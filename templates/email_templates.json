@@ -1,0 +1,16 @@
+{
+    "welcome": {
+        "subject": "Architectural & Estimating Services for {{company}}",
+        "body": "Hello {{name}},\n\nWe are Grace Architecture & Estimating LLC.\nWe provide professional architectural drawings, construction estimating and permit services.\n\nWe would like to support {{company}} with your upcoming projects in {{city}}.\n\nLooking forward to working with you.\n\nRegards,\nGrace Team"
+    },
+
+    "test": {
+        "subject": "Testing",
+        "body": "Hello\n\nThis is a test."
+    },
+
+    "followup": {
+        "subject": "Following Up",
+        "body": "Hello {{name}},\n\nThis is a follow-up email regarding our architectural and estimating services.\n\nRegards,\nGrace Team"
+    }
+}

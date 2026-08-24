@@ -1,0 +1,5 @@
+{
+    "emails_per_profile": 20,
+    "min_delay": 5,
+    "max_delay": 15
+}

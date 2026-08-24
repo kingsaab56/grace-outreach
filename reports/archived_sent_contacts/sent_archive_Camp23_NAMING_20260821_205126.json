@@ -1,0 +1,38 @@
+{
+  "campaign_id": 23,
+  "campaign_name": "NAMING",
+  "archive_time": "2026-08-21T20:51:26.493331",
+  "total_sent": 5,
+  "records": [
+    {
+      "email": "cheriemalkoff@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-798651072163448810",
+      "timestamp": 1787327482.302245
+    },
+    {
+      "email": "ccsellsaz@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-2880602458981093440",
+      "timestamp": 1787327483.3102088
+    },
+    {
+      "email": "brokereteam+northco@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-4305259487358850501",
+      "timestamp": 1787327484.1987264
+    },
+    {
+      "email": "fcbrawards@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-2479853126988938733",
+      "timestamp": 1787327485.0893745
+    },
+    {
+      "email": "electricmdlt@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r1342868947187476626",
+      "timestamp": 1787327485.9793038
+    }
+  ]
+}

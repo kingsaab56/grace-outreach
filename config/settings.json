@@ -1,0 +1,28 @@
+{
+    "company": {
+        "name": "Grace Architecture & Estimating LLC",
+        "website": "gracearchitectures.com"
+    },
+
+    "sender": {
+        "name": "King Saab",
+        "email": ""
+    },
+
+    "campaign": {
+        "default_city": "Houston",
+        "default_state": "Texas",
+        "mode": "draft_only"
+    },
+
+    "ai": {
+        "template_analysis": true,
+        "spam_check": true,
+        "subject_analysis": true
+    },
+
+    "system": {
+        "version": "1.0",
+        "developer": "King Saab"
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "campaign_id": 24,
+  "campaign_name": "TEST 1",
+  "archive_time": "2026-08-21T20:56:20.430985",
+  "total_sent": 10,
+  "records": [
+    {
+      "email": "contact.naeproperties@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r7659502110152791557",
+      "timestamp": 1787327769.698488
+    },
+    {
+      "email": "azrealestaterecycler@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r2630682696061113995",
+      "timestamp": 1787327770.6546235
+    },
+    {
+      "email": "jcarloquirogarealtor@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-6888407033385582835",
+      "timestamp": 1787327771.8422313
+    },
+    {
+      "email": "kristymeeler.realestate@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r2859428594512464727",
+      "timestamp": 1787327773.025557
+    },
+    {
+      "email": "benball.tess@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r594015747083533619",
+      "timestamp": 1787327774.2195177
+    },
+    {
+      "email": "herdeztc@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-6844163189678008316",
+      "timestamp": 1787327775.2136953
+    },
+    {
+      "email": "robinfinkhomes@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r4684299060204258290",
+      "timestamp": 1787327776.8899362
+    },
+    {
+      "email": "jeradmcminamen@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-7292149757893507071",
+      "timestamp": 1787327777.781729
+    },
+    {
+      "email": "cho85258@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r-7833071257706193168",
+      "timestamp": 1787327778.669784
+    },
+    {
+      "email": "deisyazrealtor@gmail.com",
+      "sender": "brydon.gracearchitectures.llc@gmail.com",
+      "draft_id": "r1046540441101753047",
+      "timestamp": 1787327779.5496125
+    }
+  ]
+}

@@ -1,0 +1,426 @@
+from datetime import datetime
+
+from config.database import get_connection
+
+from gmail.drafts.draft_manager import create_draft
+from gmail.chrome_profiles.gmail_detector import detect_gmail_accounts
+from gmail.oauth.gmail_service import get_profile_email
+
+from campaign_engine.queue.queue_resume import (
+    get_pending_queue,
+    update_queue_status,
+    get_queue_stats,
+    increase_attempt
+)
+
+
+def _update_campaign_summary(
+    campaign_id,
+    completed,
+    failed,
+    pending
+):
+    """
+    Update campaign statistics.
+    """
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    if failed == 0 and pending == 0:
+        status = "Completed"
+
+    elif completed > 0:
+        status = "Completed With Errors"
+
+    else:
+        status = "Failed"
+
+    cursor.execute(
+        """
+        UPDATE campaigns
+        SET
+            completed_count=?,
+            failed_count=?,
+            pending_count=?,
+            status=?
+        WHERE id=?
+        """,
+        (
+            completed,
+            failed,
+            pending,
+            status,
+            campaign_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def _get_verified_gmail(
+    profile_name,
+    account_email
+):
+    """
+    Verify the Gmail identity using the specific
+    OAuth token belonging to the selected account.
+    """
+
+    try:
+
+        email = get_profile_email(
+            profile_name,
+            account_email
+        )
+
+        if email:
+            return email
+
+    except Exception as e:
+
+        print(
+            f"[WARNING] OAuth identity detection failed "
+            f"for {profile_name} | {account_email}: {e}"
+        )
+
+    return "Unknown"
+
+
+def _show_profile_accounts():
+    """
+    Display all detected Gmail identities
+    grouped under their Chrome profile.
+    """
+
+    accounts = detect_gmail_accounts()
+
+    print("\n==========================================")
+    print("       GMAIL ACCOUNTS BY CHROME PROFILE")
+    print("==========================================")
+
+    if not accounts:
+
+        print("\nNo Gmail accounts detected.")
+        print("==========================================")
+        return
+
+    grouped = {}
+
+    for account in accounts:
+
+        profile = account.get(
+            "profile",
+            "Unknown"
+        )
+
+        grouped.setdefault(
+            profile,
+            []
+        )
+
+        grouped[profile].append(
+            account
+        )
+
+    for profile, profile_accounts in grouped.items():
+
+        print(f"\n[{profile}]")
+
+        for index, account in enumerate(
+            profile_accounts,
+            start=1
+        ):
+
+            name = account.get(
+                "name",
+                ""
+            )
+
+            email = account.get(
+                "email",
+                ""
+            )
+
+            print(
+                f"  {index}. "
+                f"{name} | {email}"
+            )
+
+    total = len(accounts)
+
+    print("\n------------------------------------------")
+    print(
+        f"Total detected identities: {total}"
+    )
+    print("==========================================")
+
+
+def _get_accounts_for_profile(
+    profile_name
+):
+    """
+    Return detected Gmail accounts for a
+    specific Chrome profile.
+    """
+
+    accounts = detect_gmail_accounts()
+
+    return [
+        account
+        for account in accounts
+        if account.get("profile") == profile_name
+    ]
+
+
+def run_campaign(campaign_id):
+
+    queue = get_pending_queue(
+        campaign_id
+    )
+
+    if not queue:
+
+        print("\nNo pending queue found.")
+        return
+
+    total = len(queue)
+
+    completed = 0
+    failed = 0
+
+    start_time = datetime.now()
+
+    print("\n==========================================")
+    print("        CAMPAIGN RUNNER STARTED")
+    print("==========================================")
+
+    _show_profile_accounts()
+
+    print("\n==========================================")
+    print("        CAMPAIGN QUEUE")
+    print("==========================================")
+
+    for index, item in enumerate(
+        queue,
+        start=1
+    ):
+
+        queue_id = item[0]
+        email = item[1]
+        profile = item[2]
+        subject = item[3]
+        body = item[4]
+
+        profile_accounts = _get_accounts_for_profile(
+            profile
+        )
+
+        if not profile_accounts:
+
+            print("\n------------------------------------------")
+            print(
+                f"Progress      : {index}/{total}"
+            )
+            print(
+                f"Profile       : {profile}"
+            )
+            print(
+                "Result        : FAILED"
+            )
+            print(
+                "Reason        : No Gmail account detected"
+            )
+            print("------------------------------------------")
+
+            increase_attempt(
+                queue_id
+            )
+
+            update_queue_status(
+                queue_id,
+                "failed"
+            )
+
+            failed += 1
+
+            continue
+
+        account = profile_accounts[
+            (index - 1) % len(profile_accounts)
+        ]
+
+        account_email = account.get(
+            "email",
+            ""
+        )
+
+        account_name = account.get(
+            "name",
+            ""
+        )
+
+        gmail_account = _get_verified_gmail(
+            profile,
+            account_email
+        )
+
+        print("\n------------------------------------------")
+
+        print(
+            f"Progress      : {index}/{total}"
+        )
+
+        print(
+            f"Profile       : {profile}"
+        )
+
+        print(
+            f"Account Name  : {account_name}"
+        )
+
+        print(
+            f"Gmail         : {gmail_account}"
+        )
+
+        print(
+            f"Recipient     : {email}"
+        )
+
+        print("------------------------------------------")
+
+        if gmail_account == "Unknown":
+
+            print(
+                "Result        : FAILED"
+            )
+
+            print(
+                "Reason        : OAuth account verification failed"
+            )
+
+            increase_attempt(
+                queue_id
+            )
+
+            update_queue_status(
+                queue_id,
+                "failed"
+            )
+
+            failed += 1
+
+            continue
+
+        try:
+
+            result = create_draft(
+                profile,
+                account_email,
+                email,
+                subject,
+                body
+            )
+
+            if result is None:
+
+                raise RuntimeError(
+                    "Draft creation returned no result."
+                )
+
+            update_queue_status(
+                queue_id,
+                "completed"
+            )
+
+            completed += 1
+
+            print(
+                "Result        : SUCCESS"
+            )
+
+        except Exception as e:
+
+            increase_attempt(
+                queue_id
+            )
+
+            update_queue_status(
+                queue_id,
+                "failed"
+            )
+
+            failed += 1
+
+            print(
+                "Result        : FAILED"
+            )
+
+            print(e)
+
+        stats = get_queue_stats(
+            campaign_id
+        )
+
+        print("\nLive Statistics")
+        print("------------------------------")
+
+        print(
+            "Completed :",
+            stats["completed"]
+        )
+
+        print(
+            "Failed    :",
+            stats["failed"]
+        )
+
+        print(
+            "Pending   :",
+            stats["pending"]
+        )
+
+    duration = datetime.now() - start_time
+
+    stats = get_queue_stats(
+        campaign_id
+    )
+
+    _update_campaign_summary(
+        campaign_id,
+        stats["completed"],
+        stats["failed"],
+        stats["pending"]
+    )
+
+    print("\n==========================================")
+    print("        CAMPAIGN FINISHED")
+    print("==========================================")
+
+    print(
+        "Total      :",
+        total
+    )
+
+    print(
+        "Completed  :",
+        stats["completed"]
+    )
+
+    print(
+        "Failed     :",
+        stats["failed"]
+    )
+
+    print(
+        "Pending    :",
+        stats["pending"]
+    )
+
+    print(
+        "Duration   :",
+        duration
+    )
+
+    print("==========================================")

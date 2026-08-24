@@ -1,0 +1,31 @@
+from pathlib import Path
+
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.modify"
+]
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+CREDENTIALS_FILE = BASE_DIR / "credentials" / "credentials.json"
+
+
+def login_new_account(profile_name):
+
+    account_dir = BASE_DIR / "accounts" / profile_name
+    account_dir.mkdir(parents=True, exist_ok=True)
+
+    token_file = account_dir / "token.json"
+
+    flow = InstalledAppFlow.from_client_secrets_file(
+        str(CREDENTIALS_FILE),
+        SCOPES
+    )
+
+    creds = flow.run_local_server(port=0)
+
+    with open(token_file, "w", encoding="utf-8") as f:
+        f.write(creds.to_json())
+
+    return token_file
