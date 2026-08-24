@@ -107,7 +107,9 @@ APP_HTML = '''<!DOCTYPE html>
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border: 1px solid var(--primary); border-radius: 10px; color: #ffffff;
             font-size: 13.5px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 20px var(--primary-glow);
+            transition: 0.2s;
         }
+        .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--primary-glow); }
 
         #enterpriseApp {
             display: none; position: relative; z-index: 30; min-height: 100vh; flex-direction: column; background: var(--bg-body);
@@ -200,11 +202,11 @@ APP_HTML = '''<!DOCTYPE html>
 
         <div class="module-capsule" style="left: 12vw; top: 35vh;"><i class="fas fa-cubes"></i> 22 Engines Online</div>
         <div class="module-capsule" style="left: 34vw; top: 25vh;"><i class="fas fa-bolt"></i> 24/7 Cloud Worker</div>
-        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> &#36;64,800 CRM Deals</div>
+        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> <span id="capsuleDealValue">&#36;64,800</span> CRM Deals</div>
         <div class="module-capsule" style="left: 36vw; top: 65vh;"><i class="fas fa-robot"></i> AI Guide Ready</div>
     </div>
 
-    <!-- 1. AUTH LOGIN (INSTANT ZERO-BLOCK OPENING) -->
+    <!-- 1. AUTH LOGIN (FORM REFRESH COMPLETELY PREVENTED) -->
     <div id="authViewport">
         <div class="auth-glass-panel">
             <div class="brand-crest"><img src="/favicon.ico?v=999" alt="Grace Crest"></div>
@@ -215,17 +217,17 @@ APP_HTML = '''<!DOCTYPE html>
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">🌟 Strategic Guidance by <strong style="color: #34d399;">Abdullah Khan</strong></div>
             </div>
 
-            <form onsubmit="handleAuthSubmit(event)" autocomplete="off">
+            <div id="loginFormContainer">
                 <div class="form-group">
                     <label>Colleague Identifier / ID</label>
-                    <input type="text" id="authUsername" class="form-control" placeholder="Enter Colleague ID" required autocomplete="off">
+                    <input type="text" id="authUsername" class="form-control" placeholder="Enter ID (or King Saab)" onkeydown="if(event.key==='Enter') executeLogin()">
                 </div>
                 <div class="form-group">
                     <label>Security Keyphrase</label>
-                    <input type="password" id="authPassword" class="form-control" placeholder="Enter Keyphrase" required autocomplete="new-password">
+                    <input type="password" id="authPassword" class="form-control" placeholder="Enter Keyphrase" onkeydown="if(event.key==='Enter') executeLogin()">
                 </div>
-                <button type="submit" class="btn-luxury" id="loginBtn"><i class="fas fa-fingerprint"></i> Enter Command Center</button>
-            </form>
+                <button type="button" class="btn-luxury" id="loginBtn" onclick="executeLogin()"><i class="fas fa-fingerprint"></i> Enter Command Center</button>
+            </div>
         </div>
     </div>
 
@@ -348,17 +350,44 @@ APP_HTML = '''<!DOCTYPE html>
             setTimeout(() => { speech.innerText = "👑 King Saab AI System Ready"; }, 2500);
         }
 
-        function handleAuthSubmit(e) {
-            e.preventDefault();
-            document.getElementById('authViewport').style.display = 'none';
-            document.getElementById('cinematicStage').style.display = 'none';
-            document.getElementById('enterpriseApp').style.display = 'flex';
+        /* 100% NON-RELOADING LOGIN TRANSITION */
+        function executeLogin() {
+            const u = document.getElementById('authUsername').value.trim();
+            const p = document.getElementById('authPassword').value.trim();
+            const btn = document.getElementById('loginBtn');
+
+            if(!u || !p) {
+                alert("Please enter Colleague Identifier and Security Keyphrase.");
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+
+            setTimeout(() => {
+                document.getElementById('authViewport').style.display = 'none';
+                document.getElementById('cinematicStage').style.display = 'none';
+                document.getElementById('enterpriseApp').style.display = 'flex';
+
+                // Automatically map role if colleague ID entered
+                const found = colleagues.find(c => c.id.toLowerCase() === u.toLowerCase() || c.name.toLowerCase() === u.toLowerCase());
+                if(found) {
+                    document.getElementById('userRoleSelector').value = found.key;
+                    switchColleagueView(found.key);
+                } else {
+                    document.getElementById('userRoleSelector').value = 'admin';
+                    switchColleagueView('admin');
+                }
+
+                btn.innerHTML = '<i class="fas fa-fingerprint"></i> Enter Command Center';
+            }, 300);
         }
 
         function handlePowerOff() {
             document.getElementById('enterpriseApp').style.display = 'none';
             document.getElementById('cinematicStage').style.display = 'block';
             document.getElementById('authViewport').style.display = 'flex';
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
         }
 
         function switchTab(tabId, btn) {
