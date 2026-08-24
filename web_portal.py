@@ -47,25 +47,6 @@ APP_HTML = '''<!DOCTYPE html>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        /* FIXED STATIC SPLASH SCREEN WITHOUT PULSING / RESIZING */
-        #launchSplash {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #02080a; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .splash-crest {
-            width: 140px; height: 140px; border-radius: 28px; overflow: hidden;
-            box-shadow: 0 0 35px var(--gold-glow);
-            transform: none !important;
-            animation: none !important;
-        }
-        .splash-crest img { width: 100%; height: 100%; object-fit: contain; }
-        .splash-title {
-            margin-top: 18px; font-size: 22px; font-weight: 900; letter-spacing: 4px;
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
         #cinematicStage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; overflow: hidden; pointer-events: none; }
         #worldCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
 
@@ -199,12 +180,6 @@ APP_HTML = '''<!DOCTYPE html>
 </head>
 <body>
 
-    <div id="launchSplash">
-        <div class="splash-crest"><img src="/favicon.ico?v=999" alt="Grace Crest"></div>
-        <div class="splash-title">GRACE OUTREACH ASSISTANT</div>
-        <div style="color:#6ee7b7; font-size:12px; margin-top:8px; font-weight:700;"><i class="fas fa-circle-notch fa-spin"></i> Initializing 22 Core Modules...</div>
-    </div>
-
     <div id="cinematicStage">
         <canvas id="worldCanvas"></canvas>
         <div class="hologram-emblem"><img src="/favicon.ico?v=999" alt="Grace Hologram"></div>
@@ -229,7 +204,7 @@ APP_HTML = '''<!DOCTYPE html>
         <div class="module-capsule" style="left: 36vw; top: 65vh;"><i class="fas fa-robot"></i> AI Guide Ready</div>
     </div>
 
-    <!-- 1. AUTH LOGIN -->
+    <!-- 1. AUTH LOGIN (INSTANT ZERO-BLOCK OPENING) -->
     <div id="authViewport">
         <div class="auth-glass-panel">
             <div class="brand-crest"><img src="/favicon.ico?v=999" alt="Grace Crest"></div>
@@ -335,7 +310,7 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- OPTION 3: COLLEAGUE MANAGEMENT, DELETE & TOGGLES -->
+            <!-- OPTION 3: COLLEAGUE MANAGEMENT -->
             <section id="tab-team-control" class="tab-section">
                 <div class="panel-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -353,13 +328,6 @@ APP_HTML = '''<!DOCTYPE html>
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('launchSplash');
-                if(splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => { splash.style.display = 'none'; }, 500);
-                }
-            }, 800);
             renderColleagues();
         });
 
@@ -401,7 +369,6 @@ APP_HTML = '''<!DOCTYPE html>
             if(btn) btn.classList.add('active');
         }
 
-        /* DYNAMIC COLLEAGUE DATA STORE WITH DELETE & PERMISSIONS */
         let colleagues = [
             { id: "COL-901", key: "colleague1", name: "Alex Vance", color: "#34d399", perms: [1,2,3,4,7,10,11] },
             { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", color: "#38bdf8", perms: [1,4,5,6,11,16] }
