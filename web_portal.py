@@ -227,7 +227,7 @@ APP_HTML = '''<!DOCTYPE html>
 
         <div class="module-capsule" style="left: 12vw; top: 35vh;"><i class="fas fa-cubes"></i> 22 Engines Online</div>
         <div class="module-capsule" style="left: 34vw; top: 25vh;"><i class="fas fa-bolt"></i> 24/7 Cloud Worker</div>
-        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> &#36;64,800 CRM Deals</div>
+        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> <span id="capsuleDealValue">&#36;64,800</span> CRM Deals</div>
         <div class="module-capsule" style="left: 36vw; top: 65vh;"><i class="fas fa-robot"></i> AI Guide Ready</div>
     </div>
 
@@ -418,41 +418,39 @@ APP_HTML = '''<!DOCTYPE html>
             selector.innerHTML = '<option value="admin" style="background:#08171a;">👑 King Saab (Super Admin)</option>';
 
             colleagues.forEach(col => {
-                // Add to role selector dropdown
                 const opt = document.createElement('option');
                 opt.value = col.key;
                 opt.style.background = "#08171a";
                 opt.innerText = "👤 " + col.name + " (" + col.id + ")";
                 selector.appendChild(opt);
 
-                // Render Card
                 const card = document.createElement('div');
                 card.className = "colleague-card";
                 card.id = "card-" + col.key;
-                card.innerHTML = 
+                card.innerHTML = `
                     <div class="colleague-header">
                         <div>
-                            <span style="font-weight:900; font-size:15px; color:;"></span>
-                            <span style="font-size:12px; color:var(--text-muted); margin-left:10px;">ID: <strong></strong></span>
+                            <span style="font-weight:900; font-size:15px; color:${col.color};">${col.name}</span>
+                            <span style="font-size:12px; color:var(--text-muted); margin-left:10px;">ID: <strong>${col.id}</strong></span>
                             <span class="active-badge" style="margin-left:10px;">● ACTIVE LIVE</span>
                         </div>
                         <div style="display:flex; gap:8px;">
-                            <button class="btn-luxury" style="width:auto; padding:6px 14px; font-size:12px; background:#d97706;" onclick="sendTargetedAlert('', '')"><i class="fas fa-bell"></i> Send Alert</button>
-                            <button class="btn-luxury" style="width:auto; padding:6px 14px; font-size:12px; background:#dc2626;" onclick="deleteColleague('', '')"><i class="fas fa-trash-alt"></i> Delete</button>
+                            <button class="btn-luxury" style="width:auto; padding:6px 14px; font-size:12px; background:#d97706;" onclick="sendTargetedAlert('${col.id}', '${col.name}')"><i class="fas fa-bell"></i> Send Alert</button>
+                            <button class="btn-luxury" style="width:auto; padding:6px 14px; font-size:12px; background:#dc2626;" onclick="deleteColleague('${col.key}', '${col.name}')"><i class="fas fa-trash-alt"></i> Delete</button>
                         </div>
                     </div>
-                    <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:6px;">Module Permissions for :</div>
+                    <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:6px;">Module Permissions for ${col.name}:</div>
                     <div class="toggle-grid">
-                        <div class="toggle-item"><span>1. Dashboard</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 1, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>2. Gmail Multi-Tenant</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 2, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>3. AI Warmup Ramp</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 3, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>4. Campaign Studio</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 4, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>5. Spin-Syntax AI</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 5, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>6. Lead Scraper</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 6, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>7. CRM Pipeline Deals</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 7, this.checked)"><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>11. AI Guide Agent</span><label class="switch"><input type="checkbox"  onchange="updateColleaguePerm('', 11, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>1. Dashboard</span><label class="switch"><input type="checkbox" ${col.perms.includes(1)?'checked':''} onchange="updateColleaguePerm('${col.key}', 1, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>2. Gmail Multi-Tenant</span><label class="switch"><input type="checkbox" ${col.perms.includes(2)?'checked':''} onchange="updateColleaguePerm('${col.key}', 2, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>3. AI Warmup Ramp</span><label class="switch"><input type="checkbox" ${col.perms.includes(3)?'checked':''} onchange="updateColleaguePerm('${col.key}', 3, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>4. Campaign Studio</span><label class="switch"><input type="checkbox" ${col.perms.includes(4)?'checked':''} onchange="updateColleaguePerm('${col.key}', 4, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>5. Spin-Syntax AI</span><label class="switch"><input type="checkbox" ${col.perms.includes(5)?'checked':''} onchange="updateColleaguePerm('${col.key}', 5, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>6. Lead Scraper</span><label class="switch"><input type="checkbox" ${col.perms.includes(6)?'checked':''} onchange="updateColleaguePerm('${col.key}', 6, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>7. CRM Pipeline Deals</span><label class="switch"><input type="checkbox" ${col.perms.includes(7)?'checked':''} onchange="updateColleaguePerm('${col.key}', 7, this.checked)"><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>11. AI Guide Agent</span><label class="switch"><input type="checkbox" ${col.perms.includes(11)?'checked':''} onchange="updateColleaguePerm('${col.key}', 11, this.checked)"><span class="slider"></span></label></div>
                     </div>
-                ;
+                `;
                 container.appendChild(card);
             });
         }
