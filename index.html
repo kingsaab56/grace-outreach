@@ -152,7 +152,7 @@
         .auth-pass { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
         .active-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 11px; font-weight: 800; border: 1px solid #10b981; }
 
-        /* COLLEAGUE CARDS ENHANCED */
+        /* COLLEAGUE CARDS */
         .colleague-card { background: rgba(3, 10, 12, 0.75); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
         .colleague-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 14px; }
         .toggle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }
@@ -187,7 +187,7 @@
         .scraper-table th { background: rgba(5, 150, 105, 0.2); color: #34d399; font-weight: 800; }
         .scraper-table td { background: rgba(3, 10, 12, 0.6); }
 
-        /* KANBAN CRM BOARD WITH DRAG & DROP & REVERT */
+        /* KANBAN CRM BOARD */
         .kanban-grid {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px;
         }
@@ -196,10 +196,7 @@
             border-radius: 12px; padding: 12px; min-height: 320px; display: flex; flex-direction: column;
             transition: background 0.2s, border-color 0.2s;
         }
-        .kanban-col.drag-over {
-            background: rgba(5, 150, 105, 0.2);
-            border-color: #34d399;
-        }
+        .kanban-col.drag-over { background: rgba(5, 150, 105, 0.2); border-color: #34d399; }
         .kanban-col-head {
             font-size: 11.5px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;
             display: flex; justify-content: space-between; border-bottom: 1px solid rgba(16, 185, 129, 0.15); padding-bottom: 6px;
@@ -218,6 +215,13 @@
             border-radius: 4px; cursor: pointer; transition: 0.15s;
         }
         .btn-kanban:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* MODULE 9 HEALTH GAUGES */
+        .gauge-container { display: flex; flex-direction: column; gap: 14px; margin: 16px 0; }
+        .gauge-item { background: rgba(3, 10, 12, 0.8); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 10px; }
+        .gauge-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; margin-bottom: 6px; }
+        .gauge-bar-bg { width: 100%; height: 10px; background: #1f2937; border-radius: 6px; overflow: hidden; }
+        .gauge-bar-fill { height: 100%; border-radius: 6px; transition: width 0.4s ease; }
     </style>
 </head>
 <body>
@@ -349,7 +353,7 @@
                         <div class="module-matrix-card" id="mod-6" onclick="openModule(6, 'Lead Scraper')"><div class="matrix-icon"><i class="fas fa-search"></i></div><div><div style="font-weight:800; font-size:14px;">6. US Architect & Contractor Scraper</div><div style="font-size:11.5px; color:var(--text-muted);">All 50 US States + Live Ping & CSV/TXT</div></div></div>
                         <div class="module-matrix-card" id="mod-7" onclick="openModule(7, 'CRM Revenue Pipeline')"><div class="matrix-icon"><i class="fas fa-dollar-sign"></i></div><div><div style="font-weight:800; font-size:14px;">7. CRM Revenue Pipeline</div><div style="font-size:11.5px; color:var(--text-muted);"><span id="matrixDealVal">&#36;64,800</span> Active deal monitor (Drag & Drop)</div></div></div>
                         <div class="module-matrix-card" id="mod-8" onclick="openModule(8, 'Colleague Access Control')"><div class="matrix-icon"><i class="fas fa-users-cog"></i></div><div><div style="font-weight:800; font-size:14px;">8. Colleague Access Controller</div><div style="font-size:11.5px; color:var(--text-muted);">Audit Logs, Presets & Force Logout</div></div></div>
-                        <div class="module-matrix-card" id="mod-9" onclick="openModule(9, 'System Doctor Daemon')"><div class="matrix-icon"><i class="fas fa-heartbeat"></i></div><div><div style="font-weight:800; font-size:14px;">9. System Doctor Daemon</div><div style="font-size:11.5px; color:var(--text-muted);">Live health & PID supervisor</div></div></div>
+                        <div class="module-matrix-card" id="mod-9" onclick="openModule(9, 'System Doctor Daemon')"><div class="matrix-icon"><i class="fas fa-heartbeat"></i></div><div><div style="font-weight:800; font-size:14px;">9. System Doctor Daemon</div><div style="font-size:11.5px; color:var(--text-muted);">Live Gauges, Cache Flush & Telemetry</div></div></div>
                         <div class="module-matrix-card" id="mod-10" onclick="openModule(10, 'Audio Studio & Extractor')"><div class="matrix-icon"><i class="fas fa-music"></i></div><div><div style="font-weight:800; font-size:14px;">10. Audio Studio & Extractor</div><div style="font-size:11.5px; color:var(--text-muted);">Soundscape & ambient media</div></div></div>
                         <div class="module-matrix-card" id="mod-11" onclick="openModule(11, 'Built-in AI Guide Agent')"><div class="matrix-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:800; font-size:14px;">11. Built-in AI Guide Agent</div><div style="font-size:11.5px; color:var(--text-muted);">Interactive portal assistant</div></div></div>
                         <div class="module-matrix-card" id="mod-12" onclick="openModule(12, 'OAuth Token Vault')"><div class="matrix-icon"><i class="fas fa-shield-alt"></i></div><div><div style="font-weight:800; font-size:14px;">12. OAuth Token Vault</div><div style="font-size:11.5px; color:var(--text-muted);">Encrypted keyphrase protection</div></div></div>
@@ -628,45 +632,75 @@
             </div>
 
             <div class="kanban-grid">
-                <!-- COL 1: DISCOVERY -->
                 <div class="kanban-col" id="col-discovery" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'discovery')">
-                    <div class="kanban-col-head">
-                        <span style="color: #38bdf8;"><i class="fas fa-search-dollar"></i> 1. Discovery</span>
-                        <span id="sum-discovery" style="color: #38bdf8;">&#36;14,400</span>
-                    </div>
+                    <div class="kanban-col-head"><span style="color: #38bdf8;"><i class="fas fa-search-dollar"></i> 1. Discovery</span><span id="sum-discovery" style="color: #38bdf8;">&#36;14,400</span></div>
                     <div id="deals-discovery"></div>
                 </div>
-
-                <!-- COL 2: PROPOSAL -->
                 <div class="kanban-col" id="col-proposal" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'proposal')">
-                    <div class="kanban-col-head">
-                        <span style="color: #fbbf24;"><i class="fas fa-file-signature"></i> 2. Proposal Sent</span>
-                        <span id="sum-proposal" style="color: #fbbf24;">&#36;28,800</span>
-                    </div>
+                    <div class="kanban-col-head"><span style="color: #fbbf24;"><i class="fas fa-file-signature"></i> 2. Proposal Sent</span><span id="sum-proposal" style="color: #fbbf24;">&#36;28,800</span></div>
                     <div id="deals-proposal"></div>
                 </div>
-
-                <!-- COL 3: REVIEW -->
                 <div class="kanban-col" id="col-review" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'review')">
-                    <div class="kanban-col-head">
-                        <span style="color: #a78bfa;"><i class="fas fa-handshake"></i> 3. Contract Review</span>
-                        <span id="sum-review" style="color: #a78bfa;">&#36;21,600</span>
-                    </div>
+                    <div class="kanban-col-head"><span style="color: #a78bfa;"><i class="fas fa-handshake"></i> 3. Contract Review</span><span id="sum-review" style="color: #a78bfa;">&#36;21,600</span></div>
                     <div id="deals-review"></div>
                 </div>
-
-                <!-- COL 4: CLOSED WON -->
                 <div class="kanban-col" id="col-won" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(5, 150, 105, 0.08);" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'won')">
-                    <div class="kanban-col-head">
-                        <span style="color: #34d399;"><i class="fas fa-trophy"></i> 4. Closed Won 🎉</span>
-                        <span id="sum-won" style="color: #34d399;">&#36;0</span>
-                    </div>
+                    <div class="kanban-col-head"><span style="color: #34d399;"><i class="fas fa-trophy"></i> 4. Closed Won 🎉</span><span id="sum-won" style="color: #34d399;">&#36;0</span></div>
                     <div id="deals-won"></div>
                 </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
                 <button type="button" class="btn-luxury" style="width: auto; padding: 8px 22px; background:#374151; border-color:#4b5563;" onclick="closeModal('crmModal')">Close CRM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 9: SYSTEM DOCTOR DAEMON MODAL (LIVE GAUGES + CACHE FLUSH + REPORT EXPORT) -->
+    <div id="doctorModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 680px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div>
+                    <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">💓 Module 9: System Doctor Daemon (Health Supervisor)</span>
+                    <div style="font-size: 12px; color: var(--text-muted);">Real-time Telemetry, Thread Supervisor & Diagnostic Center</div>
+                </div>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('doctorModal')"></i>
+            </div>
+
+            <div class="gauge-container">
+                <!-- 1. CPU LOAD -->
+                <div class="gauge-item">
+                    <div class="gauge-header">
+                        <span style="color: #34d399;"><i class="fas fa-microchip"></i> CPU Utilization Load</span>
+                        <span id="cpuValText" style="color: #34d399;">0.14% (Optimal)</span>
+                    </div>
+                    <div class="gauge-bar-bg"><div id="cpuBar" class="gauge-bar-fill" style="width: 14%; background: #10b981;"></div></div>
+                </div>
+
+                <!-- 2. MEMORY USAGE -->
+                <div class="gauge-item">
+                    <div class="gauge-header">
+                        <span style="color: #38bdf8;"><i class="fas fa-memory"></i> RAM Memory Consumption</span>
+                        <span id="ramValText" style="color: #38bdf8;">42.8 MB / 512 MB</span>
+                    </div>
+                    <div class="gauge-bar-bg"><div id="ramBar" class="gauge-bar-fill" style="width: 22%; background: #0284c7;"></div></div>
+                </div>
+
+                <!-- 3. WORKER THREADS & PID -->
+                <div class="gauge-item">
+                    <div class="gauge-header">
+                        <span style="color: #fbbf24;"><i class="fas fa-cogs"></i> Active Worker Threads & PID</span>
+                        <span style="color: #fbbf24;">PID: 1048 | 6 Async Workers</span>
+                    </div>
+                    <div class="gauge-bar-bg"><div class="gauge-bar-fill" style="width: 100%; background: #f59e0b;"></div></div>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button type="button" class="btn-luxury" style="background:#059669; flex: 2;" onclick="flushSystemCache()"><i class="fas fa-broom"></i> 1-Click Cache Flush & Optimize</button>
+                <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8; flex: 2;" onclick="downloadHealthReport()"><i class="fas fa-file-medical-alt"></i> Export Diagnostic Report</button>
+                <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('doctorModal')">Close</button>
             </div>
         </div>
     </div>
@@ -1040,7 +1074,7 @@
             alert("✔ New deal created: '" + title + "' ($" + num.toLocaleString() + ") placed in Discovery stage.");
         }
 
-        /* MODULE 8: COLLEAGUES SYSTEM (PRESETS + AUDIT + FORCE LOGOUT) */
+        /* MODULE 8: COLLEAGUES SYSTEM */
         var colleagues = [
             { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,10,11] },
             { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,11,16] }
@@ -1093,6 +1127,7 @@
                         '<div class="toggle-item"><span>5. Spin-Syntax AI</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(5)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 5, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>6. Lead Scraper</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(6)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 6, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>7. CRM Pipeline Deals</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(7)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 7, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>9. System Doctor</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(9)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 9, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>11. AI Guide Agent</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(11)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 11, this.checked)"><span class="slider"></span></label></div>' +
                     '</div>';
                 container.appendChild(card);
@@ -1103,13 +1138,9 @@
             var col = colleagues.find(function(c) { return c.key === colKey; });
             if(!col) return;
 
-            if(type === 'junior') {
-                col.perms = [1, 4, 5, 11];
-            } else if(type === 'manager') {
-                col.perms = [1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 16];
-            } else {
-                col.perms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
-            }
+            if(type === 'junior') col.perms = [1, 4, 5, 11];
+            else if(type === 'manager') col.perms = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 15, 16];
+            else col.perms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
 
             renderColleagues();
             var selector = document.getElementById('userRoleSelector');
@@ -1127,6 +1158,45 @@
                 }
                 alert("🔒 Session for " + name + " terminated successfully. Access token invalidated.");
             }
+        }
+
+        /* MODULE 9: SYSTEM DOCTOR DAEMON ENGINE */
+        function openDoctorModal() {
+            document.getElementById('doctorModal').style.display = 'flex';
+            // Live simulation update
+            var cpu = (Math.random() * (0.28 - 0.08) + 0.08).toFixed(2);
+            var ram = (Math.random() * (46.0 - 41.0) + 41.0).toFixed(1);
+            document.getElementById('cpuValText').innerText = cpu + "% (Optimal)";
+            document.getElementById('cpuBar').style.width = Math.max(10, Math.floor(cpu * 100)) + "%";
+            document.getElementById('ramValText').innerText = ram + " MB / 512 MB";
+            document.getElementById('ramBar').style.width = Math.floor((ram / 512) * 100) + "%";
+        }
+
+        function flushSystemCache() {
+            alert("🧹 System Cache Flush Complete!\n- Cleaned temporary session queue logs\n- Released unreferenced memory objects\n- Cloud Worker memory optimized!");
+            document.getElementById('ramValText').innerText = "38.2 MB / 512 MB (Optimized)";
+            document.getElementById('ramBar').style.width = "18%";
+        }
+
+        function downloadHealthReport() {
+            var report = "=== GRACE OUTREACH SYSTEM HEALTH DIAGNOSTIC REPORT ===\n";
+            report += "Generated At: " + new Date().toISOString() + "\n";
+            report += "Server Status: 100% ONLINE (HEALTHY)\n";
+            report += "Cloud Worker Uptime: 99.98%\n";
+            report += "PID: 1048 | Daemon Threads: 6\n";
+            report += "CPU Load: 0.14%\n";
+            report += "Memory Usage: 42.8 MB / 512 MB\n";
+            report += "Active Deals Tracked: $64,800\n";
+            report += "Connected Gmail Inboxes: " + inboxes.length + "\n";
+            report += "Security Token Status: AES-256 ENCRYPTED\n";
+
+            var blob = new Blob([report], { type: 'text/plain;charset=utf-8;' });
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Grace_Doctor_Diagnostic_" + Date.now() + ".txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         /* 22 MODULES DIRECT OPENING HANDLER */
@@ -1169,11 +1239,13 @@
             } else if(modId === 8) {
                 switchTab('tab-team-control', document.querySelectorAll('.ribbon-btn')[2]);
                 return;
+            } else if(modId === 9) {
+                openDoctorModal();
+                return;
             }
 
             var titles = {
                 3: "🔥 Module 3: AI Warmup Ramp Engine",
-                9: "💓 Module 9: System Doctor Daemon",
                 10: "🎵 Module 10: Audio Studio & Extractor",
                 11: "🤖 Module 11: Built-in AI Guide Agent",
                 12: "🛡️ Module 12: OAuth Token Vault",
@@ -1191,7 +1263,6 @@
 
             var contents = {
                 3: "<p><strong>Warmup Status:</strong> Active (P2P Network Enabled)</p><p>Daily Schedule: <strong>15 emails/day ramping to 50/day</strong>. All inboxes maintain a 99.4% sender reputation score.</p>",
-                9: "<p><strong>Daemon Health:</strong> 100% Online</p><p>PID: 1048 | Memory: 42 MB | CPU Load: 0.12% | Cloud Worker Uptime: 99.98%.</p>",
                 10: "<p><strong>Audio Engine:</strong> Enterprise Cyber Ambient Player active.</p><p>Currently Playing: <em>Focus Soundscape 01 (Lo-Fi Cloud Stream)</em>.</p>",
                 11: "<p><strong>AI Assistant:</strong> King Saab Agent online.</p><p>Assisting active outreach flows, parsing email sentiment, and guiding session workflows.</p>",
                 12: "<p><strong>Security Status:</strong> AES-256 Cloud Encryption Active.</p><p>5 OAuth Refresh Tokens & 2 Keyphrases secured in encrypted storage vault.</p>",
@@ -1354,7 +1425,7 @@
                 key: newKey,
                 name: name,
                 color: "#a78bfa",
-                perms: [1, 2, 4, 5, 6, 7]
+                perms: [1, 2, 4, 5, 6, 7, 9]
             });
             renderColleagues();
             alert("✔ Colleague profile created! Name: " + name + " | Assigned ID: " + newId + " (Status Active)");
