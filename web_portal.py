@@ -2,11 +2,69 @@
 import sys
 import json
 import time
+import base64
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 
 PORT = int(os.environ.get("PORT", 8080))
 HOST = "0.0.0.0"
+
+# EXACT VECTOR REPLICA OF THE 3D GOLD & EMERALD ARCHITECTURE CREST (SERVED NATIVELY)
+RAW_SVG_LOGO = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065f46"/>
+      <stop offset="50%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+    <filter id="dropGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  
+  <!-- Outer Rounded Shield Frame -->
+  <rect x="25" y="25" width="450" height="450" rx="60" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="8" filter="url(#dropGlow)"/>
+  <rect x="40" y="40" width="420" height="420" rx="48" fill="none" stroke="#047857" stroke-width="2.5" opacity="0.4"/>
+  
+  <!-- Central 3D Pillars / Architecture Emblem -->
+  <!-- Left Pillar -->
+  <path d="M170 240 L195 210 L195 145 L170 165 Z" fill="url(#emeraldGrad)"/>
+  <path d="M195 145 L200 140 L200 235 L195 240 Z" fill="url(#goldGrad)"/>
+  
+  <!-- Mid Pillar -->
+  <path d="M210 240 L235 180 L235 90 L210 115 Z" fill="url(#emeraldGrad)"/>
+  <path d="M235 90 L240 85 L240 235 L235 240 Z" fill="url(#goldGrad)"/>
+  
+  <!-- Right Tall Pillar & G Structure -->
+  <path d="M250 240 L275 145 L275 60 L250 85 Z" fill="url(#emeraldGrad)"/>
+  <path d="M275 60 L280 55 L280 235 L275 240 Z" fill="url(#goldGrad)"/>
+  <path d="M290 115 L350 175 L350 240 L315 240 L315 195 L290 170 Z" fill="url(#goldGrad)" filter="url(#dropGlow)"/>
+  <path d="M315 195 L350 195 L350 220 L315 220 Z" fill="url(#goldGrad)"/>
+
+  <!-- Brand Typography -->
+  <text x="250" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="44" fill="#022c22" text-anchor="middle" letter-spacing="10">GRACE</text>
+  <path d="M130 318 L200 318" stroke="url(#goldGrad)" stroke-width="2"/>
+  <text x="250" y="324" font-family="-apple-system, sans-serif" font-weight="800" font-size="16" fill="#b45309" text-anchor="middle" letter-spacing="6">OUTREACH</text>
+  <path d="M300 318 L370 318" stroke="url(#goldGrad)" stroke-width="2"/>
+  
+  <text x="250" y="352" font-family="-apple-system, sans-serif" font-weight="700" font-size="9" fill="#047857" text-anchor="middle" letter-spacing="1.2">CONNECTING OPPORTUNITIES. BUILDING FUTURES.</text>
+
+  <!-- Developer Seal -->
+  <text x="250" y="420" font-family="'Georgia', serif" font-style="italic" font-weight="900" font-size="12" fill="#78350f" text-anchor="middle">— Developed by King Saab —</text>
+</svg>'''
+
+LOGO_SVG_BYTES = RAW_SVG_LOGO.encode('utf-8')
+LOGO_BASE64 = base64.b64encode(LOGO_SVG_BYTES).decode('utf-8')
+LOGO_DATA_URI = "data:image/svg+xml;base64," + LOGO_BASE64
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
@@ -19,10 +77,10 @@ APP_HTML = '''<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grace Outreach Assistant | Enterprise AI Command Center</title>
     
-    <!-- HIGH RESOLUTION OFFICIAL LOGO FAVICON -->
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="shortcut icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" href="/logo.png">
+    <!-- HARDCODED FAVICON DATA-URI -->
+    <link rel="icon" type="image/svg+xml" href="''' + LOGO_DATA_URI + '''">
+    <link rel="shortcut icon" href="''' + LOGO_DATA_URI + '''">
+    <link rel="apple-touch-icon" href="''' + LOGO_DATA_URI + '''">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -57,14 +115,10 @@ APP_HTML = '''<!DOCTYPE html>
             --card-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
         }
 
-        [data-accent="gold"] { --primary: #d97706; --primary-glow: rgba(217, 119, 6, 0.45); --primary-dark: #78350f; }
-        [data-accent="cyan"] { --primary: #0891b2; --primary-glow: rgba(8, 145, 178, 0.45); --primary-dark: #164e63; }
-        [data-accent="royal"] { --primary: #2563eb; --primary-glow: rgba(37, 99, 235, 0.45); --primary-dark: #1e3a8a; }
-        [data-accent="purple"] { --primary: #9333ea; --primary-glow: rgba(147, 51, 234, 0.45); --primary-dark: #581c87; }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
+        /* INTRO SPLASH */
         #launchSplash {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -77,13 +131,10 @@ APP_HTML = '''<!DOCTYPE html>
             transition: opacity 0.6s ease, visibility 0.6s ease;
         }
         .splash-crest {
-            width: 140px; height: 140px;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 0 35px var(--primary-glow);
+            width: 150px; height: 150px;
             animation: pulseSplash 1.4s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 35px var(--gold-glow));
         }
-        .splash-crest img { width: 100%; height: 100%; object-fit: cover; }
         @keyframes pulseSplash {
             0% { transform: scale(0.92); opacity: 0.85; }
             100% { transform: scale(1.05); opacity: 1; }
@@ -98,6 +149,7 @@ APP_HTML = '''<!DOCTYPE html>
             -webkit-text-fill-color: transparent;
         }
 
+        /* 1. CINEMATIC STAGE */
         #cinematicStage {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -115,18 +167,15 @@ APP_HTML = '''<!DOCTYPE html>
             transform: translate(-50%, -50%);
             width: min(550px, 75vw);
             height: min(550px, 75vw);
-            opacity: 0.16;
+            opacity: 0.22;
             pointer-events: none;
             filter: drop-shadow(0 0 45px var(--primary-glow));
             animation: holoPulse 12s ease-in-out infinite alternate;
-            border-radius: 60px;
-            overflow: hidden;
         }
-        .hologram-emblem img { width: 100%; height: 100%; object-fit: contain; }
 
         @keyframes holoPulse {
-            0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.96); opacity: 0.12; }
-            100% { transform: translate(-50%, -50%) rotate(3deg) scale(1.03); opacity: 0.20; }
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.96); opacity: 0.16; }
+            100% { transform: translate(-50%, -50%) rotate(3deg) scale(1.03); opacity: 0.26; }
         }
 
         .robot-interactive-actor {
@@ -193,6 +242,7 @@ APP_HTML = '''<!DOCTYPE html>
             100% { transform: translate(-6px, 8px) rotate(-2deg); }
         }
 
+        /* 2. AUTH VIEWPORT */
         #authViewport {
             position: relative;
             z-index: 20;
@@ -209,7 +259,7 @@ APP_HTML = '''<!DOCTYPE html>
             backdrop-filter: blur(14px);
             border: 1.5px solid var(--border-color);
             border-radius: 24px;
-            padding: 40px 36px;
+            padding: 36px 34px;
             width: 100%;
             max-width: 440px;
             box-shadow: var(--card-shadow);
@@ -224,14 +274,10 @@ APP_HTML = '''<!DOCTYPE html>
         }
 
         .brand-crest {
-            width: 105px; height: 105px;
-            margin: 0 auto 14px;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 2px solid var(--border-gold);
-            box-shadow: 0 0 20px var(--primary-glow);
+            width: 110px; height: 110px;
+            margin: 0 auto 10px;
+            filter: drop-shadow(0 0 20px var(--gold-glow));
         }
-        .brand-crest img { width: 100%; height: 100%; object-fit: cover; }
         
         .auth-title { font-size: 22px; font-weight: 900; letter-spacing: 1.5px; color: var(--text-main); }
         
@@ -240,7 +286,7 @@ APP_HTML = '''<!DOCTYPE html>
             border: 1px dashed var(--border-gold);
             padding: 10px 14px;
             border-radius: 12px;
-            margin: 14px 0 22px;
+            margin: 12px 0 20px;
         }
         .sig-architect {
             font-family: Georgia, serif;
@@ -288,6 +334,7 @@ APP_HTML = '''<!DOCTYPE html>
         }
         .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 10px 25px var(--primary-glow); background: var(--primary); }
 
+        /* 3. ENTERPRISE APP DASHBOARD */
         #enterpriseApp {
             display: none;
             position: relative;
@@ -311,12 +358,8 @@ APP_HTML = '''<!DOCTYPE html>
         .brand-meta-box { display: flex; align-items: center; gap: 14px; }
         .nav-logo-thumb {
             width: 44px; height: 44px;
-            border-radius: 10px;
-            border: 1.5px solid var(--border-gold);
-            overflow: hidden;
-            box-shadow: 0 0 10px var(--primary-glow);
+            filter: drop-shadow(0 0 8px var(--gold-glow));
         }
-        .nav-logo-thumb img { width: 100%; height: 100%; object-fit: cover; }
         
         .nav-app-title { font-size: 17px; font-weight: 900; letter-spacing: 0.5px; }
         .nav-app-credits { font-size: 11.5px; margin-top: 2px; }
@@ -513,22 +556,20 @@ APP_HTML = '''<!DOCTYPE html>
 </head>
 <body>
 
+    <!-- 0. SPLASH LAUNCH SCREEN (DIRECT EMBEDDED CREST) -->
     <div id="launchSplash">
-        <div class="splash-crest">
-            <img src="/logo.png" alt="Grace Crest">
-        </div>
+        <div class="splash-crest">''' + RAW_SVG_LOGO + '''</div>
         <div class="splash-title">GRACE OUTREACH ASSISTANT</div>
         <div style="color:#6ee7b7; font-size:12px; margin-top:8px; font-weight:700;"><i class="fas fa-circle-notch fa-spin"></i> Initializing 22 Core Modules...</div>
     </div>
 
     <audio id="bgAudioPlayer" loop style="display:none;"></audio>
 
+    <!-- 1. CINEMATIC BACKGROUND WORLD -->
     <div id="cinematicStage">
         <canvas id="worldCanvas"></canvas>
 
-        <div class="hologram-emblem">
-            <img src="/logo.png" alt="Grace Hologram">
-        </div>
+        <div class="hologram-emblem">''' + RAW_SVG_LOGO + '''</div>
 
         <div class="robot-interactive-actor" id="robotActor" onclick="triggerRobotInteraction()">
             <div class="robot-speech-balloon" id="robotSpeech">👑 King Saab System Ready</div>
@@ -553,11 +594,10 @@ APP_HTML = '''<!DOCTYPE html>
         <div id="capsuleContainer"></div>
     </div>
 
+    <!-- 2. AUTH VIEWPORT (DIRECT EMBEDDED CREST) -->
     <div id="authViewport">
         <div class="auth-glass-panel">
-            <div class="brand-crest">
-                <img src="/logo.png" alt="Grace Crest">
-            </div>
+            <div class="brand-crest">''' + RAW_SVG_LOGO + '''</div>
             <div class="auth-title">GRACE OUTREACH</div>
             
             <div class="signature-banner">
@@ -584,12 +624,11 @@ APP_HTML = '''<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- 3. ENTERPRISE APP DASHBOARD -->
     <div id="enterpriseApp">
         <header class="top-navbar">
             <div class="brand-meta-box">
-                <div class="nav-logo-thumb">
-                    <img src="/logo.png" alt="Grace Logo">
-                </div>
+                <div class="nav-logo-thumb">''' + RAW_SVG_LOGO + '''</div>
                 <div>
                     <div class="nav-app-title">GRACE OUTREACH ASSISTANT</div>
                     <div class="nav-app-credits">
@@ -1380,17 +1419,13 @@ APP_HTML = '''<!DOCTYPE html>
 
 class GraceHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # Serve exact high-res logo image file for favicon and UI elements
-        if self.path in ['/logo.png', '/favicon.ico', '/favicon.png']:
-            if os.path.exists("logo.png"):
-                with open("logo.png", "rb") as f:
-                    content = f.read()
-                self.send_response(200)
-                self.send_header('Content-Type', 'image/png')
-                self.send_header('Cache-Control', 'public, max-age=86400')
-                self.end_headers()
-                self.wfile.write(content)
-                return
+        if self.path in ['/favicon.ico', '/favicon.png', '/logo.png']:
+            self.send_response(200)
+            self.send_header('Content-Type', 'image/svg+xml; charset=utf-8')
+            self.send_header('Cache-Control', 'public, max-age=86400')
+            self.end_headers()
+            self.wfile.write(LOGO_SVG_BYTES)
+            return
 
         self.send_response(200)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
