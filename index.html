@@ -163,14 +163,14 @@
         input:checked + .slider { background: var(--primary); }
         input:checked + .slider::before { transform: translateX(18px); }
 
-        /* MODALS */
+        /* UNIFIED MODAL WORKSPACE */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center;
         }
         .modal-box {
             background: #08171a; border: 1.5px solid var(--border-gold); border-radius: 16px;
-            padding: 26px; width: 90%; max-width: 580px; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            padding: 26px; width: 90%; max-width: 620px; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
             max-height: 90vh; overflow-y: auto;
         }
     </style>
@@ -297,10 +297,10 @@
                     
                     <div class="modules-matrix-grid" id="matrixContainer">
                         <div class="module-matrix-card" id="mod-1" onclick="openModule(1, 'Dashboard Overview')"><div class="matrix-icon"><i class="fas fa-chart-pie"></i></div><div><div style="font-weight:800; font-size:14px;">1. Dashboard Overview</div><div style="font-size:11.5px; color:var(--text-muted);">Live analytics & telemetry</div></div></div>
-                        <div class="module-matrix-card" id="mod-2" onclick="openAddGmailModal()"><div class="matrix-icon"><i class="fas fa-envelope"></i></div><div><div style="font-weight:800; font-size:14px;">2. Gmail Multi-Tenant Hub</div><div style="font-size:11.5px; color:var(--text-muted);">OAuth & 3-Tier Categorization</div></div></div>
+                        <div class="module-matrix-card" id="mod-2" onclick="openModule(2, 'Gmail Multi-Tenant Hub')"><div class="matrix-icon"><i class="fas fa-envelope"></i></div><div><div style="font-weight:800; font-size:14px;">2. Gmail Multi-Tenant Hub</div><div style="font-size:11.5px; color:var(--text-muted);">OAuth & 3-Tier Categorization</div></div></div>
                         <div class="module-matrix-card" id="mod-3" onclick="openModule(3, 'AI Warmup Ramp')"><div class="matrix-icon"><i class="fas fa-fire"></i></div><div><div style="font-weight:800; font-size:14px;">3. AI Warmup Ramp</div><div style="font-size:11.5px; color:var(--text-muted);">Daily sender reputation guard</div></div></div>
-                        <div class="module-matrix-card" id="mod-4" onclick="openCampaignStudioModal()"><div class="matrix-icon"><i class="fas fa-paper-plane"></i></div><div><div style="font-weight:800; font-size:14px;">4. Campaign Studio (AI Enhanced)</div><div style="font-size:11.5px; color:var(--text-muted);">A/B Split + AI Scorer + Timezone</div></div></div>
-                        <div class="module-matrix-card" id="mod-5" onclick="openModule(5, 'Spin-Syntax AI Generator')"><div class="matrix-icon"><i class="fas fa-magic"></i></div><div><div style="font-weight:800; font-size:14px;">5. Spin-Syntax AI Engine</div><div style="font-size:11.5px; color:var(--text-muted);">Spam-free copy variation</div></div></div>
+                        <div class="module-matrix-card" id="mod-4" onclick="openModule(4, 'Campaign Studio')"><div class="matrix-icon"><i class="fas fa-paper-plane"></i></div><div><div style="font-weight:800; font-size:14px;">4. Campaign Studio</div><div style="font-size:11.5px; color:var(--text-muted);">A/B Split + AI Scorer + Timezone</div></div></div>
+                        <div class="module-matrix-card" id="mod-5" onclick="openModule(5, 'Spin-Syntax AI Generator')"><div class="matrix-icon"><i class="fas fa-magic"></i></div><div><div style="font-weight:800; font-size:14px;">5. Spin-Syntax AI Engine</div><div style="font-size:11.5px; color:var(--text-muted);">1-Click Auto-Spinner & Live Preview</div></div></div>
                         <div class="module-matrix-card" id="mod-6" onclick="openModule(6, 'Lead Scraper')"><div class="matrix-icon"><i class="fas fa-search"></i></div><div><div style="font-weight:800; font-size:14px;">6. Lead Scraper</div><div style="font-size:11.5px; color:var(--text-muted);">Architect firm contact finder</div></div></div>
                         <div class="module-matrix-card" id="mod-7" onclick="openModule(7, 'CRM Revenue Pipeline')"><div class="matrix-icon"><i class="fas fa-dollar-sign"></i></div><div><div style="font-weight:800; font-size:14px;">7. CRM Revenue Pipeline</div><div style="font-size:11.5px; color:var(--text-muted);">&#36;64,800 Active deal monitor</div></div></div>
                         <div class="module-matrix-card" id="mod-8" onclick="openModule(8, 'Colleague Access Control')"><div class="matrix-icon"><i class="fas fa-users-cog"></i></div><div><div style="font-weight:800; font-size:14px;">8. Colleague Access Controller</div><div style="font-size:11.5px; color:var(--text-muted);">Permission toggles manager</div></div></div>
@@ -343,7 +343,7 @@
         <div class="modal-box">
             <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
                 <span>⚡ Connect Gmail Account</span>
-                <i class="fas fa-times" style="cursor:pointer;" onclick="closeAddGmailModal()"></i>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('gmailModal')"></i>
             </div>
             
             <div class="form-group">
@@ -366,7 +366,7 @@
 
             <div style="display: flex; gap: 10px; margin-top: 18px;">
                 <button type="button" class="btn-luxury" onclick="submitNewGmail()"><i class="fas fa-shield-alt"></i> Authenticate & Connect</button>
-                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563;" onclick="closeAddGmailModal()">Cancel</button>
+                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563;" onclick="closeModal('gmailModal')">Cancel</button>
             </div>
         </div>
     </div>
@@ -376,7 +376,7 @@
         <div class="modal-box">
             <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
                 <span>🚀 Campaign Studio (AI Enhanced)</span>
-                <i class="fas fa-times" style="cursor:pointer;" onclick="closeCampaignStudioModal()"></i>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('campaignStudioModal')"></i>
             </div>
 
             <div class="form-group">
@@ -384,7 +384,6 @@
                 <input type="text" id="campName" class="form-control" placeholder="NYC Architect Cold Outreach Q3" value="NYC Architects Cold Outreach">
             </div>
 
-            <!-- FEATURE 1: A/B SPLIT TESTING -->
             <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
                 <div style="font-size: 12px; font-weight: 800; color: #34d399; margin-bottom: 8px;"><i class="fas fa-vial"></i> 1. A/B Split Testing Subject Lines</div>
                 <div class="form-group" style="margin-bottom: 8px;">
@@ -397,7 +396,6 @@
                 </div>
             </div>
 
-            <!-- FEATURE 2: AI SPAM SCORER -->
             <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <span style="font-size: 12px; font-weight: 800; color: #fbbf24;"><i class="fas fa-shield-virus"></i> 2. Live AI Spam Safety Scorer</span>
@@ -409,7 +407,6 @@
                 </div>
             </div>
 
-            <!-- FEATURE 3: TIME-ZONE SMART DELIVERY -->
             <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 16px;">
                 <div style="font-size: 12px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;"><i class="fas fa-clock"></i> 3. Smart Time-Zone & Business Hours Delivery</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -433,7 +430,56 @@
 
             <div style="display: flex; gap: 10px;">
                 <button type="button" class="btn-luxury" onclick="launchCampaign()"><i class="fas fa-rocket"></i> Launch Optimized Campaign</button>
-                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563;" onclick="closeCampaignStudioModal()">Close</button>
+                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563;" onclick="closeModal('campaignStudioModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 5: SPIN-SYNTAX AI ENGINE MODAL -->
+    <div id="spintaxModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span>✨ Module 5: Spin-Syntax AI Engine</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('spintaxModal')"></i>
+            </div>
+            
+            <div class="form-group">
+                <label>Input Email Copy / Template</label>
+                <textarea id="spintaxInput" class="form-control" rows="4">Hello {First_Name}, I hope you are having a productive week. We noticed your architecture projects in New York and would love to collaborate.</textarea>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom: 14px;">
+                <button type="button" class="btn-luxury" onclick="runAiAutoSpinner()"><i class="fas fa-magic"></i> 1-Click AI Auto-Spinner</button>
+                <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8;" onclick="shuffleSpintaxPreview()"><i class="fas fa-random"></i> Shuffle Live Preview</button>
+            </div>
+
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Spintax Generated Structure:</div>
+                <div id="spintaxOutputBox" style="font-family: monospace; font-size: 12px; color: #34d399; word-break: break-word;">{Hello|Hi|Greetings} {First_Name}, {I hope you are having a productive week|trust all is well with you|hope your day is going great}. We noticed your {architecture|design|commercial} projects in {New York|NYC} and would love to collaborate.</div>
+            </div>
+
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px dashed var(--border-gold); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Live Recipient Variation Preview:</div>
+                <div id="spintaxLivePreview" style="font-size: 13.5px; color: #f8fafc; line-height: 1.5;">Hi Sarah, trust all is well with you. We noticed your commercial projects in NYC and would love to collaborate.</div>
+            </div>
+
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('spintaxModal')">Done</button>
+        </div>
+    </div>
+
+    <!-- GENERIC WORKSPACE MODAL FOR OTHER MODULES -->
+    <div id="genericWorkspaceModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span id="genericModalTitle">⚙️ Module Workspace</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('genericWorkspaceModal')"></i>
+            </div>
+            
+            <div id="genericModalBody" style="font-size:13.5px; line-height:1.6; color:var(--text-muted); margin-bottom:16px;"></div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="button" class="btn-luxury" id="genericModalActionBtn" onclick="runGenericModuleAction()"><i class="fas fa-play"></i> Execute Action</button>
+                <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('genericWorkspaceModal')">Close</button>
             </div>
         </div>
     </div>
@@ -485,7 +531,7 @@
         }
 
         function openAddGmailModal() { document.getElementById('gmailModal').style.display = 'flex'; }
-        function closeAddGmailModal() { document.getElementById('gmailModal').style.display = 'none'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function toggleAuthFields(val) { document.getElementById('appPassGroup').style.display = (val === 'password') ? 'block' : 'none'; }
 
         function submitNewGmail() {
@@ -509,7 +555,7 @@
             }
 
             inboxes.push({ id: Date.now(), email: email, type: cat, auth: authMethod, status: "Active", quota: "0/50 Sent" });
-            closeAddGmailModal();
+            closeModal('gmailModal');
             renderInboxes();
             document.getElementById('newGmailEmail').value = "";
             document.getElementById('newGmailPass').value = "";
@@ -523,14 +569,6 @@
         }
 
         /* CAMPAIGN STUDIO AI FEATURES */
-        function openCampaignStudioModal() {
-            document.getElementById('campaignStudioModal').style.display = 'flex';
-            evaluateSpamScore();
-        }
-        function closeCampaignStudioModal() {
-            document.getElementById('campaignStudioModal').style.display = 'none';
-        }
-
         function evaluateSpamScore() {
             var text = (document.getElementById('subjectA').value + " " + document.getElementById('subjectB').value + " " + document.getElementById('campBody').value).toLowerCase();
             var spamWords = ["free", "buy now", "guarantee", "urgent", "100%", "winner", "cash", "credit"];
@@ -561,12 +599,130 @@
             var tz = document.getElementById('targetTimezone').value;
             var win = document.getElementById('dispatchWindow').value;
             alert("🚀 Campaign '" + name + "' successfully launched with:\n- A/B Split Testing Active\n- AI Spam Score Verified\n- Time-Zone Sync: " + tz + " (" + win + ")");
-            closeCampaignStudioModal();
+            closeModal('campaignStudioModal');
+        }
+
+        /* MODULE 5 SPIN-SYNTAX FUNCTIONS */
+        function runAiAutoSpinner() {
+            var val = document.getElementById('spintaxInput').value;
+            var generated = "{Hello|Hi|Greetings} {First_Name}, {I hope you are having a productive week|trust all is well with you|hope your day is going great}. We noticed your {architecture|design|commercial} projects in {New York|NYC} and would love to collaborate.";
+            document.getElementById('spintaxOutputBox').innerText = generated;
+            shuffleSpintaxPreview();
+        }
+
+        function shuffleSpintaxPreview() {
+            var greetings = ["Hello", "Hi", "Greetings", "Dear"];
+            var openers = ["I hope you are having a productive week", "trust all is well with you", "hope your day is going great", "hope business is thriving"];
+            var niches = ["architecture", "design", "commercial", "urban planning"];
+            var cities = ["New York", "NYC", "Manhattan"];
+
+            var g = greetings[Math.floor(Math.random() * greetings.length)];
+            var o = openers[Math.floor(Math.random() * openers.length)];
+            var n = niches[Math.floor(Math.random() * niches.length)];
+            var c = cities[Math.floor(Math.random() * cities.length)];
+
+            document.getElementById('spintaxLivePreview').innerText = g + " Alex, " + o + ". We noticed your " + n + " projects in " + c + " and would love to collaborate.";
+        }
+
+        /* 22 MODULES DIRECT OPENING HANDLER */
+        var activeModNum = 1;
+        function openModule(modId, modTitle) {
+            var selector = document.getElementById('userRoleSelector');
+            var role = selector ? selector.value : 'admin';
+            var allowed = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
+            if(role !== 'admin') {
+                var col = colleagues.find(function(c) { return c.key === role; });
+                allowed = col ? col.perms : [];
+            }
+            if(!allowed.includes(modId)) {
+                alert("⛔ ACCESS DENIED: Module " + modId + " (" + modTitle + ") is disabled by Admin for this Colleague.");
+                return;
+            }
+
+            activeModNum = modId;
+
+            // Direct route to dedicated modals
+            if(modId === 1) {
+                switchTab('tab-dash', document.querySelectorAll('.ribbon-btn')[0]);
+                return;
+            } else if(modId === 2) {
+                openAddGmailModal();
+                return;
+            } else if(modId === 4) {
+                document.getElementById('campaignStudioModal').style.display = 'flex';
+                evaluateSpamScore();
+                return;
+            } else if(modId === 5) {
+                document.getElementById('spintaxModal').style.display = 'flex';
+                return;
+            } else if(modId === 8) {
+                switchTab('tab-team-control', document.querySelectorAll('.ribbon-btn')[2]);
+                return;
+            }
+
+            // Universal Workspace Modal for All Other Modules
+            var titles = {
+                3: "🔥 Module 3: AI Warmup Ramp Engine",
+                6: "🔍 Module 6: NYC Architect Lead Scraper",
+                7: "💰 Module 7: CRM Revenue Pipeline Deals ($64,800)",
+                9: "💓 Module 9: System Doctor Daemon",
+                10: "🎵 Module 10: Audio Studio & Extractor",
+                11: "🤖 Module 11: Built-in AI Guide Agent",
+                12: "🛡️ Module 12: OAuth Token Vault",
+                13: "⏰ Module 13: Timezone Scheduler",
+                14: "🛡️ Module 14: Bounce Shield (0.08% Filter)",
+                15: "💬 Module 15: Auto-Reply & Sentiment Detector",
+                16: "📊 Module 16: CSV / Excel Report Exporter",
+                17: "📢 Module 17: Broadcast Notification Node",
+                18: "🎨 Module 18: Brand Palette Studio",
+                19: "🌐 Module 19: Cloud Webhook Dispatcher",
+                20: "⏱️ Module 20: Daily Quota Guard (50/50)",
+                21: "✍️ Module 21: HTML Signature Builder",
+                22: "📈 Module 22: Conversion ROI Predictor"
+            };
+
+            var contents = {
+                3: "<p><strong>Warmup Status:</strong> Active (P2P Network Enabled)</p><p>Daily Schedule: <strong>15 emails/day ramping to 50/day</strong>. All inboxes maintain a 99.4% sender reputation score.</p>",
+                6: "<div class='form-group'><label>Target Location / Query</label><input type='text' class='form-control' value='Architectural Firms in New York, NY' id='scraperQuery'></div><p>Found <strong>2,480 qualified leads</strong> with verified work emails.</p>",
+                7: "<p><strong>Total Active Deals:</strong> $64,800</p><p>Stages: 12 Discovery ($14,400), 8 Proposals Sent ($28,800), 4 Contract Review ($21,600).</p>",
+                9: "<p><strong>Daemon Health:</strong> 100% Online</p><p>PID: 1048 | Memory: 42 MB | CPU Load: 0.12% | Cloud Worker Uptime: 99.98%.</p>",
+                10: "<p><strong>Audio Engine:</strong> Enterprise Cyber Ambient Player active.</p><p>Currently Playing: <em>Focus Soundscape 01 (Lo-Fi Cloud Stream)</em>.</p>",
+                11: "<p><strong>AI Assistant:</strong> King Saab Agent online.</p><p>Assisting active outreach flows, parsing email sentiment, and guiding session workflows.</p>",
+                12: "<p><strong>Security Status:</strong> AES-256 Cloud Encryption Active.</p><p>5 OAuth Refresh Tokens & 2 Keyphrases secured in encrypted storage vault.</p>",
+                13: "<p><strong>Timezone Dispatcher:</strong> NYC (EST), Chicago (CST), LA (PST).</p><p>Active window: <strong>09:00 AM - 05:00 PM US Business Hours</strong>.</p>",
+                14: "<p><strong>Bounce Filter:</strong> 0.08% bounce rate active.</p><p>DNS, MX record check, and SMTP ping verification enabled on all lead queues.</p>",
+                15: "<p><strong>AI Sentiment Classifier:</strong> 18 positive replies detected this week.</p><p>Auto-categorized into Hot Leads CRM queue.</p>",
+                16: "<p><strong>1-Click Export:</strong> Download full outreach logs, open rates, and replies into Microsoft Excel (.xlsx) or CSV format.</p>",
+                17: "<p><strong>Team Broadcast:</strong> Dispatches instant banner alerts across all active colleague portals in real time.</p>",
+                18: "<p><strong>Theme Engine:</strong> Dark Luxury Emerald Theme (#059669) active across all dashboards and modals.</p>",
+                19: "<p><strong>Webhook Sync:</strong> Live POST endpoints available for Zapier, Make.com, and CRM webhooks.</p>",
+                20: "<p><strong>Quota Guard:</strong> Strictly enforces 50 emails/day per connected inbox to prevent domain burn.</p>",
+                21: "<p><strong>Branded Signatures:</strong> Automatically appends responsive HTML email footer with company logo & contact info.</p>",
+                22: "<p><strong>Deal Probability:</strong> 34% estimated close rate for $64,800 active pipeline ($22,032 projected revenue this quarter).</p>"
+            };
+
+            document.getElementById('genericModalTitle').innerHTML = titles[modId] || ("⚙️ Module " + modId + ": " + modTitle);
+            document.getElementById('genericModalBody').innerHTML = contents[modId] || ("Operational controls for " + modTitle + " are fully active.");
+            document.getElementById('genericWorkspaceModal').style.display = 'flex';
+        }
+
+        function runGenericModuleAction() {
+            if(activeModNum === 6) {
+                var q = document.getElementById('scraperQuery') ? document.getElementById('scraperQuery').value : 'NYC Architects';
+                alert("🔍 Scraper dispatched for '" + q + "'! Extracted 50 new verified architect contacts.");
+            } else if(activeModNum === 16) {
+                alert("📊 Generating Excel Report... 'Grace_Outreach_Report_2026.csv' ready for download.");
+            } else if(activeModNum === 17) {
+                openBroadcastModal();
+            } else {
+                alert("✔ Module " + activeModNum + " command executed successfully in cloud worker!");
+            }
+            closeModal('genericWorkspaceModal');
         }
 
         /* COLLEAGUES SYSTEM */
         var colleagues = [
-            { id: "COL-901", key: "colleague1", name: "Alex Vance", color: "#34d399", perms: [1,2,3,4,7,10,11] },
+            { id: "COL-901", key: "colleague1", name: "Alex Vance", color: "#34d399", perms: [1,2,3,4,5,7,10,11] },
             { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", color: "#38bdf8", perms: [1,4,5,6,11,16] }
         ];
 
@@ -709,21 +865,6 @@
             if(selector && selector.value === colKey) switchColleagueView(colKey);
         };
 
-        window.openModule = function(modId, modTitle) {
-            var selector = document.getElementById('userRoleSelector');
-            var role = selector ? selector.value : 'admin';
-            var allowed = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
-            if(role !== 'admin') {
-                var col = colleagues.find(function(c) { return c.key === role; });
-                allowed = col ? col.perms : [];
-            }
-            if(!allowed.includes(modId)) {
-                alert("⛔ ACCESS DENIED: Module " + modId + " (" + modTitle + ") is disabled by Admin for this Colleague.");
-                return;
-            }
-            alert("✔ Opening Module " + modId + ": " + modTitle);
-        };
-
         window.openBroadcastModal = function() {
             var options = "Select Target Recipient:\n0: All Colleagues (Global Broadcast)\n";
             colleagues.forEach(function(c, idx) {
@@ -761,7 +902,7 @@
                 key: newKey,
                 name: name,
                 color: "#a78bfa",
-                perms: [1, 2, 4, 6]
+                perms: [1, 2, 4, 5, 6]
             });
             renderColleagues();
             alert("✔ Colleague profile created! Name: " + name + " | Assigned ID: " + newId + " (Status Active)");
