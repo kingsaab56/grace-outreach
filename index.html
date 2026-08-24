@@ -388,7 +388,7 @@
                         <div class="module-matrix-card" id="mod-13" onclick="openModule(13, 'Timezone Scheduler')"><div class="matrix-icon"><i class="fas fa-clock"></i></div><div><div style="font-weight:800; font-size:14px;">13. Timezone Scheduler</div><div style="font-size:11.5px; color:var(--text-muted);">US Live Clocks & Business Hour Dispatch</div></div></div>
                         <div class="module-matrix-card" id="mod-14" onclick="openModule(14, 'Bounce Shield')"><div class="matrix-icon"><i class="fas fa-filter"></i></div><div><div style="font-weight:800; font-size:14px;">14. Bounce Shield</div><div style="font-size:11.5px; color:var(--text-muted);">0.08% Bounce Ping & Queue Sanitizer</div></div></div>
                         <div class="module-matrix-card" id="mod-15" onclick="openModule(15, 'Auto-Reply Detector')"><div class="matrix-icon"><i class="fas fa-reply-all"></i></div><div><div style="font-weight:800; font-size:14px;">15. Auto-Reply Detector</div><div style="font-size:11.5px; color:var(--text-muted);">AI Sentiment Classifier & CRM Push</div></div></div>
-                        <div class="module-matrix-card" id="mod-16" onclick="openModule(16, 'CSV / Excel Export')"><div class="matrix-icon"><i class="fas fa-file-export"></i></div><div><div style="font-weight:800; font-size:14px;">16. CSV / Excel Exporter</div><div style="font-size:11.5px; color:var(--text-muted);">1-Click campaign reports</div></div></div>
+                        <div class="module-matrix-card" id="mod-16" onclick="openModule(16, 'CSV / Excel Export')"><div class="matrix-icon"><i class="fas fa-file-export"></i></div><div><div style="font-weight:800; font-size:14px;">16. CSV / Excel Exporter</div><div style="font-size:11.5px; color:var(--text-muted);">Multi-Format Reports & Analytics Export</div></div></div>
                         <div class="module-matrix-card" id="mod-17" onclick="openModule(17, 'Broadcast Notification Node')"><div class="matrix-icon"><i class="fas fa-bullhorn"></i></div><div><div style="font-weight:800; font-size:14px;">17. Broadcast Notification Node</div><div style="font-size:11.5px; color:var(--text-muted);">Real-time colleague alerts</div></div></div>
                         <div class="module-matrix-card" id="mod-18" onclick="openModule(18, 'Brand Palette Studio')"><div class="matrix-icon"><i class="fas fa-palette"></i></div><div><div style="font-weight:800; font-size:14px;">18. Brand Palette Studio</div><div style="font-size:11.5px; color:var(--text-muted);">Luxury theme customization</div></div></div>
                         <div class="module-matrix-card" id="mod-19" onclick="openModule(19, 'Cloud Webhook Dispatcher')"><div class="matrix-icon"><i class="fas fa-network-wired"></i></div><div><div style="font-weight:800; font-size:14px;">19. Cloud Webhook Dispatcher</div><div style="font-size:11.5px; color:var(--text-muted);">Third-party JSON triggers</div></div></div>
@@ -994,7 +994,7 @@
         </div>
     </div>
 
-    <!-- MODULE 15: AUTO-REPLY & SENTIMENT DETECTOR MODAL (LIVE CLASSIFIER + SMART REPLIES + HOT LEAD ALERTS) -->
+    <!-- MODULE 15: AUTO-REPLY & SENTIMENT DETECTOR MODAL -->
     <div id="replyModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 780px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1008,7 +1008,6 @@
                 <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('replyModal')"></i>
             </div>
 
-            <!-- INCOMING SAMPLE / TEST CLASSIFIER -->
             <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <span style="font-size: 12px; font-weight: 800; color: #38bdf8;"><i class="fas fa-envelope-open-text"></i> Incoming Client Reply (AI Sentiment Parser)</span>
@@ -1017,7 +1016,6 @@
                 <textarea id="sampleReplyText" class="form-control" rows="3" oninput="parseSentimentLive()">Hi King Saab, thanks for reaching out. We have a new luxury residential project in Brooklyn starting next month. Would love to review your portfolio drawings and set up a call this Thursday at 2 PM EST.</textarea>
             </div>
 
-            <!-- SMART AI SUGGESTED RESPONSE BOX -->
             <div style="background: rgba(3, 10, 12, 0.8); border: 1px dashed var(--border-gold); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <span style="font-size: 12px; font-weight: 800; color: #fbbf24;"><i class="fas fa-magic"></i> 1-Click AI Suggested Follow-Up:</span>
@@ -1029,6 +1027,64 @@
             <div style="display: flex; gap: 8px;">
                 <button type="button" class="btn-luxury" style="background:#059669; flex: 2;" onclick="dispatchHotLeadCrm()"><i class="fas fa-bolt"></i> Send AI Reply & Push Deal to CRM ($8,400)</button>
                 <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('replyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 16: CSV / EXCEL REPORT EXPORTER MODAL (COLUMN CUSTOMIZER + MULTI-FORMAT DOWNLOAD + PREVIEW) -->
+    <div id="exporterModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 840px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="font-size:24px; color:#38bdf8;">📊</div>
+                    <div>
+                        <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">Module 16: CSV / Excel Campaign Report Exporter</span>
+                        <div style="font-size: 12px; color: var(--text-muted);">Tabular Outreach Summaries, Executive Reports & Direct Data Export</div>
+                    </div>
+                </div>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('exporterModal')"></i>
+            </div>
+
+            <!-- COLUMN CUSTOMIZER -->
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 11.5px; font-weight: 800; color: #34d399; margin-bottom: 8px;"><i class="fas fa-check-square"></i> Select Columns to Include in Report:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 700;">
+                    <label><input type="checkbox" id="colCamp" checked> Campaign Name</label>
+                    <label><input type="checkbox" id="colSent" checked> Total Sent</label>
+                    <label><input type="checkbox" id="colOpen" checked> Open Rate (%)</label>
+                    <label><input type="checkbox" id="colReply" checked> Hot Replies</label>
+                    <label><input type="checkbox" id="colBounce" checked> Bounce Rate (%)</label>
+                    <label><input type="checkbox" id="colDeals" checked> Deals Value ($)</label>
+                </div>
+            </div>
+
+            <!-- LIVE DATA PREVIEW TABLE -->
+            <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 14px;">
+                <table class="scraper-table">
+                    <thead>
+                        <tr>
+                            <th>Campaign / Niche</th>
+                            <th>Total Sent</th>
+                            <th>Open Rate</th>
+                            <th>Hot Replies</th>
+                            <th>Bounce</th>
+                            <th>Deals Generated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>NYC Architects Q3 Outreach</td><td>1,240</td><td>64.2%</td><td>18</td><td>0.08%</td><td>$37,200</td></tr>
+                        <tr><td>Miami General Contractors Wave 1</td><td>860</td><td>58.6%</td><td>11</td><td>0.00%</td><td>$18,600</td></tr>
+                        <tr><td>California Commercial Design Studios</td><td>380</td><td>61.4%</td><td>6</td><td>0.00%</td><td>$9,000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- EXPORT ACTION BUTTONS -->
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-luxury" style="background:#059669; flex: 2;" onclick="downloadCampaignReport('csv')"><i class="fas fa-file-csv"></i> Download CSV (.csv)</button>
+                <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8; flex: 2;" onclick="downloadCampaignReport('xlsx')"><i class="fas fa-file-excel"></i> Download Excel (.xlsx format)</button>
+                <button type="button" class="btn-luxury" style="background:#4b5563; border-color:#6b7280; flex: 1.5;" onclick="downloadCampaignReport('txt')"><i class="fas fa-file-alt"></i> Plain Text (.txt)</button>
+                <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('exporterModal')">Close</button>
             </div>
         </div>
     </div>
@@ -1405,7 +1461,7 @@
 
         /* MODULE 8: COLLEAGUES SYSTEM */
         var colleagues = [
-            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12,13,14,15] },
+            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12,13,14,15,16] },
             { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,10,11,13,14,15,16] }
         ];
 
@@ -1463,6 +1519,7 @@
                         '<div class="toggle-item"><span>13. Timezone Scheduler</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(13)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 13, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>14. Bounce Shield</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(14)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 14, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>15. Auto-Reply Detector</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(15)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 15, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>16. CSV Exporter</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(16)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 16, this.checked)"><span class="slider"></span></label></div>' +
                     '</div>';
                 container.appendChild(card);
             });
@@ -1472,7 +1529,7 @@
             var col = colleagues.find(function(c) { return c.key === colKey; });
             if(!col) return;
 
-            if(type === 'junior') col.perms = [1, 4, 5, 10, 11, 13, 14, 15];
+            if(type === 'junior') col.perms = [1, 4, 5, 10, 11, 13, 14, 15, 16];
             else if(type === 'manager') col.perms = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16];
             else col.perms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
 
@@ -1799,7 +1856,6 @@
                 setTimeout(function() { speech.innerText = "👑 King Saab AI System Ready"; }, 3500);
             }
 
-            // Push to CRM Pipeline as Proposal stage deal
             crmDeals.push({
                 id: Date.now(),
                 title: "Brooklyn Residential Portfolio Deal",
@@ -1811,6 +1867,77 @@
 
             alert("⚡ SMART REPLY DISPATCHED & DEAL RECORDED!\n- Client notified via Gmail Multi-Tenant Hub\n- New Deal ($8,400) automatically placed into CRM Proposal Pipeline!");
             closeModal('replyModal');
+        }
+
+        /* MODULE 16: CSV / EXCEL REPORT EXPORTER ENGINE */
+        var reportDataset = [
+            { camp: "NYC Architects Q3 Outreach", sent: 1240, open: "64.2%", reply: 18, bounce: "0.08%", deal: "$37,200" },
+            { camp: "Miami General Contractors Wave 1", sent: 860, open: "58.6%", reply: 11, bounce: "0.00%", deal: "$18,600" },
+            { camp: "California Commercial Design Studios", sent: 380, open: "61.4%", reply: 6, bounce: "0.00%", deal: "$9,000" }
+        ];
+
+        function openExporterModal() {
+            document.getElementById('exporterModal').style.display = 'flex';
+        }
+
+        function downloadCampaignReport(format) {
+            playChimeSound('won');
+            var filename = "Grace_Outreach_Campaign_Report_" + Date.now();
+            var content = "";
+
+            var incCamp = document.getElementById('colCamp').checked;
+            var incSent = document.getElementById('colSent').checked;
+            var incOpen = document.getElementById('colOpen').checked;
+            var incReply = document.getElementById('colReply').checked;
+            var incBounce = document.getElementById('colBounce').checked;
+            var incDeals = document.getElementById('colDeals').checked;
+
+            if(format === 'csv' || format === 'xlsx') {
+                var headers = [];
+                if(incCamp) headers.push("Campaign Name");
+                if(incSent) headers.push("Total Sent");
+                if(incOpen) headers.push("Open Rate");
+                if(incReply) headers.push("Hot Replies");
+                if(incBounce) headers.push("Bounce Rate");
+                if(incDeals) headers.push("Deals Value");
+                content += headers.join(",") + "\n";
+
+                reportDataset.forEach(function(row) {
+                    var r = [];
+                    if(incCamp) r.push('"' + row.camp + '"');
+                    if(incSent) r.push(row.sent);
+                    if(incOpen) r.push(row.open);
+                    if(incReply) r.push(row.reply);
+                    if(incBounce) r.push(row.bounce);
+                    if(incDeals) r.push('"' + row.deal + '"');
+                    content += r.join(",") + "\n";
+                });
+                filename += (format === 'csv') ? ".csv" : ".csv"; // Excel-ready CSV
+            } else {
+                content = "========================================================\n";
+                content += "      GRACE OUTREACH ENTERPRISE CAMPAIGN REPORT\n";
+                content += "========================================================\n\n";
+                reportDataset.forEach(function(row, idx) {
+                    content += "[" + (idx + 1) + "] Campaign: " + row.camp + "\n";
+                    if(incSent) content += "    - Total Sent Volume: " + row.sent + "\n";
+                    if(incOpen) content += "    - Email Open Rate: " + row.open + "\n";
+                    if(incReply) content += "    - Hot Client Replies: " + row.reply + "\n";
+                    if(incBounce) content += "    - Bounce Rate: " + row.bounce + "\n";
+                    if(incDeals) content += "    - Pipeline Deals Value: " + row.deal + "\n\n";
+                });
+                filename += ".txt";
+            }
+
+            var mime = (format === 'txt') ? 'text/plain;charset=utf-8;' : 'text/csv;charset=utf-8;';
+            var blob = new Blob([content], { type: mime });
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert("📊 REPORT DOWNLOADED:\n'" + filename + "' successfully generated!");
         }
 
         /* 22 MODULES DIRECT OPENING HANDLER */
@@ -1874,11 +2001,13 @@
             } else if(modId === 15) {
                 openReplyModal();
                 return;
+            } else if(modId === 16) {
+                openExporterModal();
+                return;
             }
 
             var titles = {
                 3: "🔥 Module 3: AI Warmup Ramp Engine",
-                16: "📊 Module 16: CSV / Excel Report Exporter",
                 17: "📢 Module 17: Broadcast Notification Node",
                 18: "🎨 Module 18: Brand Palette Studio",
                 19: "🌐 Module 19: Cloud Webhook Dispatcher",
@@ -1889,7 +2018,6 @@
 
             var contents = {
                 3: "<p><strong>Warmup Status:</strong> Active (P2P Network Enabled)</p><p>Daily Schedule: <strong>15 emails/day ramping to 50/day</strong>. All inboxes maintain a 99.4% sender reputation score.</p>",
-                16: "<p><strong>1-Click Export:</strong> Download full outreach logs, open rates, and replies into Microsoft Excel (.xlsx) or CSV format.</p>",
                 17: "<p><strong>Team Broadcast:</strong> Dispatches instant banner alerts across all active colleague portals in real time.</p>",
                 18: "<p><strong>Theme Engine:</strong> Dark Luxury Emerald Theme (#059669) active across all dashboards and modals.</p>",
                 19: "<p><strong>Webhook Sync:</strong> Live POST endpoints available for Zapier, Make.com, and CRM webhooks.</p>",
@@ -1904,9 +2032,7 @@
         }
 
         function runGenericModuleAction() {
-            if(activeModNum === 16) {
-                alert("📊 Generating Excel Report... 'Grace_Outreach_Report_2026.csv' ready for download.");
-            } else if(activeModNum === 17) {
+            if(activeModNum === 17) {
                 openBroadcastModal();
             } else {
                 alert("✔ Module " + activeModNum + " command executed successfully in cloud worker!");
@@ -2045,7 +2171,7 @@
                 key: newKey,
                 name: name,
                 color: "#a78bfa",
-                perms: [1, 2, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15]
+                perms: [1, 2, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16]
             });
             renderColleagues();
             alert("✔ Colleague profile created! Name: " + name + " | Assigned ID: " + newId + " (Status Active)");
