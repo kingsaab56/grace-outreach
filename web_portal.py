@@ -20,8 +20,6 @@ class GraceHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', 'image/png')
             self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            self.send_header('Pragma', 'no-cache')
-            self.send_header('Expires', '0')
             self.end_headers()
             self.wfile.write(IMG_BYTES)
             return
