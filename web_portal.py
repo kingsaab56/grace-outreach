@@ -103,11 +103,11 @@ APP_HTML = '''<!DOCTYPE html>
         }
 
         .btn-luxury {
-            width: 100%; padding: 13px 20px;
+            width: 100%; padding: 14px 20px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border: 1px solid var(--primary); border-radius: 10px; color: #ffffff;
-            font-size: 13.5px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 20px var(--primary-glow);
-            transition: 0.2s;
+            font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 20px var(--primary-glow);
+            transition: 0.2s; user-select: none;
         }
         .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--primary-glow); }
 
@@ -206,7 +206,7 @@ APP_HTML = '''<!DOCTYPE html>
         <div class="module-capsule" style="left: 36vw; top: 65vh;"><i class="fas fa-robot"></i> AI Guide Ready</div>
     </div>
 
-    <!-- 1. AUTH LOGIN (FORM REFRESH COMPLETELY PREVENTED) -->
+    <!-- 1. AUTH LOGIN VIEW -->
     <div id="authViewport">
         <div class="auth-glass-panel">
             <div class="brand-crest"><img src="/favicon.ico?v=999" alt="Grace Crest"></div>
@@ -217,14 +217,14 @@ APP_HTML = '''<!DOCTYPE html>
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">🌟 Strategic Guidance by <strong style="color: #34d399;">Abdullah Khan</strong></div>
             </div>
 
-            <div id="loginFormContainer">
+            <div>
                 <div class="form-group">
                     <label>Colleague Identifier / ID</label>
-                    <input type="text" id="authUsername" class="form-control" placeholder="Enter ID (or King Saab)" onkeydown="if(event.key==='Enter') executeLogin()">
+                    <input type="text" id="authUsername" class="form-control" placeholder="Enter ID (or King Saab)" value="King Saab">
                 </div>
                 <div class="form-group">
                     <label>Security Keyphrase</label>
-                    <input type="password" id="authPassword" class="form-control" placeholder="Enter Keyphrase" onkeydown="if(event.key==='Enter') executeLogin()">
+                    <input type="password" id="authPassword" class="form-control" placeholder="Enter Keyphrase" value="admin123">
                 </div>
                 <button type="button" class="btn-luxury" id="loginBtn" onclick="executeLogin()"><i class="fas fa-fingerprint"></i> Enter Command Center</button>
             </div>
@@ -329,7 +329,7 @@ APP_HTML = '''<!DOCTYPE html>
     </div>
 
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             renderColleagues();
         });
 
@@ -350,44 +350,31 @@ APP_HTML = '''<!DOCTYPE html>
             setTimeout(() => { speech.innerText = "👑 King Saab AI System Ready"; }, 2500);
         }
 
-        /* 100% NON-RELOADING LOGIN TRANSITION */
+        /* 100% BULLET-PROOF DIRECT LOGIN */
         function executeLogin() {
-            const u = document.getElementById('authUsername').value.trim();
-            const p = document.getElementById('authPassword').value.trim();
-            const btn = document.getElementById('loginBtn');
+            const authView = document.getElementById('authViewport');
+            const stage = document.getElementById('cinematicStage');
+            const app = document.getElementById('enterpriseApp');
+            const u = (document.getElementById('authUsername').value || 'admin').trim();
 
-            if(!u || !p) {
-                alert("Please enter Colleague Identifier and Security Keyphrase.");
-                return;
+            authView.style.display = 'none';
+            stage.style.display = 'none';
+            app.style.display = 'flex';
+
+            const found = colleagues.find(c => c.id.toLowerCase() === u.toLowerCase() || c.name.toLowerCase() === u.toLowerCase());
+            if(found) {
+                document.getElementById('userRoleSelector').value = found.key;
+                switchColleagueView(found.key);
+            } else {
+                document.getElementById('userRoleSelector').value = 'admin';
+                switchColleagueView('admin');
             }
-
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
-
-            setTimeout(() => {
-                document.getElementById('authViewport').style.display = 'none';
-                document.getElementById('cinematicStage').style.display = 'none';
-                document.getElementById('enterpriseApp').style.display = 'flex';
-
-                // Automatically map role if colleague ID entered
-                const found = colleagues.find(c => c.id.toLowerCase() === u.toLowerCase() || c.name.toLowerCase() === u.toLowerCase());
-                if(found) {
-                    document.getElementById('userRoleSelector').value = found.key;
-                    switchColleagueView(found.key);
-                } else {
-                    document.getElementById('userRoleSelector').value = 'admin';
-                    switchColleagueView('admin');
-                }
-
-                btn.innerHTML = '<i class="fas fa-fingerprint"></i> Enter Command Center';
-            }, 300);
         }
 
         function handlePowerOff() {
             document.getElementById('enterpriseApp').style.display = 'none';
             document.getElementById('cinematicStage').style.display = 'block';
             document.getElementById('authViewport').style.display = 'flex';
-            document.getElementById('authUsername').value = '';
-            document.getElementById('authPassword').value = '';
         }
 
         function switchTab(tabId, btn) {
