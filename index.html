@@ -244,6 +244,12 @@
             font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 16px; cursor: pointer; transition: 0.2s;
         }
         .quick-prompt-tag:hover { background: var(--gold); color: #000; }
+
+        /* TIMEZONE CLOCKS */
+        .tz-matrix-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+        .tz-clock-card { background: rgba(3, 10, 12, 0.8); border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px 10px; text-align: center; }
+        .tz-clock-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+        .tz-clock-time { font-size: 16px; font-weight: 900; color: #38bdf8; margin: 4px 0; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -379,7 +385,7 @@
                         <div class="module-matrix-card" id="mod-10" onclick="openModule(10, 'Audio Studio & Extractor')"><div class="matrix-icon"><i class="fas fa-music"></i></div><div><div style="font-weight:800; font-size:14px;">10. Audio Studio & Extractor</div><div style="font-size:11.5px; color:var(--text-muted);">Soundscape, Visualizer & Alert Chimes</div></div></div>
                         <div class="module-matrix-card" id="mod-11" onclick="openModule(11, 'Built-in AI Guide Agent')"><div class="matrix-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:800; font-size:14px;">11. Built-in AI Guide Agent</div><div style="font-size:11.5px; color:var(--text-muted);">King Saab AI Copilot & Email Drafter</div></div></div>
                         <div class="module-matrix-card" id="mod-12" onclick="openModule(12, 'OAuth Token Vault')"><div class="matrix-icon"><i class="fas fa-shield-alt"></i></div><div><div style="font-weight:800; font-size:14px;">12. OAuth Token Vault</div><div style="font-size:11.5px; color:var(--text-muted);">AES-256 Locker, Auto-Renew & Backup</div></div></div>
-                        <div class="module-matrix-card" id="mod-13" onclick="openModule(13, 'Timezone Scheduler')"><div class="matrix-icon"><i class="fas fa-clock"></i></div><div><div style="font-weight:800; font-size:14px;">13. Timezone Scheduler</div><div style="font-size:11.5px; color:var(--text-muted);">EST & PST smart dispatching</div></div></div>
+                        <div class="module-matrix-card" id="mod-13" onclick="openModule(13, 'Timezone Scheduler')"><div class="matrix-icon"><i class="fas fa-clock"></i></div><div><div style="font-weight:800; font-size:14px;">13. Timezone Scheduler</div><div style="font-size:11.5px; color:var(--text-muted);">US Live Clocks & Business Hour Dispatch</div></div></div>
                         <div class="module-matrix-card" id="mod-14" onclick="openModule(14, 'Bounce Shield')"><div class="matrix-icon"><i class="fas fa-filter"></i></div><div><div style="font-weight:800; font-size:14px;">14. Bounce Shield</div><div style="font-size:11.5px; color:var(--text-muted);">0.08% bounce filtering</div></div></div>
                         <div class="module-matrix-card" id="mod-15" onclick="openModule(15, 'Auto-Reply Detector')"><div class="matrix-icon"><i class="fas fa-reply-all"></i></div><div><div style="font-weight:800; font-size:14px;">15. Auto-Reply Detector</div><div style="font-size:11.5px; color:var(--text-muted);">Positive sentiment alerts</div></div></div>
                         <div class="module-matrix-card" id="mod-16" onclick="openModule(16, 'CSV / Excel Export')"><div class="matrix-icon"><i class="fas fa-file-export"></i></div><div><div style="font-weight:800; font-size:14px;">16. CSV / Excel Exporter</div><div style="font-size:11.5px; color:var(--text-muted);">1-Click campaign reports</div></div></div>
@@ -808,7 +814,7 @@
         </div>
     </div>
 
-    <!-- MODULE 12: OAUTH TOKEN VAULT MODAL (LIFECYCLE STATUS + AUTO-RENEW & BACKUP) -->
+    <!-- MODULE 12: OAUTH TOKEN VAULT MODAL -->
     <div id="vaultModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 760px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -829,7 +835,6 @@
                 </div>
             </div>
 
-            <!-- TOKEN LIFECYCLE TABLE -->
             <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 14px;">
                 <table class="scraper-table">
                     <thead>
@@ -850,11 +855,87 @@
                 </table>
             </div>
 
-            <!-- CONTROLS -->
             <div style="display: flex; gap: 8px;">
                 <button type="button" class="btn-luxury" style="background:#059669; flex: 2;" onclick="forceRefreshAllTokens()"><i class="fas fa-bolt"></i> 1-Click Force Refresh All Tokens</button>
                 <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8; flex: 2;" onclick="exportVaultBackup()"><i class="fas fa-file-download"></i> Export Encrypted Vault Backup</button>
                 <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('vaultModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 13: TIMEZONE SCHEDULER MODAL (LIVE US CLOCKS + WINDOWS + WEEKEND PAUSE) -->
+    <div id="timezoneModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 760px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="font-size:24px; color:#38bdf8;">⏰</div>
+                    <div>
+                        <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">Module 13: US Timezone Scheduler & Dispatcher</span>
+                        <div style="font-size: 12px; color: var(--text-muted);">Synchronized US Working Hours & Smart Business Delivery</div>
+                    </div>
+                </div>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('timezoneModal')"></i>
+            </div>
+
+            <!-- LIVE US CLOCK MATRIX -->
+            <div class="tz-matrix-grid">
+                <div class="tz-clock-card">
+                    <div class="tz-clock-title">Eastern (EST)</div>
+                    <div class="tz-clock-time" id="clockEST">--:--:--</div>
+                    <div style="font-size:10px; color:#34d399;">New York, Miami</div>
+                </div>
+                <div class="tz-clock-card">
+                    <div class="tz-clock-title">Central (CST)</div>
+                    <div class="tz-clock-time" id="clockCST">--:--:--</div>
+                    <div style="font-size:10px; color:#34d399;">Chicago, Dallas</div>
+                </div>
+                <div class="tz-clock-card">
+                    <div class="tz-clock-title">Mountain (MST)</div>
+                    <div class="tz-clock-time" id="clockMST">--:--:--</div>
+                    <div style="font-size:10px; color:#34d399;">Denver, Phoenix</div>
+                </div>
+                <div class="tz-clock-card">
+                    <div class="tz-clock-title">Pacific (PST)</div>
+                    <div class="tz-clock-time" id="clockPST">--:--:--</div>
+                    <div style="font-size:10px; color:#34d399;">Los Angeles, SF</div>
+                </div>
+            </div>
+
+            <!-- DISPATCH WINDOW SETTINGS -->
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 12px; font-weight: 800; color: #fbbf24; margin-bottom: 10px;"><i class="fas fa-sliders-h"></i> Outreach Sending Window Config</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Daily Dispatch Start</label>
+                        <select class="form-control" id="tzStartHour">
+                            <option value="09:00">09:00 AM (Recommended Peak)</option>
+                            <option value="08:30">08:30 AM (Early Openers)</option>
+                            <option value="10:00">10:00 AM (Mid-Morning)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Daily Dispatch End</label>
+                        <select class="form-control" id="tzEndHour">
+                            <option value="17:00">05:00 PM (Close of Business)</option>
+                            <option value="16:00">04:00 PM (Safe Cutoff)</option>
+                            <option value="18:00">06:00 PM (Extended Evening)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEKEND AUTO-PAUSE TOGGLE -->
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-gold); padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-size: 12.5px; font-weight: 800; color: #34d399;"><i class="fas fa-bed"></i> Weekend Auto-Sleep Mode (Sat & Sun)</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Automatically pauses outbound queues on Saturday & Sunday to protect sender reputation.</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="weekendPauseToggle" checked><span class="slider"></span></label>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-luxury" style="flex: 2;" onclick="saveTimezoneSettings()"><i class="fas fa-save"></i> Save & Sync Timezone Policy</button>
+                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563; flex: 1;" onclick="closeModal('timezoneModal')">Close</button>
             </div>
         </div>
     </div>
@@ -1231,8 +1312,8 @@
 
         /* MODULE 8: COLLEAGUES SYSTEM */
         var colleagues = [
-            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12] },
-            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,10,11,16] }
+            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12,13] },
+            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,10,11,13,16] }
         ];
 
         function renderColleagues() {
@@ -1286,6 +1367,7 @@
                         '<div class="toggle-item"><span>10. Audio Studio</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(10)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 10, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>11. AI Guide Agent</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(11)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 11, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>12. OAuth Vault</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(12)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 12, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>13. Timezone Scheduler</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(13)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 13, this.checked)"><span class="slider"></span></label></div>' +
                     '</div>';
                 container.appendChild(card);
             });
@@ -1295,7 +1377,7 @@
             var col = colleagues.find(function(c) { return c.key === colKey; });
             if(!col) return;
 
-            if(type === 'junior') col.perms = [1, 4, 5, 10, 11];
+            if(type === 'junior') col.perms = [1, 4, 5, 10, 11, 13];
             else if(type === 'manager') col.perms = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 15, 16];
             else col.perms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
 
@@ -1514,6 +1596,38 @@
             document.body.removeChild(link);
         }
 
+        /* MODULE 13: TIMEZONE SCHEDULER ENGINE */
+        function updateUSClocks() {
+            var now = new Date();
+            var options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+
+            var est = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'America/New_York' }).format(now);
+            var cst = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'America/Chicago' }).format(now);
+            var mst = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'America/Denver' }).format(now);
+            var pst = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'America/Los_Angeles' }).format(now);
+
+            if(document.getElementById('clockEST')) document.getElementById('clockEST').innerText = est;
+            if(document.getElementById('clockCST')) document.getElementById('clockCST').innerText = cst;
+            if(document.getElementById('clockMST')) document.getElementById('clockMST').innerText = mst;
+            if(document.getElementById('clockPST')) document.getElementById('clockPST').innerText = pst;
+        }
+        setInterval(updateUSClocks, 1000);
+
+        function openTimezoneModal() {
+            document.getElementById('timezoneModal').style.display = 'flex';
+            updateUSClocks();
+        }
+
+        function saveTimezoneSettings() {
+            var start = document.getElementById('tzStartHour').value;
+            var end = document.getElementById('tzEndHour').value;
+            var weekend = document.getElementById('weekendPauseToggle').checked;
+
+            playChimeSound('won');
+            alert("⏰ TIMEZONE DISPATCH POLICY SAVED:\n- Active Delivery Window: " + start + " to " + end + " US Local Time\n- Weekend Auto-Sleep Mode: " + (weekend ? "ENABLED (Sat & Sun Paused)" : "DISABLED"));
+            closeModal('timezoneModal');
+        }
+
         /* 22 MODULES DIRECT OPENING HANDLER */
         var activeModNum = 1;
         function openModule(modId, modTitle) {
@@ -1566,11 +1680,13 @@
             } else if(modId === 12) {
                 openVaultModal();
                 return;
+            } else if(modId === 13) {
+                openTimezoneModal();
+                return;
             }
 
             var titles = {
                 3: "🔥 Module 3: AI Warmup Ramp Engine",
-                13: "⏰ Module 13: Timezone Scheduler",
                 14: "🛡️ Module 14: Bounce Shield (0.08% Filter)",
                 15: "💬 Module 15: Auto-Reply & Sentiment Detector",
                 16: "📊 Module 16: CSV / Excel Report Exporter",
@@ -1584,7 +1700,6 @@
 
             var contents = {
                 3: "<p><strong>Warmup Status:</strong> Active (P2P Network Enabled)</p><p>Daily Schedule: <strong>15 emails/day ramping to 50/day</strong>. All inboxes maintain a 99.4% sender reputation score.</p>",
-                13: "<p><strong>Timezone Dispatcher:</strong> NYC (EST), Chicago (CST), LA (PST).</p><p>Active window: <strong>09:00 AM - 05:00 PM US Business Hours</strong>.</p>",
                 14: "<p><strong>Bounce Filter:</strong> 0.08% bounce rate active.</p><p>DNS, MX record check, and SMTP ping verification enabled on all lead queues.</p>",
                 15: "<p><strong>AI Sentiment Classifier:</strong> 18 positive replies detected this week.</p><p>Auto-categorized into Hot Leads CRM queue.</p>",
                 16: "<p><strong>1-Click Export:</strong> Download full outreach logs, open rates, and replies into Microsoft Excel (.xlsx) or CSV format.</p>",
@@ -1743,7 +1858,7 @@
                 key: newKey,
                 name: name,
                 color: "#a78bfa",
-                perms: [1, 2, 4, 5, 6, 7, 10, 11, 12]
+                perms: [1, 2, 4, 5, 6, 7, 10, 11, 12, 13]
             });
             renderColleagues();
             alert("✔ Colleague profile created! Name: " + name + " | Assigned ID: " + newId + " (Status Active)");
