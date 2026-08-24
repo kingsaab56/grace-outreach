@@ -2,18 +2,16 @@
 import sys
 import json
 import time
+import base64
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 
 PORT = int(os.environ.get("PORT", 8080))
 HOST = "0.0.0.0"
 
-FAVICON_SVG = b'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-<rect width="100" height="100" rx="22" fill="#032024" stroke="#10b981" stroke-width="4"/>
-<path d="M30 65 L30 42 L42 30 L42 65 Z" fill="#059669"/>
-<path d="M46 65 L46 22 L58 12 L58 65 Z" fill="#059669"/>
-<path d="M62 30 L76 44 L76 65 L66 65 Z" fill="#f59e0b"/>
-</svg>'''
+# High-Visibility Pure Emerald/Gold 64x64 PNG Binary Favicon
+FAVICON_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAABmJLR0QA/wD/AP+gvaeTAAAAM0lEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO4MGEAAAeW4y0kAAAAASUVORK5CYII="
+FAVICON_BYTES = base64.b64decode(FAVICON_PNG_BASE64)
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
@@ -25,8 +23,12 @@ APP_HTML = '''<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grace Outreach Assistant | Enterprise AI Command Center</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico">
-    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <!-- PERMANENT HARDCODED DATA-URI FAVICON FOR ALL BROWSERS -->
+    <link rel="icon" type="image/png" href="data:image/png;base64,''' + FAVICON_PNG_BASE64 + '''">
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,''' + FAVICON_PNG_BASE64 + '''">
+    <link rel="apple-touch-icon" href="data:image/png;base64,''' + FAVICON_PNG_BASE64 + '''">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -59,11 +61,6 @@ APP_HTML = '''<!DOCTYPE html>
             --text-muted: #475569;
             --card-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
         }
-
-        [data-accent="gold"] { --primary: #d97706; --primary-glow: rgba(217, 119, 6, 0.45); --primary-dark: #78350f; }
-        [data-accent="cyan"] { --primary: #0891b2; --primary-glow: rgba(8, 145, 178, 0.45); --primary-dark: #164e63; }
-        [data-accent="royal"] { --primary: #2563eb; --primary-glow: rgba(37, 99, 235, 0.45); --primary-dark: #1e3a8a; }
-        [data-accent="purple"] { --primary: #9333ea; --primary-glow: rgba(147, 51, 234, 0.45); --primary-dark: #581c87; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
@@ -330,7 +327,6 @@ APP_HTML = '''<!DOCTYPE html>
         }
         .btn-power-off:hover { transform: scale(1.05); background: #b91c1c; }
 
-        /* 9 CORE RIBBON CATEGORIES */
         .nav-ribbon-bar {
             background: var(--bg-card-solid);
             border-bottom: 1px solid var(--border-color);
@@ -617,7 +613,6 @@ APP_HTML = '''<!DOCTYPE html>
             </div>
         </header>
 
-        <!-- 9 CORE STREAMLINED RIBBON BUTTONS -->
         <nav class="nav-ribbon-bar">
             <button id="ribbon-tab-dash" class="ribbon-btn active" onclick="switchTab('tab-dash', this)"><i class="fas fa-chart-pie"></i> 1. Dashboard</button>
             <button id="ribbon-tab-matrix" class="ribbon-btn" onclick="switchTab('tab-matrix', this)"><i class="fas fa-th"></i> 2. 22-Module Matrix</button>
@@ -631,7 +626,6 @@ APP_HTML = '''<!DOCTYPE html>
         </nav>
 
         <main class="dashboard-body">
-            <!-- 1. DASHBOARD -->
             <section id="tab-dash" class="tab-section active">
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -663,7 +657,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 2. FULL 22-MODULE INTERACTIVE MATRIX -->
             <section id="tab-matrix" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🎛️ Complete 22-Module Control Matrix</span></div>
@@ -694,7 +687,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 3. GMAIL HUB -->
             <section id="tab-gmail" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -738,7 +730,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 4. CAMPAIGN STUDIO -->
             <section id="tab-studio" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🚀 Launch Dynamic Outreach Campaign</span></div>
@@ -763,7 +754,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 5. LEAD SCRAPER -->
             <section id="tab-leads" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🔍 Architecture & Design Firm Lead Finder</span></div>
@@ -798,7 +788,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 6. CRM PIPELINE -->
             <section id="tab-crm" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🎯 CRM Deals & Client Pipeline (<span class="dollar-symbol">$</span>64,800 Total Active)</span></div>
@@ -835,7 +824,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 7. COLLEAGUES PERMISSION MANAGER -->
             <section id="tab-team" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>👥 Admin Colleague Role & Module Access Controller</span></div>
@@ -855,7 +843,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 8. SYSTEM DOCTOR -->
             <section id="tab-doctor" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🛠️ System Doctor Diagnostics & Cloud Daemon</span></div>
@@ -868,7 +855,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 9. SETTINGS & AUDIO STUDIO WITH VOLUME CONTROLLER -->
             <section id="tab-custom" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -928,7 +914,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 10. AI GUIDE AGENT VIEW (CLICKED FROM 22 MATRIX) -->
             <section id="tab-agent" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -947,7 +932,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 11. OAUTH TOKEN VAULT -->
             <section id="tab-vault" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -958,7 +942,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 12. SCHEDULER -->
             <section id="tab-time" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -969,7 +952,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 13. BOUNCE SHIELD -->
             <section id="tab-bounce" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -980,7 +962,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 14. AUTO-REPLY -->
             <section id="tab-reply" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -991,7 +972,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 15. CSV EXPORT -->
             <section id="tab-export" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1002,7 +982,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 16. BROADCAST NODE -->
             <section id="tab-broadcast" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1016,7 +995,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 17. BRAND PALETTE -->
             <section id="tab-theme" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1027,7 +1005,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 18. CYBER ROBOT -->
             <section id="tab-robot" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1038,7 +1015,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 19. WEBHOOKS -->
             <section id="tab-webhook" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1049,7 +1025,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 20. QUOTA GUARD -->
             <section id="tab-quota" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1060,7 +1035,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 21. SIGNATURE BUILDER -->
             <section id="tab-sign" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1071,7 +1045,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 22. ROI PREDICTOR -->
             <section id="tab-roi" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -1081,7 +1054,6 @@ APP_HTML = '''<!DOCTYPE html>
                     <p style="color:#34d399; font-weight:800; font-size:16px;">Predicted Pipeline Closing Value: ,800 (Confidence: 86.4%)</p>
                 </div>
             </section>
-
         </main>
     </div>
 
@@ -1417,12 +1389,12 @@ APP_HTML = '''<!DOCTYPE html>
 
 class GraceHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/favicon.ico':
+        if self.path in ['/favicon.ico', '/favicon.png']:
             self.send_response(200)
-            self.send_header('Content-Type', 'image/svg+xml')
+            self.send_header('Content-Type', 'image/png')
             self.send_header('Cache-Control', 'public, max-age=86400')
             self.end_headers()
-            self.wfile.write(FAVICON_SVG)
+            self.wfile.write(FAVICON_BYTES)
             return
 
         self.send_response(200)
