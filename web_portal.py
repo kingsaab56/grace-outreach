@@ -18,6 +18,8 @@ APP_HTML = '''<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grace Outreach Assistant | 22-Module Enterprise Command Center</title>
+    <!-- EMBEDDED HIGH-RES SVG FAVICON FOR BROWSER TAB & ADDRESS BAR -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23032024' stroke='%2310b981' stroke-width='4'/%3E%3Cpath d='M30 65 L30 42 L42 30 L42 65 Z' fill='%23059669'/%3E%3Cpath d='M46 65 L46 22 L58 12 L58 65 Z' fill='%23059669'/%3E%3Cpath d='M62 30 L76 44 L76 65 L66 65 Z' fill='%23f59e0b'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -59,7 +61,6 @@ APP_HTML = '''<!DOCTYPE html>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        /* BRAND SPLASH SCREEN */
         #launchSplash {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -90,7 +91,6 @@ APP_HTML = '''<!DOCTYPE html>
             -webkit-text-fill-color: transparent;
         }
 
-        /* CINEMATIC WORLD */
         #cinematicStage {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -183,7 +183,6 @@ APP_HTML = '''<!DOCTYPE html>
             100% { transform: translate(-6px, 8px) rotate(-2deg); }
         }
 
-        /* AUTH VIEWPORT */
         #authViewport {
             position: relative;
             z-index: 20;
@@ -270,7 +269,6 @@ APP_HTML = '''<!DOCTYPE html>
         }
         .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 10px 25px var(--primary-glow); background: var(--primary); }
 
-        /* ENTERPRISE APP DASHBOARD */
         #enterpriseApp {
             display: none;
             position: relative;
@@ -325,7 +323,6 @@ APP_HTML = '''<!DOCTYPE html>
         }
         .btn-power-off:hover { transform: scale(1.05); background: #b91c1c; }
 
-        /* ALL 22 MODULES HORIZONTAL RIBBON BAR */
         .nav-ribbon-bar {
             background: var(--bg-card-solid);
             border-bottom: 1px solid var(--border-color);
@@ -433,7 +430,6 @@ APP_HTML = '''<!DOCTYPE html>
             border: 1px solid var(--border-gold);
         }
 
-        /* AI AGENT CHAT VIEW */
         .chat-box {
             background: rgba(2, 10, 12, 0.7);
             border: 1.5px solid var(--border-color);
@@ -490,7 +486,6 @@ APP_HTML = '''<!DOCTYPE html>
 </head>
 <body>
 
-    <!-- 0. SPLASH LAUNCH SCREEN -->
     <div id="launchSplash">
         <div class="splash-crest">
             <svg viewBox="0 0 100 100" width="100%" height="100%">
@@ -506,7 +501,6 @@ APP_HTML = '''<!DOCTYPE html>
 
     <audio id="bgAudioPlayer" loop style="display:none;"></audio>
 
-    <!-- 1. CINEMATIC BACKGROUND WORLD -->
     <div id="cinematicStage">
         <canvas id="worldCanvas"></canvas>
 
@@ -553,7 +547,6 @@ APP_HTML = '''<!DOCTYPE html>
         <div id="capsuleContainer"></div>
     </div>
 
-    <!-- 2. AUTH VIEWPORT (BLANK FORM) -->
     <div id="authViewport">
         <div class="auth-glass-panel">
             <div class="brand-crest">
@@ -593,7 +586,6 @@ APP_HTML = '''<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- 3. ENTERPRISE APP DASHBOARD (ALL 22 MODULES) -->
     <div id="enterpriseApp">
         <header class="top-navbar">
             <div class="brand-meta-box">
@@ -617,7 +609,6 @@ APP_HTML = '''<!DOCTYPE html>
             </div>
         </header>
 
-        <!-- 22 MODULE HORIZONTAL NAV RIBBON -->
         <nav class="nav-ribbon-bar">
             <button id="ribbon-tab-dash" class="ribbon-btn active" onclick="switchTab('tab-dash', this)"><i class="fas fa-chart-pie"></i> 1. Dashboard</button>
             <button id="ribbon-tab-matrix" class="ribbon-btn" onclick="switchTab('tab-matrix', this)"><i class="fas fa-th"></i> 2. 22-Module Matrix</button>
@@ -644,8 +635,6 @@ APP_HTML = '''<!DOCTYPE html>
         </nav>
 
         <main class="dashboard-body">
-            
-            <!-- 1. DASHBOARD -->
             <section id="tab-dash" class="tab-section active">
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -677,7 +666,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 2. MODULE MATRIX -->
             <section id="tab-matrix" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🎛️ Complete 22-Module Control Matrix</span></div>
@@ -708,7 +696,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 3. GMAIL HUB -->
             <section id="tab-gmail" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -752,7 +739,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 4. CAMPAIGN STUDIO -->
             <section id="tab-studio" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🚀 Launch Dynamic Outreach Campaign</span></div>
@@ -777,7 +763,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 5. LEAD SCRAPER -->
             <section id="tab-leads" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🔍 Architecture & Design Firm Lead Finder</span></div>
@@ -812,7 +797,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 6. CRM PIPELINE -->
             <section id="tab-crm" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🎯 CRM Deals & Client Pipeline (<span class="dollar-symbol">$</span>64,800 Total Active)</span></div>
@@ -849,7 +833,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 7. COLLEAGUES PERMISSION MANAGER -->
             <section id="tab-team" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>👥 Admin Colleague Role & Module Access Controller</span></div>
@@ -869,7 +852,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 8. SYSTEM DOCTOR -->
             <section id="tab-doctor" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🛠️ System Doctor Diagnostics & Cloud Daemon</span></div>
@@ -882,7 +864,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 9. SETTINGS & AUDIO STUDIO WITH VOLUME SLIDER -->
             <section id="tab-custom" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header">
@@ -890,7 +871,6 @@ APP_HTML = '''<!DOCTYPE html>
                         <button class="btn-luxury" style="width:auto; padding:6px 14px;" onclick="toggleAudioPlayback()"><i id="audioBtnIcon" class="fas fa-play"></i> <span id="audioBtnText">Play Music</span></button>
                     </div>
 
-                    <!-- VOLUME CONTROLLER -->
                     <div style="margin: 10px 0 16px; background: rgba(3, 10, 12, 0.6); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color); display:flex; align-items:center; gap:16px;">
                         <i class="fas fa-volume-up" style="color:var(--gold); font-size:18px;"></i>
                         <span style="font-size:13px; font-weight:700; min-width:85px;">Volume: <span id="volLabel">50%</span></span>
@@ -944,7 +924,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 10. AI GUIDE AGENT CHAT -->
             <section id="tab-agent" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🤖 Built-in AI Guide Agent & Module Operator</span></div>
@@ -963,7 +942,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 11. OAUTH TOKEN VAULT -->
             <section id="tab-vault" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🔐 Google OAuth Token Vault & Refresh Engine</span></div>
@@ -971,7 +949,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 12. SCHEDULER -->
             <section id="tab-time" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>⏰ Timezone & Delivery Window Scheduler</span></div>
@@ -979,7 +956,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 13. BOUNCE SHIELD -->
             <section id="tab-bounce" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🛡️ Zero-Spam Bounce Shield</span></div>
@@ -987,7 +963,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 14. AUTO-REPLY -->
             <section id="tab-reply" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>💬 Instant Auto-Reply & Sentiment Detector</span></div>
@@ -995,7 +970,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 15. CSV EXPORT -->
             <section id="tab-export" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>📊 1-Click CSV & Excel Export Engine</span></div>
@@ -1003,7 +977,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 16. BROADCAST NODE -->
             <section id="tab-broadcast" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>📢 Broadcast Node Dispatcher</span></div>
@@ -1014,7 +987,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 17. BRAND PALETTE -->
             <section id="tab-theme" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🎨 Brand Theme & Visual Studio</span></div>
@@ -1022,7 +994,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 18. CYBER ROBOT -->
             <section id="tab-robot" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🤖 Cyber Viewport Robot Status</span></div>
@@ -1030,7 +1001,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 19. WEBHOOKS -->
             <section id="tab-webhook" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>🔗 Cloud Webhook Integrations</span></div>
@@ -1038,7 +1008,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 20. QUOTA GUARD -->
             <section id="tab-quota" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>⏱️ Daily Quota Guard Shield</span></div>
@@ -1046,7 +1015,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 21. SIGNATURE BUILDER -->
             <section id="tab-sign" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>✍️ Architecture HTML Signature Builder</span></div>
@@ -1054,7 +1022,6 @@ APP_HTML = '''<!DOCTYPE html>
                 </div>
             </section>
 
-            <!-- 22. ROI PREDICTOR -->
             <section id="tab-roi" class="tab-section">
                 <div class="panel-card">
                     <div class="panel-header"><span>📈 Conversion ROI & Deal Probability Predictor</span></div>
@@ -1157,7 +1124,6 @@ APP_HTML = '''<!DOCTYPE html>
             setTimeout(() => { speech.innerText = "👑 King Saab AI System Ready"; }, 2500);
         }
 
-        /* 1. AUTH LOGIN SUBMIT */
         function handleAuthSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
@@ -1183,7 +1149,6 @@ APP_HTML = '''<!DOCTYPE html>
             }, 700);
         }
 
-        /* 2. POWER OFF LOGOUT */
         function handlePowerOff() {
             const stage = document.getElementById('cinematicStage');
             const authView = document.getElementById('authViewport');
@@ -1233,7 +1198,6 @@ APP_HTML = '''<!DOCTYPE html>
             if(icon) icon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        /* AI GUIDE AGENT RESPONSE LOGIC */
         function sendAgentMessage() {
             const input = document.getElementById('agentInput');
             const query = input.value.trim();
@@ -1272,7 +1236,6 @@ APP_HTML = '''<!DOCTYPE html>
             }, 600);
         }
 
-        /* AUDIO & VOLUME CONTROLS */
         let audioCtx = null;
         let isAudioPlaying = false;
         let activeOsc = null;
