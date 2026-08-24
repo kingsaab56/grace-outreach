@@ -47,22 +47,20 @@ APP_HTML = '''<!DOCTYPE html>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
+        /* FIXED STATIC SPLASH SCREEN WITHOUT PULSING / RESIZING */
         #launchSplash {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #02080a; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
         .splash-crest {
             width: 140px; height: 140px; border-radius: 28px; overflow: hidden;
             box-shadow: 0 0 35px var(--gold-glow);
-            animation: pulseSplash 1.4s ease-in-out infinite alternate;
+            transform: none !important;
+            animation: none !important;
         }
         .splash-crest img { width: 100%; height: 100%; object-fit: contain; }
-        @keyframes pulseSplash {
-            0% { transform: scale(0.92); opacity: 0.85; }
-            100% { transform: scale(1.05); opacity: 1; }
-        }
         .splash-title {
             margin-top: 18px; font-size: 22px; font-weight: 900; letter-spacing: 4px;
             background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -227,7 +225,7 @@ APP_HTML = '''<!DOCTYPE html>
 
         <div class="module-capsule" style="left: 12vw; top: 35vh;"><i class="fas fa-cubes"></i> 22 Engines Online</div>
         <div class="module-capsule" style="left: 34vw; top: 25vh;"><i class="fas fa-bolt"></i> 24/7 Cloud Worker</div>
-        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> <span id="capsuleDealValue">&#36;64,800</span> CRM Deals</div>
+        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> &#36;64,800 CRM Deals</div>
         <div class="module-capsule" style="left: 36vw; top: 65vh;"><i class="fas fa-robot"></i> AI Guide Ready</div>
     </div>
 
@@ -359,9 +357,9 @@ APP_HTML = '''<!DOCTYPE html>
                 const splash = document.getElementById('launchSplash');
                 if(splash) {
                     splash.style.opacity = '0';
-                    setTimeout(() => { splash.style.display = 'none'; }, 600);
+                    setTimeout(() => { splash.style.display = 'none'; }, 500);
                 }
-            }, 1100);
+            }, 800);
             renderColleagues();
         });
 
