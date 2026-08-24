@@ -26,7 +26,6 @@ class GraceHandler(BaseHTTPRequestHandler):
             self.wfile.write(IMG_BYTES)
             return
 
-        # Serve index.html
         if os.path.exists("index.html"):
             with open("index.html", "rb") as f:
                 content = f.read()
