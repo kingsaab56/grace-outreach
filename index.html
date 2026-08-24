@@ -389,7 +389,7 @@
                         <div class="module-matrix-card" id="mod-14" onclick="openModule(14, 'Bounce Shield')"><div class="matrix-icon"><i class="fas fa-filter"></i></div><div><div style="font-weight:800; font-size:14px;">14. Bounce Shield</div><div style="font-size:11.5px; color:var(--text-muted);">0.08% Bounce Ping & Queue Sanitizer</div></div></div>
                         <div class="module-matrix-card" id="mod-15" onclick="openModule(15, 'Auto-Reply Detector')"><div class="matrix-icon"><i class="fas fa-reply-all"></i></div><div><div style="font-weight:800; font-size:14px;">15. Auto-Reply Detector</div><div style="font-size:11.5px; color:var(--text-muted);">AI Sentiment Classifier & CRM Push</div></div></div>
                         <div class="module-matrix-card" id="mod-16" onclick="openModule(16, 'CSV / Excel Export')"><div class="matrix-icon"><i class="fas fa-file-export"></i></div><div><div style="font-weight:800; font-size:14px;">16. CSV / Excel Exporter</div><div style="font-size:11.5px; color:var(--text-muted);">Multi-Format Reports & Analytics Export</div></div></div>
-                        <div class="module-matrix-card" id="mod-17" onclick="openModule(17, 'Broadcast Notification Node')"><div class="matrix-icon"><i class="fas fa-bullhorn"></i></div><div><div style="font-weight:800; font-size:14px;">17. Broadcast Notification Node</div><div style="font-size:11.5px; color:var(--text-muted);">Real-time colleague alerts</div></div></div>
+                        <div class="module-matrix-card" id="mod-17" onclick="openModule(17, 'Broadcast Notification Node')"><div class="matrix-icon"><i class="fas fa-bullhorn"></i></div><div><div style="font-weight:800; font-size:14px;">17. Broadcast Notification Node</div><div style="font-size:11.5px; color:var(--text-muted);">Targeted Recipient & Priority Banners</div></div></div>
                         <div class="module-matrix-card" id="mod-18" onclick="openModule(18, 'Brand Palette Studio')"><div class="matrix-icon"><i class="fas fa-palette"></i></div><div><div style="font-weight:800; font-size:14px;">18. Brand Palette Studio</div><div style="font-size:11.5px; color:var(--text-muted);">Luxury theme customization</div></div></div>
                         <div class="module-matrix-card" id="mod-19" onclick="openModule(19, 'Cloud Webhook Dispatcher')"><div class="matrix-icon"><i class="fas fa-network-wired"></i></div><div><div style="font-weight:800; font-size:14px;">19. Cloud Webhook Dispatcher</div><div style="font-size:11.5px; color:var(--text-muted);">Third-party JSON triggers</div></div></div>
                         <div class="module-matrix-card" id="mod-20" onclick="openModule(20, 'Daily Quota Guard')"><div class="matrix-icon"><i class="fas fa-tachometer-alt"></i></div><div><div style="font-weight:800; font-size:14px;">20. Daily Quota Guard</div><div style="font-size:11.5px; color:var(--text-muted);">50/50 safe account limits</div></div></div>
@@ -1031,7 +1031,7 @@
         </div>
     </div>
 
-    <!-- MODULE 16: CSV / EXCEL REPORT EXPORTER MODAL (COLUMN CUSTOMIZER + MULTI-FORMAT DOWNLOAD + PREVIEW) -->
+    <!-- MODULE 16: CSV / EXCEL REPORT EXPORTER MODAL -->
     <div id="exporterModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 840px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1045,7 +1045,6 @@
                 <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('exporterModal')"></i>
             </div>
 
-            <!-- COLUMN CUSTOMIZER -->
             <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
                 <div style="font-size: 11.5px; font-weight: 800; color: #34d399; margin-bottom: 8px;"><i class="fas fa-check-square"></i> Select Columns to Include in Report:</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; font-weight: 700;">
@@ -1058,7 +1057,6 @@
                 </div>
             </div>
 
-            <!-- LIVE DATA PREVIEW TABLE -->
             <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 14px;">
                 <table class="scraper-table">
                     <thead>
@@ -1079,12 +1077,73 @@
                 </table>
             </div>
 
-            <!-- EXPORT ACTION BUTTONS -->
             <div style="display: flex; gap: 8px;">
                 <button type="button" class="btn-luxury" style="background:#059669; flex: 2;" onclick="downloadCampaignReport('csv')"><i class="fas fa-file-csv"></i> Download CSV (.csv)</button>
                 <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8; flex: 2;" onclick="downloadCampaignReport('xlsx')"><i class="fas fa-file-excel"></i> Download Excel (.xlsx format)</button>
                 <button type="button" class="btn-luxury" style="background:#4b5563; border-color:#6b7280; flex: 1.5;" onclick="downloadCampaignReport('txt')"><i class="fas fa-file-alt"></i> Plain Text (.txt)</button>
                 <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('exporterModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 17: BROADCAST NOTIFICATION NODE MODAL (TARGETED RECIPIENTS + PRIORITY TAGS + BANNER PREVIEW) -->
+    <div id="broadcastModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 720px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="font-size:24px; color:#d97706;">📢</div>
+                    <div>
+                        <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">Module 17: Broadcast Notification Node</span>
+                        <div style="font-size: 12px; color: var(--text-muted);">Real-time Team Announcements & Priority Banners</div>
+                    </div>
+                </div>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('broadcastModal')"></i>
+            </div>
+
+            <div class="form-group">
+                <label>Target Recipient</label>
+                <select id="broadcastTargetSelect" class="form-control">
+                    <option value="all">🌍 Global Broadcast (All Active Colleagues)</option>
+                    <option value="colleague1">👤 Alex Vance (COL-901)</option>
+                    <option value="colleague2">👤 Sarah Jenkins (COL-902)</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-muted);">Priority Level</label>
+                    <select id="broadcastPriority" class="form-control" onchange="updateBannerPreviewStyle()">
+                        <option value="info">ℹ️ Normal Info</option>
+                        <option value="warning">⚠️ Important Update</option>
+                        <option value="emergency">🚨 Emergency / Critical Alert</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-muted);">Sound Alert</label>
+                    <select id="broadcastSound" class="form-control">
+                        <option value="yes">🔔 Play Chime on Delivery</option>
+                        <option value="no">Silent Push</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Announcement Message</label>
+                <textarea id="broadcastMsgInput" class="form-control" rows="3" placeholder="Type message..." oninput="updateBannerPreviewStyle()">System Notice: Daily lead quota limits have been increased to 75/day for active campaigns.</textarea>
+            </div>
+
+            <!-- LIVE BANNER PREVIEW BOX -->
+            <div style="background: rgba(8, 22, 25, 0.9); border: 1.5px dashed var(--border-gold); padding: 14px; border-radius: 10px; margin-bottom: 16px;">
+                <div style="font-size: 11px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fas fa-eye"></i> Colleague Screen Banner Preview:</div>
+                <div id="broadcastBannerPreviewBox" style="background: rgba(5, 150, 105, 0.2); border: 1.5px solid #10b981; color: #34d399; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    <i id="previewIcon" class="fas fa-info-circle" style="font-size: 18px;"></i>
+                    <span id="previewText">System Notice: Daily lead quota limits have been increased to 75/day for active campaigns.</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-luxury" style="background:#d97706; flex: 2;" onclick="dispatchLiveBroadcast()"><i class="fas fa-bullhorn"></i> Broadcast Announcement Now</button>
+                <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('broadcastModal')">Close</button>
             </div>
         </div>
     </div>
@@ -1461,8 +1520,8 @@
 
         /* MODULE 8: COLLEAGUES SYSTEM */
         var colleagues = [
-            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12,13,14,15,16] },
-            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,10,11,13,14,15,16] }
+            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17] },
+            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,10,11,13,14,15,16,17] }
         ];
 
         function renderColleagues() {
@@ -1520,6 +1579,7 @@
                         '<div class="toggle-item"><span>14. Bounce Shield</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(14)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 14, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>15. Auto-Reply Detector</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(15)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 15, this.checked)"><span class="slider"></span></label></div>' +
                         '<div class="toggle-item"><span>16. CSV Exporter</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(16)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 16, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>17. Broadcast Node</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(17)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 17, this.checked)"><span class="slider"></span></label></div>' +
                     '</div>';
                 container.appendChild(card);
             });
@@ -1529,8 +1589,8 @@
             var col = colleagues.find(function(c) { return c.key === colKey; });
             if(!col) return;
 
-            if(type === 'junior') col.perms = [1, 4, 5, 10, 11, 13, 14, 15, 16];
-            else if(type === 'manager') col.perms = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16];
+            if(type === 'junior') col.perms = [1, 4, 5, 10, 11, 13, 14, 15, 16, 17];
+            else if(type === 'manager') col.perms = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17];
             else col.perms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
 
             renderColleagues();
@@ -1912,7 +1972,7 @@
                     if(incDeals) r.push('"' + row.deal + '"');
                     content += r.join(",") + "\n";
                 });
-                filename += (format === 'csv') ? ".csv" : ".csv"; // Excel-ready CSV
+                filename += ".csv";
             } else {
                 content = "========================================================\n";
                 content += "      GRACE OUTREACH ENTERPRISE CAMPAIGN REPORT\n";
@@ -1938,6 +1998,54 @@
             document.body.removeChild(link);
 
             alert("📊 REPORT DOWNLOADED:\n'" + filename + "' successfully generated!");
+        }
+
+        /* MODULE 17: BROADCAST NOTIFICATION NODE ENGINE */
+        function openBroadcastModal() {
+            document.getElementById('broadcastModal').style.display = 'flex';
+            updateBannerPreviewStyle();
+        }
+
+        function updateBannerPreviewStyle() {
+            var priority = document.getElementById('broadcastPriority').value;
+            var text = document.getElementById('broadcastMsgInput').value;
+            var box = document.getElementById('broadcastBannerPreviewBox');
+            var icon = document.getElementById('previewIcon');
+            var pText = document.getElementById('previewText');
+
+            if(pText) pText.innerText = text;
+
+            if(priority === 'emergency') {
+                box.style.background = "rgba(239, 68, 68, 0.25)";
+                box.style.borderColor = "#ef4444";
+                box.style.color = "#f87171";
+                icon.className = "fas fa-exclamation-triangle";
+            } else if(priority === 'warning') {
+                box.style.background = "rgba(245, 158, 11, 0.25)";
+                box.style.borderColor = "#f59e0b";
+                box.style.color = "#fbbf24";
+                icon.className = "fas fa-exclamation-circle";
+            } else {
+                box.style.background = "rgba(5, 150, 105, 0.2)";
+                box.style.borderColor = "#10b981";
+                box.style.color = "#34d399";
+                icon.className = "fas fa-info-circle";
+            }
+        }
+
+        function dispatchLiveBroadcast() {
+            var target = document.getElementById('broadcastTargetSelect').value;
+            var priority = document.getElementById('broadcastPriority').value;
+            var sound = document.getElementById('broadcastSound').value;
+            var msg = document.getElementById('broadcastMsgInput').value.trim();
+
+            if(!msg) { alert("Please enter a broadcast message."); return; }
+
+            if(sound === 'yes') playChimeSound('broadcast');
+
+            var targetLabel = target === 'all' ? "Global Team (All Colleagues)" : target;
+            alert("📢 BROADCAST DISPATCHED SUCCESSFULLY!\n- Target: " + targetLabel + "\n- Priority: " + priority.toUpperCase() + "\n- Message: "" + msg + """);
+            closeModal('broadcastModal');
         }
 
         /* 22 MODULES DIRECT OPENING HANDLER */
@@ -2004,11 +2112,13 @@
             } else if(modId === 16) {
                 openExporterModal();
                 return;
+            } else if(modId === 17) {
+                openBroadcastModal();
+                return;
             }
 
             var titles = {
                 3: "🔥 Module 3: AI Warmup Ramp Engine",
-                17: "📢 Module 17: Broadcast Notification Node",
                 18: "🎨 Module 18: Brand Palette Studio",
                 19: "🌐 Module 19: Cloud Webhook Dispatcher",
                 20: "⏱️ Module 20: Daily Quota Guard (50/50)",
@@ -2018,7 +2128,6 @@
 
             var contents = {
                 3: "<p><strong>Warmup Status:</strong> Active (P2P Network Enabled)</p><p>Daily Schedule: <strong>15 emails/day ramping to 50/day</strong>. All inboxes maintain a 99.4% sender reputation score.</p>",
-                17: "<p><strong>Team Broadcast:</strong> Dispatches instant banner alerts across all active colleague portals in real time.</p>",
                 18: "<p><strong>Theme Engine:</strong> Dark Luxury Emerald Theme (#059669) active across all dashboards and modals.</p>",
                 19: "<p><strong>Webhook Sync:</strong> Live POST endpoints available for Zapier, Make.com, and CRM webhooks.</p>",
                 20: "<p><strong>Quota Guard:</strong> Strictly enforces 50 emails/day per connected inbox to prevent domain burn.</p>",
@@ -2032,11 +2141,7 @@
         }
 
         function runGenericModuleAction() {
-            if(activeModNum === 17) {
-                openBroadcastModal();
-            } else {
-                alert("✔ Module " + activeModNum + " command executed successfully in cloud worker!");
-            }
+            alert("✔ Module " + activeModNum + " command executed successfully in cloud worker!");
             closeModal('genericWorkspaceModal');
         }
 
@@ -2134,33 +2239,6 @@
             if(selector && selector.value === colKey) switchColleagueView(colKey);
         };
 
-        window.openBroadcastModal = function() {
-            var options = "Select Target Recipient:\n0: All Colleagues (Global Broadcast)\n";
-            colleagues.forEach(function(c, idx) {
-                options += (idx + 1) + ": " + c.name + " (" + c.id + ")\n";
-            });
-            var sel = prompt(options + "\nEnter recipient number (0 to " + colleagues.length + "):", "0");
-            if(sel === null) return;
-            
-            var targetName = "All Active Colleagues";
-            var num = parseInt(sel);
-            if(num > 0 && num <= colleagues.length) {
-                targetName = colleagues[num - 1].name + " (" + colleagues[num - 1].id + ")";
-            }
-
-            var msg = prompt("Type Broadcast Message for [" + targetName + "]:", "System alert: Daily lead quota limit updated.");
-            if(msg) {
-                alert("📢 Broadcast Dispatched to [" + targetName + "]: " + msg);
-            }
-        };
-
-        window.sendTargetedAlert = function(id, name) {
-            var msg = prompt("Enter targeted alert for " + name + " (" + id + "):", "Please review pending proposal deals in CRM.");
-            if(msg) {
-                alert("📢 Direct Alert Sent to " + name + " (" + id + "): " + msg);
-            }
-        };
-
         window.addNewColleague = function() {
             var name = prompt("Enter Colleague Full Name:", "Marcus Vance");
             if(!name) return;
@@ -2171,7 +2249,7 @@
                 key: newKey,
                 name: name,
                 color: "#a78bfa",
-                perms: [1, 2, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16]
+                perms: [1, 2, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17]
             });
             renderColleagues();
             alert("✔ Colleague profile created! Name: " + name + " | Assigned ID: " + newId + " (Status Active)");
