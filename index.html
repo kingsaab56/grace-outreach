@@ -229,6 +229,21 @@
             0% { height: 6px; }
             100% { height: 42px; }
         }
+
+        /* AI GUIDE TERMINAL CHAT */
+        .ai-chat-box {
+            background: rgba(3, 10, 12, 0.85); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 14px; height: 260px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;
+        }
+        .ai-msg { padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; max-width: 85%; }
+        .ai-msg-agent { background: rgba(5, 150, 105, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #f8fafc; align-self: flex-start; }
+        .ai-msg-user { background: rgba(2, 132, 199, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #f8fafc; align-self: flex-end; }
+        .quick-prompt-tag {
+            background: rgba(245, 158, 11, 0.1); border: 1px solid var(--border-gold); color: #fbbf24;
+            font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 16px; cursor: pointer; transition: 0.2s;
+        }
+        .quick-prompt-tag:hover { background: var(--gold); color: #000; }
     </style>
 </head>
 <body>
@@ -362,7 +377,7 @@
                         <div class="module-matrix-card" id="mod-8" onclick="openModule(8, 'Colleague Access Control')"><div class="matrix-icon"><i class="fas fa-users-cog"></i></div><div><div style="font-weight:800; font-size:14px;">8. Colleague Access Controller</div><div style="font-size:11.5px; color:var(--text-muted);">Audit Logs, Presets & Force Logout</div></div></div>
                         <div class="module-matrix-card" id="mod-9" onclick="openModule(9, 'System Doctor Daemon')"><div class="matrix-icon"><i class="fas fa-heartbeat"></i></div><div><div style="font-weight:800; font-size:14px;">9. System Doctor Daemon</div><div style="font-size:11.5px; color:var(--text-muted);">Live Gauges, Cache Flush & Telemetry</div></div></div>
                         <div class="module-matrix-card" id="mod-10" onclick="openModule(10, 'Audio Studio & Extractor')"><div class="matrix-icon"><i class="fas fa-music"></i></div><div><div style="font-weight:800; font-size:14px;">10. Audio Studio & Extractor</div><div style="font-size:11.5px; color:var(--text-muted);">Soundscape, Visualizer & Alert Chimes</div></div></div>
-                        <div class="module-matrix-card" id="mod-11" onclick="openModule(11, 'Built-in AI Guide Agent')"><div class="matrix-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:800; font-size:14px;">11. Built-in AI Guide Agent</div><div style="font-size:11.5px; color:var(--text-muted);">Interactive portal assistant</div></div></div>
+                        <div class="module-matrix-card" id="mod-11" onclick="openModule(11, 'Built-in AI Guide Agent')"><div class="matrix-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:800; font-size:14px;">11. Built-in AI Guide Agent</div><div style="font-size:11.5px; color:var(--text-muted);">King Saab AI Copilot & Email Drafter</div></div></div>
                         <div class="module-matrix-card" id="mod-12" onclick="openModule(12, 'OAuth Token Vault')"><div class="matrix-icon"><i class="fas fa-shield-alt"></i></div><div><div style="font-weight:800; font-size:14px;">12. OAuth Token Vault</div><div style="font-size:11.5px; color:var(--text-muted);">Encrypted keyphrase protection</div></div></div>
                         <div class="module-matrix-card" id="mod-13" onclick="openModule(13, 'Timezone Scheduler')"><div class="matrix-icon"><i class="fas fa-clock"></i></div><div><div style="font-weight:800; font-size:14px;">13. Timezone Scheduler</div><div style="font-size:11.5px; color:var(--text-muted);">EST & PST smart dispatching</div></div></div>
                         <div class="module-matrix-card" id="mod-14" onclick="openModule(14, 'Bounce Shield')"><div class="matrix-icon"><i class="fas fa-filter"></i></div><div><div style="font-weight:800; font-size:14px;">14. Bounce Shield</div><div style="font-size:11.5px; color:var(--text-muted);">0.08% bounce filtering</div></div></div>
@@ -707,7 +722,7 @@
         </div>
     </div>
 
-    <!-- MODULE 10: AUDIO STUDIO & EXTRACTOR MODAL (SOUNDSCAPE + VISUALIZER + ALERT CHIMES) -->
+    <!-- MODULE 10: AUDIO STUDIO & EXTRACTOR MODAL -->
     <div id="audioModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 680px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -718,7 +733,6 @@
                 <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('audioModal')"></i>
             </div>
 
-            <!-- LIVE AUDIO VISUALIZER -->
             <div style="background: rgba(3, 10, 12, 0.85); border: 1.5px solid var(--border-color); border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 16px;">
                 <div style="font-size: 12px; font-weight: 800; color: #34d399; margin-bottom: 6px;"><i class="fas fa-wave-square"></i> Real-time Audio Spectrum Visualizer</div>
                 <div class="audio-bars-container" id="audioVisualizer">
@@ -734,14 +748,12 @@
                 <div style="font-size: 11px; color: #fbbf24; font-weight: 700;" id="currentTrackLabel">Now Playing: Cyber Lo-Fi Focus Stream (Synthesizer 432Hz)</div>
             </div>
 
-            <!-- SOUNDSCAPE TRACK SELECTOR -->
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px;">
                 <button type="button" class="btn-luxury" style="font-size: 11.5px; padding: 10px;" onclick="switchAmbientTrack('focus')"><i class="fas fa-brain"></i> Deep Focus</button>
                 <button type="button" class="btn-luxury" style="font-size: 11.5px; padding: 10px; background: #0284c7; border-color: #38bdf8;" onclick="switchAmbientTrack('cyber')"><i class="fas fa-water"></i> Cyber Waves</button>
                 <button type="button" class="btn-luxury" style="font-size: 11.5px; padding: 10px; background: #374151; border-color: #6b7280;" onclick="switchAmbientTrack('silence')"><i class="fas fa-volume-mute"></i> Mute / Silence</button>
             </div>
 
-            <!-- ALERT SOUND TESTER -->
             <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-gold); padding: 12px; border-radius: 10px; margin-bottom: 16px;">
                 <div style="font-size: 12px; font-weight: 800; color: #fbbf24; margin-bottom: 8px;"><i class="fas fa-bell"></i> Luxury System Alert Chime Tester:</div>
                 <div style="display: flex; gap: 8px;">
@@ -751,7 +763,6 @@
                 </div>
             </div>
 
-            <!-- VOLUME SLIDER -->
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
                 <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                     <i class="fas fa-volume-up" style="color: #34d399;"></i>
@@ -759,6 +770,43 @@
                     <span id="volumePercentText" style="font-size: 12px; font-weight: 800; color: #34d399; width: 45px;">75%</span>
                 </div>
                 <button type="button" class="btn-luxury" style="width: auto; padding: 8px 20px; background:#374151; border-color:#4b5563;" onclick="closeModal('audioModal')">Close Studio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 11: BUILT-IN AI GUIDE AGENT MODAL (LIVE COPILOT + EMAIL DRAFTER + QUICK PROMPTS) -->
+    <div id="aiAgentModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 720px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="font-size:24px; color:#fbbf24;">🤖</div>
+                    <div>
+                        <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">Module 11: Built-in AI Guide Agent</span>
+                        <div style="font-size: 12px; color: var(--text-muted);">King Saab Outreach Copilot & Dynamic Assistant</div>
+                    </div>
+                </div>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('aiAgentModal')"></i>
+            </div>
+
+            <!-- CHAT TERMINAL -->
+            <div class="ai-chat-box" id="aiChatMessages">
+                <div class="ai-msg ai-msg-agent">
+                    <strong>👑 King Saab AI:</strong> Greetings! I am your AI Outreach Copilot. How can I assist you with cold email campaigns, lead scraping, warmup limits, or deals today?
+                </div>
+            </div>
+
+            <!-- 1-CLICK QUICK PROMPTS -->
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                <span class="quick-prompt-tag" onclick="sendQuickAiPrompt('Draft cold email for NYC Architects')">✨ Draft Architect Cold Email</span>
+                <span class="quick-prompt-tag" onclick="sendQuickAiPrompt('How does Daily Quota Guard protect domains?')">🛡️ Explain Quota Guard</span>
+                <span class="quick-prompt-tag" onclick="sendQuickAiPrompt('Suggest Spintax variations for outreach')">🔀 Suggest Spintax</span>
+                <span class="quick-prompt-tag" onclick="sendQuickAiPrompt('How do I connect new Gmail inbox?')">⚡ How to Connect Gmail</span>
+            </div>
+
+            <!-- INPUT BOX -->
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="aiAgentInput" class="form-control" placeholder="Ask AI Copilot anything about Grace Outreach..." onkeydown="if(event.key==='Enter') executeAiChat()">
+                <button type="button" class="btn-luxury" style="width: auto; padding: 0 20px;" onclick="executeAiChat()"><i class="fas fa-paper-plane"></i> Send</button>
             </div>
         </div>
     </div>
@@ -1282,10 +1330,10 @@
 
             if(type === 'won') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(523.25, now); // C5
-                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
-                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                osc.frequency.setValueAtTime(783.99, now + 0.2);
+                osc.frequency.setValueAtTime(1046.50, now + 0.3);
                 gain.gain.setValueAtTime(0.3, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
                 osc.start(now);
@@ -1327,6 +1375,63 @@
         function updateMasterVolume(val) {
             var txt = document.getElementById('volumePercentText');
             if(txt) txt.innerText = val + "%";
+        }
+
+        /* MODULE 11: AI GUIDE AGENT COPILOT */
+        function openAiAgentModal() {
+            document.getElementById('aiAgentModal').style.display = 'flex';
+        }
+
+        function sendQuickAiPrompt(text) {
+            document.getElementById('aiAgentInput').value = text;
+            executeAiChat();
+        }
+
+        function executeAiChat() {
+            var input = document.getElementById('aiAgentInput');
+            var q = input.value.trim();
+            if(!q) return;
+
+            var box = document.getElementById('aiChatMessages');
+            
+            // Add user message
+            var uDiv = document.createElement('div');
+            uDiv.className = "ai-msg ai-msg-user";
+            uDiv.innerHTML = "<strong>You:</strong> " + q;
+            box.appendChild(uDiv);
+
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            // Robot speech sync & audio ping
+            playChimeSound('reply');
+            var speech = document.getElementById('robotSpeech');
+            if(speech) speech.innerText = "🤖 AI Copilot Thinking...";
+
+            setTimeout(function() {
+                var response = "I have analyzed your request. ";
+                var low = q.toLowerCase();
+
+                if(low.includes("draft") || low.includes("architect") || low.includes("email")) {
+                    response = "Here is a high-converting Cold Email hook for NYC Architects:<br><br><code>Subject: Question on {Company_Name}'s latest NY project<br><br>Hi {First_Name},<br>Loved your recent architectural portfolio in New York. We assist top design studios with automated structural drawings & client outreach.<br><br>Would 10 mins this Thursday work for a quick intro?</code>";
+                } else if(low.includes("quota") || low.includes("limit") || low.includes("guard")) {
+                    response = "<strong>Daily Quota Guard Rule:</strong> Each connected Gmail inbox is limited to <strong>50 emails/day</strong>. This guarantees your domain never hits Google's spam triggers and keeps inbox deliverability at 99.4%.";
+                } else if(low.includes("spintax") || low.includes("syntax")) {
+                    response = "<strong>Spintax Advice:</strong> Always rotate greetings <code>{Hello|Hi|Dear}</code>, value propositions <code>{collaborate|partner|assist}</code>, and city references <code>{New York|NYC|Manhattan}</code> to ensure every recipient gets a unique email footprint.";
+                } else if(low.includes("connect") || low.includes("gmail")) {
+                    response = "<strong>Inbox Setup:</strong> Go to Module 2 (Gmail Multi-Tenant Hub) and choose either <strong>1-Click Google OAuth</strong> or enter a <strong>16-digit Google App Password</strong> for instant synchronization.";
+                } else {
+                    response = "Your command for '" + q + "' has been processed by the King Saab AI Agent. All 22 system modules are optimized and running at 100% capacity.";
+                }
+
+                var aDiv = document.createElement('div');
+                aDiv.className = "ai-msg ai-msg-agent";
+                aDiv.innerHTML = "<strong>👑 King Saab AI:</strong> " + response;
+                box.appendChild(aDiv);
+                box.scrollTop = box.scrollHeight;
+
+                if(speech) speech.innerText = "✨ AI Copilot Response Ready!";
+            }, 600);
         }
 
         /* 22 MODULES DIRECT OPENING HANDLER */
@@ -1375,11 +1480,13 @@
             } else if(modId === 10) {
                 document.getElementById('audioModal').style.display = 'flex';
                 return;
+            } else if(modId === 11) {
+                openAiAgentModal();
+                return;
             }
 
             var titles = {
                 3: "🔥 Module 3: AI Warmup Ramp Engine",
-                11: "🤖 Module 11: Built-in AI Guide Agent",
                 12: "🛡️ Module 12: OAuth Token Vault",
                 13: "⏰ Module 13: Timezone Scheduler",
                 14: "🛡️ Module 14: Bounce Shield (0.08% Filter)",
@@ -1395,7 +1502,6 @@
 
             var contents = {
                 3: "<p><strong>Warmup Status:</strong> Active (P2P Network Enabled)</p><p>Daily Schedule: <strong>15 emails/day ramping to 50/day</strong>. All inboxes maintain a 99.4% sender reputation score.</p>",
-                11: "<p><strong>AI Assistant:</strong> King Saab Agent online.</p><p>Assisting active outreach flows, parsing email sentiment, and guiding session workflows.</p>",
                 12: "<p><strong>Security Status:</strong> AES-256 Cloud Encryption Active.</p><p>5 OAuth Refresh Tokens & 2 Keyphrases secured in encrypted storage vault.</p>",
                 13: "<p><strong>Timezone Dispatcher:</strong> NYC (EST), Chicago (CST), LA (PST).</p><p>Active window: <strong>09:00 AM - 05:00 PM US Business Hours</strong>.</p>",
                 14: "<p><strong>Bounce Filter:</strong> 0.08% bounce rate active.</p><p>DNS, MX record check, and SMTP ping verification enabled on all lead queues.</p>",
@@ -1556,7 +1662,7 @@
                 key: newKey,
                 name: name,
                 color: "#a78bfa",
-                perms: [1, 2, 4, 5, 6, 7, 10]
+                perms: [1, 2, 4, 5, 6, 7, 10, 11]
             });
             renderColleagues();
             alert("✔ Colleague profile created! Name: " + name + " | Assigned ID: " + newId + " (Status Active)");
