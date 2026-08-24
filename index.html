@@ -152,6 +152,7 @@
         .auth-pass { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
         .active-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 11px; font-weight: 800; border: 1px solid #10b981; }
 
+        /* COLLEAGUE CARDS ENHANCED */
         .colleague-card { background: rgba(3, 10, 12, 0.75); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
         .colleague-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 14px; }
         .toggle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }
@@ -162,6 +163,14 @@
         .slider::before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
         input:checked + .slider { background: var(--primary); }
         input:checked + .slider::before { transform: translateX(18px); }
+
+        .preset-btn { background: rgba(245, 158, 11, 0.15); border: 1px solid var(--border-gold); color: #fbbf24; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .preset-btn:hover { background: var(--gold); color: #000; }
+
+        .audit-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        .audit-table th, .audit-table td { border: 1px solid rgba(16, 185, 129, 0.2); padding: 8px 10px; text-align: left; }
+        .audit-table th { background: rgba(5, 150, 105, 0.2); color: #34d399; font-weight: 800; }
+        .audit-table td { background: rgba(3, 10, 12, 0.6); }
 
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -339,7 +348,7 @@
                         <div class="module-matrix-card" id="mod-5" onclick="openModule(5, 'Spin-Syntax AI Generator')"><div class="matrix-icon"><i class="fas fa-magic"></i></div><div><div style="font-weight:800; font-size:14px;">5. Spin-Syntax AI Engine</div><div style="font-size:11.5px; color:var(--text-muted);">1-Click Auto-Spinner & Live Preview</div></div></div>
                         <div class="module-matrix-card" id="mod-6" onclick="openModule(6, 'Lead Scraper')"><div class="matrix-icon"><i class="fas fa-search"></i></div><div><div style="font-weight:800; font-size:14px;">6. US Architect & Contractor Scraper</div><div style="font-size:11.5px; color:var(--text-muted);">All 50 US States + Live Ping & CSV/TXT</div></div></div>
                         <div class="module-matrix-card" id="mod-7" onclick="openModule(7, 'CRM Revenue Pipeline')"><div class="matrix-icon"><i class="fas fa-dollar-sign"></i></div><div><div style="font-weight:800; font-size:14px;">7. CRM Revenue Pipeline</div><div style="font-size:11.5px; color:var(--text-muted);"><span id="matrixDealVal">&#36;64,800</span> Active deal monitor (Drag & Drop)</div></div></div>
-                        <div class="module-matrix-card" id="mod-8" onclick="openModule(8, 'Colleague Access Control')"><div class="matrix-icon"><i class="fas fa-users-cog"></i></div><div><div style="font-weight:800; font-size:14px;">8. Colleague Access Controller</div><div style="font-size:11.5px; color:var(--text-muted);">Permission toggles manager</div></div></div>
+                        <div class="module-matrix-card" id="mod-8" onclick="openModule(8, 'Colleague Access Control')"><div class="matrix-icon"><i class="fas fa-users-cog"></i></div><div><div style="font-weight:800; font-size:14px;">8. Colleague Access Controller</div><div style="font-size:11.5px; color:var(--text-muted);">Audit Logs, Presets & Force Logout</div></div></div>
                         <div class="module-matrix-card" id="mod-9" onclick="openModule(9, 'System Doctor Daemon')"><div class="matrix-icon"><i class="fas fa-heartbeat"></i></div><div><div style="font-weight:800; font-size:14px;">9. System Doctor Daemon</div><div style="font-size:11.5px; color:var(--text-muted);">Live health & PID supervisor</div></div></div>
                         <div class="module-matrix-card" id="mod-10" onclick="openModule(10, 'Audio Studio & Extractor')"><div class="matrix-icon"><i class="fas fa-music"></i></div><div><div style="font-weight:800; font-size:14px;">10. Audio Studio & Extractor</div><div style="font-size:11.5px; color:var(--text-muted);">Soundscape & ambient media</div></div></div>
                         <div class="module-matrix-card" id="mod-11" onclick="openModule(11, 'Built-in AI Guide Agent')"><div class="matrix-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:800; font-size:14px;">11. Built-in AI Guide Agent</div><div style="font-size:11.5px; color:var(--text-muted);">Interactive portal assistant</div></div></div>
@@ -358,16 +367,41 @@
                 </div>
             </section>
 
-            <!-- OPTION 3: COLLEAGUE MANAGEMENT -->
+            <!-- OPTION 3: COLLEAGUE MANAGEMENT & SECURITY AUDIT -->
             <section id="tab-team-control" class="tab-section">
                 <div class="panel-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                        <div style="font-size:17px; font-weight:800; color:#fbbf24;">👥 Colleague Multi-User Management & Module Access</div>
+                        <div>
+                            <div style="font-size:18px; font-weight:900; color:#fbbf24;">👥 Module 8: Colleague Access Controller & Security Vault</div>
+                            <div style="font-size:12px; color:var(--text-muted);">Role-Based Granular Permissions, Activity Audits & Force Logout</div>
+                        </div>
                         <button class="btn-luxury" style="width:auto; padding:8px 18px;" onclick="addNewColleague()"><i class="fas fa-user-plus"></i> Add New Colleague Profile</button>
                     </div>
-                    <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:20px;">Admin can configure individual module permissions, delete colleague profiles, and send targeted alert notifications.</p>
 
                     <div id="colleaguesListContainer"></div>
+
+                    <!-- ACTIVITY AUDIT LOG -->
+                    <div style="margin-top: 26px; border-top: 1px solid var(--border-color); padding-top: 18px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <span style="font-size: 14px; font-weight: 800; color: #38bdf8;"><i class="fas fa-shield-alt"></i> Live Security Activity & Dispatch Audit Log</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Encrypted Session Activity</span>
+                        </div>
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Colleague / ID</th>
+                                    <th>Action Performed</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogBody">
+                                <tr><td>Just Now</td><td>👑 King Saab (Super Admin)</td><td>Updated Module 8 Security Policies</td><td><span class="active-badge">SUCCESS</span></td></tr>
+                                <tr><td>12 mins ago</td><td>Alex Vance (COL-901)</td><td>Launched NYC Architect Cold Outreach (50 emails)</td><td><span class="active-badge">COMPLETED</span></td></tr>
+                                <tr><td>45 mins ago</td><td>Sarah Jenkins (COL-902)</td><td>Exported Lead Report (Grace_Leads.csv)</td><td><span class="active-badge">DOWNLOADED</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -579,7 +613,7 @@
         </div>
     </div>
 
-    <!-- MODULE 7: CRM REVENUE PIPELINE MODAL (WITH DRAG-AND-DROP + ADVANCE & REVERT BUTTONS) -->
+    <!-- MODULE 7: CRM REVENUE PIPELINE MODAL -->
     <div id="crmModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 920px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -873,7 +907,7 @@
             closeModal('scraperModal');
         }
 
-        /* MODULE 7: CRM REVENUE PIPELINE & KANBAN (DRAG & DROP + ADVANCE & REVERT) */
+        /* MODULE 7: CRM REVENUE PIPELINE & KANBAN */
         var crmDeals = [
             { id: 101, title: "SOM NYC Architecture Masterplan", val: 8400, stage: "discovery", contact: "David Miller" },
             { id: 102, title: "Hudson Yards Interior Drawings", val: 6000, stage: "discovery", contact: "Elena Rostova" },
@@ -924,13 +958,11 @@
                 }
             });
 
-            // Update column sums
             stages.forEach(function(s) {
                 var sumElem = document.getElementById('sum-' + s);
                 if(sumElem) sumElem.innerText = "$" + stageSums[s].toLocaleString();
             });
 
-            // Update total pipeline sync
             var formattedTotal = "$" + totalSum.toLocaleString();
             if(document.getElementById('crmTotalValueDisplay')) document.getElementById('crmTotalValueDisplay').innerText = formattedTotal;
             if(document.getElementById('dashPipelineVal')) document.getElementById('dashPipelineVal').innerText = formattedTotal;
@@ -938,15 +970,8 @@
             if(document.getElementById('capsuleDealVal')) document.getElementById('capsuleDealVal').innerText = formattedTotal;
         }
 
-        /* DRAG AND DROP HANDLERS */
-        function handleDragOver(ev) {
-            ev.preventDefault();
-            ev.currentTarget.classList.add('drag-over');
-        }
-
-        function handleDragLeave(ev) {
-            ev.currentTarget.classList.remove('drag-over');
-        }
+        function handleDragOver(ev) { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
+        function handleDragLeave(ev) { ev.currentTarget.classList.remove('drag-over'); }
 
         function handleDrop(ev, targetStage) {
             ev.preventDefault();
@@ -1013,6 +1038,95 @@
 
             renderKanban();
             alert("✔ New deal created: '" + title + "' ($" + num.toLocaleString() + ") placed in Discovery stage.");
+        }
+
+        /* MODULE 8: COLLEAGUES SYSTEM (PRESETS + AUDIT + FORCE LOGOUT) */
+        var colleagues = [
+            { id: "COL-901", key: "colleague1", name: "Alex Vance", roleType: "Staff", color: "#34d399", perms: [1,2,3,4,5,6,7,10,11] },
+            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", roleType: "Junior", color: "#38bdf8", perms: [1,4,5,6,11,16] }
+        ];
+
+        function renderColleagues() {
+            var container = document.getElementById('colleaguesListContainer');
+            var selector = document.getElementById('userRoleSelector');
+            if(!container) return;
+
+            container.innerHTML = "";
+            selector.innerHTML = '<option value="admin" style="background:#08171a;">👑 King Saab (Super Admin)</option>';
+
+            colleagues.forEach(function(col) {
+                var opt = document.createElement('option');
+                opt.value = col.key;
+                opt.style.background = "#08171a";
+                opt.innerText = "👤 " + col.name + " (" + col.id + ")";
+                selector.appendChild(opt);
+
+                var card = document.createElement('div');
+                card.className = "colleague-card";
+                card.id = "card-" + col.key;
+                card.innerHTML = 
+                    '<div class="colleague-header">' +
+                        '<div>' +
+                            '<span style="font-weight:900; font-size:15px; color:' + col.color + ';">' + col.name + '</span>' +
+                            '<span style="font-size:12px; color:var(--text-muted); margin-left:10px;">ID: <strong>' + col.id + '</strong></span>' +
+                            '<span class="active-badge" style="margin-left:10px;">● ACTIVE LIVE</span>' +
+                        '</div>' +
+                        '<div style="display:flex; gap:8px;">' +
+                            '<button class="btn-luxury" style="width:auto; padding:6px 12px; font-size:11px; background:#d97706;" onclick="sendTargetedAlert(\'' + col.id + '\', \'' + col.name + '\')"><i class="fas fa-bell"></i> Send Alert</button>' +
+                            '<button class="btn-luxury" style="width:auto; padding:6px 12px; font-size:11px; background:#b91c1c;" onclick="forceLogoutColleague(\'' + col.key + '\', \'' + col.name + '\')"><i class="fas fa-sign-out-alt"></i> Force Logout</button>' +
+                            '<button class="btn-luxury" style="width:auto; padding:6px 12px; font-size:11px; background:#4b5563;" onclick="deleteColleague(\'' + col.key + '\', \'' + col.name + '\')"><i class="fas fa-trash-alt"></i> Delete</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                        '<span style="font-size:12px; font-weight:800; color:#fbbf24;">Bulk Role Presets:</span>' +
+                        '<div style="display:flex; gap:6px;">' +
+                            '<button class="preset-btn" onclick="applyPreset(\'' + col.key + '\', \'junior\')">Junior (4 Mods)</button>' +
+                            '<button class="preset-btn" onclick="applyPreset(\'' + col.key + '\', \'manager\')">Manager (12 Mods)</button>' +
+                            '<button class="preset-btn" onclick="applyPreset(\'' + col.key + '\', \'full\')">Full Access</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="toggle-grid">' +
+                        '<div class="toggle-item"><span>1. Dashboard</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(1)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 1, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>2. Gmail Multi-Tenant</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(2)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 2, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>3. AI Warmup Ramp</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(3)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 3, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>4. Campaign Studio</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(4)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 4, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>5. Spin-Syntax AI</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(5)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 5, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>6. Lead Scraper</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(6)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 6, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>7. CRM Pipeline Deals</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(7)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 7, this.checked)"><span class="slider"></span></label></div>' +
+                        '<div class="toggle-item"><span>11. AI Guide Agent</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(11)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 11, this.checked)"><span class="slider"></span></label></div>' +
+                    '</div>';
+                container.appendChild(card);
+            });
+        }
+
+        function applyPreset(colKey, type) {
+            var col = colleagues.find(function(c) { return c.key === colKey; });
+            if(!col) return;
+
+            if(type === 'junior') {
+                col.perms = [1, 4, 5, 11];
+            } else if(type === 'manager') {
+                col.perms = [1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 16];
+            } else {
+                col.perms = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
+            }
+
+            renderColleagues();
+            var selector = document.getElementById('userRoleSelector');
+            if(selector && selector.value === colKey) switchColleagueView(colKey);
+            alert("✔ Applied '" + type.toUpperCase() + "' preset to " + col.name + "!");
+        }
+
+        function forceLogoutColleague(colKey, name) {
+            if(confirm("Force logout session for " + name + "? User will be disconnected instantly.")) {
+                var tbody = document.getElementById('auditLogBody');
+                if(tbody) {
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = "<td>Just Now</td><td>" + name + "</td><td>Session Revoked by Admin (Force Logout)</td><td><span class='active-badge' style='background:rgba(239,68,68,0.2); color:#f87171; border-color:#ef4444;'>TERMINATED</span></td>";
+                    tbody.insertBefore(tr, tbody.firstChild);
+                }
+                alert("🔒 Session for " + name + " terminated successfully. Access token invalidated.");
+            }
         }
 
         /* 22 MODULES DIRECT OPENING HANDLER */
@@ -1107,57 +1221,6 @@
                 alert("✔ Module " + activeModNum + " command executed successfully in cloud worker!");
             }
             closeModal('genericWorkspaceModal');
-        }
-
-        /* COLLEAGUES SYSTEM */
-        var colleagues = [
-            { id: "COL-901", key: "colleague1", name: "Alex Vance", color: "#34d399", perms: [1,2,3,4,5,6,7,10,11] },
-            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", color: "#38bdf8", perms: [1,4,5,6,11,16] }
-        ];
-
-        function renderColleagues() {
-            var container = document.getElementById('colleaguesListContainer');
-            var selector = document.getElementById('userRoleSelector');
-            if(!container) return;
-
-            container.innerHTML = "";
-            selector.innerHTML = '<option value="admin" style="background:#08171a;">👑 King Saab (Super Admin)</option>';
-
-            colleagues.forEach(function(col) {
-                var opt = document.createElement('option');
-                opt.value = col.key;
-                opt.style.background = "#08171a";
-                opt.innerText = "👤 " + col.name + " (" + col.id + ")";
-                selector.appendChild(opt);
-
-                var card = document.createElement('div');
-                card.className = "colleague-card";
-                card.id = "card-" + col.key;
-                card.innerHTML = 
-                    '<div class="colleague-header">' +
-                        '<div>' +
-                            '<span style="font-weight:900; font-size:15px; color:' + col.color + ';">' + col.name + '</span>' +
-                            '<span style="font-size:12px; color:var(--text-muted); margin-left:10px;">ID: <strong>' + col.id + '</strong></span>' +
-                            '<span class="active-badge" style="margin-left:10px;">● ACTIVE LIVE</span>' +
-                        '</div>' +
-                        '<div style="display:flex; gap:8px;">' +
-                            '<button class="btn-luxury" style="width:auto; padding:6px 14px; font-size:12px; background:#d97706;" onclick="sendTargetedAlert(\'' + col.id + '\', \'' + col.name + '\')"><i class="fas fa-bell"></i> Send Alert</button>' +
-                            '<button class="btn-luxury" style="width:auto; padding:6px 14px; font-size:12px; background:#dc2626;" onclick="deleteColleague(\'' + col.key + '\', \'' + col.name + '\')"><i class="fas fa-trash-alt"></i> Delete</button>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:6px;">Module Permissions for ' + col.name + ':</div>' +
-                    '<div class="toggle-grid">' +
-                        '<div class="toggle-item"><span>1. Dashboard</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(1)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 1, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>2. Gmail Multi-Tenant</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(2)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 2, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>3. AI Warmup Ramp</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(3)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 3, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>4. Campaign Studio</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(4)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 4, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>5. Spin-Syntax AI</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(5)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 5, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>6. Lead Scraper</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(6)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 6, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>7. CRM Pipeline Deals</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(7)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 7, this.checked)"><span class="slider"></span></label></div>' +
-                        '<div class="toggle-item"><span>11. AI Guide Agent</span><label class="switch"><input type="checkbox" ' + (col.perms.includes(11)?'checked':'') + ' onchange="updateColleaguePerm(\'' + col.key + '\', 11, this.checked)"><span class="slider"></span></label></div>' +
-                    '</div>';
-                container.appendChild(card);
-            });
         }
 
         window.executeLogin = function() {
