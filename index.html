@@ -1170,6 +1170,22 @@
             }
         };
     </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var btn = document.querySelector('.btn-luxury');
+            if(btn) {
+                btn.style.cursor = 'pointer';
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    document.getElementById('authViewport').style.display = 'none';
+                    document.getElementById('cinematicStage').style.display = 'none';
+                    document.getElementById('enterpriseApp').style.display = 'flex';
+                };
+            }
+        });
+    </script>
     </body>
+    
     
 
