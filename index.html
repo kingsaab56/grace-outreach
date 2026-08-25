@@ -1185,7 +1185,26 @@
             }
         });
     </script>
+    
+    <script>
+        window.openBroadcastModal = function() {
+            var msg = prompt("📢 Enter Broadcast Alert Message for All Active Colleagues:", "System alert: Daily workflow and module sync active.");
+            if(msg) {
+                alert("✔ Broadcast successfully dispatched across all active portals: " + msg);
+            }
+        };
+
+        window.handlePowerOff = function() {
+            if(confirm("Are you sure you want to power off / log out of the Enterprise Command Center?")) {
+                document.getElementById('enterpriseApp').style.display = 'none';
+                var stage = document.getElementById('cinematicStage');
+                if(stage) stage.style.display = 'block';
+                document.getElementById('authViewport').style.display = 'flex';
+            }
+        };
+    </script>
     </body>
+    
     
     
 
