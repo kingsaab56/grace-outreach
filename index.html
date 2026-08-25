@@ -306,9 +306,9 @@
         </header>
 
         <nav class="nav-ribbon-bar">
-            <button class="ribbon-btn active" onclick="switchTab('tab-dash', this)"><i class="fas fa-chart-pie"></i> 1. Dashboard Overview</button>
-            <button class="ribbon-btn" onclick="switchTab('tab-matrix', this)"><i class="fas fa-th-large"></i> 2. 22-Module Control Matrix</button>
-            <button class="ribbon-btn" onclick="switchTab('tab-team-control', this)"><i class="fas fa-user-shield"></i> 3. Colleague Management & Permissions</button>
+            <button class="ribbon-btn active" onclick="document.querySelectorAll('.tab-section').forEach(function(e){e.classList.remove('active')});document.querySelectorAll('.ribbon-btn').forEach(function(e){e.classList.remove('active')});document.getElementById('tab-dash').classList.add('active');this.classList.add('active');"><i class="fas fa-chart-pie"></i> 1. Dashboard Overview</button>
+            <button class="ribbon-btn" onclick="document.querySelectorAll('.tab-section').forEach(function(e){e.classList.remove('active')});document.querySelectorAll('.ribbon-btn').forEach(function(e){e.classList.remove('active')});document.getElementById('tab-matrix').classList.add('active');this.classList.add('active');"><i class="fas fa-th-large"></i> 2. 22-Module Control Matrix</button>
+            <button class="ribbon-btn" onclick="document.querySelectorAll('.tab-section').forEach(function(e){e.classList.remove('active')});document.querySelectorAll('.ribbon-btn').forEach(function(e){e.classList.remove('active')});document.getElementById('tab-team-control').classList.add('active');this.classList.add('active');"><i class="fas fa-user-shield"></i> 3. Colleague Management & Permissions</button>
         </nav>
 
         <main class="dashboard-body">
