@@ -1293,8 +1293,12 @@
                 return;
             }
             if(modId === 2) {
-                if(typeof openAddGmailModal === 'function') openAddGmailModal();
-                else alert("✔ Module 2: Gmail Multi-Tenant Hub (Active 3-Tier Sync) is ready!");
+                var dashBtn = document.querySelector('.ribbon-btn');
+                if(dashBtn) {
+                    window.switchTab('tab-dash', dashBtn);
+                    var modal = document.getElementById('mod2-enhanced-section');
+                    if(modal) modal.scrollIntoView({ behavior: 'smooth' });
+                }
                 return;
             }
             if(modId === 8) {
