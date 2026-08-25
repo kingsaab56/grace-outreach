@@ -1059,7 +1059,15 @@
             document.getElementById('genericWorkspaceModal').style.display = 'flex';
         }
 
-                window.executeLogin = function() {
+                        window.executeLogin = function() {
+            var authView = document.getElementById('authViewport');
+            var stage = document.getElementById('cinematicStage');
+            var app = document.getElementById('enterpriseApp');
+            if(authView) authView.style.display = 'none';
+            if(stage) stage.style.display = 'none';
+            if(app) app.style.display = 'flex';
+        };
+        window.executeLoginDirect = function() {
             var authView = document.getElementById('authViewport');
             var stage = document.getElementById('cinematicStage');
             var app = document.getElementById('enterpriseApp');
