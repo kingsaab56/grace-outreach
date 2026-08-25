@@ -1106,5 +1106,25 @@
             }
         };
     </script>
-</body>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var btn = document.getElementById('loginBtn');
+            if(btn) {
+                btn.style.pointerEvents = 'auto';
+                btn.style.zIndex = '9999999';
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    document.getElementById('authViewport').style.display = 'none';
+                    document.getElementById('cinematicStage').style.display = 'none';
+                    document.getElementById('enterpriseApp').style.display = 'flex';
+                };
+            }
+            // Clear any blocking pointer events on the container
+            var panel = document.querySelector('.auth-glass-panel');
+            if(panel) panel.style.pointerEvents = 'auto';
+        });
+    </script>
+    </body>
+    
 </html>
