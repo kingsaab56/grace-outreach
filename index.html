@@ -1227,6 +1227,11 @@
                 if(typeof openAddGmailModal === 'function') openAddGmailModal();
                 return;
             }
+            if(modId === 8) {
+                var teamBtn = document.querySelectorAll('.ribbon-btn')[2];
+                if(teamBtn) switchTab('tab-team-control', teamBtn);
+                return;
+            }
             alert("✔ Module " + modId + ": " + modTitle + " is active and fully operational!");
         };
 
@@ -1250,6 +1255,11 @@
             }
             if(modId === 2) {
                 if(typeof openAddGmailModal === 'function') openAddGmailModal();
+                return;
+            }
+            if(modId === 8) {
+                var teamBtn = document.querySelectorAll('.ribbon-btn')[2];
+                if(teamBtn) switchTab('tab-team-control', teamBtn);
                 return;
             }
             alert("✔ Module " + modId + ": " + modTitle + " is active and fully operational!");
