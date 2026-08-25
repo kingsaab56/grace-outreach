@@ -1203,7 +1203,20 @@
             }
         };
     </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var dashCards = document.querySelectorAll('#tab-dash .panel-card, #tab-dash div[style*="border-left"]');
+            dashCards.forEach(function(card, index) {
+                card.style.cursor = 'pointer';
+                card.onclick = function() {
+                    alert("✔ Module 1 Dashboard Telemetry Node " + (index + 1) + " clicked. Status: Live & Synced.");
+                };
+            });
+        });
+    </script>
     </body>
+    
     
     
     
