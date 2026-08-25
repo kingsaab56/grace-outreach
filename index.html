@@ -1125,6 +1125,50 @@
             if(panel) panel.style.pointerEvents = 'auto';
         });
     </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var passInput = document.getElementById('authPassword');
+            if(passInput) {
+                var warningDiv = document.createElement('div');
+                warningDiv.id = 'capsLockWarning';
+                warningDiv.style.cssText = 'color: #fbbf24; font-size: 11px; font-weight: 700; margin-top: 4px; display: none; text-align: left;';
+                warningDiv.innerText = '⚠️ Caps Lock is ON';
+                passInput.parentNode.appendChild(warningDiv);
+
+                passInput.addEventListener('keyup', function(e) {
+                    if (e.getModifierState && e.getModifierState('CapsLock')) {
+                        warningDiv.style.display = 'block';
+                    } else {
+                        warningDiv.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        window.executeLogin = function() {
+            var uInput = document.getElementById('authUsername').value.trim();
+            var pInput = document.getElementById('authPassword').value.trim();
+            var errBox = document.getElementById('loginErrorMsg');
+
+            // Correct credentials check
+            if((uInput === 'kingsaab56' || uInput === 'King Saab') && pInput === 'admin56') {
+                if(errBox) errBox.style.display = 'none';
+                document.getElementById('authViewport').style.display = 'none';
+                document.getElementById('cinematicStage').style.display = 'none';
+                document.getElementById('enterpriseApp').style.display = 'flex';
+                
+                var selector = document.getElementById('userRoleSelector');
+                if(selector) selector.value = 'admin';
+                if(typeof switchColleagueView === 'function') switchColleagueView('admin');
+                if(typeof renderInboxes === 'function') renderInboxes();
+            } else {
+                if(errBox) {
+                    errBox.innerText = '⚠️ Incorrect Username or Password! (Use kingsaab56 / admin56)';
+                    errBox.style.display = 'block';
+                }
+            }
+        };
+    </script>
     </body>
     
-</html>
