@@ -1218,6 +1218,11 @@
     
     <script>
         window.openModule = function(modId, modTitle) {
+            if(modId === 1) {
+                var dashBtn = document.querySelector('.ribbon-btn');
+                if(dashBtn) switchTab('tab-dash', dashBtn);
+                return;
+            }
             if(modId === 2) {
                 if(typeof openAddGmailModal === 'function') openAddGmailModal();
                 return;
@@ -1238,6 +1243,11 @@
     
     <script>
         window.openModule = function(modId, modTitle) {
+            if(modId === 1) {
+                var dashBtn = document.querySelector('.ribbon-btn');
+                if(dashBtn) switchTab('tab-dash', dashBtn);
+                return;
+            }
             if(modId === 2) {
                 if(typeof openAddGmailModal === 'function') openAddGmailModal();
                 return;
