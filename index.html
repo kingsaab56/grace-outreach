@@ -1215,7 +1215,28 @@
             });
         });
     </script>
+    
+    <script>
+        window.openModule = function(modId, modTitle) {
+            if(modId === 2) {
+                if(typeof openAddGmailModal === 'function') openAddGmailModal();
+                return;
+            }
+            alert("✔ Module " + modId + ": " + modTitle + " is active and fully operational!");
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var cards = document.querySelectorAll('.module-matrix-card');
+            cards.forEach(function(card, idx) {
+                card.style.cursor = 'pointer';
+                card.onclick = function() {
+                    window.openModule(idx + 1, card.innerText.split('\n')[0]);
+                };
+            });
+        });
+    </script>
     </body>
+    
     
     
     
