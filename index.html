@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="dark" data-accent="emerald">
 <head>
     <meta charset="UTF-8">
@@ -229,39 +229,866 @@
         .tz-clock-title { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
         .tz-clock-time { font-size: 16px; font-weight: 900; color: #38bdf8; margin: 4px 0; font-family: monospace; }
     </style>
-
-<style>
-    .panel-card, div[style*="background: var(--bg-card)"] {
-        overflow: visible !important;
-        padding-bottom: 24px !important;
-    }
-</style>
 </head>
-
 <body>
 
-    
-                
-                </div>
+    <div id="cinematicStage">
+        <canvas id="worldCanvas"></canvas>
+        <div class="hologram-emblem"><img src="/favicon.ico?v=999" alt="Grace Hologram"></div>
+
+        <div class="robot-interactive-actor" onclick="triggerRobot()">
+            <div class="robot-speech-balloon" id="robotSpeech">👑 King Saab System Ready</div>
+            <svg viewBox="0 0 240 310" width="100%" height="100%">
+                <rect x="68" y="45" width="104" height="78" rx="28" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+                <rect x="80" y="60" width="80" height="44" rx="16" fill="#021a1d" stroke="#059669" stroke-width="2"/>
+                <path d="M94 80 Q102 72 110 80" stroke="#10b981" stroke-width="3.5" fill="none"/>
+                <path d="M130 80 Q138 72 146 80" stroke="#10b981" stroke-width="3.5" fill="none"/>
+                <circle cx="120" cy="14" r="6.5" fill="#fbbf24"/>
+                <path d="M75 130 C75 122 165 122 165 130 L175 210 C175 228 65 228 65 210 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2"/>
+                <rect x="70" y="190" width="100" height="52" rx="6" fill="#022c22" stroke="#10b981" stroke-width="2"/>
+                <text x="120" y="222" font-family="'Georgia', serif" font-style="italic" font-weight="900" font-size="11.5" fill="#fbbf24" text-anchor="middle">👑 KING SAAB</text>
+            </svg>
+        </div>
+
+        <div class="module-capsule" style="left: 12vw; top: 35vh;"><i class="fas fa-cubes"></i> 22 Engines Online</div>
+        <div class="module-capsule" style="left: 34vw; top: 25vh;"><i class="fas fa-bolt"></i> 24/7 Cloud Worker</div>
+        <div class="module-capsule" style="left: 15vw; top: 55vh;"><i class="fas fa-dollar-sign"></i> <span id="capsuleDealVal">&#36;64,800</span> CRM Deals</div>
+        <div class="module-capsule" style="left: 36vw; top: 65vh;"><i class="fas fa-robot"></i> AI Guide Ready</div>
+    </div>
+
+    <!-- 1. AUTH LOGIN VIEW -->
+    <div id="authViewport">
+        <div class="auth-glass-panel">
+            <div class="brand-crest"><img src="/favicon.ico?v=999" alt="Grace Crest"></div>
+            <div style="font-size: 22px; font-weight: 900; letter-spacing: 1.5px;">GRACE OUTREACH</div>
+            
+            <div style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35); padding: 10px; border-radius: 12px; margin: 12px 0 20px;">
+                <div style="font-family: Georgia, serif; font-style: italic; font-weight: 800; font-size: 13.5px; color: #fbbf24;">✨ Architected & Engineered by King Saab</div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">🌟 Strategic Guidance by <strong style="color: #34d399;">Abdullah Khan</strong></div>
             </div>
-            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(59, 130, 246, 0.3); padding: 20px; border-radius: 14px;">
-                <h4 style="color: #3b82f6; margin-top: 0; font-size: 15px;"><i class="fas fa-sync-alt"></i> Auto-Rotate Settings</h4>
-                <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 15px;">Configure automatic failover and distribution.</p>
-                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; font-size: 12px; color: #cbd5e1;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Failover Mode:</span> <strong style="color: #10b981;">Enabled</strong></div>
-                    <div style="display: flex; justify-content: space-between;"><span>Rotation Interval:</span> <strong style="color: #fbbf24;">Every 25 emails</strong></div>
+
+            <div>
+                <div class="form-group">
+                    <label>Colleague Identifier / ID</label>
+                    <input type="text" id="authUsername" class="form-control" placeholder="Enter ID" value="kingsaab56" onkeydown="if(event.key==='Enter') executeLogin()">
                 </div>
+                <div class="form-group">
+                    <label>Security Keyphrase</label>
+                    <input type="password" id="authPassword" class="form-control" placeholder="Enter Keyphrase" value="admin123" onkeydown="if(event.key==='Enter') executeLogin()">
+                </div>
+                <button type="button" class="btn-luxury" id="loginBtn" onclick="executeLogin()"><i class="fas fa-fingerprint"></i> Enter Command Center</button>
             </div>
         </div>
     </div>
-    
-</body>
-    
-    
-    
-    
-    
-    
-    
-    
 
+    <!-- 2. ENTERPRISE APP VIEW -->
+    <div id="enterpriseApp">
+        <header class="top-navbar">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div class="nav-logo-thumb"><img src="/favicon.ico?v=999" alt="Grace Logo"></div>
+                <div>
+                    <div style="font-size: 17px; font-weight: 900;">GRACE OUTREACH ASSISTANT</div>
+                    <div style="font-size: 11.5px;"><span style="color: #fbbf24; font-style: italic;">⚡ Built by King Saab</span> | <span style="color: #6ee7b7;">🌟 Strategic Guidance by Abdullah Khan</span></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="background: rgba(3, 10, 12, 0.8); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-gold); display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 700;">Active Session:</span>
+                    <select id="userRoleSelector" onchange="switchColleagueView(this.value)" style="background: transparent; color: #fbbf24; border: none; font-weight: 800; font-size: 12px; outline: none; cursor: pointer;">
+                        <option value="admin" style="background:#08171a;">👑 King Saab (Super Admin)</option>
+                    </select>
+                </div>
+
+                <button style="background: linear-gradient(135deg, #d97706, #b45309); border:none; color:#fff; padding:9px 18px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="openBroadcastModal()"><i class="fas fa-bullhorn"></i> Broadcast Alert</button>
+                <button style="background: #dc2626; border:none; color:#fff; padding:9px 16px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="handlePowerOff()"><i class="fas fa-power-off"></i> Power Off</button>
+            </div>
+        </header>
+
+        <nav class="nav-ribbon-bar">
+            <button class="ribbon-btn active" onclick="switchTab('tab-dash', this)"><i class="fas fa-chart-pie"></i> 1. Dashboard Overview</button>
+            <button class="ribbon-btn" onclick="switchTab('tab-matrix', this)"><i class="fas fa-th-large"></i> 2. 22-Module Control Matrix</button>
+            <button class="ribbon-btn" onclick="switchTab('tab-team-control', this)"><i class="fas fa-user-shield"></i> 3. Colleague Management & Permissions</button>
+        </nav>
+
+        <main class="dashboard-body">
+            
+            <!-- OPTION 1: DASHBOARD -->
+            <section id="tab-dash" class="tab-section active">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px;">
+                    <div style="background: var(--bg-card); border-left: 5px solid var(--primary); padding: 22px; border-radius: 14px;"><div style="font-size:11.5px; color:var(--text-muted); font-weight:800;">ACTIVE OUTREACH PIPELINE</div><div style="font-size:28px; font-weight:900;" id="activePipelineMetric">2,480 Leads</div></div>
+                    <div style="background: var(--bg-card); border-left: 5px solid var(--primary); padding: 22px; border-radius: 14px;"><div style="font-size:11.5px; color:var(--text-muted); font-weight:800;">CONNECTED GMAIL ACCOUNTS</div><div style="font-size:28px; font-weight:900;" id="connectedCountBadge">5 Inboxes</div></div>
+                    <div style="background: var(--bg-card); border-left: 5px solid var(--primary); padding: 22px; border-radius: 14px;"><div style="font-size:11.5px; color:var(--text-muted); font-weight:800;">WEEKLY SENT VOLUME</div><div style="font-size:28px; font-weight:900;">1,240 Emails</div></div>
+                    <div style="background: var(--bg-card); border-left: 5px solid var(--primary); padding: 22px; border-radius: 14px;"><div style="font-size:11.5px; color:var(--text-muted); font-weight:800;">PIPELINE DEAL VALUE</div><div style="font-size:28px; font-weight:900; color:#10b981;" id="dashPipelineVal">&#36;64,800</div></div>
+                </div>
+                
+                <div class="panel-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <div>
+                            <div style="font-size:17px; font-weight:800; color:#fbbf24;"><i class="fas fa-envelope-open-text"></i> Gmail Multi-Tenant Hub (Active 3-Tier Sync)</div>
+                            <div style="font-size:12px; color:var(--text-muted);">Auto-classified by Business, Workplace, and Personal Inboxes</div>
+                        </div>
+                        <button class="btn-luxury" style="width: auto; padding: 8px 18px;" onclick="openAddGmailModal()"><i class="fas fa-plus-circle"></i> Connect New Account (OAuth / Pass)</button>
+                    </div>
+
+                    <div class="category-header"><i class="fas fa-building"></i> 1. Business Inboxes (Grace Outreach Domains)</div>
+                    <div id="businessInboxesContainer"></div>
+
+                    <div class="category-header"><i class="fas fa-briefcase"></i> 2. Workplace Inboxes (Malik Shani / Workspaces)</div>
+                    <div id="workplaceInboxesContainer"></div>
+
+                    <div class="category-header"><i class="fas fa-user-circle"></i> 3. Personal Inboxes (Outreach Rotators)</div>
+                    <div id="personalInboxesContainer"></div>
+                </div>
+            </section>
+
+            <!-- OPTION 2: 22 MODULES MATRIX -->
+            <section id="tab-matrix" class="tab-section">
+                <div class="panel-card">
+                    <div style="font-size:17px; font-weight:800; margin-bottom:14px; display:flex; justify-content:space-between;">
+                        <span>🎛️ Complete 22-Module Functional Matrix</span>
+                        <span id="activeRoleLabel" style="font-size:12px; color:#34d399; font-weight:700;">● Admin View (All Modules Unlocked)</span>
+                    </div>
+                    
+                    <div class="modules-matrix-grid" id="matrixContainer">
+                        <div class="module-matrix-card" id="mod-1" onclick="openModule(1, 'Dashboard Overview')"><div class="matrix-icon"><i class="fas fa-chart-pie"></i></div><div><div style="font-weight:800; font-size:14px;">1. Dashboard Overview</div><div style="font-size:11.5px; color:var(--text-muted);">Live analytics & telemetry</div></div></div>
+                        <div class="module-matrix-card" id="mod-2" onclick="openModule(2, 'Gmail Multi-Tenant Hub')"><div class="matrix-icon"><i class="fas fa-envelope"></i></div><div><div style="font-weight:800; font-size:14px;">2. Gmail Multi-Tenant Hub</div><div style="font-size:11.5px; color:var(--text-muted);">OAuth & 3-Tier Categorization</div></div></div>
+                        <div class="module-matrix-card" id="mod-3" onclick="openModule(3, 'AI Warmup Ramp')"><div class="matrix-icon"><i class="fas fa-fire"></i></div><div><div style="font-weight:800; font-size:14px;">3. AI Warmup Ramp</div><div style="font-size:11.5px; color:var(--text-muted);">Daily sender reputation guard</div></div></div>
+                        <div class="module-matrix-card" id="mod-4" onclick="openModule(4, 'Campaign Studio')"><div class="matrix-icon"><i class="fas fa-paper-plane"></i></div><div><div style="font-weight:800; font-size:14px;">4. Campaign Studio</div><div style="font-size:11.5px; color:var(--text-muted);">A/B Split + AI Scorer + Timezone</div></div></div>
+                        <div class="module-matrix-card" id="mod-5" onclick="openModule(5, 'Spin-Syntax AI Generator')"><div class="matrix-icon"><i class="fas fa-magic"></i></div><div><div style="font-weight:800; font-size:14px;">5. Spin-Syntax AI Engine</div><div style="font-size:11.5px; color:var(--text-muted);">1-Click Auto-Spinner & Live Preview</div></div></div>
+                        <div class="module-matrix-card" id="mod-6" onclick="openModule(6, 'Lead Scraper')"><div class="matrix-icon"><i class="fas fa-search"></i></div><div><div style="font-weight:800; font-size:14px;">6. US Architect & Contractor Scraper</div><div style="font-size:11.5px; color:var(--text-muted);">All 50 US States + Live Ping & CSV/TXT</div></div></div>
+                        <div class="module-matrix-card" id="mod-7" onclick="openModule(7, 'CRM Revenue Pipeline')"><div class="matrix-icon"><i class="fas fa-dollar-sign"></i></div><div><div style="font-weight:800; font-size:14px;">7. CRM Revenue Pipeline</div><div style="font-size:11.5px; color:var(--text-muted);"><span id="matrixDealVal">&#36;64,800</span> Active deal monitor (Drag & Drop)</div></div></div>
+                        <div class="module-matrix-card" id="mod-8" onclick="openModule(8, 'Colleague Access Control')"><div class="matrix-icon"><i class="fas fa-users-cog"></i></div><div><div style="font-weight:800; font-size:14px;">8. Colleague Access Controller</div><div style="font-size:11.5px; color:var(--text-muted);">Audit Logs, Presets & Force Logout</div></div></div>
+                        <div class="module-matrix-card" id="mod-9" onclick="openModule(9, 'System Doctor Daemon')"><div class="matrix-icon"><i class="fas fa-heartbeat"></i></div><div><div style="font-weight:800; font-size:14px;">9. System Doctor Daemon</div><div style="font-size:11.5px; color:var(--text-muted);">Live Gauges, Cache Flush & Telemetry</div></div></div>
+                        <div class="module-matrix-card" id="mod-10" onclick="openModule(10, 'Audio Studio & Extractor')"><div class="matrix-icon"><i class="fas fa-music"></i></div><div><div style="font-weight:800; font-size:14px;">10. Audio Studio & Extractor</div><div style="font-size:11.5px; color:var(--text-muted);">Soundscape, Visualizer & Alert Chimes</div></div></div>
+                        <div class="module-matrix-card" id="mod-11" onclick="openModule(11, 'Built-in AI Guide Agent')"><div class="matrix-icon"><i class="fas fa-robot"></i></div><div><div style="font-weight:800; font-size:14px;">11. Built-in AI Guide Agent</div><div style="font-size:11.5px; color:var(--text-muted);">King Saab AI Copilot & Email Drafter</div></div></div>
+                        <div class="module-matrix-card" id="mod-12" onclick="openModule(12, 'OAuth Token Vault')"><div class="matrix-icon"><i class="fas fa-shield-alt"></i></div><div><div style="font-weight:800; font-size:14px;">12. OAuth Token Vault</div><div style="font-size:11.5px; color:var(--text-muted);">AES-256 Locker, Auto-Renew & Backup</div></div></div>
+                        <div class="module-matrix-card" id="mod-13" onclick="openModule(13, 'Timezone Scheduler')"><div class="matrix-icon"><i class="fas fa-clock"></i></div><div><div style="font-weight:800; font-size:14px;">13. Timezone Scheduler</div><div style="font-size:11.5px; color:var(--text-muted);">US Live Clocks & Business Hour Dispatch</div></div></div>
+                        <div class="module-matrix-card" id="mod-14" onclick="openModule(14, 'Bounce Shield')"><div class="matrix-icon"><i class="fas fa-filter"></i></div><div><div style="font-weight:800; font-size:14px;">14. Bounce Shield</div><div style="font-size:11.5px; color:var(--text-muted);">0.08% Bounce Ping & Queue Sanitizer</div></div></div>
+                        <div class="module-matrix-card" id="mod-15" onclick="openModule(15, 'Auto-Reply Detector')"><div class="matrix-icon"><i class="fas fa-reply-all"></i></div><div><div style="font-weight:800; font-size:14px;">15. Auto-Reply Detector</div><div style="font-size:11.5px; color:var(--text-muted);">AI Sentiment Classifier & CRM Push</div></div></div>
+                        <div class="module-matrix-card" id="mod-16" onclick="openModule(16, 'CSV / Excel Export')"><div class="matrix-icon"><i class="fas fa-file-export"></i></div><div><div style="font-weight:800; font-size:14px;">16. CSV / Excel Exporter</div><div style="font-size:11.5px; color:var(--text-muted);">Multi-Format Reports & Analytics Export</div></div></div>
+                        <div class="module-matrix-card" id="mod-17" onclick="openModule(17, 'Broadcast Notification Node')"><div class="matrix-icon"><i class="fas fa-bullhorn"></i></div><div><div style="font-weight:800; font-size:14px;">17. Broadcast Notification Node</div><div style="font-size:11.5px; color:var(--text-muted);">Targeted Recipient & Priority Banners</div></div></div>
+                        <div class="module-matrix-card" id="mod-18" onclick="openModule(18, 'Brand Palette Studio')"><div class="matrix-icon"><i class="fas fa-palette"></i></div><div><div style="font-weight:800; font-size:14px;">18. Brand Palette Studio</div><div style="font-size:11.5px; color:var(--text-muted);">Luxury Theme Presets & Color Picker</div></div></div>
+                        <div class="module-matrix-card" id="mod-19" onclick="openModule(19, 'Cloud Webhook Dispatcher')"><div class="matrix-icon"><i class="fas fa-network-wired"></i></div><div><div style="font-weight:800; font-size:14px;">19. Cloud Webhook Dispatcher</div><div style="font-size:11.5px; color:var(--text-muted);">Third-party JSON triggers</div></div></div>
+                        <div class="module-matrix-card" id="mod-20" onclick="openModule(20, 'Daily Quota Guard')"><div class="matrix-icon"><i class="fas fa-tachometer-alt"></i></div><div><div style="font-weight:800; font-size:14px;">20. Daily Quota Guard</div><div style="font-size:11.5px; color:var(--text-muted);">50/50 safe account limits</div></div></div>
+                        <div class="module-matrix-card" id="mod-21" onclick="openModule(21, 'HTML Signature Builder')"><div class="matrix-icon"><i class="fas fa-signature"></i></div><div><div style="font-weight:800; font-size:14px;">21. HTML Signature Builder</div><div style="font-size:11.5px; color:var(--text-muted);">Professional design layout</div></div></div>
+                        <div class="module-matrix-card" id="mod-22" onclick="openModule(22, 'Conversion ROI Predictor')"><div class="matrix-icon"><i class="fas fa-chart-line"></i></div><div><div style="font-weight:800; font-size:14px;">22. Conversion ROI Predictor</div><div style="font-size:11.5px; color:var(--text-muted);">Deal closing probability model</div></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OPTION 3: COLLEAGUE MANAGEMENT & SECURITY AUDIT -->
+            <section id="tab-team-control" class="tab-section">
+                <div class="panel-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <div>
+                            <div style="font-size:18px; font-weight:900; color:#fbbf24;">👥 Module 8: Colleague Access Controller & Security Vault</div>
+                            <div style="font-size:12px; color:var(--text-muted);">Role-Based Granular Permissions, Activity Audits & Force Logout</div>
+                        </div>
+                        <button class="btn-luxury" style="width:auto; padding:8px 18px;" onclick="addNewColleague()"><i class="fas fa-user-plus"></i> Add New Colleague Profile</button>
+                    </div>
+
+                    <div id="colleaguesListContainer"></div>
+
+                    <div style="margin-top: 26px; border-top: 1px solid var(--border-color); padding-top: 18px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <span style="font-size: 14px; font-weight: 800; color: #38bdf8;"><i class="fas fa-shield-alt"></i> Live Security Activity & Dispatch Audit Log</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Encrypted Session Activity</span>
+                        </div>
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Colleague / ID</th>
+                                    <th>Action Performed</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogBody">
+                                <tr><td>Just Now</td><td>👑 King Saab (Super Admin)</td><td>Updated Module 8 Security Policies</td><td><span class="active-badge">SUCCESS</span></td></tr>
+                                <tr><td>12 mins ago</td><td>Alex Vance (COL-901)</td><td>Launched NYC Architect Cold Outreach (50 emails)</td><td><span class="active-badge">COMPLETED</span></td></tr>
+                                <tr><td>45 mins ago</td><td>Sarah Jenkins (COL-902)</td><td>Exported Lead Report (Grace_Leads.csv)</td><td><span class="active-badge">DOWNLOADED</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- GMAIL ADD MODAL -->
+    <div id="gmailModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span>⚡ Connect Gmail Account</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('gmailModal')"></i>
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="newGmailEmail" class="form-control" placeholder="e.g. outreach@graceoutreach.com">
+            </div>
+
+            <div class="form-group">
+                <label>Connection Method</label>
+                <select id="authMethodSelect" class="form-control" onchange="toggleAuthFields(this.value)">
+                    <option value="oauth">⚡ 1-Click Google OAuth (Browser Popup Tab)</option>
+                    <option value="password">🔑 16-Digit Google App Password</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="appPassGroup" style="display: none;">
+                <label>16-Digit App Password</label>
+                <input type="password" id="newGmailPass" class="form-control" placeholder="xxxx xxxx xxxx xxxx">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+                <button type="button" class="btn-luxury" onclick="submitNewGmail()"><i class="fas fa-shield-alt"></i> Authenticate & Connect</button>
+                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563;" onclick="closeModal('gmailModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 4: CAMPAIGN STUDIO AI MODAL -->
+    <div id="campaignStudioModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span>🚀 Campaign Studio (AI Enhanced)</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('campaignStudioModal')"></i>
+            </div>
+
+            <div class="form-group">
+                <label>Campaign Name</label>
+                <input type="text" id="campName" class="form-control" value="NYC Architects Cold Outreach">
+            </div>
+
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 12px; font-weight: 800; color: #34d399; margin-bottom: 8px;"><i class="fas fa-vial"></i> 1. A/B Split Testing Subject Lines</div>
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <label style="font-size:10px;">Subject Line A (50% Volume)</label>
+                    <input type="text" id="subjectA" class="form-control" value="Partnership inquiry for {Company_Name}" oninput="evaluateSpamScore()">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size:10px;">Subject Line B (50% Volume)</label>
+                    <input type="text" id="subjectB" class="form-control" value="Quick question regarding architectural drawings, {First_Name}" oninput="evaluateSpamScore()">
+                </div>
+            </div>
+
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                    <span style="font-size: 12px; font-weight: 800; color: #fbbf24;"><i class="fas fa-shield-virus"></i> 2. Live AI Spam Safety Scorer</span>
+                    <span id="spamScoreBadge" style="font-size: 12px; font-weight: 900; color: #10b981; background: rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 6px; border: 1px solid #10b981;">98/100 (Inbox Ready)</span>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label style="font-size:10px;">Email Body Copy</label>
+                    <textarea id="campBody" class="form-control" rows="4" oninput="evaluateSpamScore()" style="resize:vertical;">Hi {First_Name},&#10;&#10;I came across {Company_Name}'s recent high-profile portfolio in NYC and was truly impressed by your design methodology.&#10;&#10;We assist top architecture studios with specialized technical outreach. Would you be open to a brief 5-min intro this Thursday?&#10;&#10;Best regards,&#10;King Saab</textarea>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-luxury" onclick="launchCampaign()"><i class="fas fa-rocket"></i> Launch Optimized Campaign</button>
+                <button type="button" class="btn-luxury" style="background: #374151; border-color:#4b5563;" onclick="closeModal('campaignStudioModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 5: SPIN-SYNTAX AI ENGINE MODAL -->
+    <div id="spintaxModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span>✨ Module 5: Spin-Syntax AI Engine</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('spintaxModal')"></i>
+            </div>
+            
+            <div class="form-group">
+                <label>Input Email Copy / Template</label>
+                <textarea id="spintaxInput" class="form-control" rows="4">Hello {First_Name}, I hope you are having a productive week. We noticed your architecture projects in New York and would love to collaborate.</textarea>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom: 14px;">
+                <button type="button" class="btn-luxury" onclick="runAiAutoSpinner()"><i class="fas fa-magic"></i> 1-Click AI Auto-Spinner</button>
+                <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8;" onclick="shuffleSpintaxPreview()"><i class="fas fa-random"></i> Shuffle Live Preview</button>
+            </div>
+
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;">Spintax Generated Structure:</div>
+                <div id="spintaxOutputBox" style="font-family: monospace; font-size: 12px; color: #34d399; word-break: break-word;">{Hello|Hi|Greetings} {First_Name}, {I hope you are having a productive week|trust all is well with you|hope your day is going great}. We noticed your {architecture|design|commercial} projects in {New York|NYC} and would love to collaborate.</div>
+            </div>
+
+            <div style="background: rgba(8, 22, 25, 0.8); border: 1px dashed var(--border-gold); padding: 12px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: #38bdf8; margin-bottom: 4px;">Live Recipient Variation Preview:</div>
+                <div id="spintaxLivePreview" style="font-size: 13.5px; color: #f8fafc; line-height: 1.5;">Hi Sarah, trust all is well with you. We noticed your commercial projects in NYC and would love to collaborate.</div>
+            </div>
+
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('spintaxModal')">Done</button>
+        </div>
+    </div>
+
+    <!-- MODULE 6: LEAD SCRAPER MODAL -->
+    <div id="scraperModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 720px;">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span>🔍 Module 6: US Architects & Contractors Lead Scraper</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('scraperModal')"></i>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-muted);">Target Industry / Niche</label>
+                    <select id="scraperNiche" class="form-control">
+                        <option value="Architects">🏛️ Architectural Studios</option>
+                        <option value="Contractors">🔨 General Contractors & Builders</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-muted);">Select US State</label>
+                    <select id="scraperState" class="form-control">
+                        <option value="New York">New York (NY)</option>
+                        <option value="California">California (CA)</option>
+                        <option value="Texas">Texas (TX)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-muted);">Live Ping Verification</label>
+                    <select id="scraperVerify" class="form-control">
+                        <option value="yes">⚡ 100% MX & SMTP Verified</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                <button type="button" class="btn-luxury" style="flex: 2;" onclick="executeLeadScraper()"><i class="fas fa-satellite-dish"></i> Scrape & Verify Live Leads</button>
+                <button type="button" class="btn-luxury" style="background:#0284c7; border-color:#38bdf8; flex: 1;" onclick="downloadScraperData('csv')"><i class="fas fa-file-csv"></i> Save CSV</button>
+                <button type="button" class="btn-luxury" style="background:#4b5563; border-color:#6b7280; flex: 1;" onclick="downloadScraperData('txt')"><i class="fas fa-file-alt"></i> Save TXT</button>
+            </div>
+
+            <div id="scraperResultSummary" style="font-size: 12px; color: #34d399; font-weight: 800; margin-bottom: 8px;">● 4 Live Verified Records Ready</div>
+
+            <div style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                <table class="scraper-table">
+                    <thead>
+                        <tr>
+                            <th>Company / Studio</th>
+                            <th>Contact / Principal</th>
+                            <th>Verified Email</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scraperTableBody">
+                        <tr><td>Skidmore & Owings Studio</td><td>David Miller</td><td>david@som-arch.com</td><td>New York, NY</td><td><span class="active-badge">VERIFIED</span></td></tr>
+                        <tr><td>Gensler Design Partners</td><td>Amanda Ross</td><td>a.ross@gensler-ny.com</td><td>New York, NY</td><td><span class="active-badge">VERIFIED</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+                <button type="button" class="btn-luxury" style="width: auto; padding: 8px 18px; background: #059669;" onclick="pushLeadsToCrm()"><i class="fas fa-bolt"></i> Auto-Push Leads Directly to CRM & Outreach</button>
+                <button type="button" class="btn-luxury" style="width: auto; padding: 8px 18px; background:#374151; border-color:#4b5563;" onclick="closeModal('scraperModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 7: CRM REVENUE PIPELINE MODAL -->
+    <div id="crmModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 920px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div>
+                    <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">💰 Module 7: CRM Revenue Pipeline (Interactive Board)</span>
+                    <div style="font-size: 12px; color: var(--text-muted);">Active Pipeline Value: <strong style="color: #10b981; font-size: 15px;" id="crmTotalValueDisplay">&#36;64,800</strong></div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-luxury" style="width: auto; padding: 6px 14px; font-size: 12px;" onclick="addNewDealPrompt()"><i class="fas fa-plus"></i> Add New Deal</button>
+                    <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted); margin-left: 8px;" onclick="closeModal('crmModal')"></i>
+                </div>
+            </div>
+
+            <div class="kanban-grid">
+                <div class="kanban-col" id="col-discovery">
+                    <div class="kanban-col-head"><span style="color: #38bdf8;">1. Discovery</span><span id="sum-discovery">&#36;14,400</span></div>
+                    <div id="deals-discovery"></div>
+                </div>
+                <div class="kanban-col" id="col-proposal">
+                    <div class="kanban-col-head"><span style="color: #fbbf24;">2. Proposal Sent</span><span id="sum-proposal">&#36;28,800</span></div>
+                    <div id="deals-proposal"></div>
+                </div>
+                <div class="kanban-col" id="col-review">
+                    <div class="kanban-col-head"><span style="color: #a78bfa;">3. Contract Review</span><span id="sum-review">&#36;21,600</span></div>
+                    <div id="deals-review"></div>
+                </div>
+                <div class="kanban-col" id="col-won" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(5, 150, 105, 0.08);">
+                    <div class="kanban-col-head"><span style="color: #34d399;">4. Closed Won 🎉</span><span id="sum-won">&#36;0</span></div>
+                    <div id="deals-won"></div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                <button type="button" class="btn-luxury" style="width: auto; padding: 8px 22px; background:#374151; border-color:#4b5563;" onclick="closeModal('crmModal')">Close CRM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 9: SYSTEM DOCTOR DAEMON MODAL -->
+    <div id="doctorModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 680px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div>
+                    <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">💓 Module 9: System Doctor Daemon</span>
+                    <div style="font-size: 12px; color: var(--text-muted);">Real-time Telemetry & Diagnostics</div>
+                </div>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('doctorModal')"></i>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.6; color: var(--text-muted); margin-bottom: 16px;">
+                <p><strong>Status:</strong> 100% Online (Healthy)</p>
+                <p><strong>CPU Load:</strong> 0.14% | <strong>RAM:</strong> 42.8 MB</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-luxury" style="background:#059669; flex: 2;" onclick="flushSystemCache()"><i class="fas fa-broom"></i> Flush Cache</button>
+                <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563; flex: 1;" onclick="closeModal('doctorModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 10: AUDIO STUDIO MODAL -->
+    <div id="audioModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 680px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">🎵 Module 10: Audio Studio & Soundscape</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('audioModal')"></i>
+            </div>
+            <div class="audio-bars-container">
+                <div class="audio-bar" style="animation-delay: 0.1s;"></div>
+                <div class="audio-bar" style="animation-delay: 0.3s;"></div>
+                <div class="audio-bar" style="animation-delay: 0.5s;"></div>
+                <div class="audio-bar" style="animation-delay: 0.2s;"></div>
+            </div>
+            <div style="text-align: center; font-size: 12px; color: #34d399; font-weight: 800; margin-bottom: 16px;" id="currentTrackLabel">Now Playing: Cyber Lo-Fi Focus Stream</div>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn-luxury" onclick="playChimeSound('won')"><i class="fas fa-bell"></i> Test Chime</button>
+                <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('audioModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 11: AI GUIDE AGENT MODAL -->
+    <div id="aiAgentModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 720px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">🤖 Module 11: Built-in AI Guide Agent</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('aiAgentModal')"></i>
+            </div>
+            <div class="ai-chat-box" id="aiChatMessages">
+                <div class="ai-msg ai-msg-agent"><strong>👑 King Saab AI:</strong> How can I assist your outreach today?</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="aiAgentInput" class="form-control" placeholder="Ask AI..." onkeydown="if(event.key==='Enter') executeAiChat()">
+                <button type="button" class="btn-luxury" style="width: auto; padding: 0 20px;" onclick="executeAiChat()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 12: OAUTH VAULT MODAL -->
+    <div id="vaultModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 760px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">🛡️ Module 12: OAuth Token Vault</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('vaultModal')"></i>
+            </div>
+            <div style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">
+                <p>All 5 active inboxes are protected with AES-256 encryption.</p>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('vaultModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODULE 13: TIMEZONE SCHEDULER MODAL -->
+    <div id="timezoneModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 760px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">⏰ Module 13: US Timezone Scheduler</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('timezoneModal')"></i>
+            </div>
+            <div class="tz-matrix-grid">
+                <div class="tz-clock-card"><div class="tz-clock-title">EST</div><div class="tz-clock-time" id="clockEST">--:--:--</div></div>
+                <div class="tz-clock-card"><div class="tz-clock-title">CST</div><div class="tz-clock-time" id="clockCST">--:--:--</div></div>
+                <div class="tz-clock-card"><div class="tz-clock-title">MST</div><div class="tz-clock-time" id="clockMST">--:--:--</div></div>
+                <div class="tz-clock-card"><div class="tz-clock-title">PST</div><div class="tz-clock-time" id="clockPST">--:--:--</div></div>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('timezoneModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODULE 14: BOUNCE SHIELD MODAL -->
+    <div id="bounceModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 760px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">🛡️ Module 14: Bounce Shield Verifier</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('bounceModal')"></i>
+            </div>
+            <div style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">
+                <p>Bounce Rate: <strong>0.08% (Ultra Safe)</strong></p>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('bounceModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODULE 15: AUTO-REPLY DETECTOR MODAL -->
+    <div id="replyModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 780px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">💬 Module 15: Auto-Reply & Sentiment Classifier</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('replyModal')"></i>
+            </div>
+            <div style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">
+                <p>AI Sentiment analysis active for all incoming threads.</p>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('replyModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODULE 16: CSV EXPORTER MODAL -->
+    <div id="exporterModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 840px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">📊 Module 16: CSV / Excel Campaign Exporter</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('exporterModal')"></i>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#059669; margin-bottom: 12px;" onclick="downloadCampaignReport('csv')"><i class="fas fa-file-csv"></i> Download CSV Report</button>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('exporterModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODULE 17: BROADCAST MODAL -->
+    <div id="broadcastModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 720px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">📢 Module 17: Broadcast Notification Node</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('broadcastModal')"></i>
+            </div>
+            <div class="form-group">
+                <label>Announcement Message</label>
+                <textarea id="broadcastMsgInput" class="form-control" rows="3">System Notice: Daily lead quota limits have been increased.</textarea>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#d97706; margin-bottom: 12px;" onclick="dispatchLiveBroadcast()">Broadcast Now</button>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('broadcastModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODULE 18: BRAND PALETTE STUDIO MODAL -->
+    <div id="paletteModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 680px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 18px; font-weight: 900; color: #fbbf24;">🎨 Module 18: Brand Palette Studio</span>
+                <i class="fas fa-times" style="cursor:pointer; font-size: 18px; color: var(--text-muted);" onclick="closeModal('paletteModal')"></i>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px;">
+                <button type="button" class="btn-luxury" style="background: #059669;" onclick="applyThemePreset('#059669', '#022c22')">King Saab Emerald</button>
+                <button type="button" class="btn-luxury" style="background: #b45309;" onclick="applyThemePreset('#f59e0b', '#451a03')">Midnight Gold</button>
+            </div>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('paletteModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- GENERIC WORKSPACE MODAL -->
+    <div id="genericWorkspaceModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 17px; font-weight: 900; color: #fbbf24; margin-bottom: 14px; display:flex; justify-content:space-between;">
+                <span id="genericModalTitle">⚙️ Module Workspace</span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="closeModal('genericWorkspaceModal')"></i>
+            </div>
+            <div id="genericModalBody" style="font-size:13.5px; line-height:1.6; color:var(--text-muted); margin-bottom:16px;"></div>
+            <button type="button" class="btn-luxury" style="background:#374151; border-color:#4b5563;" onclick="closeModal('genericWorkspaceModal')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        var inboxes = [
+            { id: 1, email: "contact@graceoutreach.org", type: "business", auth: "oauth", status: "Active", quota: "48/50 Sent" },
+            { id: 2, email: "partners@graceoutreach.org", type: "business", auth: "oauth", status: "Active", quota: "39/50 Sent" },
+            { id: 3, email: "malikshani@workspace.net", type: "workplace", auth: "password", status: "Active", quota: "45/50 Sent" },
+            { id: 4, email: "shani.outreach@gmail.com", type: "personal", auth: "password", status: "Active", quota: "50/50 Sent" },
+            { id: 5, email: "outreach.lead2@gmail.com", type: "personal", auth: "oauth", status: "Active", quota: "32/50 Sent" }
+        ];
+
+        function renderInboxes() {
+            var bContainer = document.getElementById('businessInboxesContainer');
+            var wContainer = document.getElementById('workplaceInboxesContainer');
+            var pContainer = document.getElementById('personalInboxesContainer');
+            var countBadge = document.getElementById('connectedCountBadge');
+            if(!bContainer || !wContainer || !pContainer) return;
+
+            bContainer.innerHTML = "";
+            wContainer.innerHTML = "";
+            pContainer.innerHTML = "";
+            if(countBadge) countBadge.innerText = inboxes.length + " Inboxes";
+
+            inboxes.forEach(function(ib) {
+                var card = document.createElement('div');
+                card.className = "inbox-card";
+                card.innerHTML = '<div><div style="font-weight: 800; font-size: 14px; color: #f8fafc;">' + ib.email + '</div><div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;"><span class="auth-tag ' + (ib.auth === 'oauth' ? 'auth-oauth' : 'auth-pass') + '">' + (ib.auth === 'oauth' ? 'Google OAuth 2.0' : 'App Password') + '</span><span style="margin-left: 8px;"><i class="fas fa-tachometer-alt"></i> ' + ib.quota + '</span></div></div><div style="display:flex; align-items:center; gap:10px;"><span class="active-badge">● CONNECTED</span><button onclick="removeInbox(' + ib.id + ')" style="background:transparent; border:none; color:#ef4444; font-size:14px; cursor:pointer;"><i class="fas fa-trash-alt"></i></button></div>';
+
+                if(ib.type === 'business') bContainer.appendChild(card);
+                else if(ib.type === 'workplace') wContainer.appendChild(card);
+                else pContainer.appendChild(card);
+            });
+        }
+
+        function openAddGmailModal() { document.getElementById('gmailModal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function toggleAuthFields(val) { document.getElementById('appPassGroup').style.display = (val === 'password') ? 'block' : 'none'; }
+
+        function submitNewGmail() {
+            var email = document.getElementById('newGmailEmail').value.trim();
+            var authMethod = document.getElementById('authMethodSelect').value;
+            var pass = document.getElementById('newGmailPass').value.trim();
+            if(!email) { alert("Please enter a valid Gmail address."); return; }
+
+            var cat = "personal";
+            var low = email.toLowerCase();
+            if(low.includes("grace") || low.includes("outreach.org")) cat = "business";
+            else if(low.includes("shani") || low.includes("work") || low.includes("malik")) cat = "workplace";
+
+            inboxes.push({ id: Date.now(), email: email, type: cat, auth: authMethod, status: "Active", quota: "0/50 Sent" });
+            closeModal('gmailModal');
+            renderInboxes();
+            alert("✔ Gmail account successfully connected: " + email);
+        }
+
+        function removeInbox(id) {
+            if(confirm("Disconnect this inbox?")) {
+                inboxes = inboxes.filter(function(i) { return i.id !== id; });
+                renderInboxes();
+            }
+        }
+
+        function evaluateSpamScore() {
+            var text = (document.getElementById('subjectA').value + " " + document.getElementById('subjectB').value + " " + document.getElementById('campBody').value).toLowerCase();
+            var spamWords = ["free", "buy now", "guarantee", "urgent", "100%", "winner", "cash", "credit"];
+            var found = 0;
+            spamWords.forEach(function(w) { if(text.includes(w)) found++; });
+            var score = Math.max(40, 100 - (found * 15));
+            var badge = document.getElementById('spamScoreBadge');
+            if(badge) {
+                badge.innerText = score + "/100 (Inbox Ready)";
+            }
+        }
+
+        function launchCampaign() {
+            alert("🚀 Campaign successfully launched with A/B Split Testing & Time-Zone Sync!");
+            closeModal('campaignStudioModal');
+        }
+
+        function runAiAutoSpinner() {
+            document.getElementById('spintaxOutputBox').innerText = "{Hello|Hi|Greetings} {First_Name}, trust all is well. We noticed your architecture projects in NYC.";
+        }
+
+        function shuffleSpintaxPreview() {
+            document.getElementById('spintaxLivePreview').innerText = "Hi Sarah, hope your day is great. We noticed your commercial design projects in NYC.";
+        }
+
+        var currentScrapedLeads = [
+            { company: "Skidmore Studio", name: "David Miller", email: "david@som-arch.com", loc: "New York, NY", status: "VERIFIED" },
+            { company: "Gensler Design", name: "Amanda Ross", email: "a.ross@gensler-ny.com", loc: "New York, NY", status: "VERIFIED" }
+        ];
+
+        function executeLeadScraper() {
+            alert("🔍 Scraped 5 verified active leads in New York!");
+        }
+
+        function downloadScraperData(format) {
+            alert("📥 Leads report downloaded as " + format.toUpperCase());
+        }
+
+        function pushLeadsToCrm() {
+            document.getElementById('activePipelineMetric').innerText = "2,485 Leads";
+            alert("⚡ Leads successfully pushed to CRM & Active Pipeline!");
+            closeModal('scraperModal');
+        }
+
+        var crmDeals = [
+            { id: 101, title: "SOM NYC Architecture Masterplan", val: 8400, stage: "discovery", contact: "David Miller" },
+            { id: 102, title: "Hudson Yards Interior Drawings", val: 6000, stage: "discovery", contact: "Elena Rostova" },
+            { id: 103, title: "Manhattan Penthouse Structural", val: 14800, stage: "proposal", contact: "Amanda Ross" },
+            { id: 104, title: "Brooklyn Commercial Complex", val: 14000, stage: "proposal", contact: "Robert Vance" }
+        ];
+        var draggedDealId = null;
+
+        function renderKanban() {
+            var stages = ['discovery', 'proposal', 'review', 'won'];
+            var stageSums = { discovery: 0, proposal: 0, review: 0, won: 0 };
+            var totalSum = 0;
+
+            stages.forEach(function(s) {
+                var container = document.getElementById('deals-' + s);
+                if(container) container.innerHTML = "";
+            });
+
+            crmDeals.forEach(function(d) {
+                stageSums[d.stage] += d.val;
+                totalSum += d.val;
+                var targetBox = document.getElementById('deals-' + d.stage);
+                if(targetBox) {
+                    var card = document.createElement('div');
+                    card.className = "deal-item";
+                    card.innerHTML = '<div style="font-weight: 800; font-size: 12px; color: #f8fafc;">' + d.title + '</div><div style="font-size: 10.5px; color: var(--text-muted);">' + d.contact + '</div><div class="deal-val">&#36;' + d.val.toLocaleString() + '</div>';
+                    targetBox.appendChild(card);
+                }
+            });
+
+            stages.forEach(function(s) {
+                var sumElem = document.getElementById('sum-' + s);
+                if(sumElem) sumElem.innerText = "$" + stageSums[s].toLocaleString();
+            });
+
+            var formattedTotal = "$" + totalSum.toLocaleString();
+            if(document.getElementById('crmTotalValueDisplay')) document.getElementById('crmTotalValueDisplay').innerText = formattedTotal;
+            if(document.getElementById('dashPipelineVal')) document.getElementById('dashPipelineVal').innerText = formattedTotal;
+            if(document.getElementById('matrixDealVal')) document.getElementById('matrixDealVal').innerText = formattedTotal;
+            if(document.getElementById('capsuleDealVal')) document.getElementById('capsuleDealVal').innerText = formattedTotal;
+        }
+
+        function addNewDealPrompt() {
+            var title = prompt("Enter Deal Name:", "Apex Architecture Drawing Set");
+            if(!title) return;
+            crmDeals.push({ id: Date.now(), title: title, val: 5000, stage: "discovery", contact: "New Lead" });
+            renderKanban();
+            alert("✔ New deal added successfully!");
+        }
+
+        var colleagues = [
+            { id: "COL-901", key: "colleague1", name: "Alex Vance", color: "#34d399", perms: [1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18] },
+            { id: "COL-902", key: "colleague2", name: "Sarah Jenkins", color: "#38bdf8", perms: [1,4,5,6,10,11,13,14,15,16,17,18] }
+        ];
+
+        function renderColleagues() {
+            var container = document.getElementById('colleaguesListContainer');
+            var selector = document.getElementById('userRoleSelector');
+            if(!container) return;
+            container.innerHTML = "";
+            selector.innerHTML = '<option value="admin" style="background:#08171a;">👑 King Saab (Super Admin)</option>';
+
+            colleagues.forEach(function(col) {
+                var opt = document.createElement('option');
+                opt.value = col.key;
+                opt.style.background = "#08171a";
+                opt.innerText = "👤 " + col.name + " (" + col.id + ")";
+                selector.appendChild(opt);
+
+                var card = document.createElement('div');
+                card.className = "colleague-card";
+                card.innerHTML = '<div class="colleague-header"><span style="font-weight:900; color:' + col.color + ';">' + col.name + ' (' + col.id + ')</span><button class="btn-luxury" style="width:auto; padding:4px 10px; font-size:11px; background:#b91c1c;" onclick="alert('Session terminated for ' + col.name + '')">Force Logout</button></div><div style="font-size:11.5px; color:var(--text-muted);">Status: Active | Modules Unlocked: All 18</div>';
+                container.appendChild(card);
+            });
+        }
+
+        function playChimeSound(type) {
+            alert("🔔 System Alert Chime Triggered!");
+        }
+
+        function flushSystemCache() {
+            alert("🧹 System cache flushed and RAM optimized!");
+        }
+
+        function downloadHealthReport() {
+            alert("📥 System Diagnostic Report Downloaded!");
+        }
+
+        function updateUSClocks() {
+            var now = new Date();
+            var opt = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            if(document.getElementById('clockEST')) document.getElementById('clockEST').innerText = new Intl.DateTimeFormat('en-US', { ...opt, timeZone: 'America/New_York' }).format(now);
+            if(document.getElementById('clockCST')) document.getElementById('clockCST').innerText = new Intl.DateTimeFormat('en-US', { ...opt, timeZone: 'America/Chicago' }).format(now);
+            if(document.getElementById('clockMST')) document.getElementById('clockMST').innerText = new Intl.DateTimeFormat('en-US', { ...opt, timeZone: 'America/Denver' }).format(now);
+            if(document.getElementById('clockPST')) document.getElementById('clockPST').innerText = new Intl.DateTimeFormat('en-US', { ...opt, timeZone: 'America/Los_Angeles' }).format(now);
+        }
+        setInterval(updateUSClocks, 1000);
+
+        function executeAiChat() {
+            var input = document.getElementById('aiAgentInput');
+            var q = input.value.trim();
+            if(!q) return;
+            var box = document.getElementById('aiChatMessages');
+            box.innerHTML += '<div class="ai-msg ai-msg-user"><strong>You:</strong> ' + q + '</div>';
+            input.value = "";
+            setTimeout(function() {
+                box.innerHTML += '<div class="ai-msg ai-msg-agent"><strong>👑 King Saab AI:</strong> Processed query successfully. All 18 modules are operational.</div>';
+                box.scrollTop = box.scrollHeight;
+            }, 500);
+        }
+
+        function downloadCampaignReport(format) {
+            alert("📊 Campaign report downloaded successfully in " + format.toUpperCase() + " format!");
+        }
+
+        function dispatchLiveBroadcast() {
+            var msg = document.getElementById('broadcastMsgInput').value;
+            alert("📢 Broadcast Dispatched to Team: " + msg);
+            closeModal('broadcastModal');
+        }
+
+        function applyThemePreset(primaryColor, darkColor) {
+            document.documentElement.style.setProperty('--primary', primaryColor);
+            document.documentElement.style.setProperty('--primary-dark', darkColor);
+            alert("🎨 Brand Palette Updated!");
+        }
+
+        var activeModNum = 1;
+        function openModule(modId, modTitle) {
+            activeModNum = modId;
+            if(modId === 1) { switchTab('tab-dash', document.querySelectorAll('.ribbon-btn')[0]); return; }
+            if(modId === 2) { openAddGmailModal(); return; }
+            if(modId === 4) { document.getElementById('campaignStudioModal').style.display = 'flex'; evaluateSpamScore(); return; }
+            if(modId === 5) { document.getElementById('spintaxModal').style.display = 'flex'; return; }
+            if(modId === 6) { document.getElementById('scraperModal').style.display = 'flex'; return; }
+            if(modId === 7) { document.getElementById('crmModal').style.display = 'flex'; renderKanban(); return; }
+            if(modId === 8) { switchTab('tab-team-control', document.querySelectorAll('.ribbon-btn')[2]); return; }
+            if(modId === 9) { document.getElementById('doctorModal').style.display = 'flex'; return; }
+            if(modId === 10) { document.getElementById('audioModal').style.display = 'flex'; return; }
+            if(modId === 11) { document.getElementById('aiAgentModal').style.display = 'flex'; return; }
+            if(modId === 12) { document.getElementById('vaultModal').style.display = 'flex'; return; }
+            if(modId === 13) { document.getElementById('timezoneModal').style.display = 'flex'; updateUSClocks(); return; }
+            if(modId === 14) { document.getElementById('bounceModal').style.display = 'flex'; return; }
+            if(modId === 15) { document.getElementById('replyModal').style.display = 'flex'; return; }
+            if(modId === 16) { document.getElementById('exporterModal').style.display = 'flex'; return; }
+            if(modId === 17) { document.getElementById('broadcastModal').style.display = 'flex'; return; }
+            if(modId === 18) { document.getElementById('paletteModal').style.display = 'flex'; return; }
+
+            document.getElementById('genericModalTitle').innerHTML = "⚙️ Module " + modId + ": " + modTitle;
+            document.getElementById('genericModalBody').innerHTML = "<p>Operational controls for <strong>" + modTitle + "</strong> are fully active.</p>";
+            document.getElementById('genericWorkspaceModal').style.display = 'flex';
+        }
+
+        window.executeLogin = function() {
+            document.getElementById('authViewport').style.display = 'none';
+            document.getElementById('cinematicStage').style.display = 'none';
+            document.getElementById('enterpriseApp').style.display = 'flex';
+            renderColleagues();
+            renderInboxes();
+            renderKanban();
+        };
+
+        window.handlePowerOff = function() {
+            document.getElementById('enterpriseApp').style.display = 'none';
+            document.getElementById('cinematicStage').style.display = 'block';
+            document.getElementById('authViewport').style.display = 'flex';
+        };
+
+        window.switchTab = function(tabId, btn) {
+            document.querySelectorAll('.tab-section').forEach(function(p) { p.classList.remove('active'); });
+            document.querySelectorAll('.ribbon-btn').forEach(function(b) { b.classList.remove('active'); });
+            var target = document.getElementById(tabId);
+            if(target) target.classList.add('active');
+            if(btn) btn.classList.add('active');
+        };
+
+        window.triggerRobot = function() {
+            var speech = document.getElementById('robotSpeech');
+            if(speech) {
+                speech.innerText = "✨ King Saab Enterprise Online!";
+                setTimeout(function() { speech.innerText = "👑 King Saab System Ready"; }, 2500);
+            }
+        };
+    </script>
+</body>
+</html>

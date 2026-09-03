@@ -1,1 +1,1 @@
-web: python web_portal.py
+﻿web: python main.py

@@ -1,4 +1,4 @@
-from config.database import get_connection
+﻿from config.database import get_connection
 
 
 def get_pending_queue(campaign_id):
