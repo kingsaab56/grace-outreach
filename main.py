@@ -526,6 +526,7 @@ def render_header():
             <button id="audio-btn" class="btn btn-gray" onclick="toggleAudio()">🔊 Audio: ON</button>
             <button class="btn btn-gray" onclick="openSoundscape()">♫ Soundscape</button>
             <button id="theme-btn" class="btn btn-gray" onclick="toggleTheme()">🌓 Theme: DARK</button>
+            <button id="quick-light-btn" class="btn btn-gray" onclick="setExecutiveTheme(document.body.classList.contains('light') ? 'dark' : 'light')">☀️ Light Mode</button>
             <button class="btn btn-red" onclick="powerOff()">⏹ Power Off</button>
         </div>
     </div>
@@ -731,7 +732,7 @@ def render_header():
                 <button class="palette-option" onclick="applyTheme('royal')" style="--swatch:#16204A"><i></i><b>Royal Signal</b><small>High contrast</small></button>
                 <button class="palette-option" onclick="applyTheme('sandstone')" style="--swatch:#3B2A1A"><i></i><b>Sandstone</b><small>Warm command</small></button>
                 <button class="palette-option" onclick="applyTheme('slate')" style="--swatch:#1E293B"><i></i><b>Slate</b><small>Neutral ops</small></button>
-                <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight Obsidian</b><small>Executive Dark</small></button><button class="palette-option" onclick="applyTheme('emerald')" style="--swatch:#031C18"><i></i><b>Emerald Luxury</b><small>Signature Green</small></button><button class="palette-option" onclick="applyTheme('sapphire')" style="--swatch:#070E1A"><i></i><b>Sapphire Command</b><small>Deep Navy</small></button>
+                <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight Obsidian</b><small>Executive Dark</small></button><button class="palette-option" onclick="applyTheme('emerald')" style="--swatch:#031C18"><i></i><b>Emerald Luxury</b><small>Signature Green</small></button><button class="palette-option" onclick="setExecutiveTheme('dark')" style="--swatch:#0B1120"><i></i><b>Executive Dark</b><small>Obsidian &amp; Gold</small></button><button class="palette-option" onclick="setExecutiveTheme('light')" style="--swatch:#F8FAFC"><i></i><b>Clean Light</b><small>Crisp Emerald Slate</small></button>
             </div>
             <span class="eyebrow palette-type-label">SURFACE COLOR CONTROLS</span>
             <div class="color-control-grid">
@@ -1126,6 +1127,161 @@ BASE_CSS = """
     }
     .telemetry-card .eyebrow { color: #9BB0AD !important; }
     .telemetry-card small { color: #10B981 !important; }
+
+
+    /* =========================================================================
+       HIGH-CONTRAST CLEAN LIGHT THEME OPTION (Zero Misprint · 100% Legibility)
+       ========================================================================= */
+    body.light {
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
+        background-image: none !important;
+    }
+    body.light .card, body.light .stat-card, body.light .module-panel, body.light .modal-card, body.light .module-hero {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        color: #0F172A !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+    }
+    body.light .top-bar {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+    }
+    body.light .top-bar h2 {
+        color: #0F172A !important;
+    }
+    body.light .top-bar span {
+        color: #475569 !important;
+    }
+    body.light .profile-session-badge {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    body.light .view-as-bar {
+        background: #F8FAFC !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .view-as-bar strong, body.light .view-as-bar b {
+        color: #0F172A !important;
+    }
+    body.light .view-as-bar small {
+        color: #475569 !important;
+    }
+    body.light .view-as-controls {
+        color: #047857 !important;
+    }
+    body.light .view-as-controls select {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    body.light .stat-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+    }
+    body.light .stat-title {
+        color: #64748B !important;
+        font-size: 12px !important;
+        font-weight: 800 !important;
+    }
+    body.light .stat-value {
+        color: #047857 !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+        text-shadow: none !important;
+    }
+    body.light .stat-sub {
+        color: #059669 !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+    body.light .card h1, body.light .card h2, body.light .card h3, body.light .card h4 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+    }
+    body.light .card p, body.light .card span {
+        color: #334155;
+    }
+    body.light .btn-gray {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    body.light .btn-blue {
+        background: #0284C7 !important;
+        color: #FFFFFF !important;
+    }
+    body.light .module-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    }
+    body.light .mod-title {
+        color: #0284C7 !important;
+    }
+    body.light .mod-name {
+        color: #0F172A !important;
+    }
+    body.light .module-desc {
+        color: #475569 !important;
+    }
+    body.light .mod-status-tag {
+        color: #047857 !important;
+        background: rgba(4, 120, 87, 0.1) !important;
+    }
+    body.light .colleague-guide-card {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+    }
+    body.light .colleague-guide-card h3, body.light .colleague-guide-card strong {
+        color: #0F172A !important;
+    }
+    body.light .colleague-guide-card span, body.light .colleague-guide-card div {
+        color: #334155 !important;
+    }
+    body.light table th {
+        color: #475569 !important;
+        background: #F8FAFC !important;
+        border-bottom: 1px solid #CBD5E1 !important;
+    }
+    body.light table td {
+        color: #0F172A !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+    }
+    body.light table td b {
+        color: #0F172A !important;
+    }
+    body.light .log-box {
+        background: #0F172A !important;
+        border: 1px solid #334155 !important;
+        color: #34D399 !important;
+    }
+    body.light select, body.light textarea, body.light input[type="text"], body.light input[type="number"], body.light input[type="password"] {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    body.light .telemetry-card {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    }
+    body.light .telemetry-card strong {
+        color: #047857 !important;
+        text-shadow: none !important;
+    }
+    body.light .telemetry-card .eyebrow {
+        color: #64748B !important;
+    }
+    body.light .telemetry-card small {
+        color: #059669 !important;
+    }
 
     /* COMMON UTILITIES */
     .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -1918,13 +2074,19 @@ function toggleGatewayAudio() {
    INITIALIZATION
    ========================================================================= */
 function applyStoredTheme() {
-    // Purge any stored light/cloud theme from browser storage
-    window.localStorage.removeItem('grace-theme');
-    document.body.classList.add('dark');
-    document.body.classList.remove('light');
-    document.body.style.backgroundColor = '#0B1120';
-    document.body.style.color = '#F8FAFC';
-
+    const stored = window.localStorage.getItem('grace-theme') || 'dark';
+    if (stored === 'light') {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        document.body.style.backgroundColor = '#F8FAFC';
+        document.body.style.color = '#0F172A';
+    } else {
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
+        document.body.style.backgroundColor = '#0B1120';
+        document.body.style.color = '#F8FAFC';
+    }
+    updateThemeButton();
     applyTypography(false);
     hydrateAccessMap();
     hydrateLocalProfiles();
@@ -1937,7 +2099,6 @@ function applyStoredTheme() {
     syncCampaignControls();
     initMascotDrag();
     updateViewAs();
-    updateThemeButton();
     startLiveClocks();
     startTelemetryFeed();
     syncSharedState();
@@ -1947,42 +2108,39 @@ function applyStoredTheme() {
     }
 }
 
-let activeExecutiveTheme = 'midnight';
-function applyTheme(name, notify = true) {
-    document.body.classList.add('dark');
-    document.body.classList.remove('light');
-    
-    if (name === 'emerald') {
-        activeExecutiveTheme = 'emerald';
-        document.body.style.backgroundColor = '#031C18';
-    } else if (name === 'sapphire') {
-        activeExecutiveTheme = 'sapphire';
-        document.body.style.backgroundColor = '#070E1A';
+function setExecutiveTheme(mode) {
+    if (mode === 'light') {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        document.body.style.backgroundColor = '#F8FAFC';
+        document.body.style.color = '#0F172A';
+        window.localStorage.setItem('grace-theme', 'light');
+        showToast('☀️ Light Theme activated.', 'success');
     } else {
-        activeExecutiveTheme = 'midnight';
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
         document.body.style.backgroundColor = '#0B1120';
+        document.body.style.color = '#F8FAFC';
+        window.localStorage.setItem('grace-theme', 'dark');
+        showToast('🌙 Executive Dark Theme activated.', 'success');
     }
-    document.body.style.color = '#F8FAFC';
     updateThemeButton();
-    if (notify) {
-        showToast('Executive Dark ' + activeExecutiveTheme.toUpperCase() + ' theme activated.', 'success');
-    }
+}
+
+function toggleTheme() {
+    const isLight = document.body.classList.contains('light');
+    setExecutiveTheme(isLight ? 'dark' : 'light');
 }
 
 function updateThemeButton() {
     const btn = document.getElementById('theme-btn');
+    const quickBtn = document.getElementById('quick-light-btn');
+    const isLight = document.body.classList.contains('light');
     if (btn) {
-        btn.innerText = '🌓 Theme: ' + activeExecutiveTheme.toUpperCase();
+        btn.innerText = isLight ? '☀️ Theme: LIGHT' : '🌓 Theme: DARK';
     }
-}
-
-function toggleTheme() {
-    if (activeExecutiveTheme === 'midnight') {
-        applyTheme('emerald');
-    } else if (activeExecutiveTheme === 'emerald') {
-        applyTheme('sapphire');
-    } else {
-        applyTheme('midnight');
+    if (quickBtn) {
+        quickBtn.innerText = isLight ? '🌙 Switch to Dark' : '☀️ Light Mode';
     }
 }
 
@@ -5407,7 +5565,7 @@ def get_module_workspace_html(m_id):
                 <button class="palette-option" onclick="applyTheme('royal')" style="--swatch:#16204A"><i></i><b>Royal Signal</b><small>High contrast</small></button>
                 <button class="palette-option" onclick="applyTheme('sandstone')" style="--swatch:#3B2A1A"><i></i><b>Sandstone</b><small>Warm command</small></button>
                 <button class="palette-option" onclick="applyTheme('slate')" style="--swatch:#1E293B"><i></i><b>Slate</b><small>Neutral ops</small></button>
-                <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight Obsidian</b><small>Executive Dark</small></button><button class="palette-option" onclick="applyTheme('emerald')" style="--swatch:#031C18"><i></i><b>Emerald Luxury</b><small>Signature Green</small></button><button class="palette-option" onclick="applyTheme('sapphire')" style="--swatch:#070E1A"><i></i><b>Sapphire Command</b><small>Deep Navy</small></button>
+                <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight Obsidian</b><small>Executive Dark</small></button><button class="palette-option" onclick="applyTheme('emerald')" style="--swatch:#031C18"><i></i><b>Emerald Luxury</b><small>Signature Green</small></button><button class="palette-option" onclick="setExecutiveTheme('dark')" style="--swatch:#0B1120"><i></i><b>Executive Dark</b><small>Obsidian &amp; Gold</small></button><button class="palette-option" onclick="setExecutiveTheme('light')" style="--swatch:#F8FAFC"><i></i><b>Clean Light</b><small>Crisp Emerald Slate</small></button>
             </div>
             <div style="display:flex; justify-content:flex-end;">
                 <button class="btn btn-blue" onclick="openBrandPalette()">Open Full Typography &amp; Hex Studio</button>
