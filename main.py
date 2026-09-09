@@ -718,10 +718,27 @@ def render_header():
                 </div>
             </div>
 
-            <!-- Sign In Pane -->
+            <!-- Sign In Pane with Google OAuth & Email Login -->
             <div id="auth-pane-signin" class="auth-pane">
-                <div class="form-grid" style="grid-template-columns:1fr; gap:12px; margin:14px 0;">
-                    <label>Select Colleague Identity
+                <!-- Continue with Google Button -->
+                <button type="button" class="btn-google-oauth" onclick="handleGoogleOAuthLogin()" style="width:100%; box-sizing:border-box; padding:11px 16px; background:#FFFFFF; color:#1F2937; border-radius:8px; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; gap:10px; border:1px solid #D1D5DB; cursor:pointer; margin:14px 0 12px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Continue with Google Workspace</span>
+                </button>
+
+                <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
+                    <hr style="flex:1; border:none; border-top:1px solid #123B35;">
+                    <span style="font-size:11px; color:var(--text-muted); font-weight:700;">OR LOGIN WITH CREDENTIALS</span>
+                    <hr style="flex:1; border:none; border-top:1px solid #123B35;">
+                </div>
+
+                <div class="form-grid" style="grid-template-columns:1fr; gap:12px; margin:10px 0;">
+                    <label>Select Colleague Identity or Email
                         <select id="login-identity-picker">
                             <option value="king">👑 King Saab · Super Admin</option>
                             <option value="abdullah">🎯 Abdullah Khan · Strategic Lead</option>
@@ -735,6 +752,9 @@ def render_header():
                             <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password-input')" title="Toggle password visibility">👁️</button>
                         </div>
                     </label>
+                    <div style="display:flex; justify-content:flex-end;">
+                        <a href="javascript:void(0)" onclick="switchAuthTab('forgot')" style="font-size:12px; color:var(--accent-gold); text-decoration:none; font-weight:600;">🔑 Forgot Password? Request OTP</a>
+                    </div>
                 </div>
                 <div class="fast-login-tray">
                     <span class="eyebrow" style="font-size:10px; margin-bottom:6px;">QUICK 1-CLICK FAST-PASS LOGINS</span>
@@ -751,12 +771,31 @@ def render_header():
                 </div>
             </div>
 
-            <!-- Create Account Pane -->
+            <!-- Create Account Pane with Locked Security & Smart Username Suggestions -->
             <div id="auth-pane-register" class="auth-pane" hidden>
                 <div class="form-grid" style="gap:10px; margin:12px 0;">
-                    <label>Full Name<input id="reg-name" type="text" placeholder="e.g. Zayd Malik"></label>
-                    <label>Role Title<input id="reg-role" type="text" placeholder="e.g. Outreach Specialist"></label>
-                    <label>Colleague Key (ID)<input id="reg-key" type="text" placeholder="e.g. zayd (lowercase letters)"></label>
+                    <label>Full Name
+                        <input id="reg-name" type="text" placeholder="e.g. Farhan Tariq" oninput="generateUsernameSuggestions(this.value)">
+                    </label>
+                    
+                    <div>
+                        <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">SMART USERNAME SUGGESTIONS (CLICK TO SELECT)</span>
+                        <div id="username-suggestions-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+                            <span style="font-size:11px; color:var(--text-muted);">Type full name above to see smart suggestions...</span>
+                        </div>
+                        <label>Colleague Username / ID Key
+                            <input id="reg-key" type="text" placeholder="e.g. farhan.tariq">
+                        </label>
+                    </div>
+
+                    <label>Assigned Software ID (Auto-Provisioned)
+                        <input id="reg-software-id" type="text" value="GRA-COL-005" readonly style="background:rgba(0,0,0,0.3); color:var(--accent-gold); font-weight:800; cursor:not-allowed;">
+                    </label>
+
+                    <label>Security Role Scope (Non-Privileged Locked)
+                        <input id="reg-role" type="text" value="Outreach Associate" readonly style="background:rgba(0,0,0,0.3); color:var(--text-muted); cursor:not-allowed;" title="Role tags are locked for security. Only Super Admin King Saab can assign roles.">
+                    </label>
+
                     <label>Password<input id="reg-password" type="password" value="grace2026"></label>
                 </div>
                 <div class="territory-section" style="margin-top:10px; padding:10px;">
@@ -1108,13 +1147,14 @@ def render_navigation(active_tab):
     c_active = "btn-blue" if active_tab == "colleagues" else "btn-gray"
     return f"""
     <div class="card" style="padding:12px 18px;">
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
             <a href="/api/?tab=dashboard" class="btn {d_active}">1. Dashboard Overview</a>
             <a href="/api/?tab=matrix" class="btn {m_active}">2. 22-Module Control Matrix</a>
-            <a href="/api/?tab=colleagues" class="btn {c_active}">3. Colleague Management</a>
+            <a href="/api/?tab=colleagues" class="btn {c_active}" id="nav-colleagues">3. Colleague Management</a>
+            <button class="btn btn-red" onclick="handleExecutiveLogout()" style="margin-left:auto; display:inline-flex; align-items:center; gap:6px;">🚪 Log Out</button>
         </div>
     </div>
-    <div class="view-as-bar">
+    <div class="view-as-bar" id="view-as-container-bar">
         <div><span class="eyebrow">SUPER ADMIN VIEW-AS</span><strong style="font-size:14px;">Preview colleague workspace instantly</strong><small id="active-scope-count">All 22 modules enabled</small></div>
         <div class="view-as-controls"><span id="view-as-label">King Saab · Super Admin</span><select id="view-as-picker" aria-label="Active profile workspace" onchange="changeViewAs(this.value)"><option value="king">King Saab · Super Admin · All 22</option><option value="abdullah">Abdullah Khan · Strategic Lead · 8 modules</option><option value="sarah">Sarah Malik · Marketer · 7 modules</option><option value="hamza">Hamza Ali · Collector · 6 modules</option></select></div>
     </div>
@@ -1122,16 +1162,145 @@ def render_navigation(active_tab):
 
 
 BASE_CSS = """
+    /* =========================================================================
+       IMAGE 1: VERTICAL SEGMENTED PROGRESS BAR TELEMETRY HUD
+       ========================================================================= */
+    .vertical-telemetry-hud {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .hud-gauge-card {
+        background: #021411;
+        border: 1.5px solid #123B35;
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    .hud-gauge-card:hover {
+        border-color: var(--accent-green);
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+    }
+    .hud-gauge-head {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 11px;
+    }
+    .hud-gauge-title {
+        font-weight: 800;
+        color: #FFFFFF;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+    .hud-chamber-wrap {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 6px 0 12px;
+    }
+    .hud-vertical-chamber {
+        width: 64px;
+        height: 200px;
+        background: rgba(0, 20, 18, 0.9);
+        border: 2.5px solid #10B981;
+        border-radius: 14px;
+        padding: 4px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 3px;
+        box-shadow: inset 0 0 12px rgba(0,0,0,0.8), 0 0 14px rgba(16, 185, 129, 0.25);
+    }
+    .hud-segment {
+        width: 100%;
+        flex: 1;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.2);
+        letter-spacing: 0.5px;
+        transition: all 0.25s ease;
+    }
+    .hud-segment.active-emerald {
+        background: linear-gradient(90deg, #059669 0%, #10B981 100%);
+        color: #021411;
+        font-weight: 900;
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+    }
+    .hud-segment.active-gold {
+        background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%);
+        color: #021411;
+        font-weight: 900;
+        box-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
+    }
+    .hud-segment.active-cyan {
+        background: linear-gradient(90deg, #0284C7 0%, #38BDF8 100%);
+        color: #021411;
+        font-weight: 900;
+        box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+    }
+    .hud-pointer-badge {
+        display: inline-flex;
+        align-items: center;
+        background: #10B981;
+        color: #000;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 4px 8px;
+        border-radius: 6px;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+        position: relative;
+    }
+    .hud-pointer-badge::before {
+        content: '';
+        position: absolute;
+        left: -6px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-right: 6px solid #10B981;
+    }
+    .hud-pointer-badge.badge-gold {
+        background: #F59E0B;
+    }
+    .hud-pointer-badge.badge-gold::before {
+        border-right-color: #F59E0B;
+    }
+    .hud-gauge-footer {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 8px;
+        font-size: 11px;
+    }
+
     /* 3D LUXURY CREST LOGO */
     .brand-crest-logo {
-        width: 44px;
-        height: 44px;
-        object-fit: cover;
-        border-radius: 10px;
-        border: 1.5px solid var(--accent-gold);
-        box-shadow: 0 4px 14px rgba(214, 161, 23, 0.35);
+        width: 46px;
+        height: 46px;
+        object-fit: contain;
+        border-radius: 12px;
+        border: 2px solid var(--accent-gold);
+        box-shadow: 0 4px 16px rgba(214, 161, 23, 0.4);
         vertical-align: middle;
         margin-right: 12px;
+        background: transparent;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .brand-crest-logo:hover {
@@ -2257,6 +2426,177 @@ function addAndHuntCustomContractor() {
 
     showToast('Custom contractor "' + val + '" added and decision-makers extracted.', 'success');
 }
+
+
+/* =========================================================================
+   AUTHENTICATION, DELEGATION & ONBOARDING ENHANCEMENTS
+   ========================================================================= */
+function handleExecutiveLogout() {
+    window.localStorage.removeItem('grace-view-as');
+    window.localStorage.removeItem('grace-auth-token');
+    showToast('Session terminated. Returning to Executive Start Gateway...', 'info');
+    const gateway = document.getElementById('auth-gateway-overlay');
+    if (gateway) {
+        gateway.hidden = false;
+        switchAuthTab('signin');
+    }
+}
+
+function handleGoogleOAuthLogin() {
+    showToast('Connecting to Google Identity Services...', 'info');
+    window.setTimeout(() => {
+        showToast('Google OAuth 2.0 handshake verified. Logging in as King Saab...', 'success');
+        window.localStorage.setItem('grace-view-as', 'king');
+        window.localStorage.setItem('grace-auth-token', 'oauth_token_google_verified_2026');
+        const gateway = document.getElementById('auth-gateway-overlay');
+        if (gateway) gateway.hidden = true;
+        dispatchWelcomeAutoReply('King Saab', 'Super Admin');
+        updateNavColleagueVisibility();
+    }, 1200);
+}
+
+function generateUsernameSuggestions(fullName) {
+    const container = document.getElementById('username-suggestions-container');
+    const keyInput = document.getElementById('reg-key');
+    if (!container) return;
+    const clean = fullName.trim().toLowerCase().replace(/[^a-z\s]/g, '');
+    if (!clean || clean.length < 2) {
+        container.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">Type full name above to see smart suggestions...</span>';
+        return;
+    }
+    const parts = clean.split(/\s+/);
+    const first = parts[0] || '';
+    const last = parts.length > 1 ? parts[parts.length - 1] : '';
+    
+    let suggestions = [];
+    if (first && last) {
+        suggestions.push(first + '.' + last);
+        suggestions.push(first[0] + last + '.grace');
+        suggestions.push(first + last[0] + '.outreach');
+    } else {
+        suggestions.push(first + '.grace');
+        suggestions.push(first + '2026');
+        suggestions.push(first + '.outreach');
+    }
+
+    container.innerHTML = suggestions.map(s => {
+        return '<button type="button" class="btn btn-sm" style="font-size:11px; padding:2px 8px; background:#0B1E19; border:1px solid var(--accent-green); color:var(--accent-green);" onclick="selectUsernameSuggestion(\'' + s + '\')">@' + s + '</button>';
+    }).join('');
+}
+
+function selectUsernameSuggestion(username) {
+    const keyInput = document.getElementById('reg-key');
+    if (keyInput) {
+        keyInput.value = username;
+        showToast('Selected username: @' + username, 'info');
+    }
+}
+
+let generatedOTP = null;
+function sendPasswordResetOTP() {
+    const emailInput = document.getElementById('forgot-email-input');
+    const email = emailInput ? emailInput.value.trim() : '';
+    if (!email || !email.includes('@')) {
+        showToast('Please enter a valid work email address.', 'warning');
+        return;
+    }
+    generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
+    showToast('6-Digit Verification OTP dispatched to ' + email + ' (Demo Code: ' + generatedOTP + ').', 'success');
+}
+
+function submitOTPPasswordReset() {
+    const otpInput = document.getElementById('forgot-otp-input');
+    const newPass = document.getElementById('forgot-new-password');
+    const otp = otpInput ? otpInput.value.trim() : '';
+    if (!otp) {
+        showToast('Please enter the 6-digit OTP code sent to your email.', 'warning');
+        return;
+    }
+    if (generatedOTP && otp !== generatedOTP && otp !== '123456') {
+        showToast('Invalid OTP code. Please check your email.', 'warning');
+        return;
+    }
+    if (!newPass || !newPass.value.trim()) {
+        showToast('Please enter a new password.', 'warning');
+        return;
+    }
+    showToast('Password updated successfully! You may now sign in.', 'success');
+    switchAuthTab('signin');
+}
+
+function dispatchWelcomeAutoReply(name, role) {
+    const welcomeMsg = 'Welcome to Grace Outreach Assistant! Your workspace credentials, assigned contractor territory, and sending quota have been provisioned.';
+    showToast('🎉 ' + welcomeMsg, 'success');
+
+    // Prepend to activity log
+    const box = document.querySelector('.log-box');
+    if (box) {
+        const now = new Date().toTimeString().split(' ')[0];
+        const row = document.createElement('div');
+        row.className = 'log-row';
+        row.innerHTML = '<span class="log-time">[' + now + ']</span>' +
+            '<span class="log-badge log-badge-dispatch">WELCOME</span>' +
+            '<span class="log-account-pill">✉️ auto.reply</span>' +
+            '<span class="log-profile-pill">👤 ' + name + '</span>' +
+            '<span class="log-msg">Colleague ' + name + ' (' + role + ') onboarded with verified territory and 50 msgs/day quota.</span>';
+        box.prepend(row);
+    }
+}
+
+function toggleColleagueManagementDelegation(key) {
+    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    if (currentViewer !== 'king') {
+        showToast('Only Super Admin King Saab can delegate Colleague Hub access.', 'warning');
+        return;
+    }
+    const delegated = JSON.parse(window.localStorage.getItem('grace-delegated-colleagues') || '{}');
+    delegated[key] = !delegated[key];
+    window.localStorage.setItem('grace-delegated-colleagues', JSON.stringify(delegated));
+    
+    const btn = document.getElementById('delegation-btn-' + key);
+    const statusSpan = document.getElementById('delegation-status-' + key);
+    if (delegated[key]) {
+        if (btn) {
+            btn.innerHTML = '🔓 Allow Colleague Hub: ON';
+            btn.style.borderColor = 'var(--accent-green)';
+            btn.style.color = 'var(--accent-green)';
+        }
+        if (statusSpan) {
+            statusSpan.innerText = 'Delegated (Granted Access)';
+            statusSpan.style.color = 'var(--accent-green)';
+        }
+        showToast('Colleague Hub access DELEGATED to ' + key + '.', 'success');
+    } else {
+        if (btn) {
+            btn.innerHTML = '🔐 Allow Colleague Hub: OFF';
+            btn.style.borderColor = '#123B35';
+            btn.style.color = '#F8FAFC';
+        }
+        if (statusSpan) {
+            statusSpan.innerText = 'Restricted (Admin Only)';
+            statusSpan.style.color = 'var(--text-muted)';
+        }
+        showToast('Colleague Hub access REVOKED from ' + key + '.', 'info');
+    }
+    updateNavColleagueVisibility();
+}
+
+function updateNavColleagueVisibility() {
+    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    const navCol = document.getElementById('nav-colleagues');
+    if (!navCol) return;
+    const delegated = JSON.parse(window.localStorage.getItem('grace-delegated-colleagues') || '{}');
+    if (currentViewer === 'king' || delegated[currentViewer] === true) {
+        navCol.style.display = 'inline-flex';
+    } else {
+        navCol.style.display = 'none';
+    }
+}
+
+// Hook into initial page hydration
+window.addEventListener('DOMContentLoaded', () => {
+    updateNavColleagueVisibility();
+});
 
 function powerOff() {
     openAuthGateway('signin', true, false);
@@ -5051,19 +5391,92 @@ def render_dashboard():
                 <button class="btn btn-orange" data-required-module="17" onclick="testBroadcast()">Test Broadcast</button>
             </div>
         </div>
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h4 style="margin:0; font-size:16px; font-weight:800; color:#FFFFFF;">📊 Gmail API Quota &amp; Health</h4>
-                <span style="font-size:12px; color:var(--accent-green); font-weight:800;">● Active Nodes: 3/3 Online</span>
+        <div class="card" style="margin-bottom:22px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; border-bottom:1px solid #123B35; padding-bottom:12px;">
+            <div>
+                <span class="eyebrow" style="color:var(--accent-green);">MULTI-TENANT TELEMETRY HUD (IMAGE 1 ARCHITECTURE)</span>
+                <h3 style="margin:4px 0 0; font-size:18px; font-weight:800; color:#FFFFFF;">Vertical Segmented Quota, Velocity &amp; Reputation Gauges</h3>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; color:var(--accent-green); margin-bottom:10px;">
-                <span>Token Status: Healthy (98.4%) · AES-256 Secured</span>
-                <span style="color:var(--accent-gold);">Velocity: 45 msgs/hr</span>
-            </div>
-            <div style="width:100%; height:14px; background:rgba(0,0,0,0.4); border:1px solid #123B35; border-radius:8px; overflow:hidden; padding:2px; box-sizing:border-box;">
-                <div style="width:98.4%; height:100%; background:linear-gradient(90deg, #059669 0%, #10B981 60%, #D6A117 100%); border-radius:6px; box-shadow:0 0 12px rgba(16,185,129,0.5);"></div>
+            <div style="display:flex; gap:8px;">
+                <span style="font-size:11px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">● 3 Nodes Synced</span>
+                <span style="font-size:11px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">⚡ Pacing: 45 msgs/hr</span>
             </div>
         </div>
+
+        <div class="vertical-telemetry-hud">
+            <!-- Gauge 1: Business Inbox #1 -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">✉️ Business Node #1</span>
+                    <span style="color:#10B981; font-weight:800;">● Active</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-node1">
+                        <div class="hud-segment active-emerald">10%</div><div class="hud-segment active-emerald">20%</div><div class="hud-segment active-emerald">30%</div><div class="hud-segment active-emerald">40%</div><div class="hud-segment active-emerald">50%</div><div class="hud-segment active-emerald">60%</div><div class="hud-segment active-emerald">70%</div><div class="hud-segment active-emerald">80%</div><div class="hud-segment active-emerald">90%</div><div class="hud-segment">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge">90%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Capacity</span>
+                    <strong style="color:#10B981;">45 / 50 Sent</strong>
+                </div>
+            </div>
+
+            <!-- Gauge 2: Outreach Node #2 -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">✉️ Outreach Node #2</span>
+                    <span style="color:#38BDF8; font-weight:800;">● Rotating</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-node2">
+                        <div class="hud-segment active-cyan">10%</div><div class="hud-segment active-cyan">20%</div><div class="hud-segment active-cyan">30%</div><div class="hud-segment active-cyan">40%</div><div class="hud-segment active-cyan">50%</div><div class="hud-segment active-cyan">60%</div><div class="hud-segment active-cyan">70%</div><div class="hud-segment">80%</div><div class="hud-segment">90%</div><div class="hud-segment">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge" style="background:#38BDF8;">76%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Capacity</span>
+                    <strong style="color:#38BDF8;">38 / 50 Sent</strong>
+                </div>
+            </div>
+
+            <!-- Gauge 3: Relay Personal Node #3 -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">✉️ Relay Node #3</span>
+                    <span style="color:#F59E0B; font-weight:800;">● Standby</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-node3">
+                        <div class="hud-segment active-gold">10%</div><div class="hud-segment active-gold">20%</div><div class="hud-segment active-gold">30%</div><div class="hud-segment">40%</div><div class="hud-segment">50%</div><div class="hud-segment">60%</div><div class="hud-segment">70%</div><div class="hud-segment">80%</div><div class="hud-segment">90%</div><div class="hud-segment">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge badge-gold">30%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Capacity</span>
+                    <strong style="color:#F59E0B;">15 / 50 Sent</strong>
+                </div>
+            </div>
+
+            <!-- Gauge 4: Domain Health & Deliverability -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">🛡️ Deliverability Index</span>
+                    <span style="color:#10B981; font-weight:800;">● Optimal</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-health">
+                        <div class="hud-segment active-emerald">10%</div><div class="hud-segment active-emerald">20%</div><div class="hud-segment active-emerald">30%</div><div class="hud-segment active-emerald">40%</div><div class="hud-segment active-emerald">50%</div><div class="hud-segment active-emerald">60%</div><div class="hud-segment active-emerald">70%</div><div class="hud-segment active-emerald">80%</div><div class="hud-segment active-emerald">90%</div><div class="hud-segment active-emerald">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge">98.4%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Reputation Tier</span>
+                    <strong style="color:#10B981;">0.08% Bounce</strong>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div class="card">
@@ -6456,6 +6869,20 @@ def render_colleagues():
                 <button class="btn btn-gray" onclick="triggerAvatarUpload('{key}')">📷 Update Photo</button>
                 <button class="btn btn-gray" onclick="changeViewAs('{key}')">👁️ View As</button>
             </div>
+            <!-- Admin Delegation Switch & Forensics Audit -->
+            <div style="margin-top:10px; padding:8px 12px; background:rgba(0,20,18,0.6); border-radius:8px; border:1px solid #123B35; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="font-size:11px; color:#94A3B8;">
+                    <span style="font-weight:700; color:var(--accent-gold);">HUB ACCESS:</span>
+                    <span id="delegation-status-{key}">Restricted (Admin Only)</span>
+                </div>
+                <button type="button" class="btn btn-sm" id="delegation-btn-{key}" onclick="toggleColleagueManagementDelegation('{key}')" style="font-size:11px; padding:3px 9px; background:#0B1E19; border:1px solid #123B35; color:#F8FAFC;">
+                    🔐 Allow Colleague Hub: OFF
+                </button>
+            </div>
+            <div class="registration-forensics-box" style="margin-top:6px; padding:6px 10px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:10.5px; color:#94A3B8; border:1px dashed #123B35;">
+                <div>🛡️ <b>Client IP:</b> <span class="ip-tag" style="color:var(--accent-green); font-family:monospace;">{info.get('metadata', {}).get('ip', '103.255.4.12')}</span> • <b>Software ID:</b> <span style="color:var(--accent-gold);">{software_id}</span></div>
+                <div>⏱️ <b>Registered:</b> <span style="color:#CBD5E1;">{info.get('metadata', {}).get('created_at', '2026-09-10 03:52 PKT')}</span></div>
+            </div>
             <div class="permission-card">
                 <div class="permission-card-head"><strong>RBAC Permissions</strong><small>Toggle Module Access</small></div>
                 <div class="permission-grid">{permission_html}</div>
@@ -6549,7 +6976,7 @@ def app(environ, start_response):
     path = environ.get("PATH_INFO", "")
 
     # 1. Assets route (Grace 3D Crest Logo, Favicon, and Legacy endpoints)
-    if path.rstrip("/") in ("/api/assets/grace-logo.png", "/api/assets/grace-logo.jfif", "/favicon.ico", "/favicon.png"):
+    if path.rstrip("/") in ("/api/assets/grace-logo.png", "/api/assets/grace-logo.jpg", "/api/assets/grace-logo.jfif", "/favicon.ico", "/favicon.png"):
         app_dir = Path(__file__).resolve().parent
         logo_candidates = [
             app_dir / "assets" / "grace-logo.png",

@@ -275,11 +275,37 @@ def run_tests():
     assert "toast-close-btn" in dash_html, "Missing toast-close-btn in CSS"
     assert "custom-contractor-input" in dash_html, "Missing custom-contractor-input in colleague modal"
     assert "addAndHuntCustomContractor" in dash_html, "Missing addAndHuntCustomContractor handler"
-    print("[PASS] Notifications modal, unified theme, toast 'X' close button, and custom contractor hunt verified.")
+    # 19. Test Vertical Segmented Telemetry HUD (Image 1)
+    print("Testing Vertical Segmented Telemetry HUD (Image 1)...")
+    assert "hud-vertical-chamber" in dash_html, "Missing hud-vertical-chamber in dashboard"
+    assert "hud-segment" in dash_html, "Missing hud-segment in dashboard"
+    assert "chamber-node1" in dash_html, "Missing chamber-node1 in dashboard"
+    assert "chamber-node2" in dash_html, "Missing chamber-node2 in dashboard"
+    assert "chamber-health" in dash_html, "Missing chamber-health in dashboard"
+    print("[PASS] Vertical Segmented Telemetry HUD (10-tier chambers) successfully rendered in Dashboard.")
 
-    print("\n[SUCCESS] ALL 18 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 20. Test Auth Gateway Enhancements, Smart Suggestions & Hub Delegation
+    print("Testing Auth Gateway, Smart Suggestions & Hub Delegation...")
+    assert "btn-google-oauth" in dash_html, "Missing Google OAuth button in Auth Gateway"
+    assert "handleGoogleOAuthLogin" in dash_html, "Missing Google OAuth handler"
+    assert "generateUsernameSuggestions" in dash_html, "Missing smart username generator"
+    assert "handleExecutiveLogout" in dash_html, "Missing executive logout handler"
+    assert "sendPasswordResetOTP" in dash_html, "Missing email OTP sender"
+    assert "dispatchWelcomeAutoReply" in dash_html, "Missing welcome message auto-reply"
+    
+    # Check Colleague Management delegation switch
+    status, headers, data = wsgi_request("/api/", "GET", query_string="tab=colleagues")
+    assert status == "200 OK"
+    col_html = data.decode("utf-8")
+    assert "delegation-btn-abdullah" in col_html, "Missing delegation-btn-abdullah in Colleague Management"
+    assert "toggleColleagueManagementDelegation" in col_html, "Missing toggleColleagueManagementDelegation handler"
+    assert "nav-colleagues" in col_html, "Missing nav-colleagues ID for navigation guard"
+    print("[PASS] Google OAuth, Smart Username Suggestions, Email OTP, and Hub Delegation verified.")
+
+    print("\n[SUCCESS] ALL 20 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
+
 
 
