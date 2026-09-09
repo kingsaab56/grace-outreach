@@ -491,20 +491,9 @@ def update_shared_state(payload):
         return state
 
 
-LOGO_SVG = """<svg width="38" height="38" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle; margin-right:10px;">
-    <rect width="24" height="24" rx="6" fill="#10B981" fill-opacity="0.22"/>
-    <path d="M12 3L3 7.5L12 12L21 7.5L12 3Z" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M3 12L12 16.5L21 12" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M3 16.5L12 21L21 16.5" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>"""
-
-FAVICON_DATA_URI = (
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
-    "%3Crect width='32' height='32' rx='8' fill='%230B1120'/%3E"
-    "%3Cpath d='M16 4L4 10L16 16L28 10L16 4Z' fill='none' stroke='%2310B981' stroke-width='2.5' stroke-linejoin='round'/%3E"
-    "%3Cpath d='M4 14L16 20L28 14M4 20L16 26L28 20' fill='none' stroke='%2310B981' stroke-width='2.5' stroke-linejoin='round'/%3E"
-    "%3C/svg%3E"
-)
+LOGO_SVG = """<img src="/api/assets/grace-logo.png" class="brand-crest-logo" alt="Grace Outreach Emblem" />"""
+LOGO_IMG_HTML = LOGO_SVG
+FAVICON_DATA_URI = "/api/assets/grace-logo.png" 
 
 
 def render_header():
@@ -512,25 +501,201 @@ def render_header():
     <div class="card top-bar">
         <div style="display:flex; align-items:center;">
             <div id="brand-logo-container">{LOGO_SVG}</div>
-            <div>
-                <h2 style="margin:0; font-size: 19px; font-weight:800; letter-spacing:0.5px;">GRACE OUTREACH ASSISTANT</h2>
-                <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">Built by King Saab | Strategic Guidance by Abdullah Khan</span>
-                <div class="active-profile-chip" id="active-profile-chip"><i class="presence-dot online"></i><span>Active workspace · <b id="active-profile-name">King Saab · Super Admin</b></span></div>
+            <div class="header-brand-wrap">
+                <h1 class="header-main-title">
+                    <span class="title-grace">GRACE</span> <span class="title-outreach">OUTREACH</span> <span class="title-sub">ASSISTANT</span>
+                </h1>
+                <div class="header-creators-line">
+                    <span class="creator-badge creator-king">👑 <b>King Saab</b> <small>Lead Architect</small></span>
+                    <span class="creator-sep">•</span>
+                    <span class="creator-badge creator-abdullah">🌟 <b>Abdullah Khan</b> <small>Strategic Guidance</small></span>
+                </div>
+                <div class="active-profile-chip" id="active-profile-chip">
+                    <div class="avatar header-avatar" data-profile-avatar="king" id="header-profile-avatar" style="width:26px; height:26px; font-size:11px; border-radius:50%; border:1.5px solid var(--accent-gold); display:inline-flex; align-items:center; justify-content:center; margin-right:4px; background:#001A17; color:var(--accent-gold); font-weight:800;">KS</div>
+                    <i class="presence-dot online"></i>
+                    <span>Active Workspace: <strong id="active-profile-name" style="color:var(--accent-gold);">👑 King Saab · Super Admin</strong></span>
+                </div>
             </div>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <span class="btn btn-gray profile-session-badge">👑 <span id="active-profile-badge">King Saab · Super Admin</span></span>
-            <button class="btn btn-gray" onclick="showToast('All 3 Gmail inboxes are operating at peak performance.', 'success')">🔔 Notifications <b>2</b></button>
+            <span class="btn btn-gray profile-session-badge" style="border:1px solid var(--accent-gold); background:rgba(214,161,23,0.12);">👑 <span id="active-profile-badge">King Saab · Super Admin</span></span>
+            <button class="btn btn-gray" onclick="openNotificationsModal()" id="ribbon-notifications-btn" title="View Classified Incoming Contractor Replies">🔔 Notifications <b class="badge-count" style="background:#10B981; color:#061510; padding:2px 7px; border-radius:10px; font-size:11px; margin-left:4px;">4 New</b></button>
             <button class="btn btn-orange" onclick="openBroadcast()">📢 Broadcast Alert</button>
             <button class="btn btn-gray" onclick="openBrandPalette()">🎨 Brand Palette</button>
             <button id="audio-btn" class="btn btn-gray" onclick="toggleAudio()">🔊 Audio: ON</button>
             <button class="btn btn-gray" onclick="openSoundscape()">♫ Soundscape</button>
-            <button id="theme-btn" class="btn btn-gray" onclick="toggleTheme()">🌓 Theme: DARK</button>
-            <button id="quick-light-btn" class="btn btn-gray" onclick="setExecutiveTheme(document.body.classList.contains('light') ? 'dark' : 'light')">☀️ Light Mode</button>
+            <button id="theme-btn" class="btn btn-gray" onclick="toggleExecutiveTheme()">🌓 Theme: <b id="theme-btn-label">DARK</b></button>
             <button class="btn btn-red" onclick="powerOff()">⏹ Power Off</button>
         </div>
     </div>
     <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Executive Notifications & Multi-Intent Sentiment Stream Modal -->
+    <div id="notifications-inbox-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="notifications-modal-title">
+        <div class="modal-card wide-modal" style="width:min(860px, calc(100vw - 32px)); max-height:85vh; display:flex; flex-direction:column; padding:22px; background:#001A17; border:1px solid #123B35;">
+            <div class="modal-header" style="border-bottom:1px solid #123B35; padding-bottom:14px; margin-bottom:16px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:42px; height:42px; border-radius:10px; background:rgba(16,185,129,0.15); border:1.5px solid var(--accent-green); display:flex; align-items:center; justify-content:center; font-size:22px;">
+                        📥
+                    </div>
+                    <div>
+                        <h3 id="notifications-modal-title" style="margin:0; font-size:18px; font-weight:800; color:#FFFFFF;">Incoming Communications &amp; Sentiment Stream</h3>
+                        <div style="font-size:12px; color:var(--accent-gold); font-weight:600; margin-top:2px;">Multi-Tenant Inbox Telemetry across 3 Connected Gmail Nodes</div>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeNotificationsModal()" aria-label="Close notifications">✕</button>
+            </div>
+
+            <!-- Intent Filter Pills -->
+            <div class="notifications-filter-bar" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                <button class="btn btn-gray active-filter" onclick="filterNotifications('all', this)">All Communications (6)</button>
+                <button class="btn btn-gray" onclick="filterNotifications('full_interested', this)" style="border-color:#10B981; color:#10B981;">🔥 Full Interested (2)</button>
+                <button class="btn btn-gray" onclick="filterNotifications('most_interested', this)" style="border-color:#D6A117; color:#D6A117;">⭐ Most Interested (2)</button>
+                <button class="btn btn-gray" onclick="filterNotifications('interested', this)" style="border-color:#38BDF8; color:#38BDF8;">👍 Interested (1)</button>
+                <button class="btn btn-gray" onclick="filterNotifications('followup_queued', this)" style="border-color:#A855F7; color:#A855F7;">⏳ Follow-up Queued (1)</button>
+            </div>
+
+            <!-- Messages List -->
+            <div id="notifications-messages-list" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px; padding-right:6px;">
+                <div class="notification-msg-card" data-category="full_interested" style="background:rgba(0,26,23,0.7); border:1px solid #10B981; border-radius:10px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#FFF; font-size:14px;">David Vance · VP of Estimating</strong>
+                            <span style="color:var(--text-muted); font-size:12px; margin-left:8px;">Turner Construction Co. (Texas Territory)</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; background:rgba(16,185,129,0.2); color:#10B981; border:1px solid #10B981; padding:2px 8px; border-radius:12px; font-weight:800;">🔥 FULL INTERESTED · 99.4%</span>
+                            <small style="color:var(--text-muted); font-size:11px;">14 mins ago · via business.inbox1@gmail.com</small>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Subject: Re: Structural Steel Detailing &amp; Architectural Coordination Proposal</div>
+                    <p style="margin:0 0 10px; font-size:12px; color:#CBD5E1; line-height:1.5;">"We reviewed your portfolio and steel shop-drawing capabilities. We have an upcoming $38M healthcare facility in Houston needing structural BIM by end of month. Can your lead engineer jump on a 15-min discovery call tomorrow at 2:00 PM CST?"</p>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="openNotificationReply('David Vance', 'david.vance@turnerconstruction.com', 'business.inbox1@gmail.com', 'Re: Structural Steel Detailing')">⚡ Quick Reply Draft</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="pushNotificationToCRM('Turner Construction - $38M Facility', '$38,000')">📋 Push to CRM Pipeline</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="markNotificationRead(this)">✓ Mark Reviewed</button>
+                    </div>
+                </div>
+
+                <div class="notification-msg-card" data-category="full_interested" style="background:rgba(0,26,23,0.7); border:1px solid #10B981; border-radius:10px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#FFF; font-size:14px;">Amanda Clark · Chief Procurement Officer</strong>
+                            <span style="color:var(--text-muted); font-size:12px; margin-left:8px;">Clark Construction Group (California Territory)</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; background:rgba(16,185,129,0.2); color:#10B981; border:1px solid #10B981; padding:2px 8px; border-radius:12px; font-weight:800;">🔥 FULL INTERESTED · 98.8%</span>
+                            <small style="color:var(--text-muted); font-size:11px;">42 mins ago · via outreach.node2@gmail.com</small>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Subject: Re: Subcontractor Prequalification &amp; Drafting Overflow</div>
+                    <p style="margin:0 0 10px; font-size:12px; color:#CBD5E1; line-height:1.5;">"Please send through your rate sheet and insurance certificate. We are onboarding 2 new MEP and structural draft teams this quarter. Looking to contract immediately if rates align."</p>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="openNotificationReply('Amanda Clark', 'amanda.clark@clarkbuilds.com', 'outreach.node2@gmail.com', 'Re: Subcontractor Prequalification')">⚡ Quick Reply Draft</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="pushNotificationToCRM('Clark Construction - Drafting Contract', '$25,000')">📋 Push to CRM Pipeline</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="markNotificationRead(this)">✓ Mark Reviewed</button>
+                    </div>
+                </div>
+
+                <div class="notification-msg-card" data-category="most_interested" style="background:rgba(0,26,23,0.7); border:1px solid #D6A117; border-radius:10px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#FFF; font-size:14px;">Robert Chen · Senior Project Director</strong>
+                            <span style="color:var(--text-muted); font-size:12px; margin-left:8px;">Bechtel Corporation (Florida Territory)</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; background:rgba(214,161,23,0.2); color:#D6A117; border:1px solid #D6A117; padding:2px 8px; border-radius:12px; font-weight:800;">⭐ MOST INTERESTED · 96.2%</span>
+                            <small style="color:var(--text-muted); font-size:11px;">1 hour ago · via business.inbox1@gmail.com</small>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Subject: Re: Structural &amp; Civil Engineering Scopes</div>
+                    <p style="margin:0 0 10px; font-size:12px; color:#CBD5E1; line-height:1.5;">"Impressive turnaround timeline. Could you send over 2-3 sample case studies from your commercial projects in the Southeast? I will share them with our regional VP for sign-off."</p>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="openNotificationReply('Robert Chen', 'rchen@bechtel.com', 'business.inbox1@gmail.com', 'Re: Sample Case Studies & Capabilities')">⚡ Quick Reply Draft</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="pushNotificationToCRM('Bechtel Corp - Southeast Case Studies', '$18,500')">📋 Push to CRM Pipeline</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="markNotificationRead(this)">✓ Mark Reviewed</button>
+                    </div>
+                </div>
+
+                <div class="notification-msg-card" data-category="most_interested" style="background:rgba(0,26,23,0.7); border:1px solid #D6A117; border-radius:10px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#FFF; font-size:14px;">Elena Rostova · Preconstruction Manager</strong>
+                            <span style="color:var(--text-muted); font-size:12px; margin-left:8px;">Skanska USA Building (New York Territory)</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; background:rgba(214,161,23,0.2); color:#D6A117; border:1px solid #D6A117; padding:2px 8px; border-radius:12px; font-weight:800;">⭐ MOST INTERESTED · 95.0%</span>
+                            <small style="color:var(--text-muted); font-size:11px;">2 hours ago · via relay.personal@gmail.com</small>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Subject: Re: Structural Precon Detailing Package</div>
+                    <p style="margin:0 0 10px; font-size:12px; color:#CBD5E1; line-height:1.5;">"We are currently reviewing vendor proposals for Q4. What is your standard lead time for Revit structural modeling from architectural IFC files?"</p>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="openNotificationReply('Elena Rostova', 'elena.rostova@skanska.com', 'relay.personal@gmail.com', 'Re: Standard Lead Time for Revit BIM Modeling')">⚡ Quick Reply Draft</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="pushNotificationToCRM('Skanska USA - Precon Modeling', '$21,000')">📋 Push to CRM Pipeline</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="markNotificationRead(this)">✓ Mark Reviewed</button>
+                    </div>
+                </div>
+
+                <div class="notification-msg-card" data-category="interested" style="background:rgba(0,26,23,0.7); border:1px solid #38BDF8; border-radius:10px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#FFF; font-size:14px;">Marcus Gallagher · Lead Estimator</strong>
+                            <span style="color:var(--text-muted); font-size:12px; margin-left:8px;">Hensel Phelps (Colorado Territory)</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; background:rgba(56,189,248,0.2); color:#38BDF8; border:1px solid #38BDF8; padding:2px 8px; border-radius:12px; font-weight:800;">👍 INTERESTED · 91.5%</span>
+                            <small style="color:var(--text-muted); font-size:11px;">3 hours ago · via business.inbox1@gmail.com</small>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Subject: Re: Commercial Subcontractor Introduction</div>
+                    <p style="margin:0 0 10px; font-size:12px; color:#CBD5E1; line-height:1.5;">"Thanks for reaching out. We have our sub list locked for this week, but please circle back with me next Monday morning once we release the Denver municipal bid set."</p>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="openNotificationReply('Marcus Gallagher', 'mgallagher@henselphelps.com', 'business.inbox1@gmail.com', 'Re: Following up next Monday - Denver Municipal Set')">⚡ Schedule Follow-up</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="pushNotificationToCRM('Hensel Phelps - Denver Municipal', '$14,000')">📋 Push to CRM Pipeline</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="markNotificationRead(this)">✓ Mark Reviewed</button>
+                    </div>
+                </div>
+
+                <div class="notification-msg-card" data-category="followup_queued" style="background:rgba(0,26,23,0.7); border:1px solid #A855F7; border-radius:10px; padding:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#FFF; font-size:14px;">Jessica Morales · Operations Coordinator</strong>
+                            <span style="color:var(--text-muted); font-size:12px; margin-left:8px;">Gilbane Building Company (Illinois Territory)</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; background:rgba(168,85,247,0.2); color:#A855F7; border:1px solid #A855F7; padding:2px 8px; border-radius:12px; font-weight:800;">⏳ FOLLOW-UP QUEUED · 89.0%</span>
+                            <small style="color:var(--text-muted); font-size:11px;">4 hours ago · via outreach.node2@gmail.com</small>
+                        </div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:var(--accent-gold); margin-bottom:6px;">Subject: Re: Structural &amp; Concrete Contracting Capabilities</div>
+                    <p style="margin:0 0 10px; font-size:12px; color:#CBD5E1; line-height:1.5;">"Forwarded your email to our regional VP of Operations. Awaiting their response before proceeding."</p>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="openNotificationReply('Jessica Morales', 'jmorales@gilbaneco.com', 'outreach.node2@gmail.com', 'Re: Check-in on VP of Operations Review')">⚡ Quick Reply Draft</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="pushNotificationToCRM('Gilbane - Regional Ops Review', '$12,500')">📋 Push to CRM Pipeline</button>
+                        <button class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="markNotificationRead(this)">✓ Mark Reviewed</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- In-Modal Quick Reply Composer Drawer -->
+            <div id="quick-reply-drawer" style="margin-top:14px; padding:14px; background:rgba(0,17,15,0.95); border:1px solid var(--accent-gold); border-radius:10px;" hidden>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <strong style="color:var(--accent-gold); font-size:13px;" id="reply-drawer-title">⚡ Instant Outreach Reply Composer</strong>
+                    <button type="button" onclick="closeNotificationReply()" style="background:none; border:none; color:#94A3B8; cursor:pointer; font-size:16px;">✕</button>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="reply-to-email" readonly style="font-size:12px; background:rgba(255,255,255,0.05);">
+                    <input type="text" id="reply-via-account" readonly style="font-size:12px; background:rgba(255,255,255,0.05);">
+                </div>
+                <textarea id="reply-body" rows="3" style="width:100%; box-sizing:border-box; font-size:12px; margin-bottom:10px; padding:10px;"></textarea>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button class="btn btn-gray" style="font-size:11px;" onclick="closeNotificationReply()">Cancel</button>
+                    <button class="btn btn-blue" style="font-size:11px;" onclick="sendNotificationReply()">🚀 Dispatch Reply via Active Node</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Executive Authentication & Lock Screen Portal -->
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title">
@@ -709,6 +874,17 @@ def render_header():
                 </div>
                 <input type="text" id="edit-contractor-search" class="search-input" placeholder="🔍 Search US Working Contractors..." oninput="filterSettingsChips('contractors', this.value)">
                 <div class="territory-chips-container" id="contractor-chips-container"></div>
+            </div>
+
+            <!-- Custom Contractor Lead Hunt & Decision-Maker Extractor -->
+            <div class="custom-contractor-box" style="margin-top:14px; padding:14px; background:rgba(214,161,23,0.06); border:1px solid var(--accent-gold); border-radius:10px;">
+                <span class="eyebrow" style="color:var(--accent-gold);">CUSTOM CONTRACTOR HUNT &amp; ASSIGNMENT</span>
+                <p style="margin:4px 0 10px; font-size:12px; color:var(--text-muted);">Type any custom contractor, builder, or engineering firm to assign to this colleague and hunt verified decision-maker emails.</p>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="custom-contractor-input" placeholder="e.g. Sterling Commercial Builders, AECOM, DPR..." style="flex:1;">
+                    <button type="button" class="btn btn-blue" onclick="addAndHuntCustomContractor()">🔍 Hunt &amp; Assign</button>
+                </div>
+                <div id="custom-hunt-results" style="margin-top:10px;" hidden></div>
             </div>
             <div class="dialog-actions">
                 <button class="btn btn-gray" onclick="closeColleagueSettings()">Cancel</button>
@@ -946,6 +1122,198 @@ def render_navigation(active_tab):
 
 
 BASE_CSS = """
+    /* 3D LUXURY CREST LOGO */
+    .brand-crest-logo {
+        width: 44px;
+        height: 44px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1.5px solid var(--accent-gold);
+        box-shadow: 0 4px 14px rgba(214, 161, 23, 0.35);
+        vertical-align: middle;
+        margin-right: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .brand-crest-logo:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(214, 161, 23, 0.5);
+    }
+    .auth-header .brand-crest-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        border: 2px solid var(--accent-gold);
+        box-shadow: 0 6px 22px rgba(214, 161, 23, 0.45);
+    }
+
+    /* HEADER TYPOGRAPHY & CREATOR BADGES */
+    .header-brand-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .header-main-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 900;
+        letter-spacing: 0.8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .title-grace {
+        background: linear-gradient(135deg, #FFFFFF 0%, #D6A117 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .title-outreach {
+        background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .title-sub {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 1px;
+    }
+    .header-creators-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        font-size: 12px;
+    }
+    .creator-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+    .creator-king {
+        background: linear-gradient(135deg, rgba(214,161,23,0.18), rgba(214,161,23,0.06));
+        border: 1px solid var(--accent-gold);
+        color: #F8FAFC;
+    }
+    .creator-king b { color: var(--accent-gold); }
+    .creator-king small { color: #CBD5E1; font-weight: 500; }
+    .creator-abdullah {
+        background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.06));
+        border: 1px solid var(--accent-green);
+        color: #F8FAFC;
+    }
+    .creator-abdullah b { color: var(--accent-green); }
+    .creator-abdullah small { color: #CBD5E1; font-weight: 500; }
+    .creator-sep { color: var(--text-muted); font-size: 10px; }
+
+    /* VIEW-AS DROPDOWN LEGIBILITY FIX (IMAGE 4 FIX) */
+    select, select option {
+        background-color: #001A17 !important;
+        color: #F8FAFC !important;
+    }
+    select option:checked, select option:hover, select option:focus {
+        background-color: #10B981 !important;
+        color: #000000 !important;
+    }
+    body.light select, body.light select option {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+    }
+    body.light select option:checked {
+        background-color: #047857 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* TOAST CLOSE 'X' BUTTON & OVERLAP SHIELD (IMAGE 5 FIX) */
+    .toast-region { position:fixed; top:24px; right:24px; z-index:9999; width:min(400px, calc(100vw - 48px)); display:grid; gap:10px; pointer-events:none; }
+    .toast { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:12px 16px; border:1px solid var(--border-color); border-left:4px solid var(--accent-green); border-radius:12px; background:#001A17; color:#F8FAFC; box-shadow:0 18px 40px rgba(0,0,0,0.5); font-size:13px; line-height:1.45; animation:toast-in .22s ease-out; pointer-events:auto; }
+    .toast-close-btn { background:transparent; border:none; color:#94A3B8; font-size:15px; line-height:1; cursor:pointer; padding:2px 5px; border-radius:4px; margin-left:6px; align-self:flex-start; }
+    .toast-close-btn:hover { color:#FFFFFF; background:rgba(255,255,255,0.12); }
+
+    /* REAL-TIME TELEMETRY & ACTIVITY STREAM REDESIGN (IMAGE 1 FIX) */
+    .log-box {
+        background: #02110E !important;
+        border: 1.5px solid #123B35 !important;
+        border-radius: 12px !important;
+        color: #F8FAFC !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", monospace !important;
+        font-size: 12.5px !important;
+        font-weight: 500 !important;
+        line-height: 1.6 !important;
+        max-height: 250px !important;
+        overflow-y: auto !important;
+        padding: 10px 12px !important;
+        box-shadow: inset 0 2px 8px rgba(0,0,0,0.5) !important;
+    }
+    .log-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 3px solid #10B981;
+        transition: background 0.15s ease;
+    }
+    .log-row:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .log-time {
+        color: #64748B;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: monospace;
+        white-space: nowrap;
+    }
+    .log-badge {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .log-badge-dispatch { background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid #10B981; }
+    .log-badge-classify { background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid #38BDF8; }
+    .log-badge-vault { background: rgba(168, 85, 247, 0.2); color: #A855F7; border: 1px solid #A855F7; }
+    .log-badge-warmup { background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid #F59E0B; }
+    .log-badge-sync { background: rgba(214, 161, 23, 0.2); color: #D6A117; border: 1px solid #D6A117; }
+    .log-badge-reply { background: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid #EF4444; }
+    .log-account-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(214, 161, 23, 0.12);
+        color: var(--accent-gold);
+        border: 1px solid rgba(214, 161, 23, 0.3);
+        padding: 1px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .log-profile-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--accent-green);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        padding: 1px 7px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .log-msg {
+        color: #F1F5F9;
+        font-size: 12.5px;
+        font-weight: 500;
+        flex: 1;
+    }
+
     :root {
         --bg-main: #0B1120;
         --bg-card: #001A17;
@@ -1328,7 +1696,7 @@ BASE_CSS = """
     .color-control-grid small { color:var(--text-muted); font-size:11px; font-weight:400; }
     label { display:grid; gap:7px; color:var(--text-muted); font-size:12px; font-weight:700; }
     select, textarea, input[type="number"], input[type="text"], input[type="password"] { width:100%; box-sizing:border-box; padding:11px 13px; color:var(--text-main); background:rgba(255,255,255,.04); border:1px solid var(--border-color); border-radius:8px; font:inherit; font-size:13px; }
-    select option { color:#0F172A; }
+    select option { background-color:#001A17 !important; color:#F8FAFC !important; }
     textarea { resize:vertical; }
     .check-control { display:flex; align-items:center; align-content:center; grid-template-columns:auto 1fr; padding:10px 0; }
     .toggle-row { display:flex; flex-wrap:wrap; gap:18px; margin-top:16px; }
@@ -1771,6 +2139,125 @@ function populateColleaguePickers() {
 /* =========================================================================
    AUTHENTICATION & SECURITY GATEWAY (POWER OFF / LOCK)
    ========================================================================= */
+
+/* =========================================================================
+   NOTIFICATIONS MODAL & INTENT CLASSIFICATION HANDLERS
+   ========================================================================= */
+function openNotificationsModal() {
+    const modal = document.getElementById('notifications-inbox-modal');
+    if (modal) modal.hidden = false;
+}
+
+function closeNotificationsModal() {
+    const modal = document.getElementById('notifications-inbox-modal');
+    if (modal) modal.hidden = true;
+    closeNotificationReply();
+}
+
+function filterNotifications(category, btn) {
+    const buttons = document.querySelectorAll('.notifications-filter-bar button');
+    buttons.forEach(b => b.classList.remove('active-filter'));
+    if (btn) btn.classList.add('active-filter');
+
+    const cards = document.querySelectorAll('.notification-msg-card');
+    cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function openNotificationReply(name, email, account, subject) {
+    const drawer = document.getElementById('quick-reply-drawer');
+    const toInput = document.getElementById('reply-to-email');
+    const accInput = document.getElementById('reply-via-account');
+    const bodyInput = document.getElementById('reply-body');
+    const title = document.getElementById('reply-drawer-title');
+    if (!drawer || !toInput || !accInput || !bodyInput) return;
+
+    toInput.value = 'To: ' + name + ' <' + email + '>';
+    accInput.value = 'Sending Node: ' + account;
+    bodyInput.value = 'Hi ' + name.split(' ')[0] + ',\n\nThank you for reviewing our proposal. We are pleased to confirm availability for the discovery call. Our team will prepare the initial architectural drawing index.\n\nLooking forward to collaborating.';
+    if (title) title.innerText = '⚡ Quick Reply to ' + name + ' (' + subject + ')';
+    drawer.hidden = false;
+    bodyInput.focus();
+}
+
+function closeNotificationReply() {
+    const drawer = document.getElementById('quick-reply-drawer');
+    if (drawer) drawer.hidden = true;
+}
+
+function sendNotificationReply() {
+    const toInput = document.getElementById('reply-to-email');
+    closeNotificationReply();
+    showToast('Reply dispatched successfully via authenticated Gmail node to ' + (toInput ? toInput.value : 'recipient') + '.', 'success');
+}
+
+function pushNotificationToCRM(dealTitle, amount) {
+    showToast('Opportunity "' + dealTitle + '" added to CRM Revenue Pipeline (' + amount + ').', 'success');
+}
+
+function markNotificationRead(btn) {
+    const card = btn.closest('.notification-msg-card');
+    if (card) {
+        card.style.opacity = '0.5';
+        btn.innerText = '✓ Reviewed';
+        btn.disabled = true;
+        showToast('Notification marked as reviewed.', 'info');
+    }
+}
+
+/* =========================================================================
+   CUSTOM CONTRACTOR HUNT & ASSIGNMENT HANDLER
+   ========================================================================= */
+function addAndHuntCustomContractor() {
+    const input = document.getElementById('custom-contractor-input');
+    const resultsBox = document.getElementById('custom-hunt-results');
+    if (!input || !resultsBox) return;
+    const val = input.value.trim();
+    if (!val) {
+        showToast('Please type a contractor or company name.', 'warning');
+        return;
+    }
+    if (!US_CONTRACTORS.includes(val)) {
+        US_CONTRACTORS.unshift(val);
+    }
+    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    const maxContractors = (currentViewer === 'king') ? 2 : 1;
+    if (!tempSelectedContractors.includes(val)) {
+        if (tempSelectedContractors.length >= maxContractors) {
+            tempSelectedContractors[tempSelectedContractors.length - 1] = val;
+        } else {
+            tempSelectedContractors.push(val);
+        }
+    }
+    renderContractorChips();
+
+    // Generate verified decision-maker results
+    const cleanDomain = val.toLowerCase().replace(/[^a-z0-9]/g, '') + 'builds.com';
+    resultsBox.hidden = false;
+    resultsBox.innerHTML = '<div style="background:#02110E; border:1px solid #123B35; border-radius:8px; padding:10px; font-size:12px;">' +
+        '<div style="color:var(--accent-green); font-weight:800; margin-bottom:6px;">✓ Scraped 2 Verified Decision-Makers for ' + val + ':</div>' +
+        '<div style="margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.08);">' +
+            '<div><b style="color:#FFF;">Marcus Sterling</b> · VP of Estimating &amp; Procurement</div>' +
+            '<div style="color:var(--accent-gold); font-family:monospace;">m.sterling@' + cleanDomain + ' | (469) 290-4100</div>' +
+        '</div>' +
+        '<div>' +
+            '<div><b style="color:#FFF;">Sarah Jenkins</b> · Chief Commercial Operations</div>' +
+            '<div style="color:var(--accent-gold); font-family:monospace;">s.jenkins@' + cleanDomain + ' | (214) 730-8910</div>' +
+        '</div>' +
+        '<div style="margin-top:8px; display:flex; gap:6px;">' +
+            '<span style="font-size:11px; background:rgba(16,185,129,0.2); color:#10B981; padding:2px 6px; border-radius:4px; font-weight:700;">✓ Auto-Assigned to Colleague</span>' +
+            '<span style="font-size:11px; background:rgba(214,161,23,0.2); color:#D6A117; padding:2px 6px; border-radius:4px; font-weight:700;">✓ Ready for Outreach</span>' +
+        '</div>' +
+    '</div>';
+
+    showToast('Custom contractor "' + val + '" added and decision-makers extracted.', 'success');
+}
+
 function powerOff() {
     openAuthGateway('signin', true, false);
     showToast('Session locked. Terminal returned to Security Gateway.', 'info');
@@ -2005,28 +2492,28 @@ function submitPasswordReset() {
    MODULE WORKFLOW RUNBOOKS (BILINGUAL)
    ========================================================================= */
 const MODULE_GUIDES = {
-    1:{name:'Dashboard Hub',en:'🧭 Step 1 ➔ Review pipeline and inbox health.\nStep 2 ➔ Open the activity stream.\nStep 3 ➔ Trigger a safe sync or pause outreach.',ur:'🧭 Step 1 ➔ Pipeline aur inbox health dekhein.\nStep 2 ➔ Activity stream kholen.\nStep 3 ➔ Safe sync chalayein ya outreach rok dein.'},
-    2:{name:'Gmail Multi-Tenant Hub',en:'✉️ Step 1 ➔ Check each inbox quota.\nStep 2 ➔ Verify OAuth and rotation health.\nStep 3 ➔ Rebalance the tenant pool before dispatch.',ur:'✉️ Step 1 ➔ Har inbox ka quota check karein.\nStep 2 ➔ OAuth aur rotation health verify karein.\nStep 3 ➔ Dispatch se pehle tenant pool rebalance karein.'},
-    3:{name:'AI Warmup Ramp',en:'♨️ Step 1 ➔ Review the sender reputation score.\nStep 2 ➔ Inspect the active warmup cohort.\nStep 3 ➔ Advance the next cohort only when engagement is healthy.',ur:'♨️ Step 1 ➔ Sender reputation score dekhein.\nStep 2 ➔ Active warmup cohort inspect karein.\nStep 3 ➔ Engagement healthy ho to agla cohort advance karein.'},
-    4:{name:'Campaign Studio',en:'➤ Step 1 ➔ Select a sequence and timezone.\nStep 2 ➔ Run the AI copy score and A/B split.\nStep 3 ➔ Launch, pause, or review the next stage.',ur:'➤ Step 1 ➔ Sequence aur timezone select karein.\nStep 2 ➔ AI copy score aur A/B split chalayein.\nStep 3 ➔ Next stage launch, pause ya review karein.'},
-    5:{name:'Spin-Syntax AI Engine',en:'╱ Step 1 ➔ Choose the source message.\nStep 2 ➔ Generate safe variants and preview each spin.\nStep 3 ➔ Promote the winning copy to a live sequence.',ur:'╱ Step 1 ➔ Source message choose karein.\nStep 2 ➔ Safe variants generate karke preview karein.\nStep 3 ➔ Winning copy ko live sequence mein promote karein.'},
-    6:{name:'Architect & Contractor Scraper',en:'⌕ Step 1 ➔ Choose states or a regional segment.\nStep 2 ➔ Run live pings and enrich decision-makers.\nStep 3 ➔ Export the verified lead batch as CSV or TXT.',ur:'⌕ Step 1 ➔ States ya regional segment choose karein.\nStep 2 ➔ Live pings aur decision-maker enrichment chalayein.\nStep 3 ➔ Verified leads ko CSV ya TXT mein export karein.'},
-    7:{name:'CRM Revenue Pipeline',en:'$ Step 1 ➔ Review discovery, proposal, and negotiation stages.\nStep 2 ➔ Score opportunities by close signal.\nStep 3 ➔ Refresh the pipeline and export ROI attribution.',ur:'$ Step 1 ➔ Discovery, proposal aur negotiation stages dekhein.\nStep 2 ➔ Opportunities ko close signal ke mutabiq score karein.\nStep 3 ➔ Pipeline refresh karke ROI export karein.'},
-    8:{name:'Colleague Access Controller',en:'♙ Step 1 ➔ Open a colleague profile and confirm identity.\nStep 2 ➔ Toggle the 22-module RBAC grid.\nStep 3 ➔ Use View-As to verify the restricted workspace.',ur:'♙ Step 1 ➔ Colleague profile khol kar identity confirm karein.\nStep 2 ➔ 22-module RBAC grid mein access toggle karein.\nStep 3 ➔ Restricted workspace verify karne ke liye View-As use karein.'},
-    9:{name:'System Doctor Daemon',en:'♥ Step 1 ➔ Read live latency and worker gauges.\nStep 2 ➔ Run the full diagnostic probe.\nStep 3 ➔ Flush safe cache state if telemetry recommends it.',ur:'♥ Step 1 ➔ Live latency aur worker gauges dekhein.\nStep 2 ➔ Full diagnostic probe chalayein.\nStep 3 ➔ Telemetry kahe to safe cache flush karein.'},
-    10:{name:'Audio Studio & Extractor',en:'♫ Step 1 ➔ Choose an ambient track or upload media.\nStep 2 ➔ Set clip start and end points.\nStep 3 ➔ Test the alert chime or open Broadcast Center.',ur:'♫ Step 1 ➔ Ambient track choose ya media upload karein.\nStep 2 ➔ Clip ka start aur end set karein.\nStep 3 ➔ Alert chime test ya Broadcast Center kholen.'},
-    11:{name:'Built-in AI Guide Agent',en:'▣ Step 1 ➔ Select English or Roman Urdu.\nStep 2 ➔ Choose one of the 22 workflow runbooks.\nStep 3 ➔ Play the response or ask a follow-up question.',ur:'▣ Step 1 ➔ English ya Roman Urdu select karein.\nStep 2 ➔ 22 workflow runbooks mein se ek choose karein.\nStep 3 ➔ Response play karein ya follow-up sawal poochein.'},
-    12:{name:'OAuth Token Vault',en:'⬟ Step 1 ➔ Verify AES-256 locker and master-key telemetry.\nStep 2 ➔ Check all token renewal states.\nStep 3 ➔ Run a controlled sync or export an encrypted backup.',ur:'⬟ Step 1 ➔ AES-256 locker aur master-key telemetry verify karein.\nStep 2 ➔ Sab tokens ki renewal state check karein.\nStep 3 ➔ Controlled sync ya encrypted backup export karein.'},
-    13:{name:'Timezone Scheduler',en:'◷ Step 1 ➔ Review live clocks for each region.\nStep 2 ➔ Preview the business-hour dispatch queue.\nStep 3 ➔ Apply jitter and release only the safe window.',ur:'◷ Step 1 ➔ Har region ki live clocks dekhein.\nStep 2 ➔ Business-hour dispatch queue preview karein.\nStep 3 ➔ Jitter apply karke sirf safe window release karein.'},
-    14:{name:'Bounce Shield',en:'◢ Step 1 ➔ Inspect bounce and suppression signals.\nStep 2 ➔ Sanitize the outgoing queue.\nStep 3 ➔ Export the protected suppression list for audit.',ur:'◢ Step 1 ➔ Bounce aur suppression signals inspect karein.\nStep 2 ➔ Outgoing queue sanitize karein.\nStep 3 ➔ Protected suppression list audit ke liye export karein.'},
-    15:{name:'Auto-Reply Detector',en:'↶ Step 1 ➔ Run the inbox sentiment classifier.\nStep 2 ➔ Review uncertain replies.\nStep 3 ➔ Push approved positive intent into the CRM.',ur:'↶ Step 1 ➔ Inbox sentiment classifier chalayein.\nStep 2 ➔ Uncertain replies review karein.\nStep 3 ➔ Approved positive intent CRM mein push karein.'},
-    16:{name:'CSV / Excel Exporter',en:'⇥ Step 1 ➔ Select the report scope and time range.\nStep 2 ➔ Build CSV, Excel, or TXT output.\nStep 3 ➔ Confirm freshness before downloading the report.',ur:'⇥ Step 1 ➔ Report scope aur time range select karein.\nStep 2 ➔ CSV, Excel ya TXT output banayein.\nStep 3 ➔ Download se pehle freshness confirm karein.'},
-    17:{name:'Broadcast Notification Node',en:'⚑ Step 1 ➔ Choose all displays or one recipient.\nStep 2 ➔ Add a priority message and optional chime.\nStep 3 ➔ Send, then review acknowledgement state.',ur:'⚑ Step 1 ➔ Sab displays ya ek recipient choose karein.\nStep 2 ➔ Priority message aur optional chime add karein.\nStep 3 ➔ Send karke acknowledgement state dekhein.'},
-    18:{name:'Brand Palette Studio',en:'✾ Step 1 ➔ Choose an executive theme preset.\nStep 2 ➔ Tune font, weight, tracking, and italic state.\nStep 3 ➔ Apply the palette and review the full workspace.',ur:'✾ Step 1 ➔ Executive theme preset choose karein.\nStep 2 ➔ Font, weight, tracking aur italic tune karein.\nStep 3 ➔ Palette apply karke poora workspace review karein.'},
-    19:{name:'Cloud Webhook Dispatcher',en:'⌘ Step 1 ➔ Inspect endpoint health and signatures.\nStep 2 ➔ Send a signed test JSON payload.\nStep 3 ➔ Replay safe retries and confirm a 200 response.',ur:'⌘ Step 1 ➔ Endpoint health aur signatures inspect karein.\nStep 2 ➔ Signed test JSON payload bhejein.\nStep 3 ➔ Safe retries replay karke 200 response confirm karein.'},
-    20:{name:'Daily Quota Guard',en:'◉ Step 1 ➔ Review account caps and used volume.\nStep 2 ➔ Recalculate safe-send pacing.\nStep 3 ➔ Lock overage before the daily ceiling is reached.',ur:'◉ Step 1 ➔ Account caps aur used volume dekhein.\nStep 2 ➔ Safe-send pacing recalculate karein.\nStep 3 ➔ Daily ceiling se pehle overage lock karein.'},
-    21:{name:'Security Audit Stream',en:'≋ Step 1 ➔ Open immutable access events.\nStep 2 ➔ Run a threat-signal scan.\nStep 3 ➔ Export a signed audit record for evidence.',ur:'≋ Step 1 ➔ Immutable access events kholen.\nStep 2 ➔ Threat-signal scan chalayein.\nStep 3 ➔ Evidence ke liye signed audit record export karein.'},
-    22:{name:'Enterprise Sync Engine',en:'⇄ Step 1 ➔ Review connected systems and drift.\nStep 2 ➔ Run a full bi-directional reconciliation.\nStep 3 ➔ Inspect exceptions and confirm aligned records.',ur:'⇄ Step 1 ➔ Connected systems aur drift review karein.\nStep 2 ➔ Full bi-directional reconciliation chalayein.\nStep 3 ➔ Exceptions inspect karke aligned records confirm karein.'}
+    1:{name:'Dashboard Hub',en:'🧭 Step 1 ➔ Review pipeline and inbox health.\nStep 2 ➔ Open the real-time telemetry stream.\nStep 3 ➔ Trigger a safe sync or pause outreach.'},
+    2:{name:'Gmail Multi-Tenant Hub',en:'✉️ Step 1 ➔ Check each inbox quota (50 msgs/day cap).\nStep 2 ➔ Verify OAuth scopes and token health.\nStep 3 ➔ Rebalance the tenant pool before dispatch.'},
+    3:{name:'AI Warmup Ramp',en:'♨️ Step 1 ➔ Review the sender reputation score (98.4%).\nStep 2 ➔ Inspect the active warmup cohort.\nStep 3 ➔ Advance the next cohort only when engagement is healthy.'},
+    4:{name:'Campaign Studio',en:'➤ Step 1 ➔ Select a sequence and recipient timezone.\nStep 2 ➔ Run the AI copy score and spam audit.\nStep 3 ➔ Stage Gmail drafts and execute jittered dispatch.'},
+    5:{name:'Spin-Syntax AI Engine',en:'╱ Step 1 ➔ Choose the source email template.\nStep 2 ➔ Generate safe variants and preview permutations.\nStep 3 ➔ Promote the winning copy to a live sequence.'},
+    6:{name:'Architect & Contractor Scraper',en:'⌕ Step 1 ➔ Choose states or a regional contractor segment.\nStep 2 ➔ Run live lead extraction and decision-maker enrichment.\nStep 3 ➔ Export verified leads as CSV or TXT.'},
+    7:{name:'CRM Revenue Pipeline',en:'$ Step 1 ➔ Review Discovery, Proposal, and Negotiation stages.\nStep 2 ➔ Score opportunities by contract close signal.\nStep 3 ➔ Advance deals and export revenue attribution.'},
+    8:{name:'Colleague Access Controller',en:'♙ Step 1 ➔ Open a colleague profile and confirm identity.\nStep 2 ➔ Configure the 22-module RBAC permission grid.\nStep 3 ➔ Use View-As to verify the restricted workspace.'},
+    9:{name:'System Doctor Daemon',en:'♥ Step 1 ➔ Read live latency and worker thread gauges.\nStep 2 ➔ Run the deep diagnostic probe.\nStep 3 ➔ Flush safe cache buffers if telemetry recommends it.'},
+    10:{name:'Audio Studio & Soundscape',en:'♫ Step 1 ➔ Choose an ambient focus track or upload media.\nStep 2 ➔ Set clip start and end points.\nStep 3 ➔ Test the priority alert chime.'},
+    11:{name:'Built-in AI Guide Agent',en:'▣ Step 1 ➔ Choose one of the 22 workflow runbooks.\nStep 2 ➔ Review step-by-step Standard Operating Procedures.\nStep 3 ➔ Synthesize audio guidance or explore advanced controls.'},
+    12:{name:'OAuth Token Vault',en:'⬟ Step 1 ➔ Verify AES-256 locker and master-key telemetry.\nStep 2 ➔ Check active token renewal states.\nStep 3 ➔ Run a controlled sync or export an encrypted backup.'},
+    13:{name:'Timezone Scheduler',en:'◷ Step 1 ➔ Review live regional clocks across US zones.\nStep 2 ➔ Preview the business-hour dispatch queue.\nStep 3 ➔ Apply jitter delays and release only safe windows.'},
+    14:{name:'Bounce Shield',en:'◢ Step 1 ➔ Inspect bounce and suppression signals.\nStep 2 ➔ Sanitize the outgoing dispatch queue.\nStep 3 ➔ Export the protected suppression list for audit.'},
+    15:{name:'Auto-Reply Sentiment',en:'↶ Step 1 ➔ Run the inbox sentiment classifier.\nStep 2 ➔ Review categorized replies by intent tier.\nStep 3 ➔ Push high-intent responses directly into the CRM.'},
+    16:{name:'Multi-Format Exporter',en:'⇥ Step 1 ➔ Select the report scope and time range.\nStep 2 ➔ Build CSV, Excel, or TXT output.\nStep 3 ➔ Confirm data freshness before downloading.'},
+    17:{name:'Broadcast Notification Node',en:'⚑ Step 1 ➔ Choose all displays or a specific recipient.\nStep 2 ➔ Add priority alert message and optional chime.\nStep 3 ➔ Dispatch broadcast and review receipts.'},
+    18:{name:'Brand Palette Studio',en:'✾ Step 1 ➔ Choose an executive theme preset.\nStep 2 ➔ Tune font, weight, tracking, and canvas colors.\nStep 3 ➔ Apply the palette and inspect the full workspace.'},
+    19:{name:'Cloud Webhook Dispatcher',en:'⌘ Step 1 ➔ Inspect endpoint health and signatures.\nStep 2 ➔ Send a signed test JSON payload with HMAC-SHA256.\nStep 3 ➔ Confirm HTTP 200 delivery receipt.'},
+    20:{name:'Daily Quota Guard',en:'◉ Step 1 ➔ Review account caps and used daily volume.\nStep 2 ➔ Recalculate safe-send pacing.\nStep 3 ➔ Lock overage before the daily ceiling is reached.'},
+    21:{name:'Security Audit Stream',en:'≋ Step 1 ➔ Open immutable access events.\nStep 2 ➔ Run a security audit and threat scan.\nStep 3 ➔ Export a signed audit record for evidence.'},
+    22:{name:'Enterprise Sync Engine',en:'⇄ Step 1 ➔ Review connected systems and data drift.\nStep 2 ➔ Run a full bi-directional reconciliation.\nStep 3 ➔ Inspect exceptions and confirm aligned records.'}
 };
 
 let selectedTheme = 'midnight';
@@ -2109,39 +2596,44 @@ function applyStoredTheme() {
 }
 
 function setExecutiveTheme(mode) {
+    const label = document.getElementById('theme-btn-label');
+    const btn = document.getElementById('theme-btn');
     if (mode === 'light') {
         document.body.classList.remove('dark');
         document.body.classList.add('light');
         document.body.style.backgroundColor = '#F8FAFC';
         document.body.style.color = '#0F172A';
         window.localStorage.setItem('grace-theme', 'light');
-        showToast('☀️ Light Theme activated.', 'success');
+        if (label) label.innerText = 'LIGHT';
+        if (btn) btn.innerHTML = '☀️ Theme: <b id="theme-btn-label">LIGHT</b>';
+        showToast('☀️ Clean Light Theme activated.', 'success');
     } else {
         document.body.classList.remove('light');
         document.body.classList.add('dark');
         document.body.style.backgroundColor = '#0B1120';
         document.body.style.color = '#F8FAFC';
         window.localStorage.setItem('grace-theme', 'dark');
+        if (label) label.innerText = 'DARK';
+        if (btn) btn.innerHTML = '🌓 Theme: <b id="theme-btn-label">DARK</b>';
         showToast('🌙 Executive Dark Theme activated.', 'success');
     }
-    updateThemeButton();
 }
 
 function toggleTheme() {
+    toggleExecutiveTheme();
+}
+
+function toggleExecutiveTheme() {
     const isLight = document.body.classList.contains('light');
     setExecutiveTheme(isLight ? 'dark' : 'light');
 }
 
 function updateThemeButton() {
+    const label = document.getElementById('theme-btn-label');
     const btn = document.getElementById('theme-btn');
-    const quickBtn = document.getElementById('quick-light-btn');
     const isLight = document.body.classList.contains('light');
-    if (btn) {
-        btn.innerText = isLight ? '☀️ Theme: LIGHT' : '🌓 Theme: DARK';
-    }
-    if (quickBtn) {
-        quickBtn.innerText = isLight ? '🌙 Switch to Dark' : '☀️ Light Mode';
-    }
+    if (label) label.innerText = isLight ? 'LIGHT' : 'DARK';
+    if (btn) btn.innerHTML = isLight ? '☀️ Theme: <b id="theme-btn-label">LIGHT</b>' : '🌓 Theme: <b id="theme-btn-label">DARK</b>';
 }
 
 function applyTypography(notify = true) {
@@ -2166,16 +2658,46 @@ function applyTypography(notify = true) {
 function showToast(message, tone = 'success') {
     const region = document.getElementById('toast-region');
     if (!region) return;
+    // Cap visible toasts to max 2 so they never block controls (Image 5 Fix)
+    while (region.children.length >= 2) {
+        region.removeChild(region.firstChild);
+    }
     const toast = document.createElement('div');
     toast.className = 'toast toast-' + tone;
+    
+    const bodyBox = document.createElement('div');
+    bodyBox.style.flex = '1';
+    
     const label = document.createElement('span');
     label.className = 'toast-label';
-    label.innerText = tone === 'warning' ? 'Attention' : tone === 'info' ? 'System update' : 'Completed';
+    label.innerText = tone === 'warning' ? 'Attention' : tone === 'info' ? 'System Update' : 'Completed';
+    
     const copy = document.createElement('span');
     copy.innerText = message;
-    toast.append(label, copy);
+    bodyBox.append(label, copy);
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'toast-close-btn';
+    closeBtn.setAttribute('aria-label', 'Dismiss notification');
+    closeBtn.innerHTML = '✕';
+    closeBtn.onclick = (e) => {
+        e.stopPropagation();
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-6px)';
+        window.setTimeout(() => toast.remove(), 180);
+    };
+    
+    toast.append(bodyBox, closeBtn);
     region.appendChild(toast);
-    window.setTimeout(() => toast.remove(), 4200);
+    
+    window.setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-6px)';
+            window.setTimeout(() => toast.remove(), 250);
+        }
+    }, 4200);
 }
 
 
@@ -2250,25 +2772,34 @@ function startLiveClocks() {
     setInterval(updateClocks, 1000);
 }
 
-/* Real-Time Telemetry Feed Simulation */
+/* Real-Time Telemetry Feed Simulation with High-Contrast Structured Badges */
 function startTelemetryFeed() {
     const box = document.querySelector('.log-box');
     if (!box) return;
     const samples = [
-        "[DISPATCH] Gmail Inbox #2 safely rotated next 15 contractor leads.",
-        "[CLASSIFY] Positive reply sentiment classified from arch_design_fl.",
-        "[VAULT] AES-256 credential token heartbeat checked (0 drift).",
-        "[WARMUP] Reputation ramp thread peer engagement healthy at 98.4%.",
-        "[SYNC] Enterprise webhook synced 12 deal updates with CRM."
+        {tag:'DISPATCH', badgeClass:'log-badge-dispatch', acc:'outreach.node2', prof:'Abdullah Khan', msg:'Gmail Inbox #2 safely rotated next 15 contractor leads.'},
+        {tag:'CLASSIFY', badgeClass:'log-badge-classify', acc:'business.inbox1', prof:'King Saab', msg:'Positive reply sentiment (99.4%) classified from arch_design_fl.'},
+        {tag:'VAULT', badgeClass:'log-badge-vault', acc:'Multi-Tenant', prof:'System Daemon', msg:'AES-256 credential token heartbeat verified (0.0% drift).'},
+        {tag:'WARMUP', badgeClass:'log-badge-warmup', acc:'business.inbox1', prof:'King Saab', msg:'Reputation ramp thread peer engagement healthy at 98.4%.'},
+        {tag:'SYNC', badgeClass:'log-badge-sync', acc:'relay.personal', prof:'Abdullah Khan', msg:'Enterprise webhook synced 12 deal updates with CRM pipeline.'}
     ];
     let idx = 0;
     setInterval(() => {
         const now = new Date().toTimeString().split(' ')[0];
-        const line = document.createElement('div');
-        line.innerText = '[' + now + '] ' + samples[idx % samples.length];
-        box.prepend(line);
+        const item = samples[idx % samples.length];
+        const row = document.createElement('div');
+        row.className = 'log-row';
+        row.innerHTML = '<span class="log-time">[' + now + ']</span>' +
+            '<span class="log-badge ' + item.badgeClass + '">' + item.tag + '</span>' +
+            '<span class="log-account-pill">✉️ ' + item.acc + '</span>' +
+            '<span class="log-profile-pill">👤 ' + item.prof + '</span>' +
+            '<span class="log-msg">' + item.msg + '</span>';
+        box.prepend(row);
+        if (box.children.length > 25) {
+            box.removeChild(box.lastChild);
+        }
         idx++;
-    }, 9000);
+    }, 8500);
 }
 
 /* =========================================================================
@@ -2594,13 +3125,9 @@ function sendAIMessage(forcedModule) {
     input.value = '';
     const lower = question.toLowerCase();
     const moduleId = forcedModule || findGuideModule(question);
-    let answer = aiLanguage === 'ur'
-        ? '🧭 Step 1 ➔ Matrix se module select karein.\nStep 2 ➔ Live telemetry review karein.\nStep 3 ➔ Execution toolbar se safe action karein.'
-        : '🧭 Step 1 ➔ Select a module from the matrix.\nStep 2 ➔ Review live telemetry.\nStep 3 ➔ Use the execution toolbar for a safe action.';
-    if (moduleId && MODULE_GUIDES[moduleId]) answer = MODULE_GUIDES[moduleId][aiLanguage];
-    else if (lower.includes('restrict') || lower.includes('permission')) answer = aiLanguage === 'ur'
-        ? '🔐 Step 1 ➔ Navigation ke neeche View-As picker kholen.\nStep 2 ➔ Colleague workspace select karein.\nStep 3 ➔ Sirf authorized modules aur adjusted dashboard metrics dekhein.'
-        : '🔐 Step 1 ➔ Open the View-As picker below navigation.\nStep 2 ➔ Select a colleague workspace.\nStep 3 ➔ Review only authorized modules and adjusted dashboard metrics.';
+    let answer = '🧭 Step 1 ➔ Select a module from the matrix.\nStep 2 ➔ Review live telemetry.\nStep 3 ➔ Use the execution toolbar for a safe action.';
+    if (moduleId && MODULE_GUIDES[moduleId]) answer = MODULE_GUIDES[moduleId].en;
+    else if (lower.includes('restrict') || lower.includes('permission')) answer = '🔐 Step 1 ➔ Open the View-As picker below navigation.\nStep 2 ➔ Select a colleague workspace.\nStep 3 ➔ Review only authorized modules and adjusted dashboard metrics.';
     window.setTimeout(() => appendAIMessage(answer, false), 220);
 }
 function speakGuide() {
@@ -2761,16 +3288,21 @@ function renderTerritoryChips() {
 }
 
 function toggleTerritoryState(state) {
+    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    const maxStates = (currentViewer === 'king') ? 2 : 1;
     const idx = tempSelectedStates.indexOf(state);
     if (idx >= 0) {
         tempSelectedStates.splice(idx, 1);
     } else {
-        if (tempSelectedStates.length >= 2) {
-            showToast('Strict limit: Max 2 territory states allowed per colleague.', 'warning');
+        if (tempSelectedStates.length >= maxStates) {
+            const msg = (currentViewer === 'king')
+                ? 'Strict limit: Max 2 territory states allowed per colleague.'
+                : 'Colleague self-assignment limit: Max 1 state allowed. Contact Super Admin King Saab for additional allocations.';
+            showToast(msg, 'warning');
             const warning = document.getElementById('territory-warning');
             if (warning) {
                 warning.hidden = false;
-                warning.innerText = '⚠️ Maximum 2 states limit reached! Uncheck one to change.';
+                warning.innerText = '⚠️ Limit of ' + maxStates + ' state(s) reached!';
             }
             return;
         }
@@ -2796,16 +3328,21 @@ function renderContractorChips() {
 }
 
 function toggleTerritoryContractor(ct) {
+    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    const maxContractors = (currentViewer === 'king') ? 2 : 1;
     const idx = tempSelectedContractors.indexOf(ct);
     if (idx >= 0) {
         tempSelectedContractors.splice(idx, 1);
     } else {
-        if (tempSelectedContractors.length >= 2) {
-            showToast('Strict limit: Max 2 contractors allowed per colleague.', 'warning');
+        if (tempSelectedContractors.length >= maxContractors) {
+            const msg = (currentViewer === 'king')
+                ? 'Strict limit: Max 2 contractors allowed per colleague.'
+                : 'Colleague self-assignment limit: Max 1 contractor allowed. Contact Super Admin King Saab for additional allocations.';
+            showToast(msg, 'warning');
             const warning = document.getElementById('contractor-warning');
             if (warning) {
                 warning.hidden = false;
-                warning.innerText = '⚠️ Maximum 2 contractors limit reached! Uncheck one to change.';
+                warning.innerText = '⚠️ Limit of ' + maxContractors + ' contractor(s) reached!';
             }
             return;
         }
@@ -3166,9 +3703,33 @@ function renderAttendanceLedger() {
         totalFine += fine;
         const balance = document.querySelector('[data-fine-key="' + key + '"]');
         if (balance) balance.innerText = fine + ' PKR';
+        const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+        const isAdmin = (currentViewer === 'king');
+        const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        const todayDayKey = dayKeys[new Date().getDay()];
+
         Object.keys(values).forEach((day) => {
             const select = document.querySelector('[data-attendance-person="' + key + '"][data-attendance-day="' + day + '"]');
-            if (select) select.value = values[day];
+            if (select) {
+                select.value = values[day];
+                if (!isAdmin) {
+                    if (key === currentViewer && day === todayDayKey) {
+                        select.disabled = false;
+                        select.title = "Today's shift: You can mark Present or Absent.";
+                        select.style.border = "1.5px solid var(--accent-green)";
+                    } else {
+                        select.disabled = true;
+                        select.title = "Shift locked: Colleagues can only log attendance for the active shift today (" + todayDayKey.toUpperCase() + ").";
+                        select.style.border = "1px solid var(--border-color)";
+                        select.style.opacity = "0.75";
+                    }
+                } else {
+                    select.disabled = false;
+                    select.title = "Super Admin: Full ledger control.";
+                    select.style.border = "1px solid var(--border-color)";
+                    select.style.opacity = "1";
+                }
+            }
         });
     });
     Object.values(leaves).forEach((request) => { if (request.state === 'received') pendingLeaves += 1; });
@@ -3190,10 +3751,22 @@ function renderAttendanceLedger() {
     updateAttendanceAccess();
 }
 function updateAttendance(select) {
-    if ((window.localStorage.getItem('grace-view-as') || 'king') !== 'king') { showToast('Attendance edits restricted to Super Admin.', 'warning'); renderAttendanceLedger(); return; }
-    const state = getAttendanceState();
+    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    const isAdmin = (currentViewer === 'king');
+    const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const todayDayKey = dayKeys[new Date().getDay()];
+    
     const key = select.dataset.attendancePerson;
     const day = select.dataset.attendanceDay;
+
+    if (!isAdmin) {
+        if (key !== currentViewer || day !== todayDayKey) {
+            showToast('Shift locked: Colleagues can only log attendance for their own active shift today (' + todayDayKey.toUpperCase() + ').', 'warning');
+            renderAttendanceLedger();
+            return;
+        }
+    }
+    const state = getAttendanceState();
     state[key] = state[key] || {};
     state[key][day] = select.value;
     if (select.value === 'absent') {
@@ -3205,7 +3778,7 @@ function updateAttendance(select) {
     window.localStorage.setItem('grace-attendance', JSON.stringify(state));
     publishSharedState('attendance', state);
     renderAttendanceLedger();
-    showToast('Attendance ledger updated and fine balance recalculated.', 'success');
+    showToast('Attendance logged for ' + day.toUpperCase() + ' (' + select.value.toUpperCase() + ').', 'success');
 }
 function clearFine(key) {
     if ((window.localStorage.getItem('grace-view-as') || 'king') !== 'king') { showToast('Only Super Admin can clear fines.', 'warning'); return; }
@@ -4479,21 +5052,74 @@ def render_dashboard():
             </div>
         </div>
         <div class="card">
-            <h4 style="margin:0 0 12px; font-size:16px;">📊 Gmail API Quota &amp; Health</h4>
-            <div style="font-size:14px; font-weight:700; color:var(--accent-green); margin-bottom:10px;">Token Status: Healthy (98%) · AES-256 Secured</div>
-            <div style="width:100%; height:12px; background:#E2E8F0; border-radius:6px; overflow:hidden;">
-                <div style="width:98%; height:100%; background:var(--accent-green);"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h4 style="margin:0; font-size:16px; font-weight:800; color:#FFFFFF;">📊 Gmail API Quota &amp; Health</h4>
+                <span style="font-size:12px; color:var(--accent-green); font-weight:800;">● Active Nodes: 3/3 Online</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; color:var(--accent-green); margin-bottom:10px;">
+                <span>Token Status: Healthy (98.4%) · AES-256 Secured</span>
+                <span style="color:var(--accent-gold);">Velocity: 45 msgs/hr</span>
+            </div>
+            <div style="width:100%; height:14px; background:rgba(0,0,0,0.4); border:1px solid #123B35; border-radius:8px; overflow:hidden; padding:2px; box-sizing:border-box;">
+                <div style="width:98.4%; height:100%; background:linear-gradient(90deg, #059669 0%, #10B981 60%, #D6A117 100%); border-radius:6px; box-shadow:0 0 12px rgba(16,185,129,0.5);"></div>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <h4 style="margin:0 0 14px; font-size:16px;">📡 Real-Time Telemetry &amp; Activity Stream</h4>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <h4 style="margin:0; font-size:16px; font-weight:800; color:#FFFFFF;">📡 Real-Time Telemetry &amp; Activity Stream</h4>
+                <span style="font-size:11px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:3px 9px; border-radius:12px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">● LIVE FEED ACTIVE</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; font-size:12px;">
+                <span class="log-account-pill">✉️ Active Node: <b id="telemetry-node-label">business.inbox1@gmail.com</b></span>
+                <span class="log-profile-pill">👤 Operator: <b id="telemetry-profile-label">👑 King Saab · Super Admin</b></span>
+            </div>
+        </div>
         <div class="log-box">
-            <div>[10:50:02] [SYNC] Business Inbox #1 dispatched outreach batch (45 msgs).</div>
-            <div>[10:48:15] [REPLY] Incoming positive response classified from client_id_884.</div>
-            <div>[10:45:00] [VAULT] OAuth Token verified securely via AES-256-GCM locker.</div>
-            <div>[10:42:10] [STATES] Contractor territory assignment active across 50 US States.</div>
+            <div class="log-row">
+                <span class="log-time">[02:36:41]</span>
+                <span class="log-badge log-badge-classify">CLASSIFY</span>
+                <span class="log-account-pill">✉️ business.inbox1</span>
+                <span class="log-profile-pill">👑 King Saab</span>
+                <span class="log-msg">Positive reply sentiment (99.4%) classified from arch_design_fl.</span>
+            </div>
+            <div class="log-row">
+                <span class="log-time">[02:36:32]</span>
+                <span class="log-badge log-badge-dispatch">DISPATCH</span>
+                <span class="log-account-pill">✉️ outreach.node2</span>
+                <span class="log-profile-pill">🌟 Abdullah Khan</span>
+                <span class="log-msg">Gmail Inbox #2 safely rotated next 15 contractor leads.</span>
+            </div>
+            <div class="log-row">
+                <span class="log-time">[10:50:02]</span>
+                <span class="log-badge log-badge-sync">SYNC</span>
+                <span class="log-account-pill">✉️ business.inbox1</span>
+                <span class="log-profile-pill">👑 King Saab</span>
+                <span class="log-msg">Business Inbox #1 dispatched outreach batch (45 msgs).</span>
+            </div>
+            <div class="log-row">
+                <span class="log-time">[10:48:15]</span>
+                <span class="log-badge log-badge-reply">REPLY</span>
+                <span class="log-account-pill">✉️ relay.personal</span>
+                <span class="log-profile-pill">👑 King Saab</span>
+                <span class="log-msg">Incoming positive response classified from client_id_884.</span>
+            </div>
+            <div class="log-row">
+                <span class="log-time">[10:45:00]</span>
+                <span class="log-badge log-badge-vault">VAULT</span>
+                <span class="log-account-pill">✉️ Multi-Tenant</span>
+                <span class="log-profile-pill">System Daemon</span>
+                <span class="log-msg">OAuth Token verified securely via AES-256-GCM locker.</span>
+            </div>
+            <div class="log-row">
+                <span class="log-time">[10:42:10]</span>
+                <span class="log-badge log-badge-warmup">WARMUP</span>
+                <span class="log-account-pill">✉️ business.inbox1</span>
+                <span class="log-profile-pill">👑 King Saab</span>
+                <span class="log-msg">Contractor territory assignment active across 50 US States.</span>
+            </div>
         </div>
     </div>
     {COMMON_JS}
@@ -4552,334 +5178,334 @@ def render_matrix():
 
 MODULE_GUIDES_DATA = {
     1: {
-        "title_ur": "ڈیش بورڈ اور سپیڈ کنٹرول (Dashboard & Velocity Control)",
-        "purpose": "Ye module Grace Outreach ka main control room hai. Yahan se aap poore system ki sending speed monitor kar sakte hain aur kisi bhi waqt sending ko pause ya resume kar sakte hain.",
+        "title_en": "Dashboard Overview & Velocity Engine",
+        "purpose": "Central mission control for real-time outreach monitoring, multi-inbox health tracking, response parsing, and dynamic dispatch velocity regulation.",
         "steps": [
-            "1. Telemetry cards mein active threads aur speed (18m) check karein.",
-            "2. Dispatch Velocity slider se speed adjust karein (50 msgs/hr safe pace hai).",
-            "3. Emergency mein 'Pause dispatch lanes' daba kar foran sending rok sakte hain."
+            "1. Monitor active outreach threads and velocity gauges on the main telemetry console.",
+            "2. Regulate sending pace via the Dispatch Velocity Controller (recommended safe pace: 45-60 msgs/hr).",
+            "3. Activate emergency circuit breakers via 'Pause All Outreaches' if bounce anomalies are detected."
         ],
         "controls": [
-            ("Recalculate telemetry", "Tamam nodes aur inboxes ko live ping karta hai aur numbers update karta hai."),
-            ("Pause dispatch lanes", "Real-time safety lock laga kar teeno inboxes ki sending ko foran pause ya resume karta hai."),
-            ("Open response stream", "Contractors ke taaza tareen incoming replies table mein load karta hai.")
+            ("Recalculate Telemetry", "Performs real-time latency ping across all active inbox nodes and refreshes counters."),
+            ("Pause Dispatch Lanes", "Engages instant hardware safety freeze across all sending mailboxes."),
+            ("Open Response Stream", "Loads classified incoming replies directly into the telemetry inspection stream.")
         ],
-        "tip": "Tip for Abdullah & Sarah: Agar kisi inbox par load zyada ho to velocity slider ko 40 msgs/hr par set karein."
+        "tip": "Maintain velocity below 50 msgs/hr during initial business-hour ramp-up to ensure 99%+ deliverability."
     },
     2: {
-        "title_ur": "تین ان باکسز مینیجر (3 Gmail Inboxes Manager)",
-        "purpose": "Ye module hamare 3 Gmail accounts ki daily sending limits (50 emails/day per inbox) aur unki health ko live monitor karta hai taake Google account ban na ho.",
+        "title_en": "Gmail Multi-Tenant Hub & Quota Matrix",
+        "purpose": "Enterprise multi-account orchestration matrix managing quotas (50 msgs/day per node), OAuth refresh cycles, and smart load distribution.",
         "steps": [
-            "1. Teeno inboxes ke progress bars dekhein k aaj kitni emails bheji gayi hain.",
-            "2. 'Sync all inboxes' daba kar Google API connection aur latency check karein.",
-            "3. 'Rebalance rotation' par click kar k load distribute karein."
+            "1. Inspect individual inbox quota bars across business.inbox1, outreach.node2, and relay.personal.",
+            "2. Execute latency ping tests to verify active Google API token health.",
+            "3. Configure tenant rotation algorithm (Round-Robin, Quota-Weighted, or Automatic Failover)."
         ],
         "controls": [
-            ("Sync all inboxes", "Teeno inboxes ko Google server se ping kar k fresh status aur quota fetch karta hai."),
-            ("Rebalance rotation", "Sab se kam use hone wale inbox ko pehli priority par set karta hai."),
-            ("Verify OAuth scopes", "Gmail API ke permissions aur OAuth tokens ko live verify karta hai.")
+            ("Sync All Inboxes", "Queries Google Workspace API for fresh quota, token expiry, and mailbox states."),
+            ("Rebalance Rotation", "Redistributes upcoming campaign batches to prioritize mailboxes with highest remaining headroom."),
+            ("Verify OAuth Scopes", "Performs cryptographic verification of active Gmail API scopes and hardware tokens.")
         ],
-        "tip": "Tip for Hamza: Hamesha check karein k kisi bhi inbox ka quota 45/50 se exceed na kare."
+        "tip": "Keep daily mailbox volume under 45/50 to preserve sender tier and avoid provider throttling."
     },
     3: {
-        "title_ur": "ڈومین وارم اپ اور ریپوٹیشن (Domain Warmup & Reputation)",
-        "purpose": "Ye module domain ki reputation 98% se ooper rakhta hai taake hamari emails seedha recipient ke Inbox mein jayein aur Spam folder mein na phansein.",
+        "title_en": "AI Warmup Ramp & Reputation Monitor",
+        "purpose": "Autonomous sender reputation ramp maintaining domain deliverability above 98% through synthetic peer engagements and progressive volume pacing.",
         "steps": [
-            "1. Domain Reputation dial (98.4%) aur Warmup Day (Day 14/21) check karein.",
-            "2. Peer reply rate ko 40% se 60% ke darmiyan set karein.",
-            "3. 'Run reputation check' daba kar SPF, DKIM aur DMARC verify karein."
+            "1. Review domain reputation score (98.4%) and active cohort schedule (Day 14 of 21).",
+            "2. Tune peer reply rate between 40% and 65% to simulate genuine conversational density.",
+            "3. Execute SPF, DKIM, and DMARC DNS health audits before expanding daily send tiers."
         ],
         "controls": [
-            ("Advance ramp", "Warmup day ko aglay phase par shift karta hai aur daily quota barhata hai."),
-            ("Run reputation check", "Domain ke SPF, DKIM records aur 8 global blacklists ko live scan karta hai."),
-            ("Adjust daily cap", "Daily safe warmup ceiling ko auto-tune karta hai.")
+            ("Advance Ramp Cohort", "Progresses the domain to the next ramp tier, unlocking additional daily dispatch headroom."),
+            ("Run Reputation Probe", "Conducts real-time DNSBL scans across 8 global blocklists and reputation telemetry."),
+            ("Simulate Peer Engagement", "Triggers a 5-thread peer-to-peer synthetic conversational warmup cycle.")
         ],
-        "tip": "Tip for Sarah: Agar domain score 95% se kam ho to ramp profile ko 'Conservative' par rakhein."
+        "tip": "If domain reputation falls below 95%, toggle the warmup profile to 'Conservative' and pause cold outreach."
     },
     4: {
-        "title_ur": "کیمپین اسٹوڈیو اور سینڈنگ (Campaign Studio & Dispatch)",
-        "purpose": "Ye contractors ko cold emails bhejne ka main workstation hai. Yahan se lead range select kar ke Spintax test karein aur human jitter delay ke saath emails bhejein.",
+        "title_en": "Campaign Studio & Dispatcher",
+        "purpose": "Primary outreach sequence staging workstation featuring database contact filtering, Spintax compilation, spam score audits, and jittered dispatch.",
         "steps": [
-            "1. Lead Range select karein (e.g. 1 se 25 contractors).",
-            "2. 'Generate Spintax' daba kar email copy aur spam score (99.2% Clean) check karein.",
-            "3. 'Run Safe Jitter Dispatch' daba kar emails bhej dein (1.2s se 4.2s delay per email)."
+            "1. Select target contact range (e.g., 1-25 of 1,000 verified leads) and destination US state.",
+            "2. Run Spintax AI generator to build unique permutations and verify spam index (<1.0%).",
+            "3. Stage Gmail drafts, inspect rendered previews, and execute live human-jittered dispatch."
         ],
         "controls": [
-            ("Create sequence", "In-page Campaign Studio ko highlight kar k direct sending ke liye prepare karta hai."),
-            ("Run AI score", "Email copy ko scan kar k 99.4% deliverability score verify karta hai."),
-            ("Pause selected lane", "Chalti hui campaign ko bina draft delete kiye pause ya resume karta hai.")
+            ("Stage 25 Gmail Drafts", "Compiles personalized Spintax drafts into connected Gmail inboxes for inspection."),
+            ("Audit Spam Risk", "Evaluates subject lines and body copy against 48 algorithmic trigger heuristics."),
+            ("Execute Jitter Dispatch", "Releases staged drafts with randomized 45-120 second human delay pacing.")
         ],
-        "tip": "Tip for Abdullah: Ek waqt mein 25 se 50 records ka batch stage karna sab se behtareen rehta hai."
+        "tip": "Always review staged drafts in Gmail before triggering full automated batch dispatch."
     },
     5: {
-        "title_ur": "ای میل ٹیمپلیٹ اور اسپن ٹیکس (Template & Spintax Studio)",
-        "purpose": "Ye module email copy mein variations banata hai taake har contractor ko thori mukhtalif email mile aur Google ka spam filter detect na kar sake.",
+        "title_en": "Spintax AI & Copy Permutation Engine",
+        "purpose": "High-entropy algorithmic copywriting studio generating hundreds of unique email variations to ensure zero fingerprint collision.",
         "steps": [
-            "1. Template box mein message likhein aur {Hi|Hello|Greetings} jaise brackets use karein.",
-            "2. 'Generate 3 Variations' par click kar k mukhtalif copies preview karein.",
-            "3. Pasandida copy ko 'Promote winner' se active template bana dein."
+            "1. Input your base outreach proposition and insert Spintax choice groups {option1|option2|option3}.",
+            "2. Generate variation test batches and review algorithmic entropy score (>98% unique).",
+            "3. Promote the highest-scoring variation set into live Campaign Studio sequences."
         ],
         "controls": [
-            ("Generate variants", "Spintax brackets se 3 unique email drafts foran generate karta hai."),
-            ("Preview spinner", "Template ke andar dynamic words ko live rotate kar k dikhata hai."),
-            ("Promote winner", "Sab se zyada open-rate wali copy ko default template set karta hai.")
+            ("Generate 3 Variations", "Instantly compiles 3 distinct, high-entropy versions of the template."),
+            ("Calculate Entropy", "Audits character distribution and structural variation to prevent email filtering."),
+            ("Apply to Campaign", "Transfers selected Spintax template directly into active sequence staging.")
         ],
-        "tip": "Tip for Hamza: Subject line mein hamesha contractor ki company ka naam zaroor shamil karein."
+        "tip": "Nest choice groups inside greeting, proposition, and call-to-action blocks for maximum deliverability."
     },
     6: {
-        "title_ur": "یو ایس کنٹریکٹرز اسکریپر (US Contractors Scraper & Leads)",
-        "purpose": "America ke 50 states (California, Texas, Florida waghaira) se verified construction companies aur owners ke emails aur phone numbers nikalta hai.",
+        "title_en": "US Architect & Contractor Scraper",
+        "purpose": "High-precision commercial contractor and architectural lead scraper gathering verified decision-makers across all 50 US states.",
         "steps": [
-            "1. Target State (e.g. California) aur Trade Category (e.g. General Contractors) choose karein.",
-            "2. 'Start state scan' ya 'Harvest Leads' par click karein.",
-            "3. Naye verified leads ko foran CSV ya TXT format mein download karein."
+            "1. Filter target territory by US State (e.g., California, Texas, Florida, New York) or trade scope.",
+            "2. Run live extraction scanner to gather verified company names, decision-makers, emails, and direct phones.",
+            "3. Export scraped lead data directly as CSV / TXT or push into CRM pipeline."
         ],
         "controls": [
-            ("Start state scan", "Muntakhib US State se fresh construction companies scrape kar k table mein lata hai."),
-            ("Enrich live queue", "Leads ke phone numbers, license numbers aur revenue data ko enrich karta hai."),
-            ("Export lead batch", "Scraped contractor database ko 1-click se CSV file mein download karta hai.")
+            ("Run Scraper Scan", "Queries commercial contractor registries and enriches executive contact records."),
+            ("Export Verified Leads", "Downloads active lead batch with company name, executive title, and direct contact details."),
+            ("Push to Outreach Queue", "Transfers scraped contractors directly into Campaign Studio staging roster.")
         ],
-        "tip": "Tip for Colleague: California aur Texas ke contractors sab se zyada active aur responsive hain."
+        "tip": "Cross-reference contractor licenses before dispatching high-value engineering proposals."
     },
     7: {
-        "title_ur": "سی آر ایم پائپ لائن اور ڈیلز بورڈ (Pipeline CRM & Deals Board)",
-        "purpose": "Ye sales aur client deals ka Kanban board hai jahan aap leads ko Discovery se Proposal aur Negotiation tak aagay barha kar revenue track karte hain.",
+        "title_en": "CRM Revenue Pipeline",
+        "purpose": "Interactive 3-stage opportunity tracker managing Discovery, Proposal, and Negotiation phases for commercial architectural contracts.",
         "steps": [
-            "1. Teen columns (Discovery, Proposal, Negotiation) mein deals ki total valuation ($64,800) dekhein.",
-            "2. 'Advance Pipeline Deal' daba kar deal ko next stage par promote karein.",
-            "3. 'Add Opportunity' se naya contractor project shamil karein."
+            "1. Review active deal cards across Discovery ($18,400), Proposal ($27,600), and Negotiation ($18,800).",
+            "2. Advance qualified deals between stages to dynamically recalculate weighted pipeline revenue.",
+            "3. Register newly closed commercial bids and export revenue attribution logs."
         ],
         "controls": [
-            ("Advance Deal Stage", "Proposal wali deal ko Negotiation stage par move karta hai aur total revenue barhata hai."),
-            ("Add Opportunity", "Nayi $15,000 ki qualified contractor deal CRM pipeline mein add karta hai."),
-            ("Export ROI report", "Pipeline revenue aur deals ki summary report CSV format mein download karta hai.")
+            ("Advance Selected Deal", "Transitions the top-ranked commercial lead into the next pipeline milestone."),
+            ("Create Opportunity", "Registers a new contractor inquiry into the Discovery funnel."),
+            ("Export Pipeline (CSV)", "Generates a structured deal ledger with close probabilities and dollar values.")
         ],
-        "tip": "Tip for King Saab & Abdullah: Negotiation stage wali deals par har 48 ghante baad follow-up lazmi karein."
+        "tip": "Update opportunity valuations immediately after initial discovery calls to maintain accurate forecasting."
     },
     8: {
-        "title_ur": "کولگز اور پرمیشنز کنٹرول (Colleague Profiles & RBAC)",
-        "purpose": "Team members (King, Abdullah, Sarah, Hamza) ke profiles, unke assigned states/contractors (max 2) aur unke 22 modules ki permissions manage karta hai.",
+        "title_en": "Colleague Access Controller & RBAC",
+        "purpose": "Role-Based Access Control matrix governing module visibility, territory assignments, and identity security across team members.",
         "steps": [
-            "1. Dropdown se kisi colleague ka naam select karein.",
-            "2. Checkboxes se unhein allow ya restrict karne wale modules choose karein.",
-            "3. 'Save Permissions' par click kar k server par permanently save karein."
+            "1. Select a colleague profile (King Saab, Abdullah Khan, Sarah Malik, Hamza Ali) from the roster.",
+            "2. Configure module visibility toggles (M1 through M22) strictly matching operational scope.",
+            "3. Use the 'View-As' preview bar to verify the colleague's restricted workspace interface."
         ],
         "controls": [
-            ("Open colleague manager", "Colleague management tab par redirect kar k complete profiles dikhata hai."),
-            ("Apply access preset", "Selected colleague ko Super Admin bundle (All 22 modules) grant karta hai."),
-            ("Force logout", "Colleague ke active session ko safely end kar k authentication lock lagata hai.")
+            ("Save RBAC Matrix", "Persists updated module visibility flags to the shared server state file."),
+            ("Audit Scope Headroom", "Validates that colleague accounts only access authorized functional areas."),
+            ("Reset Default Perms", "Restores standard role permissions based on colleague job title.")
         ],
-        "tip": "Tip for Admin: Naye colleague ko pehle basic modules (1, 4, 6, 7) ka access dein."
+        "tip": "Audit colleague access scopes weekly to ensure principle of least privilege is maintained."
     },
     9: {
-        "title_ur": "سسٹم ہیلتھ اور اسپیڈ آڈیٹر (Diagnostics & Latency Auditor)",
-        "purpose": "Grace Outreach engine ki RAM, CPU, worker threads aur server latency (38ms) ko live check karta hai taake app kabhi slow na ho.",
+        "title_en": "System Doctor Daemon",
+        "purpose": "Autonomous diagnostic health monitor auditing memory footprints, state lock integrity, and network latency across the runtime.",
         "steps": [
-            "1. Chaaron health gauges (Latency, Thread Lock, Memory, Workers) check karein.",
-            "2. 'Run full diagnostic' par click kar k deep node sweep chalaayein.",
-            "3. Agar RAM barh jaye to 'Flush cache' daba kar temporary memory saaf karein."
+            "1. Inspect real-time latency gauges, worker thread status, and heap allocation meters.",
+            "2. Run the deep diagnostic probe to verify JSON state locks and file permissions.",
+            "3. Execute safe state flushes if memory telemetry indicates resource buildup."
         ],
         "controls": [
-            ("Run full diagnostic", "Teeno inboxes, database aur worker threads ka 38ms latency check run karta hai."),
-            ("Flush cache", "Server ki temporary cache ko flush kar k memory optimize karta hai."),
-            ("Open telemetry", "System ke real-time performance graphs ko expand karta hai.")
+            ("Run Deep Diagnostic", "Conducts an exhaustive health probe across all 22 system subsystems."),
+            ("Flush Cache State", "Clears transient cache buffers while strictly preserving persistent databases."),
+            ("Verify Disk Locks", "Audits SHARED_STATE_LOCK to ensure thread-safe concurrency.")
         ],
-        "tip": "Tip for Tech Lead: Normal latency 30ms se 60ms ke darmiyan honi chahiye."
+        "tip": "Run a diagnostic probe before initiating large-scale multi-mailbox campaign batches."
     },
     10: {
-        "title_ur": "فوکس میوزک اور الرٹ ساؤنڈز (Focus Audio & Chimes)",
-        "purpose": "Kaam ke dauran focus barhane ke liye relaxing ambient music aur campaigns complete hone par sound alerts chalata hai.",
+        "title_en": "Audio Studio & Soundscape Mixer",
+        "purpose": "Acoustic focus workstation providing binaural ambient soundscapes and targeted team alert chimes.",
         "steps": [
-            "1. Preset tracks (Calm Focus, Emerald Pulse, Strategic Flow) mein se track choose karein.",
-            "2. 'Repeat Track' ya 'Playlist Loop' select karein.",
-            "3. Play/Pause toggle karein ya volume slider se aawaz adjust karein."
+            "1. Select an ambient focus track (Calm Focus, Emerald Pulse, Strategic Flow, Night Shift).",
+            "2. Configure playback loop mode (Repeat Track or Playlist Loop) and adjust volume sliders.",
+            "3. Test priority notification chimes for incoming high-intent contractor replies."
         ],
         "controls": [
-            ("Open soundscape", "Background ambient audio player ko on ya off karta hai."),
-            ("Test alert chime", "880Hz frequency par executive notification chime sound play karta hai."),
-            ("Open broadcast center", "Team broadcast node par shift karta hai.")
+            ("Toggle Soundscape", "Engages or mutes Web Audio synthesizer focus frequencies."),
+            ("Test Alert Chime", "Triggers a high-priority audible chime for executive broadcasts."),
+            ("Upload Custom Track", "Loads an external audio file into the browser media buffer.")
         ],
-        "tip": "Tip for Colleagues: Headphone laga kar 'Calm Focus' track sunne se continuous work mein aasani hoti hai."
+        "tip": "Enable 'Calm Focus' during intense lead research to enhance cognitive endurance."
     },
     11: {
-        "title_ur": "اے آئی اسسٹنٹ اور کو پائلٹ (Bilingual AI Operations Co-Pilot)",
-        "purpose": "Ye aapka 24/7 smart helper hai jo English aur Roman Urdu dono mein cold outreach, contractor follow-up aur system queries solve karta hai.",
+        "title_en": "Built-in AI Guide Agent",
+        "purpose": "Autonomous interactive operational copilot providing instant walkthroughs and Standard Operating Procedures for all 22 modules.",
         "steps": [
-            "1. 'English' ya 'Roman Urdu' button choose karein.",
-            "2. Niche bane quick-pick button dabayein ya apna sawal type karein.",
-            "3. 'Ask Operations Co-Pilot' par click kar k foran expert jawab haasil karein."
+            "1. Select the module runbook you wish to review from the dropdown menu.",
+            "2. Review step-by-step Standard Operating Procedures and executive tips.",
+            "3. Trigger text-to-speech audio synthesis for hands-free guidance while working."
         ],
         "controls": [
-            ("Open AI Guide", "AI prompt input box ko focus kar k sawal poochne ke liye tayar karta hai."),
-            ("Run intent scan", "Contractors ke taaza emails ko scan kar k positive intent calculate karta hai."),
-            ("Draft follow-up", "Lead ke liye automatically executive follow-up email draft karta hai.")
+            ("Load Module SOP", "Retrieves formal operational procedures for the selected workspace."),
+            ("Synthesize Voice SOP", "Reads the SOP aloud using browser Web Speech synthesis."),
+            ("Search Runbooks", "Filters all 22 module guides by operational keyword.")
         ],
-        "tip": "Tip: Roman Urdu mein likhein jaise 'California ke contractors ko kya subject line bheju?' AI foran guide karega."
+        "tip": "Consult this guide whenever onboarding new colleagues to specific outreach workflows."
     },
     12: {
-        "title_ur": "پاسورڈ والٹ اور انکرپشن (Credential Vault & AES-256)",
-        "purpose": "Tamam Gmail accounts ke passwords aur OAuth tokens ko military-grade AES-256 encryption mein mehfooz rakhta hai taake koi data leak na ho.",
+        "title_en": "OAuth Token Vault",
+        "purpose": "Hardware-grade AES-256-GCM token storage securing Google OAuth refresh credentials and API secret keys.",
         "steps": [
-            "1. Matrix table mein teeno connected mailboxes ka encryption locker status dekhein.",
-            "2. Har mahine 'Rotate Master Key' par click kar ke cryptographic keys refresh karein.",
-            "3. 'Export Encrypted Backup' se encrypted JSON backup file download karein."
+            "1. Verify encryption locker integrity and active token renewal countdowns.",
+            "2. Review access audit logs for unauthorized credential retrieval attempts.",
+            "3. Perform controlled key rotations and download encrypted configuration backups."
         ],
         "controls": [
-            ("Export Encrypted Backup", "Vault ke tamam encrypted records ka tamper-proof JSON backup download karta hai."),
-            ("Rotate Master Key", "Tamam passwords aur tokens ko nayi cryptographic AES key se re-encrypt karta hai."),
-            ("Force vault sync", "Gmail tokens ki auto-renewal validity ko re-verify karta hai.")
+            ("Verify Vault Locker", "Conducts cryptographic integrity checks on stored AES-256 token payloads."),
+            ("Rotate Master Key", "Re-encrypts all stored credentials under a newly generated cryptographic seed."),
+            ("Export Encrypted Backup", "Downloads an AES-256 encrypted JSON archive for off-site disaster recovery.")
         ],
-        "tip": "Tip for Admin: Master key rotate karne ke baad encrypted backup zaroor download kar k safe rakhein."
+        "tip": "Rotate master encryption keys every 90 days and store the backup in cold storage."
     },
     13: {
-        "title_ur": "یو ایس ٹائم زونز سنکرونائزر (US Timezone Dispatch Synchronizer)",
-        "purpose": "America ke 4 timezones (Eastern, Central, Mountain, Pacific) ke mutabiq local office hours (8 AM se 5 PM) mein emails deliver karta hai.",
+        "title_en": "Timezone Scheduler & Jitter Engine",
+        "purpose": "Business-hour dispatch governor enforcing local recipient time windows (ET, CT, MT, PT) with anti-spam jitter.",
         "steps": [
-            "1. Live 4 ghariyan dekhein k recipient ke state mein is waqt kitne baje hain.",
-            "2. 'Active' status green hone par hi sending start karein.",
-            "3. Raat ke waqt automated queue pause ho jati hai taake contractor disturb na ho."
+            "1. Review live regional clocks for Eastern, Central, Mountain, and Pacific timezones.",
+            "2. Confirm recipient business hours (08:00-17:00 local) before queuing batch releases.",
+            "3. Apply randomized human delay jitter (30-90 seconds) to avoid robotic delivery cadence."
         ],
         "controls": [
-            ("Refresh live clocks", "US ke chaaron timezones ki ghariyon aur seconds ko live synchronize karta hai."),
-            ("Preview schedule", "Har timezone ke liye safe sending hours (8:00 AM - 5:00 PM) highlight karta hai."),
-            ("Pause queue", "Scheduled queue ko kisi bhi waqt hold par rakhne ke liye pause karta hai.")
+            ("Sync Regional Clocks", "Refreshes live US timezone offsets against atomic time servers."),
+            ("Simulate Window Release", "Tests queuing logic against current recipient business hours."),
+            ("Enable Smart Jitter", "Randomizes dispatch intervals to replicate human typing and sending patterns.")
         ],
-        "tip": "Tip for Outreach: New York (ET) aur California (PT) mein 3 ghante ka farq hota hai, iska hamesha khayal rakhein."
+        "tip": "Schedule outreach to arrive at 09:15 AM recipient local time for highest open rates."
     },
     14: {
-        "title_ur": "باؤنس پروٹیکشن اور بلاک لسٹ (Bounce Sentinel & Suppression)",
-        "purpose": "Invalid ya expired email addresses ko filter karta hai taake bounce rate 0.08% se kam rahe aur domain reputation block na ho.",
+        "title_en": "Bounce Shield & Zero-Bounce Protection",
+        "purpose": "Pre-dispatch email verification layer protecting sender reputation by filtering invalid, disposable, and spam-trap addresses.",
         "steps": [
-            "1. Live bounce rate (0.08% Low Risk) aur spam blacklists check karein.",
-            "2. Agar koi contractor unsubscribe kare to 'Add Email to Suppression' mein daal dein.",
-            "3. 'Export Suppressions' se block list CSV download karein."
+            "1. Inspect incoming contractor lead lists for syntax anomalies and missing MX records.",
+            "2. Cross-reference lead emails against the global suppression registry.",
+            "3. Automatically purge hard-bounced addresses before campaign staging."
         ],
         "controls": [
-            ("Sanitize queue", "Sending list se unverified aur risky emails ko foran remove karta hai."),
-            ("Run DNSBL scan", "Spamhaus aur Barracuda samet 8 global spam blacklists ko live scan karta hai."),
-            ("Export Suppressions", "Block shuda email addresses ki mukammal CSV file download karta hai.")
+            ("Audit Lead List", "Runs MX record checks and syntax validation on active contact lists."),
+            ("Add to Suppression List", "Permanently blocks an address from receiving future outreach."),
+            ("Export Suppression Registry", "Downloads the active suppression list in CSV format for compliance.")
         ],
-        "tip": "Tip for Team: Kisi bhi contractor ke unsubscribe kehne par foran unka email suppress karein."
+        "tip": "Maintain bounce rates strictly below 1.5% to preserve Google Workspace domain reputation."
     },
     15: {
-        "title_ur": "اے آئی ریپلائی اینالائزر (NLP Response Classifier)",
-        "purpose": "Contractors ke incoming replies ko parh kar automatically batata hai k contractor interested hai, out-of-office hai ya not interested.",
+        "title_en": "Auto-Reply Sentiment & Reply Classifier",
+        "purpose": "Natural language processing classifier parsing incoming replies into actionable sentiment classes (Full Interested, Most Interested, Interested, Follow-up Queued).",
         "steps": [
-            "1. Contractor ka email message paste karein ya test preset choose karein.",
-            "2. 'Analyze Sentiment' par click karein aur intent score (98.6%) check karein.",
-            "3. Positive response ko 'Push Deal to CRM' par click kar k direct deal mein tabdeel karein."
+            "1. Review incoming replies categorized by algorithmic intent score.",
+            "2. Inspect Full Interested leads requesting contract proposals or discovery calls.",
+            "3. Push approved positive responses directly into CRM revenue pipeline opportunities."
         ],
         "controls": [
-            ("Classify inbox", "Tamam new incoming replies par NLP sentiment analysis run karta hai."),
-            ("Review uncertain", "Jin replies mein baat wazeh na ho unhein human review ke liye filter karta hai."),
-            ("Push to CRM", "Interested contractors ko foran Module 7 CRM Pipeline mein forward karta hai.")
+            ("Classify Sentiment", "Parses raw email text to evaluate intent, objection type, and urgency."),
+            ("Push to CRM Pipeline", "Creates an opportunity card in CRM Stage 1 or Stage 2."),
+            ("Mark as Addressed", "Archives the reply from the active notification review queue.")
         ],
-        "tip": "Tip for Abdullah: Positive intent wale contractors ko 30 minutes ke andar call ya customized quote dein."
+        "tip": "Respond to 'Full Interested' contractor replies within 30 minutes for maximum conversion."
     },
     16: {
-        "title_ur": "رپورٹنگ اور اینالیٹکس اسٹوڈیو (Campaign Reporting Studio)",
-        "purpose": "Poori outreach campaign, response rates aur revenue ka mukammal report taiyar karta hai jo client presentation ya team review ke liye zaroori hai.",
+        "title_en": "Multi-Format Exporter & Report Builder",
+        "purpose": "Comprehensive business intelligence exporter generating clean CSV, Excel, and TXT reports across all system operations.",
         "steps": [
-            "1. Report Scope (Weekly, Monthly) aur Metrics select karein.",
-            "2. CSV, Excel (.xls) ya TXT format choose karein.",
-            "3. Download button daba kar professional formatted report haasil karein."
+            "1. Select the operational scope (Outreach Logs, Contractor Leads, Pipeline Deals, Audit Records).",
+            "2. Define the desired date range and filtering criteria.",
+            "3. Generate and download formatted reports with one-click browser export."
         ],
         "controls": [
-            ("Build CSV report", "Outreach telemetry aur delivery stats ki CSV spreadsheet download karta hai."),
-            ("Build Excel report", "Executive Deal ROI aur pipeline conversions ka formatted Excel (.xls) banata hai."),
-            ("Download audit TXT", "Colleagues ki security access trail ka signed TXT summary download karta hai.")
+            ("Export as CSV", "Builds a standardized comma-separated values file compatible with all CRM tools."),
+            ("Export as Excel (.xls)", "Generates a structured spreadsheet with formatted data columns."),
+            ("Export as Plain Text", "Creates an unformatted TXT dump for terminal parsing or archival.")
         ],
-        "tip": "Tip for Sarah: Har Monday subah Excel report download kar k weekly target review karein."
+        "tip": "Export contractor lead batches in CSV format for seamless synchronization with external tools."
     },
     17: {
-        "title_ur": "ایمرجنسی ٹیم براڈکاسٹ (Emergency Broadcast Node)",
-        "purpose": "Tamam active colleagues (Sarah, Hamza, Abdullah, King) ki screens par foran priority announcement ya urgent notice display karta hai.",
+        "title_en": "Broadcast Notification Terminal",
+        "purpose": "Direct team communications console delivering high-priority alert banners and audible chimes across colleague terminals.",
         "steps": [
-            "1. Target (All Colleagues ya specific person) aur Priority (High, Critical) select karein.",
-            "2. Important announcement text likhein aur 'Play sound alert' check karein.",
-            "3. 'Transmit Broadcast' daba kar foran sub ke displays par pop-up send karein."
+            "1. Select target audience (All Colleague Terminals or a specific team member).",
+            "2. Compose the alert message and select priority tier (Standard, Warning, Critical).",
+            "3. Dispatch the broadcast with optional priority audio chime."
         ],
         "controls": [
-            ("Compose broadcast", "Priority notification form ko focus kar k send karne ke liye tayar karta hai."),
-            ("Send test packet", "Sabhi colleagues ke screens par safe test notification packet bhejta hai."),
-            ("Review acknowledgements", "Colleagues ke confirmation receipts (Delivered/Acknowledged) check karta hai.")
+            ("Send Broadcast Alert", "Pushes the notification instantaneously to all connected sessions."),
+            ("Test Alert Chime", "Plays the priority notification tone locally for volume verification."),
+            ("Clear Active Broadcasts", "Dismisses all active team alert banners from client screens.")
         ],
-        "tip": "Tip for Admin: Critical announcements ke waqt audio chime zaroor enable rakhein."
+        "tip": "Use critical broadcasts sparingly for major events like emergency dispatch freezes."
     },
     18: {
-        "title_ur": "برانڈ تھیم اور کلرز اسٹوڈیو (Palette & Theme Studio)",
-        "purpose": "Portal ka visual appearance, dark luxury colors (Emerald, Obsidian, Gold) aur typography font sizes customize karne ke liye.",
+        "title_en": "Brand Palette Studio",
+        "purpose": "Visual customization workstation enabling live theme switching, custom palette editing, and typography tuning.",
         "steps": [
-            "1. Theme presets (Emerald Signature, Obsidian Gold, Sapphire Node) mein se choose karein.",
-            "2. Font size aur weight slider se text readability customize karein.",
-            "3. Changes live apply ho kar server aur browser mein permanently save ho jati hain."
+            "1. Preview luxury theme presets (Executive Dark, Clean Light, Emerald Luxury, Midnight Obsidian).",
+            "2. Adjust surface colors, canvas backgrounds, and ribbon accents using live color pickers.",
+            "3. Tune typography fonts, weights, and letter-spacing for optimal visual ergonomics."
         ],
         "controls": [
-            ("Open brand palette", "Executive theme modal kholta hai jahan se tamam color hex codes change ho sakte hain."),
-            ("Tune typography", "Portal ke font sizes aur typography weights ko customize karta hai."),
-            ("Preview light mode", "High-contrast accessible theme preview toggle karta hai.")
+            ("Apply Theme Preset", "Instantly restyles the portal canvas and persists selection to browser storage."),
+            ("Reset to Default", "Restores the signature Grace Outreach emerald & gold executive dark palette."),
+            ("Save Custom Colors", "Stores bespoke palette parameters into local configuration.")
         ],
-        "tip": "Tip for Team: Default 'Emerald Luxury Dark' theme eyes ke liye sab se comfortable aur sharp hai."
+        "tip": "The signature Emerald & Gold dark theme provides the best visual comfort during evening operations."
     },
     19: {
-        "title_ur": "ویب ہک اور کلاؤڈ انٹیگریشن (Cloud Webhook Dispatcher)",
-        "purpose": "Grace Outreach ko external systems (HubSpot, Slack, Zapier, Webhook endpoints) ke saath real-time data sync ke liye jorta hai.",
+        "title_en": "Cloud Webhook Dispatcher",
+        "purpose": "Secure event delivery engine streaming outreach events, replies, and deal updates to external endpoints with HMAC-SHA256 signatures.",
         "steps": [
-            "1. Webhook URL aur HMAC-SHA256 secret verify karein.",
-            "2. JSON payload editor mein test message check karein.",
-            "3. 'Send Test Webhook' daba kar live HTTP 200 response confirm karein."
+            "1. Configure destination webhook URL and verify HTTPS certificate validity.",
+            "2. Set the cryptographic HMAC secret key used to sign outbound JSON payloads.",
+            "3. Dispatch signed test events and inspect real HTTP status code receipts."
         ],
         "controls": [
-            ("Dispatch test JSON", "Connected endpoint par signed JSON payload bhej kar HTTP 200 OK test karta hai."),
-            ("Replay retry queue", "Temporary fail hone wale webhooks ko automatically dobara re-send karta hai."),
-            ("Rotate webhook secret", "HMAC signing secret ko refresh kar k security tighten karta hai.")
+            ("Dispatch Test Webhook", "Sends a signed test payload and displays the target server's HTTP response."),
+            ("Inspect Delivery Log", "Reviews recent webhook delivery attempts, timestamps, and latency metrics."),
+            ("Regenerate Secret Key", "Issues a new cryptographic signing key for downstream verification.")
         ],
-        "tip": "Tip for Tech Lead: HMAC secret verify hone ke baad external CRMs automatically update hote hain."
+        "tip": "Always verify HMAC-SHA256 signatures on your receiving server before processing incoming events."
     },
     20: {
-        "title_ur": "ڈیلی کوٹہ اور اکاؤنٹ ہیلتھ (Daily Quota & Account Guardrail)",
-        "purpose": "Har Gmail inbox ki 50 emails/day ceiling enforce karta hai taake Google ka automated algorithm kisi inbox ko flag na kare.",
+        "title_en": "Daily Quota Guard & Safety Ceiling",
+        "purpose": "Protective quota monitor enforcing strict daily send limits (50 msgs/day) and automatic emergency freezes to prevent domain flagging.",
         "steps": [
-            "1. Teeno inboxes ke consumed quota bars (45/50, 32/50, 18/50) dekhein.",
-            "2. Agar koi account 48 par pohnche to 'Emergency Freeze' activate karein.",
-            "3. Pacing schedule check karein k har 30 minute mein kitni emails send ho rahi hain."
+            "1. Monitor cumulative sending volume across all active Gmail mailboxes.",
+            "2. Inspect remaining capacity per inbox and projected daily exhaustion times.",
+            "3. Enable automatic emergency freeze if any inbox approaches 90% of its safe ceiling."
         ],
         "controls": [
-            ("Recalculate quota", "Teeno inboxes ka safe remaining quota refresh kar k pacing schedule banata hai."),
-            ("Open safe-send plan", "Har 30-minute block ke safe sending windows ko table mein show karta hai."),
-            ("Lock overage", "Emergency safety freeze toggle karta hai taake koi bhi inbox 50 ki limit cross na kare.")
+            ("Recalculate Headroom", "Computes safe remaining dispatch volume based on active business hours."),
+            ("Emergency Mailbox Freeze", "Locks all outbound sending across specified accounts immediately."),
+            ("Reset Daily Counters", "Manually resets daily volume counters following midnight quota renewal.")
         ],
-        "tip": "Tip for All: Kisi bhi surat mein ek inbox se aik din mein 50 se zyada emails send na karein."
+        "tip": "Never exceed 45 emails per day on a single standard Gmail inbox to prevent account reviews."
     },
     21: {
-        "title_ur": "سیکیورٹی آڈٹ اور فرانزک لاگ (Security Audit Stream & Forensic Ledger)",
-        "purpose": "Poore portal mein kon kab login hua, kis ne permission badli ya email send ki, sab ka immutable digital record rakhta hai.",
+        "title_en": "Security Audit Stream & Forensics",
+        "purpose": "Immutable append-only audit trail logging all logins, permission updates, configuration changes, and data exports.",
         "steps": [
-            "1. Live Audit Table mein timestamps, user name aur actions inspect karein.",
-            "2. Naya manual security note log karna ho to form mein details submit karein.",
-            "3. 'Export Signed Audit Record' se certified TXT audit report download karein."
+            "1. Review the chronological stream of system events, operator identities, and timestamps.",
+            "2. Filter audit records by action type (Authentication, RBAC, Dispatch, Configuration).",
+            "3. Export cryptographically signed audit logs for compliance reviews."
         ],
         "controls": [
-            ("Export Audit Log", "Signed aur cryptographically timestamped audit log TXT format mein export karta hai."),
-            ("Run threat scan", "Logins aur IP addresses scan kar k unauthorized access attempts check karta hai."),
-            ("Flush memory buffer", "Pending audit logs ko permanently server disk storage par commit karta hai.")
+            ("Refresh Audit Stream", "Fetches the latest event entries from the server's shared audit journal."),
+            ("Filter by Operator", "Isolates actions performed by a specific colleague or administrator."),
+            ("Export Audit Trail", "Downloads an immutable text record containing full forensic metadata.")
         ],
-        "tip": "Tip for Super Admin: Har hafte audit log export kar k company compliance ke liye archive karein."
+        "tip": "Regularly inspect the audit stream to verify that all administrative actions were authorized."
     },
     22: {
-        "title_ur": "ڈیٹا ری کنسیلیشن اور ہب سنک (Data Reconciliation & Hub Sync)",
-        "purpose": "CRM deals, Gmail inboxes, contractors data aur local storage ke darmiyan kisi bhi mismatch ko dhoond kar 100% align karta hai.",
+        "title_en": "Enterprise Sync Engine & Reconciliation",
+        "purpose": "Bi-directional reconciliation service ensuring complete data alignment between local state, CRM records, and Google API telemetry.",
         "steps": [
-            "1. Drift monitor gauge dekhein (0.0% No Drift ka matlab sab records barabar hain).",
-            "2. 'Run Full Sync & Reconciliation' par click karein.",
-            "3. Progress bar 100% hone par verification status check karein."
+            "1. Review synchronization status and data drift metrics (0.0% drift = optimal alignment).",
+            "2. Identify any mismatched contact states, unsynced replies, or pending CRM updates.",
+            "3. Execute a full bi-directional reconciliation to synchronize all data stores."
         ],
         "controls": [
-            ("Run full sync", "CRM, Mailboxes aur Central Hub ke darmiyan bi-directional sync run karta hai."),
-            ("Review drift", "Aise records ko scan karta hai jo sync se bahar hon aur 0.0% drift verify karta hai."),
-            ("Open connector map", "Connected cloud APIs ka interactive integration network dikhata hai.")
+            ("Run Full Reconciliation", "Performs deep two-way data matching across local databases and cloud APIs."),
+            ("Resolve Drift Exceptions", "Applies authoritative server state to any conflicting local records."),
+            ("Export Sync Summary", "Generates an audit report summarizing reconciled records and execution latency.")
         ],
-        "tip": "Tip for Team: Badi campaign dispatch karne ke baad reconciliation zaroor chalayein."
+        "tip": "Run a full reconciliation at the conclusion of each daily outreach shift to guarantee data consistency."
     }
 }
 
@@ -4895,7 +5521,7 @@ def get_module_user_friendly_guide_html(m_id):
     )
     
     controls_html = "".join(
-        f'<div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 12px; margin-bottom:6px;"><div style="display:flex; align-items:center; gap:6px;"><span class="badge" style="background:#10B981; color:#000; font-weight:800; font-size:10px; padding:2px 6px; border-radius:4px;">RUN</span><strong style="color:#FFF; font-size:12px;">{name}</strong></div><div style="font-size:11px; color:#94A3B8; margin-top:2px;">{desc}</div></div>'
+        f'<div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:6px; padding:8px 12px; margin-bottom:6px;"><div style="display:flex; align-items:center; gap:6px;"><span class="badge" style="background:#10B981; color:#000; font-weight:800; font-size:10px; padding:2px 6px; border-radius:4px;">ACTION</span><strong style="color:#FFF; font-size:12px;">{name}</strong></div><div style="font-size:11px; color:#94A3B8; margin-top:2px;">{desc}</div></div>'
         for name, desc in guide["controls"]
     )
     
@@ -4907,42 +5533,42 @@ def get_module_user_friendly_guide_html(m_id):
                     📘
                 </div>
                 <div>
-                    <h3 style="margin:0; font-size:16px; color:#FFF; font-weight:700;">Colleague Operations Guide · ساتھیوں کے لیے گائیڈ</h3>
-                    <div style="font-size:12px; color:var(--accent-gold); font-weight:600; margin-top:2px;">{guide["title_ur"]}</div>
+                    <h3 style="margin:0; font-size:16px; color:#FFF; font-weight:700;">Colleague Operations Runbook</h3>
+                    <div style="font-size:12px; color:var(--accent-gold); font-weight:600; margin-top:2px;">{guide.get("title_en", "Standard Operating Procedure")}</div>
                 </div>
             </div>
             <div style="display:flex; gap:8px;">
                 <span style="font-size:11px; padding:4px 10px; border-radius:12px; background:rgba(16,185,129,0.15); color:var(--accent-green); font-weight:bold; border:1px solid rgba(16,185,129,0.3);">🟢 Real-Time Interactive</span>
-                <span style="font-size:11px; padding:4px 10px; border-radius:12px; background:rgba(214,161,23,0.15); color:var(--accent-gold); font-weight:bold; border:1px solid rgba(214,161,23,0.3);">💡 Team Friendly</span>
+                <span style="font-size:11px; padding:4px 10px; border-radius:12px; background:rgba(214,161,23,0.15); color:var(--accent-gold); font-weight:bold; border:1px solid rgba(214,161,23,0.3);">💡 Operational Protocol</span>
             </div>
         </div>
         
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
-            <!-- Column 1: Purpose & Steps -->
+            <!-- Column 1: Purpose & SOP Steps -->
             <div style="background:rgba(0,26,23,0.6); border:1px solid rgba(18,59,53,0.8); border-radius:8px; padding:14px;">
-                <div style="font-size:11px; font-weight:800; color:var(--accent-green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">📌 Purpose / مقصد</div>
+                <div style="font-size:11px; font-weight:800; color:var(--accent-green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">📌 Purpose &amp; Operational Scope</div>
                 <div style="font-size:13px; color:#F1F5F9; line-height:1.5; margin-bottom:14px;">{guide["purpose"]}</div>
                 
-                <div style="font-size:11px; font-weight:800; color:var(--accent-gold); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">💡 How to use / طریقہ کار</div>
+                <div style="font-size:11px; font-weight:800; color:var(--accent-gold); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">💡 Standard Operating Procedures (SOP)</div>
                 <div style="display:flex; flex-direction:column; gap:4px;">
                     {steps_html}
                 </div>
             </div>
             
-            <!-- Column 2: Controls Explained -->
+            <!-- Column 2: Controls & Executive Tip -->
             <div style="background:rgba(0,26,23,0.6); border:1px solid rgba(18,59,53,0.8); border-radius:8px; padding:14px;">
-                <div style="font-size:11px; font-weight:800; color:var(--accent-blue); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">⚡ Execution Controls / بٹن کیا کرتے ہیں؟</div>
-                <div style="font-size:12px; color:#94A3B8; margin-bottom:10px;">Niche Execution Controls mein har button real-time kaam karta hai:</div>
-                {controls_html}
+                <div style="font-size:11px; font-weight:800; color:var(--accent-green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">⚙️ Workspace Controls &amp; Capabilities</div>
+                <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
+                    {controls_html}
+                </div>
+                
+                <div style="background:rgba(214,161,23,0.1); border:1px solid rgba(214,161,23,0.3); border-radius:6px; padding:10px 12px; font-size:12px; color:#FDE68A;">
+                    <strong>💡 Executive Best Practice Tip:</strong> {guide["tip"]}
+                </div>
             </div>
-        </div>
-        
-        <div style="margin-top:14px; padding:10px 14px; background:rgba(214,161,23,0.08); border-left:3px solid var(--accent-gold); border-radius:0 6px 6px 0; font-size:12px; color:#E2E8F0;">
-            <strong style="color:var(--accent-gold);">Operational Tip:</strong> {guide["tip"]}
         </div>
     </div>
     """
-
 
 def get_module_workspace_html(m_id):
     if m_id == 1:
@@ -5922,14 +6548,29 @@ def render_colleagues():
 def app(environ, start_response):
     path = environ.get("PATH_INFO", "")
 
-    # 1. Assets route (Grace logo with embedded SVG fallback)
-    if path.rstrip("/") == "/api/assets/grace-logo.jfif":
-        logo_bytes = LOGO_SVG.encode("utf-8")
-        content_type = "image/svg+xml"
+    # 1. Assets route (Grace 3D Crest Logo, Favicon, and Legacy endpoints)
+    if path.rstrip("/") in ("/api/assets/grace-logo.png", "/api/assets/grace-logo.jfif", "/favicon.ico", "/favicon.png"):
+        app_dir = Path(__file__).resolve().parent
+        logo_candidates = [
+            app_dir / "assets" / "grace-logo.png",
+            app_dir / "data" / "grace-logo.png",
+            DATA_DIR / "grace-logo.png",
+        ]
+        logo_bytes = b""
+        for cand in logo_candidates:
+            if cand.exists():
+                try:
+                    with open(cand, "rb") as lf:
+                        logo_bytes = lf.read()
+                    break
+                except Exception:
+                    pass
+        if not logo_bytes:
+            logo_bytes = b""
         start_response(
             "200 OK",
             [
-                ("Content-Type", content_type),
+                ("Content-Type", "image/png"),
                 ("Content-Length", str(len(logo_bytes))),
                 ("Cache-Control", "public, max-age=86400, immutable"),
             ],
