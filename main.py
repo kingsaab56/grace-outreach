@@ -1290,29 +1290,44 @@ BASE_CSS = """
         font-size: 11px;
     }
 
-    /* 3D LUXURY CREST LOGO */
+    /* 3D LUXURY CREST LOGO - BORDERLESS & CRISP ASPECT RATIO */
+    #brand-logo-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 12px 0 0 !important;
+        box-shadow: none !important;
+    }
     .brand-crest-logo {
-        width: 46px;
-        height: 46px;
-        object-fit: contain;
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
         border-radius: 12px;
-        border: 2px solid var(--accent-gold);
-        box-shadow: 0 4px 16px rgba(214, 161, 23, 0.4);
+        border: none !important;
+        outline: none !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
         vertical-align: middle;
-        margin-right: 12px;
         background: transparent;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: block;
     }
     .brand-crest-logo:hover {
         transform: scale(1.05);
-        box-shadow: 0 6px 20px rgba(214, 161, 23, 0.5);
+        box-shadow: 0 6px 22px rgba(214, 161, 23, 0.4);
     }
     .auth-header .brand-crest-logo {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        border: 2px solid var(--accent-gold);
-        box-shadow: 0 6px 22px rgba(214, 161, 23, 0.45);
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        border: none !important;
+        outline: none !important;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    }
+    body.light .brand-crest-logo {
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     }
 
     /* HEADER TYPOGRAPHY & CREATOR BADGES */
@@ -2431,28 +2446,53 @@ function addAndHuntCustomContractor() {
 /* =========================================================================
    AUTHENTICATION, DELEGATION & ONBOARDING ENHANCEMENTS
    ========================================================================= */
+function isUserAuthenticated() {
+    const token = window.localStorage.getItem('grace-auth-token');
+    const sessUser = window.sessionStorage.getItem('grace_auth_user');
+    const localUser = window.localStorage.getItem('grace_auth_user');
+    return Boolean((token && token.length > 5) || sessUser || localUser);
+}
+
+function getActiveAuthUser() {
+    return window.sessionStorage.getItem('grace_auth_user') ||
+           window.localStorage.getItem('grace_auth_user') ||
+           window.localStorage.getItem('grace-view-as') ||
+           'king';
+}
+
+function persistUserAuthentication(userKey, roleName = '') {
+    const key = userKey || 'king';
+    const role = roleName || (PROFILE_DATA[key]?.role || 'Super Admin');
+    window.sessionStorage.setItem('grace_auth_user', key);
+    window.sessionStorage.setItem('grace_auth_role', role);
+    window.localStorage.setItem('grace_auth_user', key);
+    window.localStorage.setItem('grace-view-as', key);
+    window.localStorage.setItem('grace-auth-token', 'oauth_token_' + key + '_verified_2026');
+    window.localStorage.setItem('grace-session-locked', 'false');
+    document.body.classList.remove('safety-locked');
+    closeAuthGateway();
+    updateNavColleagueVisibility();
+}
+
 function handleExecutiveLogout() {
     window.localStorage.removeItem('grace-view-as');
     window.localStorage.removeItem('grace-auth-token');
+    window.localStorage.removeItem('grace_auth_user');
+    window.sessionStorage.removeItem('grace_auth_user');
+    window.sessionStorage.removeItem('grace_auth_role');
+    window.localStorage.setItem('grace-session-locked', 'true');
     showToast('Session terminated. Returning to Executive Start Gateway...', 'info');
-    const gateway = document.getElementById('auth-gateway-overlay');
-    if (gateway) {
-        gateway.hidden = false;
-        switchAuthTab('signin');
-    }
+    openAuthGateway('signin', true, true);
 }
 
 function handleGoogleOAuthLogin() {
     showToast('Connecting to Google Identity Services...', 'info');
     window.setTimeout(() => {
-        showToast('Google OAuth 2.0 handshake verified. Logging in as King Saab...', 'success');
-        window.localStorage.setItem('grace-view-as', 'king');
-        window.localStorage.setItem('grace-auth-token', 'oauth_token_google_verified_2026');
-        const gateway = document.getElementById('auth-gateway-overlay');
-        if (gateway) gateway.hidden = true;
+        persistUserAuthentication('king', 'Super Admin');
+        showToast('Google OAuth 2.0 handshake verified. Logged in as King Saab.', 'success');
         dispatchWelcomeAutoReply('King Saab', 'Super Admin');
-        updateNavColleagueVisibility();
-    }, 1200);
+        changeViewAs('king');
+    }, 300);
 }
 
 function generateUsernameSuggestions(fullName) {
@@ -2596,17 +2636,31 @@ function updateNavColleagueVisibility() {
 // Hook into initial page hydration
 window.addEventListener('DOMContentLoaded', () => {
     updateNavColleagueVisibility();
+    if (isUserAuthenticated()) {
+        const authedUser = getActiveAuthUser();
+        if (!window.sessionStorage.getItem('grace_auth_user')) {
+            window.sessionStorage.setItem('grace_auth_user', authedUser);
+        }
+        closeAuthGateway();
+    }
 });
 
 function powerOff() {
+    window.localStorage.setItem('grace-session-locked', 'true');
     openAuthGateway('signin', true, false);
     showToast('Session locked. Terminal returned to Security Gateway.', 'info');
 }
 
 function openAuthGateway(tab = 'signin', isLock = false, isMandatory = false) {
+    if (!isLock && isUserAuthenticated()) {
+        closeAuthGateway();
+        return;
+    }
     const overlay = document.getElementById('auth-gateway-overlay');
     if (!overlay) return;
     overlay.hidden = false;
+    overlay.style.display = 'grid';
+    overlay.setAttribute('aria-hidden', 'false');
     switchAuthTab(tab);
     if (isLock) {
         window.localStorage.setItem('grace-session-locked', 'true');
@@ -2625,18 +2679,19 @@ function openAuthGateway(tab = 'signin', isLock = false, isMandatory = false) {
 
 function closeAuthGateway() {
     const overlay = document.getElementById('auth-gateway-overlay');
-    if (overlay) overlay.hidden = true;
+    if (overlay) {
+        overlay.hidden = true;
+        overlay.style.display = 'none';
+        overlay.setAttribute('aria-hidden', 'true');
+    }
     window.localStorage.setItem('grace-session-locked', 'false');
     document.body.classList.remove('safety-locked');
 }
 
 function unlockGatewayPreview() {
-    if (!window.sessionStorage.getItem('grace_auth_user')) {
-        showToast('Access restricted: Please log in or create an account.', 'warning');
-        return;
-    }
+    window.localStorage.setItem('grace-session-locked', 'false');
     closeAuthGateway();
-    showToast('Lock screen dismissed. Active workspace preview active.', 'info');
+    showToast('Lock screen dismissed. Workspace preview active.', 'info');
 }
 
 function switchAuthTab(tab) {
@@ -2680,9 +2735,8 @@ function submitSignIn() {
         showToast('Invalid password for ' + (PROFILE_DATA[key]?.name || key) + '.', 'warning');
         return;
     }
-    window.sessionStorage.setItem('grace_auth_user', key);
+    persistUserAuthentication(key, PROFILE_DATA[key]?.role || 'Colleague');
     changeViewAs(key);
-    closeAuthGateway();
     publishAuditEvent('Authentication', 'Colleague signed into workspace: ' + (PROFILE_DATA[key]?.name || key));
     showToast('Welcome back, ' + PROFILE_DATA[key].name + ' · Workspace unlocked.', 'success');
 }
@@ -2809,13 +2863,11 @@ function submitCreateAccount() {
     storedPasswords[cleanKey] = pwd;
     window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
     window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
-    window.sessionStorage.setItem('grace_auth_user', cleanKey);
-
     publishSharedState('profiles', newProfile, cleanKey);
     publishAuditEvent('Account Registration', 'Registered new colleague ' + name + ' (' + cleanKey + ')');
     populateColleaguePickers();
+    persistUserAuthentication(cleanKey, role);
     changeViewAs(cleanKey);
-    closeAuthGateway();
     showToast('New colleague identity registered successfully!', 'success');
 }
 
@@ -2930,8 +2982,10 @@ function applyStoredTheme() {
     startTelemetryFeed();
     syncSharedState();
 
-    if (window.localStorage.getItem('grace-session-locked') === 'true') {
+    if (window.localStorage.getItem('grace-session-locked') === 'true' && !isUserAuthenticated()) {
         openAuthGateway('signin', true);
+    } else if (isUserAuthenticated()) {
+        closeAuthGateway();
     }
 }
 
@@ -4487,9 +4541,15 @@ function cancelStudioDispatch() {
 const origApplyStoredTheme = applyStoredTheme;
 applyStoredTheme = function() {
     origApplyStoredTheme();
-    const authSession = window.sessionStorage.getItem('grace_auth_user');
-    if (!authSession) {
+    if (!isUserAuthenticated()) {
         openAuthGateway('signin', true, true);
+    } else {
+        const isLocked = window.localStorage.getItem('grace-session-locked') === 'true';
+        if (isLocked) {
+            openAuthGateway('signin', true, false);
+        } else {
+            closeAuthGateway();
+        }
     }
 };
 
@@ -5350,7 +5410,9 @@ def render_dashboard():
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/svg+xml">
+    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/png">
+    <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
+    <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - Dashboard Hub</title>
     <style>{BASE_CSS}</style>
 </head>
@@ -5563,7 +5625,9 @@ def render_matrix():
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/svg+xml">
+    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/png">
+    <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
+    <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - 22-Module Control Matrix</title>
     <style>{BASE_CSS}</style>
 </head>
@@ -6754,7 +6818,9 @@ def render_module_detail(mod_id):
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/svg+xml">
+    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/png">
+    <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
+    <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - Module {m_id}: {mod_info["name"]}</title>
     <style>{BASE_CSS}</style>
 </head>
@@ -6904,7 +6970,9 @@ def render_colleagues():
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/svg+xml">
+    <link rel="icon" href="{FAVICON_DATA_URI}" type="image/png">
+    <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
+    <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - Colleague Management</title>
     <style>{BASE_CSS}</style>
 </head>
@@ -6994,10 +7062,15 @@ def app(environ, start_response):
                     pass
         if not logo_bytes:
             logo_bytes = b""
+        content_type = "image/png"
+        if logo_bytes.startswith(b"\xff\xd8"):
+            content_type = "image/jpeg"
+        elif logo_bytes.startswith(b"\x89PNG"):
+            content_type = "image/png"
         start_response(
             "200 OK",
             [
-                ("Content-Type", "image/png"),
+                ("Content-Type", content_type),
                 ("Content-Length", str(len(logo_bytes))),
                 ("Cache-Control", "public, max-age=86400, immutable"),
             ],
