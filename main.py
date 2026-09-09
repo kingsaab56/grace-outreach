@@ -731,7 +731,7 @@ def render_header():
                 <button class="palette-option" onclick="applyTheme('royal')" style="--swatch:#16204A"><i></i><b>Royal Signal</b><small>High contrast</small></button>
                 <button class="palette-option" onclick="applyTheme('sandstone')" style="--swatch:#3B2A1A"><i></i><b>Sandstone</b><small>Warm command</small></button>
                 <button class="palette-option" onclick="applyTheme('slate')" style="--swatch:#1E293B"><i></i><b>Slate</b><small>Neutral ops</small></button>
-                <button class="palette-option" onclick="applyTheme('dark')" style="--swatch:#0B1120"><i></i><b>Executive Dark</b><small>Luxury Obsidian</small></button><button class="palette-option" onclick="applyTheme('light')" style="--swatch:#FFFFFF"><i></i><b>Clean Light</b><small>High contrast slate</small></button>
+                <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight Obsidian</b><small>Executive Dark</small></button><button class="palette-option" onclick="applyTheme('emerald')" style="--swatch:#031C18"><i></i><b>Emerald Luxury</b><small>Signature Green</small></button><button class="palette-option" onclick="applyTheme('sapphire')" style="--swatch:#070E1A"><i></i><b>Sapphire Command</b><small>Deep Navy</small></button>
             </div>
             <span class="eyebrow palette-type-label">SURFACE COLOR CONTROLS</span>
             <div class="color-control-grid">
@@ -958,18 +958,17 @@ BASE_CSS = """
         --accent-gold: #D6A117;
         --nav-color: #00110F;
     }
-    /* GLOBAL BODY DEFAULT */
+    /* GLOBAL BODY & SEAMLESS DARK LUXURY THEME */
     body {
+        background-color: #0B1120 !important;
+        color: #F8FAFC !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         margin: 0;
         padding: 22px;
-        transition: background-color 0.2s ease, color 0.2s ease;
+        background-image: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, .08), transparent 38rem);
     }
 
-    /* =========================================================================
-       DARK THEME (Executive Dark Luxury)
-       ========================================================================= */
-    body.dark, body:not(.light) {
+    :root, body.dark, body {
         --bg-main: #0B1120;
         --bg-card: #001A17;
         --text-main: #F8FAFC;
@@ -979,93 +978,122 @@ BASE_CSS = """
         --accent-green: #10B981;
         --accent-orange: #F59E0B;
         --accent-gold: #D6A117;
-        background-color: #0B1120 !important;
-        color: #F8FAFC !important;
-        background-image: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, .08), transparent 38rem);
+        --nav-color: #00110F;
     }
-    body.dark .top-bar, body:not(.light) .top-bar {
-        background: var(--nav-color, #00110F) !important;
-        border-color: #80621B !important;
-    }
-    body.dark .top-bar h1, body.dark .top-bar a, body.dark .top-bar span,
-    body:not(.light) .top-bar h1, body:not(.light) .top-bar a, body:not(.light) .top-bar span {
-        color: #F8FAFC !important;
-    }
-    body.dark .card, body.dark .stat-card, body.dark .module-panel, body.dark .modal-card,
-    body:not(.light) .card, body:not(.light) .stat-card, body:not(.light) .module-panel, body:not(.light) .modal-card {
+
+    /* Seamless cohesive cards - no disjointed white boxes */
+    .card, .stat-card, .module-panel, .modal-card, .module-hero {
         background: #001A17 !important;
         border: 1px solid #123B35 !important;
         color: #F8FAFC !important;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        margin-bottom: 22px;
     }
-    body.dark .stat-title, body:not(.light) .stat-title {
+
+    .top-bar {
+        background: #00110F !important;
+        border: 1px solid #80621B !important;
+        border-radius: 14px;
+        padding: 16px 22px;
+        margin-bottom: 18px;
+    }
+    .top-bar h2 { color: #F8FAFC !important; }
+    .top-bar span { color: var(--text-muted) !important; }
+
+    .view-as-bar {
+        background: linear-gradient(100deg, rgba(16,185,129,.1), rgba(214,161,23,.06)) !important;
+        border: 1px solid var(--accent-gold) !important;
+        border-radius: 12px;
+        color: #F8FAFC !important;
+        margin: -4px 0 22px;
+        padding: 14px 18px;
+    }
+    .view-as-bar strong, .view-as-bar b { color: #FFFFFF !important; }
+    .view-as-bar small { color: var(--text-muted) !important; }
+    .view-as-controls { color: var(--accent-green) !important; }
+    .view-as-controls select {
+        background: #001A17 !important;
+        color: #F8FAFC !important;
+        border: 1px solid #123B35 !important;
+    }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 22px; }
+    .stat-card {
+        background: #001A17 !important;
+        border: 1px solid #123B35 !important;
+        border-radius: 14px !important;
+        padding: 18px 22px !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
+    }
+    .stat-title {
         color: #9BB0AD !important;
         font-size: 12px !important;
         font-weight: 800 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.6px !important;
     }
-    body.dark .stat-value, body:not(.light) .stat-value {
+    .stat-value {
         color: #10B981 !important;
         font-size: 32px !important;
         font-weight: 800 !important;
         margin: 10px 0 6px !important;
-        text-shadow: 0 0 16px rgba(16,185,129,0.35) !important;
+        text-shadow: 0 0 16px rgba(16, 185, 129, 0.35) !important;
     }
-    body.dark .stat-sub, body:not(.light) .stat-sub {
+    .stat-sub {
         color: #10B981 !important;
         font-size: 13px !important;
         font-weight: 700 !important;
     }
-    body.dark .card h1, body.dark .card h2, body.dark .card h3, body.dark .card h4,
-    body:not(.light) .card h1, body:not(.light) .card h2, body:not(.light) .card h3, body:not(.light) .card h4 {
+
+    .card h1, .card h2, .card h3, .card h4 {
         color: #FFFFFF !important;
         font-weight: 700 !important;
     }
-    body.dark .card p, body.dark .card span,
-    body:not(.light) .card p, body:not(.light) .card span {
-        color: #E2E8F0;
-    }
-    body.dark .btn-gray, body:not(.light) .btn-gray {
+    .card p, .card span { color: #E2E8F0; }
+
+    .btn-gray {
         background: #032824 !important;
         color: #F8FAFC !important;
         border: 1px solid #80621B !important;
     }
-    body.dark .btn-blue, body:not(.light) .btn-blue {
+    .btn-blue {
         background: #D6A117 !important;
         color: #061510 !important;
     }
-    body.dark .module-card, body:not(.light) .module-card {
+
+    .module-card {
         background: #001A17 !important;
-        border-color: #123B35 !important;
+        border: 1px solid #123B35 !important;
+        border-radius: 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     }
-    body.dark .colleague-guide-card, body:not(.light) .colleague-guide-card {
+    .mod-title { color: var(--accent-green) !important; }
+    .mod-name { color: #FFFFFF !important; font-weight: 800; }
+    .module-desc { color: #9BB0AD !important; }
+    .mod-status-tag { color: var(--accent-green) !important; }
+
+    .colleague-guide-card {
         background: linear-gradient(135deg, rgba(6,53,43,0.35), rgba(11,17,32,0.85)) !important;
-        border-color: rgba(16,185,129,0.3) !important;
+        border: 1px solid rgba(16,185,129,0.3) !important;
         color: #F8FAFC !important;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
-    body.dark .colleague-guide-card h3, body:not(.light) .colleague-guide-card h3 {
-        color: #FFFFFF !important;
-    }
-    body.dark table th, body:not(.light) table th {
+    .colleague-guide-card h3 { color: #FFFFFF !important; }
+
+    table th {
         color: #9BB0AD !important;
         background: #001A17 !important;
+        border-bottom: 1px solid #123B35 !important;
     }
-    body.dark table td, body:not(.light) table td {
+    table td {
         color: #F8FAFC !important;
-        border-color: #123B35 !important;
+        border-bottom: 1px solid #123B35 !important;
     }
-    body.dark table td b, body:not(.light) table td b {
-        color: #FFFFFF !important;
-    }
-    body.dark .view-as-bar, body:not(.light) .view-as-bar {
-        background: linear-gradient(100deg,rgba(16,185,129,.1),rgba(214,161,23,.06)) !important;
-        border-color: var(--accent-gold) !important;
-    }
-    body.dark .view-as-bar strong, body:not(.light) .view-as-bar strong {
-        color: #FFFFFF !important;
-    }
-    body.dark .log-box, body:not(.light) .log-box {
+    table td b { color: #FFFFFF !important; }
+
+    .log-box {
         background: #051412 !important;
         border: 1px solid #123B35 !important;
         border-radius: 10px !important;
@@ -1076,194 +1104,28 @@ BASE_CSS = """
         max-height: 220px !important;
         overflow-y: auto !important;
     }
-    body.dark .log-box div, body:not(.light) .log-box div {
+    .log-box div {
         color: #34D399 !important;
         margin-bottom: 4px !important;
     }
 
-    /* =========================================================================
-       LIGHT THEME (High-Contrast Professional Clean Slate)
-       ========================================================================= */
-    body.light {
-        --bg-main: #F1F5F9;
-        --bg-card: #FFFFFF;
-        --text-main: #0F172A;
-        --text-muted: #475569;
-        --border-color: #CBD5E1;
-        --accent-blue: #0284C7;
-        --accent-green: #059669;
-        --accent-orange: #D97706;
-        --accent-gold: #B45309;
-        background-color: #F1F5F9 !important;
-        color: #0F172A !important;
-        background-image: none !important;
+    select, textarea, input[type="text"], input[type="number"], input[type="password"] {
+        background: rgba(0,26,23,0.8) !important;
+        color: #F8FAFC !important;
+        border: 1px solid #123B35 !important;
     }
-    body.light .top-bar {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    .telemetry-card {
+        background: #001A17 !important;
+        border: 1px solid rgba(16,185,129,0.35) !important;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.3);
     }
-    body.light .top-bar h1, body.light .top-bar a, body.light .top-bar span {
-        color: #0F172A !important;
+    .telemetry-card strong {
+        color: #10B981 !important;
+        text-shadow: 0 0 16px rgba(16,185,129,0.35) !important;
     }
-    body.light .profile-session-badge {
-        background: #F8FAFC !important;
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important;
-    }
-    body.light .nav-tabs {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-    }
-    body.light .nav-tab {
-        color: #475569 !important;
-    }
-    body.light .nav-tab.active {
-        background: #0284C7 !important;
-        color: #FFFFFF !important;
-    }
-    body.light .card, body.light .stat-card, body.light .module-panel, body.light .modal-card {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        color: #0F172A !important;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06) !important;
-    }
-    body.light .stat-title {
-        color: #475569 !important;
-        font-size: 12px !important;
-        font-weight: 800 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.6px !important;
-    }
-    body.light .stat-value {
-        color: #059669 !important;
-        font-size: 32px !important;
-        font-weight: 800 !important;
-        margin: 10px 0 6px !important;
-        text-shadow: none !important;
-    }
-    body.light .stat-sub {
-        color: #059669 !important;
-        font-size: 13px !important;
-        font-weight: 700 !important;
-    }
-    body.light .card h1, body.light .card h2, body.light .card h3, body.light .card h4 {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-    }
-    body.light .card p, body.light .card span {
-        color: #334155;
-    }
-    body.light .btn-gray {
-        background: #F1F5F9 !important;
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important;
-    }
-    body.light .btn-blue {
-        background: #0284C7 !important;
-        color: #FFFFFF !important;
-    }
-    body.light .module-card {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
-    }
-    body.light .mod-title {
-        color: #64748B !important;
-    }
-    body.light .mod-name {
-        color: #0F172A !important;
-    }
-    body.light .module-desc {
-        color: #334155 !important;
-    }
-    body.light .mod-status-tag {
-        color: #059669 !important;
-        background: rgba(5,150,105,0.1) !important;
-    }
-    body.light .colleague-guide-card {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        color: #0F172A !important;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
-    }
-    body.light .colleague-guide-card h3, body.light .colleague-guide-card strong {
-        color: #0F172A !important;
-    }
-    body.light .colleague-guide-card span, body.light .colleague-guide-card div {
-        color: #334155 !important;
-    }
-    body.light table th {
-        color: #475569 !important;
-        background: #F8FAFC !important;
-        border-color: #CBD5E1 !important;
-    }
-    body.light table td {
-        color: #0F172A !important;
-        border-color: #E2E8F0 !important;
-    }
-    body.light table td b {
-        color: #0F172A !important;
-    }
-    body.light .view-as-bar {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.04) !important;
-    }
-    body.light .view-as-bar strong, body.light .view-as-bar b {
-        color: #0F172A !important;
-    }
-    body.light .view-as-bar small {
-        color: #475569 !important;
-    }
-    body.light .view-as-controls select {
-        background: #F8FAFC !important;
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important;
-    }
-    body.light .log-box {
-        background: #0F172A !important;
-        border: 1px solid #334155 !important;
-        border-radius: 10px !important;
-        color: #34D399 !important;
-        font-family: monospace !important;
-        font-size: 13px !important;
-        line-height: 1.6 !important;
-        max-height: 220px !important;
-        overflow-y: auto !important;
-    }
-    body.light .log-box div {
-        color: #34D399 !important;
-        margin-bottom: 4px !important;
-    }
-    body.light select, body.light textarea, body.light input[type="text"], body.light input[type="number"], body.light input[type="password"] {
-        background: #FFFFFF !important;
-        color: #0F172A !important;
-        border: 1px solid #CBD5E1 !important;
-    }
-    body.light .telemetry-card {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
-    }
-    body.light .telemetry-card strong {
-        color: #059669 !important;
-        text-shadow: none !important;
-    }
-    body.light .telemetry-card .eyebrow {
-        color: #475569 !important;
-    }
-    body.light .telemetry-card small {
-        color: #059669 !important;
-    }
-    body.light .module-hero {
-        background: #FFFFFF !important;
-        border: 1px solid #CBD5E1 !important;
-        color: #0F172A !important;
-    }
-    body.light .module-hero h2 {
-        color: #0F172A !important;
-    }
+    .telemetry-card .eyebrow { color: #9BB0AD !important; }
+    .telemetry-card small { color: #10B981 !important; }
 
     /* COMMON UTILITIES */
     .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -2056,8 +1918,13 @@ function toggleGatewayAudio() {
    INITIALIZATION
    ========================================================================= */
 function applyStoredTheme() {
-    const stored = window.localStorage.getItem('grace-theme') || 'dark';
-    applyTheme(stored === 'light' ? 'light' : 'dark', false);
+    // Purge any stored light/cloud theme from browser storage
+    window.localStorage.removeItem('grace-theme');
+    document.body.classList.add('dark');
+    document.body.classList.remove('light');
+    document.body.style.backgroundColor = '#0B1120';
+    document.body.style.color = '#F8FAFC';
+
     applyTypography(false);
     hydrateAccessMap();
     hydrateLocalProfiles();
@@ -2080,42 +1947,43 @@ function applyStoredTheme() {
     }
 }
 
+let activeExecutiveTheme = 'midnight';
 function applyTheme(name, notify = true) {
-    const isLight = (name === 'light' || name === 'cloud');
-    const isDark = !isLight;
+    document.body.classList.add('dark');
+    document.body.classList.remove('light');
     
-    if (isDark) {
-        document.body.classList.add('dark');
-        document.body.classList.remove('light');
-        document.body.style.backgroundColor = '#0B1120';
-        document.body.style.color = '#F8FAFC';
-        selectedTheme = 'dark';
+    if (name === 'emerald') {
+        activeExecutiveTheme = 'emerald';
+        document.body.style.backgroundColor = '#031C18';
+    } else if (name === 'sapphire') {
+        activeExecutiveTheme = 'sapphire';
+        document.body.style.backgroundColor = '#070E1A';
     } else {
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
-        document.body.style.backgroundColor = '#F1F5F9';
-        document.body.style.color = '#0F172A';
-        selectedTheme = 'light';
+        activeExecutiveTheme = 'midnight';
+        document.body.style.backgroundColor = '#0B1120';
     }
-    window.localStorage.setItem('grace-theme', selectedTheme);
+    document.body.style.color = '#F8FAFC';
     updateThemeButton();
     if (notify) {
-        showToast(isDark ? '🌓 Dark Theme activated.' : '☀️ Light Theme activated.', 'success');
+        showToast('Executive Dark ' + activeExecutiveTheme.toUpperCase() + ' theme activated.', 'success');
     }
 }
 
 function updateThemeButton() {
     const btn = document.getElementById('theme-btn');
-    const isDark = document.body.classList.contains('dark') || !document.body.classList.contains('light');
     if (btn) {
-        btn.innerText = isDark ? '🌓 Theme: DARK' : '☀️ Theme: LIGHT';
+        btn.innerText = '🌓 Theme: ' + activeExecutiveTheme.toUpperCase();
     }
 }
 
 function toggleTheme() {
-    const isCurrentlyDark = document.body.classList.contains('dark') || !document.body.classList.contains('light');
-    const targetTheme = isCurrentlyDark ? 'light' : 'dark';
-    applyTheme(targetTheme);
+    if (activeExecutiveTheme === 'midnight') {
+        applyTheme('emerald');
+    } else if (activeExecutiveTheme === 'emerald') {
+        applyTheme('sapphire');
+    } else {
+        applyTheme('midnight');
+    }
 }
 
 function applyTypography(notify = true) {
@@ -5539,7 +5407,7 @@ def get_module_workspace_html(m_id):
                 <button class="palette-option" onclick="applyTheme('royal')" style="--swatch:#16204A"><i></i><b>Royal Signal</b><small>High contrast</small></button>
                 <button class="palette-option" onclick="applyTheme('sandstone')" style="--swatch:#3B2A1A"><i></i><b>Sandstone</b><small>Warm command</small></button>
                 <button class="palette-option" onclick="applyTheme('slate')" style="--swatch:#1E293B"><i></i><b>Slate</b><small>Neutral ops</small></button>
-                <button class="palette-option" onclick="applyTheme('dark')" style="--swatch:#0B1120"><i></i><b>Executive Dark</b><small>Luxury Obsidian</small></button><button class="palette-option" onclick="applyTheme('light')" style="--swatch:#FFFFFF"><i></i><b>Clean Light</b><small>High contrast slate</small></button>
+                <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight Obsidian</b><small>Executive Dark</small></button><button class="palette-option" onclick="applyTheme('emerald')" style="--swatch:#031C18"><i></i><b>Emerald Luxury</b><small>Signature Green</small></button><button class="palette-option" onclick="applyTheme('sapphire')" style="--swatch:#070E1A"><i></i><b>Sapphire Command</b><small>Deep Navy</small></button>
             </div>
             <div style="display:flex; justify-content:flex-end;">
                 <button class="btn btn-blue" onclick="openBrandPalette()">Open Full Typography &amp; Hex Studio</button>
