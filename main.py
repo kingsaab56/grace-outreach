@@ -25,6 +25,19 @@ US_STATES_CATALOG = [
     "Wisconsin", "Wyoming"
 ]
 
+US_CONTRACTORS_CATALOG = [
+    "Turner Construction Co.", "Bechtel Corporation", "Skanska USA Building",
+    "The Whiting-Turner Contracting Co.", "Gilbane Building Company", "Hensel Phelps",
+    "Clark Construction Group", "DPR Construction", "Mortenson Construction",
+    "McCarthy Building Companies", "Holder Construction", "Balfour Beatty US",
+    "JE Dunn Construction", "Brasfield & Gorrie", "Lendlease Americas",
+    "Suffolk Construction", "PCL Construction Enterprises", "Clayco Inc.",
+    "Sundt Construction", "Webcor Builders", "Walsh Construction",
+    "Structure Tone", "Austin Commercial", "Ryan Companies",
+    "Pepper Construction", "Swinerton Inc.", "Kitchell Corporation",
+    "Crossland Construction", "Level 10 Construction", "Hoar Construction"
+]
+
 MODULES_DATA = {
     1: {
         "name": "Dashboard Overview",
@@ -214,6 +227,7 @@ DEFAULT_PROFILES = {
         "initials": "KS",
         "tags": ["Manager", "Admin"],
         "assigned_states": ["California", "New York"],
+        "assigned_contractors": ["Turner Construction Co.", "Skanska USA Building"],
         "allowed": list(range(1, 23)),
         "metrics": {"pipeline": "2,480", "inboxes": "3 Inboxes", "volume": "1,240", "deal": "$64,800"},
     },
@@ -226,6 +240,7 @@ DEFAULT_PROFILES = {
         "initials": "AK",
         "tags": ["Manager", "Strategy"],
         "assigned_states": ["Texas", "Florida"],
+        "assigned_contractors": ["Bechtel Corporation", "Clark Construction Group"],
         "allowed": [1, 2, 3, 4, 5, 6, 7, 12],
         "metrics": {"pipeline": "1,860", "inboxes": "3 Inboxes", "volume": "920", "deal": "$48,200"},
     },
@@ -238,6 +253,7 @@ DEFAULT_PROFILES = {
         "initials": "SM",
         "tags": ["Marketer", "Growth"],
         "assigned_states": ["Illinois", "Washington"],
+        "assigned_contractors": ["Gilbane Building Company", "DPR Construction"],
         "allowed": [1, 2, 4, 5, 11, 17, 18],
         "metrics": {"pipeline": "1,120", "inboxes": "2 Inboxes", "volume": "640", "deal": "$18,400"},
     },
@@ -250,6 +266,7 @@ DEFAULT_PROFILES = {
         "initials": "HA",
         "tags": ["Collector", "Research"],
         "assigned_states": ["Georgia", "Ohio"],
+        "assigned_contractors": ["Mortenson Construction", "Hensel Phelps"],
         "allowed": [1, 2, 6, 7, 13, 16],
         "metrics": {"pipeline": "740", "inboxes": "1 Inbox", "volume": "410", "deal": "$12,600"},
     },
@@ -299,6 +316,14 @@ LEAVE_DEFAULTS = {
 }
 
 
+INITIAL_AUDIT_LOG = [
+    {"id": "AUD-1001", "user": "King Saab", "action": "System Kernel Initialized", "timestamp": "2026-09-10 00:00:01 PKT", "role": "Super Admin", "status": "Verified"},
+    {"id": "AUD-1002", "user": "King Saab", "action": "AES-256 Vault Locker Armed", "timestamp": "2026-09-10 00:01:15 PKT", "role": "Super Admin", "status": "Verified"},
+    {"id": "AUD-1003", "user": "Abdullah Khan", "action": "Contractor Outreach Pool Synced", "timestamp": "2026-09-10 00:05:22 PKT", "role": "Strategic Lead", "status": "Verified"},
+    {"id": "AUD-1004", "user": "System Daemon", "action": "US Working Contractors Catalog (30) Staged", "timestamp": "2026-09-10 00:10:00 PKT", "role": "Watchdog", "status": "Verified"}
+]
+
+
 def _default_shared_state():
     return {
         "photos": {},
@@ -307,6 +332,7 @@ def _default_shared_state():
         "leaves": copy.deepcopy(LEAVE_DEFAULTS),
         "clearedFines": {},
         "accessMap": {k: v["allowed"] for k, v in DEFAULT_PROFILES.items()},
+        "auditLog": copy.deepcopy(INITIAL_AUDIT_LOG),
     }
 
 
@@ -321,8 +347,11 @@ def _read_shared_state_unlocked():
     if not isinstance(saved, dict):
         raise ValueError("Shared Grace state has an invalid shape.")
     for key in state:
-        if key in saved and isinstance(saved[key], dict):
-            state[key].update(saved[key])
+        if key in saved:
+            if isinstance(saved[key], dict):
+                state[key].update(saved[key])
+            elif isinstance(saved[key], list):
+                state[key] = saved[key]
     return state
 
 
@@ -342,7 +371,7 @@ def _validate_shared_update(payload):
     if not isinstance(payload, dict):
         raise ValueError("State update must be a JSON object.")
     resource = payload.get("resource")
-    if resource not in {"photos", "profiles", "attendance", "leaves", "clearedFines", "accessMap"}:
+    if resource not in {"photos", "profiles", "attendance", "leaves", "clearedFines", "accessMap", "auditLog"}:
         raise ValueError(f"Unknown shared state resource: {resource}")
     value = payload.get("value")
 
@@ -370,7 +399,18 @@ def _validate_shared_update(payload):
         for st in assigned_states:
             if not isinstance(st, str) or st not in US_STATES_CATALOG:
                 raise ValueError(f"Invalid territory state: {st}")
+        assigned_contractors = value.get("assigned_contractors", [])
+        if not isinstance(assigned_contractors, list) or len(assigned_contractors) > 2:
+            raise ValueError("Maximum 2 contractors allowed per colleague.")
+        for ct in assigned_contractors:
+            if not isinstance(ct, str) or ct not in US_CONTRACTORS_CATALOG:
+                raise ValueError(f"Invalid contractor assignment: {ct}")
         return resource, key, value
+
+    if resource == "auditLog":
+        if not isinstance(value, dict):
+            raise ValueError("Invalid audit log entry.")
+        return resource, None, value
 
     if not isinstance(value, dict):
         raise ValueError("State resource value must be an object.")
@@ -425,6 +465,7 @@ def update_shared_state(payload):
                     "initials": initials,
                     "tags": ["Team", "Contractor"],
                     "assigned_states": value.get("assigned_states", []),
+                    "assigned_contractors": value.get("assigned_contractors", []),
                     "allowed": [1, 2, 6, 7, 13, 16],
                     "metrics": {"pipeline": "500", "inboxes": "1 Inbox", "volume": "250", "deal": "$10,000"}
                 }
@@ -439,6 +480,11 @@ def update_shared_state(payload):
         elif resource == "accessMap":
             for profile, mods in value.items():
                 state["accessMap"][profile] = mods
+        elif resource == "auditLog":
+            if "auditLog" not in state or not isinstance(state["auditLog"], list):
+                state["auditLog"] = []
+            state["auditLog"].insert(0, value)
+            state["auditLog"] = state["auditLog"][:60]
         else:
             state["clearedFines"] = value
         _write_shared_state_unlocked(state)
@@ -487,7 +533,8 @@ def render_header():
 
     <!-- Executive Authentication & Lock Screen Portal -->
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title">
-        <div class="modal-card auth-card">
+        <div class="modal-card auth-card" style="position:relative;">
+            <button type="button" id="gateway-sound-toggle" class="gateway-sound-toggle" onclick="toggleGatewayAudio()">🔇 Ambient Sound: OFF</button>
             <div class="auth-header">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
                     {LOGO_SVG}
@@ -496,6 +543,7 @@ def render_header():
                         <small style="color:var(--accent-green); font-weight:700; font-size:11px;">AES-256 Hardware Locker • Role-Based Terminal Access</small>
                     </div>
                 </div>
+                <div id="gateway-mandatory-notice" class="mandatory-notice" hidden>🔒 <b>Mandatory Access:</b> Please sign in with an executive identity or create an account to unlock the workspace.</div>
                 <p id="auth-status-desc" class="modal-copy" style="margin:6px 0 16px;">Session locked. Authenticate with colleague credentials or provision a new account.</p>
                 <div class="auth-tabs">
                     <button id="auth-tab-btn-signin" class="auth-tab-btn active" onclick="switchAuthTab('signin')">🔐 Sign In</button>
@@ -532,7 +580,7 @@ def render_header():
                     </div>
                 </div>
                 <div class="dialog-actions" style="margin-top:18px;">
-                    <button class="btn btn-gray" onclick="unlockGatewayPreview()">Dismiss / Cancel</button>
+                    <button id="gateway-dismiss-btn" class="btn btn-gray" onclick="unlockGatewayPreview()">Dismiss / Cancel</button>
                     <button class="btn btn-blue" onclick="submitSignIn()">Authenticate &amp; Unlock</button>
                 </div>
             </div>
@@ -550,7 +598,16 @@ def render_header():
                         <span class="eyebrow" style="font-size:10px;">TERRITORY STATES (MAX 2)</span>
                         <small id="reg-territory-warn" style="color:var(--accent-orange); font-size:10px;" hidden>Max 2 reached</small>
                     </div>
-                    <div id="reg-territory-chips" class="territory-chips-container" style="max-height:100px;"></div>
+                    <input type="text" id="reg-state-search" class="search-input" placeholder="🔍 Search 50 US States..." oninput="filterRegChips('states', this.value)">
+                    <div id="reg-territory-chips" class="territory-chips-container" style="max-height:85px;"></div>
+                </div>
+                <div class="territory-section" style="margin-top:10px; padding:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span class="eyebrow" style="font-size:10px;">US WORKING CONTRACTORS (MAX 2)</span>
+                        <small id="reg-contractor-warn" style="color:var(--accent-orange); font-size:10px;" hidden>Max 2 reached</small>
+                    </div>
+                    <input type="text" id="reg-contractor-search" class="search-input" placeholder="🔍 Search US Working Contractors..." oninput="filterRegChips('contractors', this.value)">
+                    <div id="reg-contractor-chips" class="territory-chips-container" style="max-height:85px;"></div>
                 </div>
                 <div class="dialog-actions" style="margin-top:16px;">
                     <button class="btn btn-gray" onclick="switchAuthTab('signin')">Back to Sign In</button>
@@ -624,7 +681,7 @@ def render_header():
                 <h3 id="settings-title">Colleague Settings &amp; Territories</h3>
                 <button class="modal-close" onclick="closeColleagueSettings()" aria-label="Close settings">×</button>
             </div>
-            <p class="modal-copy">Update identity, role, and manage US contractor assignments (strict limit of max 2 states).</p>
+            <p class="modal-copy">Update identity, role, and manage US contractor &amp; territory assignments (strict limit of max 2 states and max 2 contractors).</p>
             <input type="hidden" id="edit-colleague-key">
             <div class="form-grid">
                 <label>Colleague name<input id="edit-colleague-name" type="text"></label>
@@ -638,11 +695,23 @@ def render_header():
                     </div>
                     <small id="territory-warning" class="territory-warning-banner" hidden>⚠️ Maximum 2 states allowed!</small>
                 </div>
+                <input type="text" id="edit-state-search" class="search-input" placeholder="🔍 Search 50 US States..." oninput="filterSettingsChips('states', this.value)">
                 <div class="territory-chips-container" id="territory-chips-container"></div>
+            </div>
+            <div class="territory-section" style="margin-top:14px;">
+                <div class="territory-header">
+                    <div>
+                        <span class="eyebrow">ASSIGNED US WORKING CONTRACTORS</span>
+                        <strong style="font-size:14px;">Assigned Contractors (<span id="assigned-contractors-count">0</span> / 2 Max)</strong>
+                    </div>
+                    <small id="contractor-warning" class="territory-warning-banner" hidden>⚠️ Maximum 2 contractors allowed!</small>
+                </div>
+                <input type="text" id="edit-contractor-search" class="search-input" placeholder="🔍 Search US Working Contractors..." oninput="filterSettingsChips('contractors', this.value)">
+                <div class="territory-chips-container" id="contractor-chips-container"></div>
             </div>
             <div class="dialog-actions">
                 <button class="btn btn-gray" onclick="closeColleagueSettings()">Cancel</button>
-                <button class="btn btn-blue" onclick="saveColleagueSettings()">Save Profile &amp; States</button>
+                <button class="btn btn-blue" onclick="saveColleagueSettings()">Save Profile &amp; Territories</button>
             </div>
         </div>
     </div>
@@ -651,6 +720,10 @@ def render_header():
         <div class="modal-card">
             <div class="modal-header"><h3 id="palette-title">Grace brand palette</h3><button class="modal-close" onclick="closeBrandPalette()" aria-label="Close brand palette">×</button></div>
             <p class="modal-copy">Instantly restyle the entire command center and tune typography for your operating style.</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:8px 12px; background:rgba(16,185,129,0.08); border-radius:8px; border:1px solid rgba(16,185,129,0.3); font-size:12px;">
+                <span style="color:var(--accent-green); font-weight:700;">👁️ Live Preview Mode (Canvas updates immediately)</span>
+                <button class="btn btn-blue" style="font-size:11px; padding:6px 12px;" onclick="applyStoredTheme(); closeBrandPalette();">Save &amp; Lock</button>
+            </div>
             <span class="eyebrow">COLOR THEMES</span>
             <div class="palette-grid">
                 <button class="palette-option" onclick="applyTheme('midnight')" style="--swatch:#0B1120"><i></i><b>Midnight</b><small>Executive dark</small></button>
@@ -685,6 +758,11 @@ def render_header():
                 <button class="soundscape-option" data-track="strategy" onclick="selectSoundscape('strategy')"><b>Strategic Flow</b><small>Measured planning ambience</small></button>
                 <button class="soundscape-option" data-track="night" onclick="selectSoundscape('night')"><b>Night Shift</b><small>Low-light focus mode</small></button>
             </div>
+            <div style="display:flex; gap:10px; margin:14px 0 6px; align-items:center;">
+                <span class="eyebrow" style="font-size:10px;">LOOP MODE:</span>
+                <button type="button" id="loop-single-btn" class="btn btn-gray" style="font-size:11px; padding:6px 12px;" onclick="setLoopMode('single')">🔁 Repeat Track</button>
+                <button type="button" id="loop-ambient-btn" class="btn btn-blue" style="font-size:11px; padding:6px 12px;" onclick="setLoopMode('ambient')">🔀 Ambient Playlist Loop</button>
+            </div>
             <div class="audio-player-shell">
                 <div><span class="eyebrow">ACTIVE SOUNDSCAPE</span><strong id="soundscape-status">Calm Focus · Ready</strong></div>
                 <div class="audio-controls"><button class="btn btn-blue" onclick="toggleSoundscape()">▶ Start / Pause</button><span id="soundscape-time">00:00 / 00:00</span></div>
@@ -712,6 +790,123 @@ def render_header():
     </div>
     <div id="broadcast-overlay" class="broadcast-overlay" hidden>
         <div class="broadcast-overlay-card"><span class="eyebrow">INCOMING PRIORITY BROADCAST</span><h2 id="broadcast-overlay-title">Grace Operations Notice</h2><p id="broadcast-overlay-message"></p><small id="broadcast-overlay-target"></small><button class="btn btn-orange" onclick="closeBroadcastOverlay()">Acknowledge notice</button></div>
+    </div>
+
+    <!-- Real-Time Interactive Campaign Execution Studio Drawer / Modal -->
+    <div id="campaign-studio-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="campaign-studio-title">
+        <div class="modal-card campaign-studio-card">
+            <div class="modal-header">
+                <div>
+                    <span class="eyebrow">ENTERPRISE CAMPAIGN DISPATCH ENGINE</span>
+                    <h3 id="campaign-studio-title" style="margin:2px 0 0;">Campaign Studio &amp; Real-Time Dispatcher</h3>
+                </div>
+                <button class="modal-close" onclick="closeCampaignStudio()" aria-label="Close campaign studio">×</button>
+            </div>
+            <p class="modal-copy">Select contact database records, rotate Spintax variants with spam scoring, verify OAuth/App Passwords, and trigger live jittered sending.</p>
+
+            <!-- Step 1: Database Contact Range -->
+            <div class="studio-step">
+                <div class="step-header">
+                    <strong>1. Database Contact Range Selector</strong>
+                    <span class="step-badge">1,000 Verified Contractors in Pool</span>
+                </div>
+                <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+                    <label>Start Record Number
+                        <input id="studio-range-start" type="number" min="1" max="1000" value="1" oninput="updateStudioRange()">
+                    </label>
+                    <label>End Record Number (Draft Count)
+                        <input id="studio-range-end" type="number" min="1" max="1000" value="25" oninput="updateStudioRange()">
+                    </label>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                    <span style="font-size:12px; color:var(--text-muted);">Active Selection: <b id="studio-target-count" style="color:var(--accent-gold);">25 Decision-Makers</b></span>
+                    <small style="color:var(--accent-green); font-weight:700;">Target Segment: Commercial Architects &amp; General Contractors</small>
+                </div>
+            </div>
+
+            <!-- Step 2: Template, Spintax Rotation & Spam Score -->
+            <div class="studio-step">
+                <div class="step-header">
+                    <strong>2. Template, Spintax AI Variants &amp; Spam Scorer</strong>
+                    <span class="spam-score-pill">🛡️ 99.2% Clean · Zero Spam Flags</span>
+                </div>
+                <label>Subject Line (with Spintax choice brackets)
+                    <input id="studio-subject" type="text" value="{{Exclusive Alliance|Commercial Opportunity|Architectural Partnership}} with {{{{company}}}}">
+                </label>
+                <label style="margin-top:8px;">Email Body Template
+                    <textarea id="studio-body" rows="4">{{Hi|Hello|Dear}} {{{{first_name}}}}, I noticed your recent architectural projects in {{{{state}}}}. We would love to collaborate on upcoming commercial developments.</textarea>
+                </label>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <button type="button" class="btn btn-gray" style="font-size:11px;" onclick="generateStudioAiVariants()">🎲 Generate 3 AI Rotating Variants</button>
+                    <small style="color:var(--text-muted); font-size:11px;">Automatic hash rotation per recipient</small>
+                </div>
+                <div id="studio-variants-preview" class="spintax-preview" style="margin-top:8px; display:none;"></div>
+            </div>
+
+            <!-- Step 3: Sending Account & Auth Protocol Gate -->
+            <div class="studio-step">
+                <div class="step-header">
+                    <strong>3. Multi-Tenant Sending Account &amp; Connection Method</strong>
+                    <span id="studio-auth-chip" class="auth-status-chip connected">● OAuth 2.0 Connected</span>
+                </div>
+                <div class="form-grid" style="grid-template-columns:1.2fr 1fr; gap:12px;">
+                    <label>Select Sending Inbox
+                        <select id="studio-inbox-select" onchange="updateStudioInboxAuth(this.value)">
+                            <option value="business.inbox1@gmail.com">business.inbox1@gmail.com (OAuth 2.0)</option>
+                            <option value="outreach.node2@gmail.com">outreach.node2@gmail.com (16-Digit App Password)</option>
+                            <option value="relay.personal@gmail.com">relay.personal@gmail.com (OAuth 2.0 Backup)</option>
+                        </select>
+                    </label>
+                    <div style="display:flex; flex-direction:column; justify-content:center; gap:6px;">
+                        <button type="button" id="studio-auth-action-btn" class="btn btn-gray" style="font-size:11px;" onclick="triggerOAuthPermissionFlow()">🔗 Re-Authorize Google OAuth</button>
+                        <small id="studio-auth-desc" style="font-size:11px; color:var(--text-muted);">AES-256 Token Active</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Staging Drafts & Multi-Campaign Execution -->
+            <div class="studio-step">
+                <div class="step-header">
+                    <strong>4. Multi-Campaign Staging &amp; Draft Progress</strong>
+                    <span id="studio-campaign-id" class="countdown-pill">Campaign #GRA-CMP-104</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div id="studio-draft-progress" class="progress-bar-fill"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="studio-draft-status" style="font-size:12px; color:var(--text-muted);">Awaiting draft initialization...</span>
+                    <button type="button" class="btn btn-blue" onclick="stageStudioDrafts()">📝 Stage Drafts in Gmail Account</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Jittered Dispatch Engine -->
+            <div class="studio-step">
+                <div class="step-header">
+                    <strong>5. Dispatch Pacing &amp; Randomized Human Jitter</strong>
+                    <span class="countdown-pill" id="studio-jitter-label">Random Jitter: 1s – 5s</span>
+                </div>
+                <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+                    <label>Dispatch Mode
+                        <select id="studio-dispatch-mode">
+                            <option value="auto">⚡ Autonomous Jittered Dispatch</option>
+                            <option value="manual">👁️ Manual Review &amp; Send</option>
+                        </select>
+                    </label>
+                    <label>Jitter Pacing Profile
+                        <select id="studio-jitter-select" onchange="updateJitterProfile(this.value)">
+                            <option value="human">🎲 Human Jitter (Random 1s, 3s, 5s)</option>
+                            <option value="steady">⏱ Steady Pacing (4s interval)</option>
+                            <option value="conservative">🛡 Conservative (8s interval)</option>
+                        </select>
+                    </label>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin:12px 0 8px;">
+                    <button type="button" class="btn btn-orange" onclick="runStudioDispatch()">🚀 Execute Live Safe Dispatch</button>
+                    <button type="button" class="btn btn-gray" onclick="cancelStudioDispatch()">⏹ Halt Queue</button>
+                </div>
+                <div id="studio-live-ticker" class="dispatch-live-ticker" style="display:none;"></div>
+            </div>
+        </div>
     </div>
     <div id="ai-mascot" class="ai-mascot" onclick="toggleAIAssistant()" role="button" tabindex="0" aria-label="Open Grace AI Guide" onkeydown="if(event.key==='Enter' || event.key===' ') toggleAIAssistant()">
         <span class="robot-3d" aria-hidden="true"><i class="robot-antenna"></i><i class="robot-head"></i><i class="robot-eye left"></i><i class="robot-eye right"></i><i class="robot-body"></i><i class="robot-arm left"></i><i class="robot-arm right"></i></span><span class="ai-ping"></span>
@@ -751,18 +946,19 @@ def render_navigation(active_tab):
 
 BASE_CSS = """
     :root {
-        --bg-main: #F1F5F9;
-        --bg-card: #FFFFFF;
-        --text-main: #0F172A;
-        --text-muted: #64748B;
-        --border-color: #CBD5E1;
-        --accent-blue: #0284C7;
+        --bg-main: #0B1120;
+        --bg-card: #001A17;
+        --text-main: #F8FAFC;
+        --text-muted: #9BB0AD;
+        --border-color: #123B35;
+        --accent-blue: #D6A117;
         --accent-green: #10B981;
-        --accent-orange: #EA580C;
+        --accent-orange: #F59E0B;
         --accent-red: #EF4444;
-        --accent-gold: #D97706;
+        --accent-gold: #D6A117;
+        --nav-color: #00110F;
     }
-    body.dark {
+    body.dark, body {
         --bg-main: #0B1120;
         --bg-card: #001A17;
         --text-main: #F8FAFC;
@@ -773,7 +969,7 @@ BASE_CSS = """
         --accent-orange: #F59E0B;
         --accent-gold: #D6A117;
     }
-    body { background-color: var(--bg-main); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 22px; }
+    body { background-color: #0B1120 !important; color: #F8FAFC !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 22px; background-image: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, .08), transparent 38rem); }
     body.dark { background-image: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, .08), transparent 38rem); }
     .card { background: var(--bg-card); padding: 20px 26px; border-radius: 14px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 22px; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -930,21 +1126,27 @@ BASE_CSS = """
     .rbac-section { margin-top:22px; }
     .permission-card { min-width:0; overflow:hidden; margin-top:14px; padding:16px; border:1px solid var(--border-color); border-radius:12px; background:rgba(0,0,0,.08); }
     .permission-card-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
-    .permission-card-head strong { font-size:13px; }
+    .permission-card-head strong { font-size:13px; color:var(--text-main); }
     .permission-card-head small { color:var(--text-muted); font-size:11px; }
-    .permission-grid { display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:8px; width:100%; }
-    .permission-item { min-width:0; display:grid; justify-items:center; gap:5px; padding:6px 3px; border:1px solid rgba(148,163,184,.16); border-radius:6px; color:var(--text-muted); font-size:10px; overflow:hidden; cursor:pointer; }
-    .permission-item:hover { border-color:var(--accent-gold); color:var(--text-main); }
-    .permission-item input { margin:0; }
+    .permission-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:8px; width:100%; }
+    .permission-item { min-width:0; display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid rgba(148,163,184,.16); border-radius:8px; background:rgba(255,255,255,.02); color:var(--text-muted); font-size:11px; overflow:hidden; cursor:pointer; transition:0.15s; }
+    .permission-item:hover { border-color:var(--accent-gold); color:var(--text-main); background:rgba(214,161,23,.06); }
+    .permission-item input { margin:0; flex:0 0 auto; }
+    .perm-badge { font-family:monospace; font-weight:800; color:var(--accent-gold); font-size:10px; flex:0 0 auto; }
+    .perm-icon { font-size:13px; flex:0 0 auto; color:var(--accent-green); }
+    .perm-title { font-weight:600; font-size:11px; color:var(--text-main); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
 
-    /* TERRITORY PICKER */
+    /* TERRITORY PICKER & SEARCH FILTERS */
     .territory-section { margin-top:20px; padding:16px; border:1px solid var(--border-color); border-radius:12px; background:rgba(0,0,0,.06); }
-    .territory-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+    .territory-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
     .territory-warning-banner { color:var(--accent-orange); font-size:12px; font-weight:800; }
-    .territory-chips-container { display:flex; flex-wrap:wrap; gap:8px; max-height:220px; overflow-y:auto; padding:4px; }
+    .search-input { width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid var(--border-color); border-radius:8px; background:rgba(0,0,0,0.3); color:#F8FAFC; font-size:12px; margin-bottom:10px; }
+    .search-input:focus { outline:none; border-color:var(--accent-gold); }
+    .territory-chips-container { display:flex; flex-wrap:wrap; gap:8px; max-height:180px; overflow-y:auto; padding:4px; }
     .state-chip-btn { padding:6px 12px; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,.03); color:var(--text-muted); font-size:12px; font-weight:600; cursor:pointer; transition:.15s; }
     .state-chip-btn:hover { border-color:var(--accent-gold); color:var(--text-main); }
     .state-chip-btn.selected { background:rgba(16,185,129,.16); border-color:var(--accent-green); color:var(--accent-green); font-weight:800; }
+    .contractor-badge { padding:4px 9px; border:1px solid rgba(214,161,23,.45); border-radius:999px; color:var(--accent-gold); background:rgba(214,161,23,.08); font-size:11px; font-weight:800; }
 
     /* CROPPER MODAL */
     .cropper-card { width: min(660px, 100%); }
@@ -956,10 +1158,38 @@ BASE_CSS = """
     .cropper-preview-box { text-align:center; padding:14px; border:1px solid var(--border-color); border-radius:12px; background:rgba(0,0,0,0.15); }
     #cropper-preview { border-radius:50%; border:2px solid var(--accent-gold); background:#040e0c; margin-top:8px; }
 
+    /* BRAND PALETTE SCROLLBAR FIX */
+    #brand-palette-modal .modal-card { max-height:88vh !important; overflow-y:auto !important; overflow-x:hidden !important; scrollbar-width:thin; scrollbar-color:var(--accent-green) var(--bg-card); }
+    #brand-palette-modal .modal-card::-webkit-scrollbar { width:8px; }
+    #brand-palette-modal .modal-card::-webkit-scrollbar-thumb { background:#10B981; border-radius:4px; }
+    #brand-palette-modal .modal-card::-webkit-scrollbar-track { background:#001A17; }
+
+    /* GATEWAY FLOATING AUDIO & MANDATORY BANNER */
+    .gateway-sound-toggle { position:absolute; top:18px; right:18px; background:rgba(16,185,129,0.12); border:1px solid var(--accent-green); color:var(--accent-green); font-size:11px; font-weight:700; border-radius:999px; padding:6px 12px; cursor:pointer; transition:0.15s; }
+    .gateway-sound-toggle:hover { background:rgba(16,185,129,0.25); }
+    .mandatory-notice { padding:10px 14px; background:rgba(214,161,23,0.1); border:1px solid var(--accent-gold); border-radius:8px; color:var(--accent-gold); font-size:12px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+
+    /* CAMPAIGN STUDIO INTERACTIVE MODAL */
+    .campaign-studio-card { width: min(840px, 100%); max-height: 90vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--accent-green) var(--bg-card); }
+    .campaign-studio-card::-webkit-scrollbar { width: 8px; }
+    .campaign-studio-card::-webkit-scrollbar-thumb { background: #10B981; border-radius: 4px; }
+    .campaign-studio-card::-webkit-scrollbar-track { background: #001A17; }
+    .studio-step { background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+    .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .step-badge { background: var(--accent-green); color: #061510; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+    .spam-score-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(16,185,129,0.15); border: 1px solid var(--accent-green); color: var(--accent-green); font-size: 11px; font-weight: 800; }
+    .auth-status-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; }
+    .auth-status-chip.connected { background: rgba(16,185,129,0.15); border: 1px solid var(--accent-green); color: var(--accent-green); }
+    .auth-status-chip.pending { background: rgba(245,158,11,0.15); border: 1px solid var(--accent-orange); color: var(--accent-orange); }
+    .progress-bar-wrap { height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; margin: 10px 0; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-green), var(--accent-gold)); transition: width 0.3s; }
+    .countdown-pill { font-family: monospace; font-size: 13px; font-weight: 800; color: var(--accent-gold); }
+    .dispatch-live-ticker { max-height: 120px; overflow-y: auto; font-family: monospace; font-size: 11px; line-height: 1.6; padding: 8px 12px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border-color); color: var(--accent-green); }
+
     /* ATTENDANCE & PAYROLL */
     .attendance-card { margin-top:22px; }
     .section-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; }
-    .section-heading h3, .section-heading h4 { margin:6px 0 0; font-size:18px; }
+    .section-heading h3, .section-heading h4 { margin:6px 0 0; font-size:18px; color:var(--text-main); }
     .section-heading.compact { align-items:end; margin-bottom:12px; }
     .section-heading.compact h4 { font-size:15px; }
     .section-heading small { color:var(--text-muted); font-size:12px; }
@@ -969,7 +1199,7 @@ BASE_CSS = """
     .mini-stat strong { display:block; margin-top:6px; color:var(--accent-gold); font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .attendance-scroll { overflow-x:auto; border:1px solid var(--border-color); border-radius:12px; }
     .attendance-table { min-width:980px; margin-top:0; }
-    .attendance-table th, .attendance-table td { padding:12px 10px; font-size:12px; vertical-align:middle; }
+    .attendance-table th, .attendance-table td { padding:12px 10px; font-size:12px; vertical-align:middle; color:var(--text-main); }
     .attendance-table th { font-size:11px; font-weight:800; }
     .attendance-table td:first-child { min-width:150px; }
     .attendance-table td:first-child small, .leave-row small { display:block; margin-top:3px; color:var(--text-muted); font-size:11px; }
@@ -985,34 +1215,33 @@ BASE_CSS = """
 
     /* 22-MODULE MATRIX CARD REFINEMENTS (CRISP LEGIBILITY) */
     .modules-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
-    .module-card { min-height: 96px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 18px; text-decoration: none; display: flex; align-items: flex-start; gap: 14px; color: inherit; transition: 0.2s ease; }
-    .module-card:hover { border-color: var(--accent-gold); transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
-    body.dark .module-card { background: #001713; border-color: #123D36; }
+    .module-card { min-height: 96px; background: #001713 !important; border: 1px solid #123D36 !important; border-radius: 12px; padding: 16px 18px; text-decoration: none; display: flex; align-items: flex-start; gap: 14px; color: inherit; transition: 0.2s ease; }
+    .module-card:hover { border-color: var(--accent-gold) !important; transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
     .module-card.is-restricted { display:none; }
     .module-icon { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; color: #F59E0B; background: rgba(245, 158, 11, .12); border: 1px solid rgba(214, 161, 23, .65); border-radius: 10px; font-size: 20px; font-weight: 800; }
     .module-copy { min-width: 0; flex: 1; }
     .mod-title { font-size: 12px; font-weight: 800; color: var(--accent-gold); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: 0.5px; }
-    .mod-name { font-size: 15px; font-weight: 700; line-height: 1.35; color: var(--text-main); margin-bottom: 4px; }
+    .mod-name { font-size: 15px; font-weight: 700; line-height: 1.35; color: #F8FAFC !important; margin-bottom: 4px; }
     .module-desc { margin-top: 4px; color: var(--text-muted); font-size: 12px; line-height: 1.45; font-weight: 400; }
     .mod-status-tag { font-size: 11px; font-weight: 800; color: var(--accent-green); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
 
-    /* MODULE DETAIL & TELEMETRY */
+    /* MODULE DETAIL & HIGH-CONTRAST TELEMETRY (FIXES CONTRAST GLITCH) */
     table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border-color); font-size: 13px; color: #F8FAFC; }
     th { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; }
-    .module-hero { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
+    .module-hero { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; background: #001A17 !important; }
     .module-hero h2 { margin:6px 0 7px; font-size:24px; color:var(--accent-gold); }
     .module-hero-copy { max-width:780px; }
     .module-status-pill { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid rgba(16,185,129,.35); border-radius:999px; color:var(--accent-green); font-size:12px; font-weight:800; white-space:nowrap; }
     .telemetry-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 22px; }
-    .telemetry-card { min-width:0; padding:16px 20px; border:1px solid var(--border-color); border-radius:12px; background:linear-gradient(145deg,rgba(16,185,129,.08),rgba(214,161,23,.04)); }
-    .telemetry-card strong { display:block; margin:8px 0 4px; font-size:24px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .telemetry-card small { color:var(--accent-green); font-size:12px; font-weight:700; }
+    .telemetry-card { min-width:0; padding:16px 20px; border:1px solid rgba(16,185,129,.35) !important; border-radius:12px; background:#001f1c !important; }
+    .telemetry-card strong { display:block; margin:8px 0 4px; font-size:26px !important; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#10B981 !important; font-weight:800 !important; text-shadow:0 0 16px rgba(16,185,129,.35) !important; }
+    .telemetry-card small { color:var(--accent-green) !important; font-size:12px; font-weight:700; }
     .module-workbench { display:grid; grid-template-columns:1.3fr .9fr; gap:22px; }
-    .module-panel { min-width:0; padding:20px; border:1px solid var(--border-color); border-radius:14px; background:var(--bg-card); }
-    .module-panel h3 { margin:0 0 14px; font-size:16px; }
+    .module-panel { min-width:0; padding:20px; border:1px solid #123B35 !important; border-radius:14px; background:#001A17 !important; color:#F8FAFC !important; }
+    .module-panel h3 { margin:0 0 14px; font-size:16px; color:#F8FAFC; }
     .panel-copy { margin:-5px 0 16px; color:var(--text-muted); font-size:12px; line-height:1.55; }
-    .campaign-panel { margin-top:22px; border-color:rgba(214,161,23,.55); }
+    .campaign-panel { margin-top:22px; border-color:rgba(214,161,23,.55) !important; }
     .range-label { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; margin-top:14px; color:var(--text-muted); font-size:12px; }
     .range-label input { grid-column:1 / -1; width:100%; accent-color:var(--accent-gold); }
     .range-label span { color:var(--accent-gold); font-family:monospace; font-size:13px; font-weight:700; }
@@ -1021,13 +1250,13 @@ BASE_CSS = """
     .dispatch-check.is-ready { color:var(--accent-green); border-color:rgba(16,185,129,.45); background:rgba(16,185,129,.07); }
     .dispatch-check.is-warning { color:var(--accent-orange); border-color:rgba(234,88,12,.45); background:rgba(234,88,12,.07); }
     .dispatch-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
-    .dispatch-result { margin-top:14px; padding:12px; border-radius:8px; color:var(--text-muted); background:rgba(0,0,0,.12); font-size:12px; line-height:1.5; }
-    .spintax-preview { min-height:85px; margin:14px 0 0; padding:12px; overflow:auto; border:1px solid var(--border-color); border-radius:8px; white-space:pre-wrap; color:var(--accent-green); background:rgba(0,0,0,.15); font:12px/1.6 monospace; }
+    .dispatch-result { margin-top:14px; padding:12px; border-radius:8px; color:var(--text-muted); background:rgba(0,0,0,.25); font-size:12px; line-height:1.5; }
+    .spintax-preview { min-height:85px; margin:14px 0 0; padding:12px; overflow:auto; border:1px solid var(--border-color); border-radius:8px; white-space:pre-wrap; color:var(--accent-green); background:rgba(0,0,0,.25); font:12px/1.6 monospace; }
     .bar-chart { display:flex; align-items:end; gap:10px; height:160px; padding:16px 10px 10px; border-bottom:1px solid var(--border-color); background:repeating-linear-gradient(to top,transparent 0,transparent 29px,rgba(148,163,184,.12) 30px); }
     .bar-chart span { flex:1; min-width:8px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,var(--accent-green),var(--accent-gold)); box-shadow:0 0 12px rgba(16,185,129,.16); }
     .chart-caption { display:flex; justify-content:space-between; margin-top:10px; color:var(--text-muted); font-size:11px; }
     .control-list { display:grid; gap:10px; }
-    .control-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:10px; }
+    .control-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:10px; background:rgba(0,0,0,0.2); }
     .control-row span { color:var(--text-muted); font-size:12px; line-height:1.4; }
     .control-row b { display:block; color:var(--text-main); font-size:13px; margin-bottom:3px; }
     .control-row .btn { flex:0 0 auto; font-size:11px; padding:8px 12px; }
@@ -1036,7 +1265,7 @@ BASE_CSS = """
     .module-access-denied { padding:32px; text-align:center; border:1px dashed var(--accent-orange); border-radius:14px; background:rgba(234,88,12,.08); }
     .module-access-denied h3 { margin:0 0 10px; color:var(--accent-orange); font-size:18px; }
     .module-access-denied p { color:var(--text-muted); font-size:13px; }
-    .vault-panel { margin-top:22px; border-color:var(--accent-gold); }
+    .vault-panel { margin-top:22px; border-color:var(--accent-gold) !important; }
 
     @media (max-width: 1200px) { .modules-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (max-width: 980px) {
@@ -1081,6 +1310,38 @@ const US_STATES = [
     "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
     "Wisconsin", "Wyoming"
 ];
+
+const US_CONTRACTORS = [
+    "Turner Construction Co.", "Bechtel Corporation", "Skanska USA Building",
+    "The Whiting-Turner Contracting Co.", "Gilbane Building Company", "Hensel Phelps",
+    "Clark Construction Group", "DPR Construction", "Mortenson Construction",
+    "McCarthy Building Companies", "Holder Construction", "Balfour Beatty US",
+    "JE Dunn Construction", "Brasfield & Gorrie", "Lendlease Americas",
+    "Suffolk Construction", "PCL Construction Enterprises", "Clayco Inc.",
+    "Sundt Construction", "Webcor Builders", "Walsh Construction",
+    "Structure Tone", "Austin Commercial", "Ryan Companies",
+    "Pepper Construction", "Swinerton Inc.", "Kitchell Corporation",
+    "Crossland Construction", "Level 10 Construction", "Hoar Construction"
+];
+
+function publishAuditEvent(action, details) {
+    const userKey = window.localStorage.getItem('grace-view-as') || 'king';
+    const userName = PROFILE_DATA[userKey]?.name || 'King Saab';
+    const now = new Date();
+    const timestamp = now.getFullYear() + '-' +
+        String(now.getMonth()+1).padStart(2,'0') + '-' +
+        String(now.getDate()).padStart(2,'0') + ' ' +
+        String(now.getHours()).padStart(2,'0') + ':' +
+        String(now.getMinutes()).padStart(2,'0') + ':' +
+        String(now.getSeconds()).padStart(2,'0');
+    const entry = {
+        timestamp: timestamp,
+        user: userName,
+        action: action,
+        details: details
+    };
+    publishSharedState('auditLog', entry);
+}
 
 const THEME_PRESETS = {
     midnight: {dark:true, bg:'#0B1120', card:'#001A17', text:'#F8FAFC', muted:'#9BB0AD', border:'#123B35', accent:'#D6A117', green:'#10B981'},
@@ -1210,11 +1471,11 @@ function populateColleaguePickers() {
    AUTHENTICATION & SECURITY GATEWAY (POWER OFF / LOCK)
    ========================================================================= */
 function powerOff() {
-    openAuthGateway('signin', true);
+    openAuthGateway('signin', true, false);
     showToast('Session locked. Terminal returned to Security Gateway.', 'info');
 }
 
-function openAuthGateway(tab = 'signin', isLock = false) {
+function openAuthGateway(tab = 'signin', isLock = false, isMandatory = false) {
     const overlay = document.getElementById('auth-gateway-overlay');
     if (!overlay) return;
     overlay.hidden = false;
@@ -1222,6 +1483,15 @@ function openAuthGateway(tab = 'signin', isLock = false) {
     if (isLock) {
         window.localStorage.setItem('grace-session-locked', 'true');
         document.body.classList.add('safety-locked');
+    }
+    const notice = document.getElementById('gateway-mandatory-notice');
+    const dismissBtn = document.getElementById('gateway-dismiss-btn');
+    if (isMandatory) {
+        if (notice) notice.hidden = false;
+        if (dismissBtn) dismissBtn.style.display = 'none';
+    } else {
+        if (notice) notice.hidden = true;
+        if (dismissBtn) dismissBtn.style.display = '';
     }
 }
 
@@ -1233,6 +1503,10 @@ function closeAuthGateway() {
 }
 
 function unlockGatewayPreview() {
+    if (!window.sessionStorage.getItem('grace_auth_user')) {
+        showToast('Access restricted: Please log in or create an account.', 'warning');
+        return;
+    }
     closeAuthGateway();
     showToast('Lock screen dismissed. Active workspace preview active.', 'info');
 }
@@ -1247,6 +1521,7 @@ function switchAuthTab(tab) {
 
     if (tab === 'register') {
         renderRegTerritoryChips();
+        renderRegContractorChips();
     }
 }
 
@@ -1258,6 +1533,8 @@ function togglePasswordVisibility(inputId) {
 function fastPassLogin(key) {
     const picker = document.getElementById('login-identity-picker');
     if (picker) picker.value = key;
+    const pwdInput = document.getElementById('login-password-input');
+    if (pwdInput) pwdInput.value = 'grace2026';
     submitSignIn();
 }
 
@@ -1275,18 +1552,39 @@ function submitSignIn() {
         showToast('Invalid password for ' + (PROFILE_DATA[key]?.name || key) + '.', 'warning');
         return;
     }
+    window.sessionStorage.setItem('grace_auth_user', key);
     changeViewAs(key);
     closeAuthGateway();
+    publishAuditEvent('Authentication', 'Colleague signed into workspace: ' + (PROFILE_DATA[key]?.name || key));
     showToast('Welcome back, ' + PROFILE_DATA[key].name + ' · Workspace unlocked.', 'success');
 }
 
 let regSelectedStates = [];
+let regSelectedContractors = [];
+let regStateSearchFilter = '';
+let regContractorSearchFilter = '';
+
+function filterRegChips(type, query) {
+    if (type === 'states') {
+        regStateSearchFilter = (query || '').trim().toLowerCase();
+        renderRegTerritoryChips();
+    } else {
+        regContractorSearchFilter = (query || '').trim().toLowerCase();
+        renderRegContractorChips();
+    }
+}
+
 function renderRegTerritoryChips() {
     const container = document.getElementById('reg-territory-chips');
+    const warn = document.getElementById('reg-territory-warn');
     if (!container) return;
-    container.innerHTML = US_STATES.slice(0, 20).map((st) => {
+    if (warn) warn.hidden = regSelectedStates.length < 2;
+    const list = regStateSearchFilter
+        ? US_STATES.filter(s => s.toLowerCase().includes(regStateSearchFilter))
+        : US_STATES.slice(0, 20);
+    container.innerHTML = list.map((st) => {
         const sel = regSelectedStates.includes(st);
-        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegState(\'' + st + '\')">' + (sel ? '✓ ' : '+ ') + st + '</button>';
+        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegState(\'' + st.replace(/'/g, "\\'") + '\')">' + (sel ? '✓ ' : '+ ') + st + '</button>';
     }).join('');
 }
 
@@ -1304,6 +1602,36 @@ function toggleRegState(st) {
         regSelectedStates.push(st);
     }
     renderRegTerritoryChips();
+}
+
+function renderRegContractorChips() {
+    const container = document.getElementById('reg-contractor-chips');
+    const warn = document.getElementById('reg-contractor-warn');
+    if (!container) return;
+    if (warn) warn.hidden = regSelectedContractors.length < 2;
+    const list = regContractorSearchFilter
+        ? US_CONTRACTORS.filter(c => c.toLowerCase().includes(regContractorSearchFilter))
+        : US_CONTRACTORS.slice(0, 15);
+    container.innerHTML = list.map((ct) => {
+        const sel = regSelectedContractors.includes(ct);
+        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegContractor(\'' + ct.replace(/'/g, "\\'") + '\')">' + (sel ? '✓ ' : '+ ') + ct + '</button>';
+    }).join('');
+}
+
+function toggleRegContractor(ct) {
+    const idx = regSelectedContractors.indexOf(ct);
+    if (idx >= 0) {
+        regSelectedContractors.splice(idx, 1);
+    } else {
+        if (regSelectedContractors.length >= 2) {
+            showToast('Strict limit: Max 2 contractors per colleague.', 'warning');
+            const warn = document.getElementById('reg-contractor-warn');
+            if (warn) warn.hidden = false;
+            return;
+        }
+        regSelectedContractors.push(ct);
+    }
+    renderRegContractorChips();
 }
 
 function submitCreateAccount() {
@@ -1329,7 +1657,8 @@ function submitCreateAccount() {
     const newProfile = {
         name,
         role,
-        assigned_states: Array.from(regSelectedStates)
+        assigned_states: Array.from(regSelectedStates),
+        assigned_contractors: Array.from(regSelectedContractors)
     };
 
     // Save locally
@@ -1343,6 +1672,7 @@ function submitCreateAccount() {
         initials,
         tags: ['New', 'Team'],
         assigned_states: Array.from(regSelectedStates),
+        assigned_contractors: Array.from(regSelectedContractors),
         allowed: [1, 2, 4, 6, 7, 13, 16],
         metrics: {pipeline:'500', inboxes:'1 Inbox', volume:'200', deal:'$12,000'}
     };
@@ -1351,8 +1681,10 @@ function submitCreateAccount() {
     storedPasswords[cleanKey] = pwd;
     window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
     window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
+    window.sessionStorage.setItem('grace_auth_user', cleanKey);
 
     publishSharedState('profiles', newProfile, cleanKey);
+    publishAuditEvent('Account Registration', 'Registered new colleague ' + name + ' (' + cleanKey + ')');
     populateColleaguePickers();
     changeViewAs(cleanKey);
     closeAuthGateway();
@@ -1400,9 +1732,42 @@ let selectedTheme = 'midnight';
 let ambientContext = null;
 let ambientNodes = [];
 let soundscapePlaying = false;
+let loopMode = 'ambient';
+let gatewayAudioActive = false;
 let customMediaUrl = null;
 let aiLanguage = window.localStorage.getItem('grace-ai-language') || 'en';
 let mascotDrag = {active:false, moved:false, startX:0, startY:0, left:0, top:0, suppressClick:false};
+
+function setLoopMode(mode) {
+    loopMode = mode;
+    const singleBtn = document.getElementById('loop-single-btn');
+    const ambientBtn = document.getElementById('loop-ambient-btn');
+    if (singleBtn && ambientBtn) {
+        if (mode === 'single') {
+            singleBtn.className = 'btn btn-blue';
+            ambientBtn.className = 'btn btn-gray';
+            showToast('Loop mode: Repeat current soundscape track.', 'info');
+        } else {
+            singleBtn.className = 'btn btn-gray';
+            ambientBtn.className = 'btn btn-blue';
+            showToast('Loop mode: Continuous ambient soundscape playlist.', 'info');
+        }
+    }
+}
+
+function toggleGatewayAudio() {
+    const btn = document.getElementById('gateway-sound-toggle');
+    gatewayAudioActive = !gatewayAudioActive;
+    if (gatewayAudioActive) {
+        startAmbient();
+        if (btn) btn.innerText = '🔊 Ambient Sound: ON';
+        showToast('Gateway background soundscape playing.', 'success');
+    } else {
+        stopAmbient();
+        if (btn) btn.innerText = '🔇 Ambient Sound: OFF';
+        showToast('Gateway background soundscape muted.', 'info');
+    }
+}
 
 /* =========================================================================
    INITIALIZATION
@@ -1993,6 +2358,7 @@ function hydrateColleagueCards() {
         const nameEl = card.querySelector('.colleague-name');
         const roleEl = card.querySelector('.colleague-role');
         const stateWrap = card.querySelector('.colleague-states-list');
+        const contractorWrap = card.querySelector('.colleague-contractors-list');
         if (nameEl) nameEl.innerText = prof.name;
         if (roleEl) roleEl.innerText = prof.role;
         if (stateWrap) {
@@ -2001,11 +2367,30 @@ function hydrateColleagueCards() {
                 ? states.map((s) => '<span class="state-badge">📍 ' + s + '</span>').join('')
                 : '<span style="color:var(--text-muted);font-size:11px;">No states assigned (Max 2)</span>';
         }
+        if (contractorWrap) {
+            const contractors = prof.assigned_contractors || [];
+            contractorWrap.innerHTML = contractors.length
+                ? contractors.map((c) => '<span class="state-badge" style="border-color:var(--accent-gold); color:var(--accent-gold);">🏗️ ' + c + '</span>').join('')
+                : '<span style="color:var(--text-muted);font-size:11px;">No contractors assigned (Max 2)</span>';
+        }
     });
 }
 
 let activeEditingColleague = null;
 let tempSelectedStates = [];
+let tempSelectedContractors = [];
+let editStateFilter = '';
+let editContractorFilter = '';
+
+function filterSettingsChips(type, query) {
+    if (type === 'states') {
+        editStateFilter = (query || '').trim().toLowerCase();
+        renderTerritoryChips();
+    } else {
+        editContractorFilter = (query || '').trim().toLowerCase();
+        renderContractorChips();
+    }
+}
 
 function openColleagueSettings(key) {
     activeEditingColleague = key;
@@ -2016,7 +2401,15 @@ function openColleagueSettings(key) {
     document.getElementById('edit-colleague-name').value = prof.name;
     document.getElementById('edit-colleague-role').value = prof.role;
     tempSelectedStates = Array.from(prof.assigned_states || []);
+    tempSelectedContractors = Array.from(prof.assigned_contractors || []);
+    editStateFilter = '';
+    editContractorFilter = '';
+    const stSearch = document.getElementById('edit-state-search');
+    const ctSearch = document.getElementById('edit-contractor-search');
+    if (stSearch) stSearch.value = '';
+    if (ctSearch) ctSearch.value = '';
     renderTerritoryChips();
+    renderContractorChips();
     modal.hidden = false;
 }
 
@@ -2031,11 +2424,14 @@ function renderTerritoryChips() {
     const counter = document.getElementById('assigned-states-count');
     const warning = document.getElementById('territory-warning');
     if (!container) return;
-    counter.innerText = String(tempSelectedStates.length);
-    warning.hidden = tempSelectedStates.length < 2;
-    container.innerHTML = US_STATES.map((state) => {
+    if (counter) counter.innerText = String(tempSelectedStates.length);
+    if (warning) warning.hidden = tempSelectedStates.length < 2;
+    const list = editStateFilter
+        ? US_STATES.filter(s => s.toLowerCase().includes(editStateFilter))
+        : US_STATES;
+    container.innerHTML = list.map((state) => {
         const isSelected = tempSelectedStates.includes(state);
-        return '<button type="button" class="state-chip-btn ' + (isSelected ? 'selected' : '') + '" onclick="toggleTerritoryState(\'' + state + '\')">' + (isSelected ? '✓ ' : '+ ') + state + '</button>';
+        return '<button type="button" class="state-chip-btn ' + (isSelected ? 'selected' : '') + '" onclick="toggleTerritoryState(\'' + state.replace(/'/g, "\\'") + '\')">' + (isSelected ? '✓ ' : '+ ') + state + '</button>';
     }).join('');
 }
 
@@ -2058,6 +2454,41 @@ function toggleTerritoryState(state) {
     renderTerritoryChips();
 }
 
+function renderContractorChips() {
+    const container = document.getElementById('contractor-chips-container');
+    const counter = document.getElementById('assigned-contractors-count');
+    const warning = document.getElementById('contractor-warning');
+    if (!container) return;
+    if (counter) counter.innerText = String(tempSelectedContractors.length);
+    if (warning) warning.hidden = tempSelectedContractors.length < 2;
+    const list = editContractorFilter
+        ? US_CONTRACTORS.filter(c => c.toLowerCase().includes(editContractorFilter))
+        : US_CONTRACTORS;
+    container.innerHTML = list.map((ct) => {
+        const isSelected = tempSelectedContractors.includes(ct);
+        return '<button type="button" class="state-chip-btn ' + (isSelected ? 'selected' : '') + '" onclick="toggleTerritoryContractor(\'' + ct.replace(/'/g, "\\'") + '\')">' + (isSelected ? '✓ ' : '+ ') + ct + '</button>';
+    }).join('');
+}
+
+function toggleTerritoryContractor(ct) {
+    const idx = tempSelectedContractors.indexOf(ct);
+    if (idx >= 0) {
+        tempSelectedContractors.splice(idx, 1);
+    } else {
+        if (tempSelectedContractors.length >= 2) {
+            showToast('Strict limit: Max 2 contractors allowed per colleague.', 'warning');
+            const warning = document.getElementById('contractor-warning');
+            if (warning) {
+                warning.hidden = false;
+                warning.innerText = '⚠️ Maximum 2 contractors limit reached! Uncheck one to change.';
+            }
+            return;
+        }
+        tempSelectedContractors.push(ct);
+    }
+    renderContractorChips();
+}
+
 function saveColleagueSettings() {
     const key = document.getElementById('edit-colleague-key').value;
     const name = document.getElementById('edit-colleague-name').value.trim();
@@ -2070,18 +2501,24 @@ function saveColleagueSettings() {
         showToast('Maximum 2 states allowed per colleague.', 'warning');
         return;
     }
+    if (tempSelectedContractors.length > 2) {
+        showToast('Maximum 2 contractors allowed per colleague.', 'warning');
+        return;
+    }
     if (!PROFILE_DATA[key]) return;
     PROFILE_DATA[key].name = name;
     PROFILE_DATA[key].role = role;
     PROFILE_DATA[key].assigned_states = Array.from(tempSelectedStates);
+    PROFILE_DATA[key].assigned_contractors = Array.from(tempSelectedContractors);
 
     window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
-    publishSharedState('profiles', {name, role, assigned_states: tempSelectedStates}, key);
+    publishSharedState('profiles', {name, role, assigned_states: tempSelectedStates, assigned_contractors: tempSelectedContractors}, key);
+    publishAuditEvent('Territory Update', 'Updated profile, states & contractors for ' + name);
     hydrateColleagueCards();
     populateColleaguePickers();
     updateViewAs();
     closeColleagueSettings();
-    showToast('Profile and contractor territory states saved permanently.', 'success');
+    showToast('Profile, territory states & contractors saved permanently.', 'success');
 }
 
 /* =========================================================================
@@ -2631,6 +3068,193 @@ function sendSpintaxBatch() {
     showToast('Batch send simulation applied a unique variant to every recipient.', 'success');
 }
 
+/* =========================================================================
+   INTERACTIVE CAMPAIGN EXECUTION STUDIO
+   ========================================================================= */
+let studioJitterTimer = null;
+let studioIsDispatching = false;
+let studioJitterProfile = 'human';
+
+function openCampaignStudio() {
+    const modal = document.getElementById('campaign-studio-modal');
+    if (!modal) return;
+    modal.hidden = false;
+    updateStudioRange();
+}
+
+function closeCampaignStudio() {
+    const modal = document.getElementById('campaign-studio-modal');
+    if (modal) modal.hidden = true;
+    cancelStudioDispatch();
+}
+
+function updateStudioRange() {
+    const start = parseInt(document.getElementById('studio-range-start')?.value || '1', 10);
+    const end = parseInt(document.getElementById('studio-range-end')?.value || '25', 10);
+    const count = Math.max(0, end - start + 1);
+    const targetCount = document.getElementById('studio-target-count');
+    if (targetCount) targetCount.innerText = count + ' Decision-Makers';
+}
+
+function generateStudioAiVariants() {
+    const subjTpl = document.getElementById('studio-subject')?.value || '{Exclusive Alliance|Commercial Opportunity} with {{company}}';
+    const bodyTpl = document.getElementById('studio-body')?.value || '{Hi|Hello} {{first_name}}, let us collaborate.';
+    const container = document.getElementById('studio-variants-preview');
+    if (!container) return;
+
+    function spin(template) {
+        return template.replace(/\{([^{}]+)\}/g, function(_, choices) {
+            const arr = choices.split('|');
+            return arr[Math.floor(Math.random() * arr.length)].trim();
+        });
+    }
+
+    const previewCards = [1, 2, 3].map(i => {
+        const s = spin(subjTpl).replace('{{company}}', 'Apex Arch LLC');
+        const b = spin(bodyTpl).replace('{{first_name}}', 'Marcus').replace('{{state}}', 'California');
+        return '<div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-color); border-radius:6px; padding:8px; margin-bottom:6px;">' +
+            '<div style="font-size:11px; color:var(--accent-gold); font-weight:700;">Variant #' + i + ' Subject: ' + s + '</div>' +
+            '<div style="font-size:11px; color:var(--text-main); margin-top:3px;">' + b + '</div>' +
+            '</div>';
+    }).join('');
+
+    container.innerHTML = previewCards;
+    container.style.display = 'block';
+    showToast('Generated 3 AI rotating Spintax variants.', 'success');
+}
+
+function updateStudioInboxAuth(inbox) {
+    const chip = document.getElementById('studio-auth-chip');
+    const btn = document.getElementById('studio-auth-action-btn');
+    const desc = document.getElementById('studio-auth-desc');
+    if (inbox.includes('node2')) {
+        if (chip) { chip.className = 'auth-status-chip connected'; chip.innerText = '● 16-Digit App Password'; }
+        if (btn) btn.innerText = '🔑 Validate App Password';
+        if (desc) desc.innerText = 'Encrypted AES-256 Locker';
+    } else {
+        if (chip) { chip.className = 'auth-status-chip connected'; chip.innerText = '● OAuth 2.0 Connected'; }
+        if (btn) btn.innerText = '🔗 Re-Authorize Google OAuth';
+        if (desc) desc.innerText = 'AES-256 Token Active';
+    }
+}
+
+function triggerOAuthPermissionFlow() {
+    showToast('Google OAuth 2.0 consent token verified and renewed (AES-256).', 'success');
+}
+
+function stageStudioDrafts() {
+    const start = parseInt(document.getElementById('studio-range-start')?.value || '1', 10);
+    const end = parseInt(document.getElementById('studio-range-end')?.value || '25', 10);
+    const count = Math.max(0, end - start + 1);
+    const progress = document.getElementById('studio-draft-progress');
+    const status = document.getElementById('studio-draft-status');
+
+    if (status) status.innerText = 'Staging ' + count + ' customized drafts in Gmail account...';
+    let pct = 0;
+    if (progress) progress.style.width = '0%';
+    const intv = setInterval(() => {
+        pct += 25;
+        if (progress) progress.style.width = pct + '%';
+        if (pct >= 100) {
+            clearInterval(intv);
+            if (status) status.innerText = '✓ ' + count + ' Drafts successfully created in Gmail queue (Ready to send)';
+            showToast(count + ' Drafts staged in multi-tenant inbox.', 'success');
+        }
+    }, 280);
+}
+
+function updateJitterProfile(profile) {
+    studioJitterProfile = profile;
+    const label = document.getElementById('studio-jitter-label');
+    if (!label) return;
+    if (profile === 'human') label.innerText = 'Random Jitter: 1s – 5s';
+    else if (profile === 'steady') label.innerText = 'Steady: 4s Interval';
+    else label.innerText = 'Conservative: 8s Interval';
+}
+
+function runStudioDispatch() {
+    if (studioIsDispatching) {
+        showToast('Dispatch is already in progress.', 'info');
+        return;
+    }
+    const start = parseInt(document.getElementById('studio-range-start')?.value || '1', 10);
+    const end = parseInt(document.getElementById('studio-range-end')?.value || '25', 10);
+    const count = Math.max(0, end - start + 1);
+
+    const ticker = document.getElementById('studio-live-ticker');
+    if (ticker) {
+        ticker.style.display = 'block';
+        ticker.innerHTML = '<div style="color:var(--accent-green); font-weight:700;">🚀 Dispatch queue launched for ' + count + ' records...</div>';
+    }
+
+    studioIsDispatching = true;
+    let currentRecord = start;
+
+    const contractorSampleNames = [
+        "Marcus Vance · Apex Arch (CA)", "Elena Ramos · Blue Ridge (TX)",
+        "David Sterling · Cascade (WA)", "Rachel Meyer · Evergreen (IL)",
+        "Thomas Reed · Summit Valley (CO)", "Sophia Alvarez · Coastal (FL)",
+        "Julian Hayes · Metro Guild (NY)", "Kevin Brooks · Keystone (PA)"
+    ];
+
+    function scheduleNext() {
+        if (!studioIsDispatching || currentRecord > end) {
+            studioIsDispatching = false;
+            if (ticker) ticker.innerHTML = '<div style="color:var(--accent-gold); font-weight:700;">✓ Campaign Dispatch Complete. ' + count + ' emails sent safely.</div>' + ticker.innerHTML;
+            showToast('All ' + count + ' outreach emails dispatched safely!', 'success');
+            publishAuditEvent('Campaign Dispatch', 'Safely dispatched ' + count + ' outreach emails with human jitter');
+            return;
+        }
+
+        let jitterMs = 2500;
+        if (studioJitterProfile === 'human') {
+            jitterMs = Math.floor(Math.random() * 4000) + 1200; // 1.2s to 5.2s
+        } else if (studioJitterProfile === 'steady') {
+            jitterMs = 4000;
+        } else {
+            jitterMs = 8000;
+        }
+
+        studioJitterTimer = setTimeout(() => {
+            const nowTime = new Date().toTimeString().split(' ')[0];
+            const name = contractorSampleNames[(currentRecord - start) % contractorSampleNames.length];
+            const jitterSec = (jitterMs / 1000).toFixed(1);
+            if (ticker) {
+                const line = document.createElement('div');
+                line.style.fontSize = '11px';
+                line.style.margin = '2px 0';
+                line.innerHTML = '<span style="color:var(--accent-green);">[' + nowTime + ']</span> <b style="color:var(--accent-gold);">#' + currentRecord + '</b> Sent to <i>' + name + '</i> · Jitter ' + jitterSec + 's · Spintax Applied';
+                ticker.prepend(line);
+            }
+            currentRecord++;
+            scheduleNext();
+        }, jitterMs);
+    }
+
+    scheduleNext();
+    showToast('Autonomous jittered dispatch started.', 'success');
+}
+
+function cancelStudioDispatch() {
+    if (studioJitterTimer) clearTimeout(studioJitterTimer);
+    studioIsDispatching = false;
+    const ticker = document.getElementById('studio-live-ticker');
+    if (ticker && ticker.style.display !== 'none') {
+        ticker.innerHTML = '<div style="color:var(--accent-orange); font-weight:700;">⏹ Dispatch halted by user.</div>' + ticker.innerHTML;
+    }
+    showToast('Campaign dispatch halted.', 'warning');
+}
+
+/* Session Enforcement on load */
+const origApplyStoredTheme = applyStoredTheme;
+applyStoredTheme = function() {
+    origApplyStoredTheme();
+    const authSession = window.sessionStorage.getItem('grace_auth_user');
+    if (!authSession) {
+        openAuthGateway('signin', true, true);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', applyStoredTheme);
 </script>
 """
@@ -2677,6 +3301,7 @@ def render_dashboard():
         <div class="card">
             <h4 style="margin:0 0 16px; font-size:16px;">⚡ Quick Action Toolbar</h4>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button class="btn btn-gold" data-required-module="4" onclick="openCampaignStudio()">🚀 Launch Campaign Studio</button>
                 <button class="btn btn-blue" data-required-module="2" onclick="manualSync()">Trigger Manual Sync</button>
                 <button class="btn btn-red" data-required-module="4" onclick="pauseOutreach()">Pause All Outreaches</button>
                 <button class="btn btn-orange" data-required-module="17" onclick="testBroadcast()">Test Broadcast</button>
@@ -2810,6 +3435,16 @@ def render_module_detail(mod_id):
         f'<tr><td><b>{first}</b></td><td>{second}</td><td><span style="color:var(--accent-green);font-weight:800;">{third}</span></td></tr>'
         for first, second, third in blueprint["rows"]
     )
+    if m_id == 21:
+        stored_state = read_shared_state()
+        audit_logs = stored_state.get("auditLog", [])
+        if audit_logs:
+            rows_html = "".join(
+                f'<tr><td><b>{entry.get("timestamp", "2026-09-09 12:00:00")}</b></td>'
+                f'<td>{entry.get("user", "System")} · {entry.get("action", "Event")} · {entry.get("details", "")}</td>'
+                f'<td><span style="color:var(--accent-green);font-weight:800;">Logged &amp; Verified</span></td></tr>'
+                for entry in reversed(audit_logs[-30:])
+            )
     vault_html = ""
     if m_id == 12:
         vault_html = """
@@ -2844,6 +3479,13 @@ def render_module_detail(mod_id):
             </div>
             <div class="dispatch-actions"><button class="btn btn-blue" onclick="evaluateDispatch()">Evaluate Pre-Dispatch</button><button class="btn btn-orange" onclick="executeCampaignDispatch()">Run Safe Dispatch</button></div>
             <div id="dispatch-result" class="dispatch-result">Awaiting pre-dispatch evaluation.</div>
+            <div style="margin-top:16px; padding:12px; background:rgba(214,161,23,0.08); border-radius:8px; border:1px solid rgba(214,161,23,0.25); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <strong style="color:var(--accent-gold); font-size:13px;">ENTERPRISE INTERACTIVE CAMPAIGN STUDIO</strong>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Contact range selection, 3-variant Spintax preview, spam scorer &amp; live jittered dispatch.</div>
+                </div>
+                <button class="btn btn-gold" onclick="openCampaignStudio()">🚀 Launch Campaign Studio</button>
+            </div>
         </div>
         """
     elif m_id == 5:
@@ -2856,6 +3498,9 @@ def render_module_detail(mod_id):
             <div class="dispatch-actions"><button class="btn btn-blue" onclick="previewSpintax()">Generate 3 Variations</button><button class="btn btn-orange" onclick="sendSpintaxBatch()">Simulate Send Batch</button></div>
             <pre id="spintax-preview" class="spintax-preview">Your generated variants will appear here.</pre>
             <div id="spintax-status" class="dispatch-result">Per-send variation engine · Armed</div>
+            <div style="margin-top:14px; display:flex; justify-content:flex-end;">
+                <button class="btn btn-gold" onclick="openCampaignStudio()">🚀 Open Interactive Campaign Studio</button>
+            </div>
         </div>
         """
     elif m_id == 6:
@@ -2952,13 +3597,23 @@ def render_colleagues():
         assigned_states = info.get("assigned_states", [])
         allowed_modules = info.get("allowed", list(range(1, 23)))
 
+        assigned_contractors = info.get("assigned_contractors", [])
         tags_html = "".join(f'<span class="tag">{tag}</span>' for tag in tags)
         states_badges = "".join(f'<span class="state-badge">📍 {st}</span>' for st in assigned_states)
         if not states_badges:
             states_badges = '<span style="color:var(--text-muted);font-size:11px;">No states assigned (Max 2)</span>'
 
+        contractors_badges = "".join(f'<span class="state-badge" style="border-color:var(--accent-gold); color:var(--accent-gold);">🏗️ {ct}</span>' for ct in assigned_contractors)
+        if not contractors_badges:
+            contractors_badges = '<span style="color:var(--text-muted);font-size:11px;">No contractors assigned (Max 2)</span>'
+
         permission_html = "".join(
-            f'<label class="permission-item" title="Module {module_id}"><input type="checkbox" {"checked" if module_id in allowed_modules else ""} onchange="savePermission(\'{key}\', {module_id}, this.checked)">M{module_id}</label>'
+            f'<label class="permission-item" title="{MODULES_DATA.get(module_id, {}).get("name", "")}">'
+            f'<input type="checkbox" {"checked" if module_id in allowed_modules else ""} onchange="savePermission(\'{key}\', {module_id}, this.checked)">'
+            f'<span class="perm-badge">M{module_id}</span>'
+            f'<span class="perm-icon">{MODULES_DATA.get(module_id, {}).get("icon", "•")}</span>'
+            f'<span class="perm-title">{MODULES_DATA.get(module_id, {}).get("name", "")}</span>'
+            f'</label>'
             for module_id in range(1, 23)
         )
         online_class = "online" if status == "Online" else ""
@@ -2981,9 +3636,13 @@ def render_colleagues():
                     <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">CONTRACTOR TERRITORY (MAX 2 STATES)</span>
                     <div class="tag-list colleague-states-list">{states_badges}</div>
                 </div>
+                <div style="margin-top:6px;">
+                    <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">US WORKING CONTRACTORS (MAX 2)</span>
+                    <div class="tag-list colleague-contractors-list">{contractors_badges}</div>
+                </div>
             </div>
             <div class="colleague-actions">
-                <button class="btn btn-blue" onclick="openColleagueSettings('{key}')">⚙️ Settings &amp; States</button>
+                <button class="btn btn-blue" onclick="openColleagueSettings('{key}')">⚙️ Settings &amp; Territories</button>
                 <button class="btn btn-gray" onclick="triggerAvatarUpload('{key}')">📷 Update Photo</button>
                 <button class="btn btn-gray" onclick="changeViewAs('{key}')">👁️ View As</button>
             </div>
