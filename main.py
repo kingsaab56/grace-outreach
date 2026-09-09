@@ -290,7 +290,7 @@ MODULE_BLUEPRINTS = {
     15: {"eyebrow": "CLASSIFICATION", "title": "Auto-reply intelligence desk", "metrics": [("Replies scanned", "1,824", "Since last sync"), ("Positive sentiment", "62%", "CRM push armed"), ("Confidence score", "94%", "High confidence")], "chart": [51, 58, 63, 67, 74, 72, 84, 92], "table_title": "Sentiment routing", "rows": [("Positive", "1,131 replies", "CRM push"), ("Neutral", "438 replies", "Needs review"), ("Negative", "255 replies", "Suppressed")], "controls": [("Classify inbox", "Run the sentiment model"), ("Review uncertain", "Open low-confidence replies"), ("Push to CRM", "Send approved classifications")]},
     16: {"eyebrow": "REPORTING", "title": "Multi-format analytics exporter", "metrics": [("Rows available", "18,420", "Across 22 modules"), ("Report freshness", "Live", "Current snapshot"), ("Export jobs", "Ready", "Instant browser handoff")], "chart": [42, 54, 63, 59, 71, 76, 84, 90], "table_title": "Recent exports", "rows": [("Weekly outreach telemetry", "CSV Format", "Instant Export"), ("Executive deal ROI", "Excel Format", "Instant Export"), ("Colleague security audit", "TXT Log", "Instant Export")], "controls": [("Build CSV report", "Download outreach telemetry CSV"), ("Build Excel report", "Download formatted Excel report"), ("Download audit TXT", "Download security access trail TXT")]},
     17: {"eyebrow": "NOTIFICATIONS", "title": "Broadcast notification node", "metrics": [("Reachable displays", "4 / 4", "Presence confirmed"), ("Priority banners", "2", "Awaiting ack"), ("Delivery latency", "220ms", "Within target")], "chart": [44, 52, 48, 61, 65, 72, 78, 87], "table_title": "Recipient delivery", "rows": [("All colleagues", "4 displays", "Delivered"), ("Sarah Malik", "1 display", "Acknowledged"), ("Hamza Ali", "1 display", "Offline queue")], "controls": [("Compose broadcast", "Target a display or all colleagues"), ("Send test packet", "Verify the notification node"), ("Review acknowledgements", "Check delivery receipts")]},
-    18: {"eyebrow": "BRAND SYSTEM", "title": "Palette and typography studio", "metrics": [("Theme presets", "6", "Ready to apply"), ("Typography profiles", "4", "Saved locally"), ("Brand consistency", "100%", "All surfaces aligned")], "chart": [72, 75, 78, 81, 84, 88, 91, 100], "table_title": "Brand tokens", "rows": [("Emerald signature", "#06352B", "Active"), ("Executive gold", "#D6A117", "Primary"), ("Cloud workspace", "#F1F5F9", "Available")], "controls": [("Open brand palette", "Apply a complete theme preset"), ("Tune typography", "Adjust the operating type system"), ("Preview light mode", "Review the accessible surface")]},
+    18: {"eyebrow": "BRAND SYSTEM", "title": "Palette and typography studio", "metrics": [("Theme presets", "6", "Ready to apply"), ("Typography profiles", "4", "Saved locally"), ("Brand consistency", "100%", "All surfaces aligned")], "chart": [72, 75, 78, 81, 84, 88, 91, 100], "table_title": "Brand tokens", "rows": [("Emerald signature", "#06352B", "Active"), ("Executive gold", "#D6A117", "Primary"), ("Sapphire Obsidian", "#0A192F", "Available")], "controls": [("Open brand palette", "Apply a complete theme preset"), ("Tune typography", "Adjust the operating type system"), ("Preview light mode", "Review the accessible surface")]},
     19: {"eyebrow": "INTEGRATION", "title": "Cloud webhook dispatcher", "metrics": [("Connected hooks", "7", "All signatures valid"), ("Delivered today", "4,280", "+12.1%"), ("Retry queue", "3", "Backoff active")], "chart": [65, 59, 72, 68, 77, 82, 79, 94], "table_title": "Webhook endpoints", "rows": [("CRM revenue", "POST /deals", "200 OK"), ("Audit sink", "POST /events", "200 OK"), ("Partner hub", "POST /sync", "Retrying")], "controls": [("Dispatch test JSON", "Send a signed test payload"), ("Replay retry queue", "Reattempt safe failures"), ("Rotate webhook secret", "Refresh endpoint signing")]},
     20: {"eyebrow": "QUOTA SAFETY", "title": "Daily quota guardrail", "metrics": [("Safe accounts", "3 / 3", "Within policy"), ("Used today", "1,240", "50% of safe cap"), ("Blocked sends", "0", "No policy violations")], "chart": [24, 31, 38, 44, 51, 57, 63, 50], "table_title": "Account quota lanes", "rows": [("Inbox #1", "420 / 800", "Safe"), ("Inbox #2", "410 / 800", "Safe"), ("Inbox #3", "410 / 800", "Safe")], "controls": [("Recalculate quota", "Refresh account pacing limits"), ("Open safe-send plan", "Review the next dispatch window"), ("Lock overage", "Enforce the daily ceiling")]},
     21: {"eyebrow": "FORENSICS", "title": "Security audit stream", "metrics": [("Events recorded", "12,842", "Append-only"), ("Threat signals", "0", "No active threats"), ("Retention", "180 days", "Policy compliant")], "chart": [47, 51, 49, 58, 64, 69, 66, 82], "table_title": "Recent audit events", "rows": [("View-As session", "King Saab", "Recorded"), ("RBAC mutation", "M17 enabled", "Recorded"), ("Vault check", "AES-256", "Verified")], "controls": [("Export Audit Log", "Download signed tamper-proof log"), ("Run threat scan", "Check recent access signals"), ("Flush memory buffer", "Clear safe audit pointers")]},
@@ -731,7 +731,7 @@ def render_header():
                 <button class="palette-option" onclick="applyTheme('royal')" style="--swatch:#16204A"><i></i><b>Royal Signal</b><small>High contrast</small></button>
                 <button class="palette-option" onclick="applyTheme('sandstone')" style="--swatch:#3B2A1A"><i></i><b>Sandstone</b><small>Warm command</small></button>
                 <button class="palette-option" onclick="applyTheme('slate')" style="--swatch:#1E293B"><i></i><b>Slate</b><small>Neutral ops</small></button>
-                <button class="palette-option" onclick="applyTheme('cloud')" style="--swatch:#F1F5F9"><i></i><b>Cloud</b><small>Light workspace</small></button>
+                <button class="palette-option" onclick="applyTheme('sapphire')" style="--swatch:#0A192F"><i></i><b>Sapphire</b><small>Deep executive blue</small></button>
             </div>
             <span class="eyebrow palette-type-label">SURFACE COLOR CONTROLS</span>
             <div class="color-control-grid">
@@ -994,7 +994,14 @@ BASE_CSS = """
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 22px; }
     .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 22px; }
     .stat-title { font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
-    .stat-value { font-size: 30px; font-weight: 800; margin: 10px 0 6px; }
+    .stat-value { font-size: 32px !important; font-weight: 800 !important; margin: 10px 0 6px !important; color: #10B981 !important; text-shadow: 0 0 16px rgba(16,185,129,0.35) !important; }
+    .stat-card { background: #001A17 !important; border: 1px solid #123B35 !important; border-radius: 14px !important; padding: 18px 22px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important; }
+    .stat-title { color: #9BB0AD !important; font-size: 12px !important; font-weight: 800 !important; text-transform: uppercase !important; letter-spacing: 0.6px !important; }
+    .stat-sub { color: #10B981 !important; font-size: 13px !important; font-weight: 700 !important; }
+    .card { background: #001A17 !important; border: 1px solid #123B35 !important; color: #F8FAFC !important; box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important; }
+    .card h1, .card h2, .card h3, .card h4 { color: #FFFFFF !important; font-weight: 700 !important; }
+    .log-box { background: #051412 !important; border: 1px solid #123B35 !important; border-radius: 10px !important; color: #34D399 !important; font-family: monospace !important; font-size: 13px !important; line-height: 1.6 !important; max-height: 220px !important; overflow-y: auto !important; }
+    .log-box div { color: #34D399 !important; margin-bottom: 4px !important; }
     .stat-sub { font-size: 13px; font-weight: 700; color: var(--accent-green); }
     .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
     .log-box { background: rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; font-family: monospace; font-size: 13px; line-height: 1.6; max-height: 220px; overflow-y: auto; }
@@ -1349,7 +1356,8 @@ const THEME_PRESETS = {
     royal: {dark:true, bg:'#11162D', card:'#182348', text:'#F5F7FF', muted:'#AEB8D6', border:'#34457C', accent:'#CBB5FF', green:'#64E6C0'},
     sandstone: {dark:true, bg:'#211A14', card:'#302319', text:'#FFF9F0', muted:'#C6B39D', border:'#60452B', accent:'#F0B55A', green:'#69D0A2'},
     slate: {dark:true, bg:'#111827', card:'#1E293B', text:'#F8FAFC', muted:'#A7B3C5', border:'#334155', accent:'#38BDF8', green:'#34D399'},
-    cloud: {dark:false, bg:'#F1F5F9', card:'#FFFFFF', text:'#0F172A', muted:'#64748B', border:'#CBD5E1', accent:'#0284C7', green:'#10B981'}
+    sapphire: {dark:true, bg:'#070E1A', card:'#0A192F', text:'#F8FAFC', muted:'#94A3B8', border:'#1E3A5F', accent:'#38BDF8', green:'#10B981'},
+    cloud: {dark:true, bg:'#0B1120', card:'#001A17', text:'#F8FAFC', muted:'#9BB0AD', border:'#123B35', accent:'#D6A117', green:'#10B981'}
 };
 
 let ACCESS_MAP = {
@@ -1773,8 +1781,13 @@ function toggleGatewayAudio() {
    INITIALIZATION
    ========================================================================= */
 function applyStoredTheme() {
-    const stored = window.localStorage.getItem('grace-theme') || 'midnight';
-    applyTheme(THEME_PRESETS[stored] ? stored : 'midnight', false);
+    // Purge any stored light or cloud theme to permanently eliminate white-card glitch
+    let stored = window.localStorage.getItem('grace-theme');
+    if (!stored || stored === 'cloud' || stored === 'light' || !THEME_PRESETS[stored] || !THEME_PRESETS[stored].dark) {
+        stored = 'midnight';
+        window.localStorage.setItem('grace-theme', 'midnight');
+    }
+    applyTheme(stored, false);
     applyTypography(false);
     hydrateAccessMap();
     hydrateLocalProfiles();
@@ -1798,9 +1811,12 @@ function applyStoredTheme() {
 }
 
 function applyTheme(name, notify = true) {
+    if (!name || name === 'cloud' || name === 'light' || !THEME_PRESETS[name] || !THEME_PRESETS[name].dark) {
+        name = 'midnight';
+    }
     const preset = THEME_PRESETS[name] || THEME_PRESETS.midnight;
     selectedTheme = name;
-    document.body.classList.toggle('dark', preset.dark);
+    document.body.classList.add('dark');
     Object.entries({
         '--bg-main': preset.bg, '--bg-card': preset.card, '--text-main': preset.text,
         '--text-muted': preset.muted, '--border-color': preset.border,
@@ -1813,7 +1829,8 @@ function applyTheme(name, notify = true) {
 
 function updateThemeButton() {
     const btn = document.getElementById('theme-btn');
-    if (btn) btn.innerText = document.body.classList.contains('dark') ? '🌓 Theme: DARK' : '☀️ Theme: LIGHT';
+    const current = window.localStorage.getItem('grace-theme') || 'midnight';
+    if (btn) btn.innerText = current === 'emerald' ? '🌓 Theme: EMERALD' : '🌓 Theme: MIDNIGHT';
 }
 
 function applyTypography(notify = true) {
@@ -1851,7 +1868,9 @@ function showToast(message, tone = 'success') {
 }
 
 function toggleTheme() {
-    applyTheme(document.body.classList.contains('dark') ? 'cloud' : 'midnight');
+    const current = window.localStorage.getItem('grace-theme') || 'midnight';
+    const next = current === 'midnight' ? 'emerald' : 'midnight';
+    applyTheme(next);
 }
 
 function toggleAudio() {
@@ -5240,7 +5259,7 @@ def get_module_workspace_html(m_id):
                 <button class="palette-option" onclick="applyTheme('royal')" style="--swatch:#16204A"><i></i><b>Royal Signal</b><small>High contrast</small></button>
                 <button class="palette-option" onclick="applyTheme('sandstone')" style="--swatch:#3B2A1A"><i></i><b>Sandstone</b><small>Warm command</small></button>
                 <button class="palette-option" onclick="applyTheme('slate')" style="--swatch:#1E293B"><i></i><b>Slate</b><small>Neutral ops</small></button>
-                <button class="palette-option" onclick="applyTheme('cloud')" style="--swatch:#F1F5F9"><i></i><b>Cloud</b><small>Light workspace</small></button>
+                <button class="palette-option" onclick="applyTheme('sapphire')" style="--swatch:#0A192F"><i></i><b>Sapphire</b><small>Deep executive blue</small></button>
             </div>
             <div style="display:flex; justify-content:flex-end;">
                 <button class="btn btn-blue" onclick="openBrandPalette()">Open Full Typography &amp; Hex Studio</button>
