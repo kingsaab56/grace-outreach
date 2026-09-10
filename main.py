@@ -1927,9 +1927,12 @@ BASE_CSS = """
 
     /* COMPREHENSIVE LIGHT THEME ENGINE (ZERO TEXT HIDING - 100% CONTRAST) */
     body.light {
+        --text-main: #0F172A !important;
         --text-primary: #0F172A !important;
         --text-secondary: #334155 !important;
         --text-muted: #64748B !important;
+        --border-color: #CBD5E1 !important;
+        --bg-card: #FFFFFF !important;
     }
 
     body.light .brightness-control-pill {
@@ -1955,6 +1958,7 @@ BASE_CSS = """
 
     /* 2. Preserve White Text on Solid Colorful Action Buttons and Badges */
     body.light .btn-blue, body.light .btn-red, body.light .btn-orange, body.light .btn-green,
+    body.light .btn-run-control,
     body.light .badge-count,
     body.light .hud-segment.active-emerald,
     body.light .hud-segment.active-cyan,
@@ -2035,6 +2039,105 @@ BASE_CSS = """
         background: rgba(15, 23, 42, 0.08) !important;
         color: rgba(15, 23, 42, 0.45) !important;
     }
+    body.light .hud-gauge-footer strong {
+        color: #047857 !important;
+    }
+    body.light .hud-gauge-footer span {
+        color: #475569 !important;
+    }
+
+    /* 7. Pro Mission Execution Controls (Zero Invisible Text) */
+    body.light .control-row {
+        background: #F8FAFC !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+        transition: all 0.2s ease;
+    }
+    body.light .control-row:hover {
+        background: #FFFFFF !important;
+        border-color: #059669 !important;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.12) !important;
+        transform: translateY(-1px);
+    }
+    body.light .control-row b,
+    body.light .control-list b,
+    body.light .control-row strong {
+        color: #0F172A !important;
+        font-size: 13.5px !important;
+        font-weight: 800 !important;
+    }
+    body.light .control-row span {
+        color: #475569 !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+    body.light .module-panel {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    }
+    body.light .module-panel h3,
+    body.light .module-panel h4 {
+        color: #0F172A !important;
+    }
+    body.light .module-hero {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    }
+    body.light .module-hero h2 {
+        color: #0F172A !important;
+    }
+    body.light table {
+        color: #0F172A !important;
+    }
+    body.light table th {
+        color: #334155 !important;
+        border-bottom-color: #CBD5E1 !important;
+    }
+    body.light table td {
+        color: #0F172A !important;
+        border-bottom-color: #F1F5F9 !important;
+    }
+    body.light table td b {
+        color: #0F172A !important;
+    }
+
+    /* 8. Pro Cyber Activity Terminal (Image 1 Crystal Clarity) */
+    .log-box, body.light .log-box, body.dark .log-box {
+        background: #061512 !important;
+        border: 1.5px solid #123B35 !important;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.6) !important;
+    }
+    .log-box .log-row, body.light .log-box .log-row {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-left: 3.5px solid #10B981 !important;
+    }
+    .log-box .log-row:hover, body.light .log-box .log-row:hover {
+        background: rgba(16, 185, 129, 0.08) !important;
+    }
+    .log-box .log-msg, body.light .log-box .log-msg, body.dark .log-box .log-msg {
+        color: #F1F5F9 !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+    }
+    .log-box .log-time, body.light .log-box .log-time {
+        color: #38BDF8 !important;
+        font-weight: 700 !important;
+        font-family: monospace !important;
+    }
+    .log-box .log-account-pill {
+        background: rgba(56, 189, 248, 0.15) !important;
+        color: #38BDF8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.35) !important;
+    }
+    .log-box .log-profile-pill {
+        background: rgba(214, 161, 23, 0.15) !important;
+        color: #FBBF24 !important;
+        border: 1px solid rgba(214, 161, 23, 0.35) !important;
+    }
+
     body.light .modal-close {
         background: #F1F5F9 !important;
         border: 1px solid #CBD5E1 !important;
@@ -2347,11 +2450,40 @@ BASE_CSS = """
     .bar-chart { display:flex; align-items:end; gap:10px; height:160px; padding:16px 10px 10px; border-bottom:1px solid var(--border-color); background:repeating-linear-gradient(to top,transparent 0,transparent 29px,rgba(148,163,184,.12) 30px); }
     .bar-chart span { flex:1; min-width:8px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,var(--accent-green),var(--accent-gold)); box-shadow:0 0 12px rgba(16,185,129,.16); }
     .chart-caption { display:flex; justify-content:space-between; margin-top:10px; color:var(--text-muted); font-size:11px; }
-    .control-list { display:grid; gap:10px; }
-    .control-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px; border:1px solid var(--border-color); border-radius:10px; background:rgba(0,0,0,0.2); }
-    .control-row span { color:var(--text-muted); font-size:12px; line-height:1.4; }
-    .control-row b { display:block; color:var(--text-main); font-size:13px; margin-bottom:3px; }
-    .control-row .btn { flex:0 0 auto; font-size:11px; padding:8px 12px; }
+    .control-list { display:grid; gap:12px; }
+    .control-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px 16px;
+        border: 1.5px solid #123B35;
+        border-radius: 12px;
+        background: rgba(0, 26, 23, 0.7);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .control-row:hover {
+        border-color: var(--accent-gold);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    }
+    .control-row span { color: var(--text-muted); font-size: 12.5px; line-height: 1.4; display: block; }
+    .control-row b { display: block; color: #FFFFFF; font-size: 14px; font-weight: 800; margin-bottom: 3px; letter-spacing: 0.2px; }
+    .control-row .btn-run-control {
+        flex: 0 0 auto;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 9px 18px;
+        border-radius: 8px;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+        transition: all 0.18s ease;
+    }
+    .control-row .btn-run-control:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.55);
+    }
     .module-table-wrap { margin-top:22px; overflow-x:auto; }
     .module-table-wrap table { min-width:540px; margin-top:0; }
     .module-access-denied { padding:32px; text-align:center; border:1px dashed var(--accent-orange); border-radius:14px; background:rgba(234,88,12,.08); }
@@ -7172,6 +7304,104 @@ def render_vertical_telemetry_gauge(label, value, delta, mod_id, idx):
     </div>
     """
 
+def render_module_workbench_hud(m_id, blueprint):
+    metrics = blueprint.get("metrics", [])
+    g1_label = metrics[0][0] if len(metrics) > 0 else "Execution Velocity"
+    g1_val = metrics[0][1] if len(metrics) > 0 else "45 / 50 Sent"
+    g2_label = metrics[1][0] if len(metrics) > 1 else "Quota & Buffer"
+    g2_val = metrics[1][1] if len(metrics) > 1 else "38 / 50 Sent"
+    g3_label = metrics[2][0] if len(metrics) > 2 else "Deliverability Index"
+    g3_val = metrics[2][1] if len(metrics) > 2 else "0.08% Bounce"
+
+    gauge_configs = [
+        {
+            "title": f"📬 {g1_label}",
+            "status": "● Active",
+            "status_color": "#10B981",
+            "pct": 90,
+            "theme": "active-emerald",
+            "badge_color": "#10B981",
+            "badge_cls": "",
+            "footer_label": "Capacity",
+            "footer_val": g1_val,
+            "footer_val_color": "#10B981",
+            "chamber_id": f"chamber-wb-{m_id}-1",
+        },
+        {
+            "title": f"📨 {g2_label}",
+            "status": "● Rotating",
+            "status_color": "#38BDF8",
+            "pct": 76,
+            "theme": "active-cyan",
+            "badge_color": "#38BDF8",
+            "badge_cls": "",
+            "footer_label": "Capacity",
+            "footer_val": g2_val,
+            "footer_val_color": "#38BDF8",
+            "chamber_id": f"chamber-wb-{m_id}-2",
+        },
+        {
+            "title": "📫 Relay Node #3",
+            "status": "● Standby",
+            "status_color": "#F59E0B",
+            "pct": 30,
+            "theme": "active-gold",
+            "badge_color": "#F59E0B",
+            "badge_cls": "badge-gold",
+            "footer_label": "Capacity",
+            "footer_val": "15 / 50 Sent",
+            "footer_val_color": "#F59E0B",
+            "chamber_id": f"chamber-wb-{m_id}-3",
+        },
+        {
+            "title": f"🛡️ {g3_label}",
+            "status": "● Optimal",
+            "status_color": "#10B981",
+            "pct": 98.4,
+            "theme": "active-emerald",
+            "badge_color": "#10B981",
+            "badge_cls": "",
+            "footer_label": "Reputation Tier",
+            "footer_val": g3_val,
+            "footer_val_color": "#10B981",
+            "chamber_id": f"chamber-wb-{m_id}-4",
+        },
+    ]
+
+    gauges_html = []
+    for g in gauge_configs:
+        pct_val = g["pct"]
+        tier_count = max(1, min(10, round(float(pct_val) / 10)))
+        theme_class = g["theme"]
+        segments = "".join(
+            f'<div class="hud-segment {theme_class if (t + 1) <= tier_count else ""}">{ (t + 1) * 10 }%</div>'
+            for t in range(10)
+        )
+        badge_style = f'background:{g["badge_color"]};' if "gold" not in g["badge_cls"] else ""
+        badge_cls = f'hud-pointer-badge {g["badge_cls"]}'.strip()
+
+        gauges_html.append(f"""
+            <div class="hud-gauge-card" style="padding:14px 10px; min-width:140px;">
+                <div class="hud-gauge-head" style="margin-bottom:8px;">
+                    <span class="hud-gauge-title" style="font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{g["title"]}</span>
+                    <span style="color:{g["status_color"]}; font-weight:800; font-size:10.5px; margin-left:4px;">{g["status"]}</span>
+                </div>
+                <div class="hud-chamber-wrap" style="gap:8px; margin:4px 0 10px;">
+                    <div class="hud-vertical-chamber" id="{g["chamber_id"]}" style="width:54px; height:170px;">
+                        {segments}
+                    </div>
+                    <div class="{badge_cls}" style="{badge_style} font-size:11px; padding:3px 6px;">{pct_val}%</div>
+                </div>
+                <div class="hud-gauge-footer" style="padding-top:6px; font-size:10.5px;">
+                    <span style="color:var(--text-muted);">{g["footer_label"]}</span>
+                    <strong style="color:{g["footer_val_color"]}; font-size:11.5px;">{g["footer_val"]}</strong>
+                </div>
+            </div>
+        """)
+
+    return "".join(gauges_html)
+
+
 def render_module_detail(mod_id):
     try:
         m_id = int(mod_id)
@@ -7185,6 +7415,7 @@ def render_module_detail(mod_id):
         render_vertical_telemetry_gauge(label, value, delta, m_id, idx)
         for idx, (label, value, delta) in enumerate(blueprint["metrics"])
     )
+    workbench_hud_html = render_module_workbench_hud(m_id, blueprint)
     bars_html = "".join(f'<span style="height:{height}%;" title="Telemetry sample {index + 1}"></span>' for index, height in enumerate(blueprint["chart"]))
     
     # Generate interactive real-time module controls
@@ -7238,14 +7469,30 @@ def render_module_detail(mod_id):
             <div class="telemetry-grid">{metrics_html}</div>
             {get_module_user_friendly_guide_html(m_id)}
             {get_module_workspace_html(m_id)}
-            <div class="module-workbench">
-                <section class="module-panel">
-                    <h3>📈 Live Telemetry Trend</h3>
-                    <div class="bar-chart" id="module-bar-chart">{bars_html}</div>
-                    <div class="chart-caption"><span>−24h</span><span>Current operating window</span><span>Now</span></div>
+            <div class="module-workbench" style="margin-bottom:22px;">
+                <section class="module-panel" style="min-width:0; padding:18px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(16,185,129,0.25); padding-bottom:10px;">
+                        <div>
+                            <span class="eyebrow" style="color:var(--accent-green); font-size:11px; letter-spacing:1px; font-weight:800;">MULTI-TENANT TELEMETRY HUD (IMAGE 1 ARCHITECTURE)</span>
+                            <h3 style="margin:4px 0 0; font-size:16px; font-weight:800; color:var(--text-primary);">Vertical Segmented Quota, Velocity &amp; Reputation Gauges</h3>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <span style="font-size:10.5px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">🟢 3 Nodes Synced</span>
+                            <span style="font-size:10.5px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">⚡ Pacing: 45 msgs/hr</span>
+                        </div>
+                    </div>
+                    <div class="vertical-telemetry-hud" id="module-bar-chart" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom:0;">
+                        {workbench_hud_html}
+                    </div>
                 </section>
-                <section class="module-panel">
-                    <h3>⚡ Execution Controls</h3>
+                <section class="module-panel" style="min-width:0; padding:18px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px; border-bottom:1px solid rgba(16,185,129,0.25); padding-bottom:10px;">
+                        <div>
+                            <span class="eyebrow" style="color:var(--accent-gold); font-size:11px; letter-spacing:1px; font-weight:800;">REAL-TIME CONTROLS</span>
+                            <h3 style="margin:4px 0 0; font-size:16px; font-weight:800; color:var(--text-primary);">⚡ Execution Controls</h3>
+                        </div>
+                        <span style="font-size:10.5px; background:rgba(56,189,248,0.15); color:#0284C7; padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(56,189,248,0.3);">3 Actions Ready</span>
+                    </div>
                     <div class="control-list">{controls_html}</div>
                 </section>
             </div>

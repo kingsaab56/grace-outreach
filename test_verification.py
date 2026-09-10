@@ -343,10 +343,26 @@ def run_tests():
     assert "brightness-overlay" in dash_html, "Missing brightness-overlay in JS"
     print("[PASS] Ultra-HD Master, Retina Thumbnail, and Viewport-Docked Modal verified.")
 
-    print("\n[SUCCESS] ALL 24 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 25. Test Module Detail Vertical Segmented HUD (Image 3) & Pro Max Execution Controls
+    print("Testing Module Detail Vertical Segmented HUD (Image 3) & Pro Max Execution Controls...")
+    status_m8, headers_m8, data_m8 = wsgi_request("/api/", "GET", query_string="tab=module&id=8")
+    assert status_m8 == "200 OK", f"Expected 200 OK for module 8, got {status_m8}"
+    m8_html = data_m8.decode("utf-8")
+    assert "MULTI-TENANT TELEMETRY HUD" in m8_html, "Missing MULTI-TENANT TELEMETRY HUD in module 8"
+    assert "Vertical Segmented Quota, Velocity &amp; Reputation Gauges" in m8_html, "Missing Image 3 HUD title in module 8"
+    assert "chamber-wb-8-1" in m8_html, "Missing vertical chamber chamber-wb-8-1 in module 8"
+    assert "chamber-wb-8-2" in m8_html, "Missing vertical chamber chamber-wb-8-2 in module 8"
+    assert "chamber-wb-8-3" in m8_html, "Missing vertical chamber chamber-wb-8-3 in module 8"
+    assert "chamber-wb-8-4" in m8_html, "Missing vertical chamber chamber-wb-8-4 in module 8"
+    assert "body.light .control-row b" in m8_html, "Missing light theme control-row text contrast fix"
+    assert "--text-main: #0F172A !important;" in m8_html, "Missing --text-main light mode variable"
+    print("[PASS] Module Detail Vertical Segmented HUD (Image 3) and Pro Max Execution Controls verified.")
+
+    print("\n[SUCCESS] ALL 25 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
+
 
 
 
