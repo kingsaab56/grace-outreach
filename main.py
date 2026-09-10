@@ -1290,7 +1290,7 @@ BASE_CSS = """
         font-size: 11px;
     }
 
-    /* 3D LUXURY CREST LOGO - BORDERLESS & CRISP ASPECT RATIO */
+    /* 3D LUXURY CREST LOGO - 100% BORDERLESS & ZERO BLACK BOX */
     #brand-logo-container {
         display: inline-flex;
         align-items: center;
@@ -1298,36 +1298,45 @@ BASE_CSS = """
         background: transparent !important;
         border: none !important;
         padding: 0 !important;
-        margin: 0 12px 0 0 !important;
+        margin: 0 14px 0 0 !important;
         box-shadow: none !important;
+        outline: none !important;
     }
     .brand-crest-logo {
         width: 56px;
         height: 56px;
         object-fit: contain;
-        border-radius: 12px;
+        border-radius: 0 !important;
         border: none !important;
         outline: none !important;
         background: transparent !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        box-shadow: none !important;
+        filter: none !important;
         vertical-align: middle;
         display: block;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease;
     }
     .brand-crest-logo:hover {
         transform: scale(1.05);
-        box-shadow: 0 6px 22px rgba(214, 161, 23, 0.4);
+        box-shadow: none !important;
     }
     .auth-header .brand-crest-logo {
         width: 64px;
         height: 64px;
-        border-radius: 14px;
+        border-radius: 0 !important;
         border: none !important;
         outline: none !important;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+        box-shadow: none !important;
+        filter: none !important;
+        background: transparent !important;
     }
-    body.light .brand-crest-logo {
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    body.light .brand-crest-logo,
+    body.dark .brand-crest-logo {
+        box-shadow: none !important;
+        filter: none !important;
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
     }
 
     /* HEADER TYPOGRAPHY & CREATOR BADGES */
@@ -5443,8 +5452,97 @@ def render_dashboard():
         </div>
     </div>
 
-        <div class="grid-2" style="align-items:stretch; margin-bottom:22px; gap:18px;">
-        <!-- Left Column: Quick Action Toolbar + Real-Time Telemetry Stream (Zero Blank Space) -->
+            <!-- FULL-WIDTH DEDICATED EXECUTIVE CARD: 4-GAUGE VERTICAL SEGMENTED TELEMETRY HUD (IMAGE 1 ARCHITECTURE) -->
+    <div class="card" style="margin-bottom:22px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; border-bottom:1px solid #123B35; padding-bottom:12px;">
+            <div>
+                <span class="eyebrow" style="color:var(--accent-green);">MULTI-TENANT TELEMETRY HUD (IMAGE 1 ARCHITECTURE)</span>
+                <h3 style="margin:4px 0 0; font-size:18px; font-weight:800; color:#FFFFFF;">Vertical Segmented Quota, Velocity &amp; Reputation Gauges</h3>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <span style="font-size:11px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">🟢 3 Nodes Synced</span>
+                <span style="font-size:11px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">⚡ Pacing: 45 msgs/hr</span>
+            </div>
+        </div>
+
+        <div class="vertical-telemetry-hud" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            <!-- Gauge 1: Business Inbox #1 -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">📬 Business Node #1</span>
+                    <span style="color:#10B981; font-weight:800;">● Active</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-node1">
+                        <div class="hud-segment active-emerald">10%</div><div class="hud-segment active-emerald">20%</div><div class="hud-segment active-emerald">30%</div><div class="hud-segment active-emerald">40%</div><div class="hud-segment active-emerald">50%</div><div class="hud-segment active-emerald">60%</div><div class="hud-segment active-emerald">70%</div><div class="hud-segment active-emerald">80%</div><div class="hud-segment active-emerald">90%</div><div class="hud-segment">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge">90%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Capacity</span>
+                    <strong style="color:#10B981;">45 / 50 Sent</strong>
+                </div>
+            </div>
+
+            <!-- Gauge 2: Outreach Node #2 -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">📨 Outreach Node #2</span>
+                    <span style="color:#38BDF8; font-weight:800;">● Rotating</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-node2">
+                        <div class="hud-segment active-cyan">10%</div><div class="hud-segment active-cyan">20%</div><div class="hud-segment active-cyan">30%</div><div class="hud-segment active-cyan">40%</div><div class="hud-segment active-cyan">50%</div><div class="hud-segment active-cyan">60%</div><div class="hud-segment active-cyan">70%</div><div class="hud-segment">80%</div><div class="hud-segment">90%</div><div class="hud-segment">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge" style="background:#38BDF8;">76%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Capacity</span>
+                    <strong style="color:#38BDF8;">38 / 50 Sent</strong>
+                </div>
+            </div>
+
+            <!-- Gauge 3: Relay Personal Node #3 -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">📫 Relay Node #3</span>
+                    <span style="color:#F59E0B; font-weight:800;">● Standby</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-node3">
+                        <div class="hud-segment active-gold">10%</div><div class="hud-segment active-gold">20%</div><div class="hud-segment active-gold">30%</div><div class="hud-segment">40%</div><div class="hud-segment">50%</div><div class="hud-segment">60%</div><div class="hud-segment">70%</div><div class="hud-segment">80%</div><div class="hud-segment">90%</div><div class="hud-segment">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge badge-gold">30%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Capacity</span>
+                    <strong style="color:#F59E0B;">15 / 50 Sent</strong>
+                </div>
+            </div>
+
+            <!-- Gauge 4: Domain Health & Deliverability -->
+            <div class="hud-gauge-card">
+                <div class="hud-gauge-head">
+                    <span class="hud-gauge-title">🛡️ Deliverability Index</span>
+                    <span style="color:#10B981; font-weight:800;">● Optimal</span>
+                </div>
+                <div class="hud-chamber-wrap">
+                    <div class="hud-vertical-chamber" id="chamber-health">
+                        <div class="hud-segment active-emerald">10%</div><div class="hud-segment active-emerald">20%</div><div class="hud-segment active-emerald">30%</div><div class="hud-segment active-emerald">40%</div><div class="hud-segment active-emerald">50%</div><div class="hud-segment active-emerald">60%</div><div class="hud-segment active-emerald">70%</div><div class="hud-segment active-emerald">80%</div><div class="hud-segment active-emerald">90%</div><div class="hud-segment active-emerald">100%</div>
+                    </div>
+                    <div class="hud-pointer-badge">98.4%</div>
+                </div>
+                <div class="hud-gauge-footer">
+                    <span style="color:var(--text-muted);">Reputation Tier</span>
+                    <strong style="color:#10B981;">0.08% Bounce</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZERO EMPTY SPACE: BALANCED DUAL-COLUMN WORKSPACE -->
+    <div class="grid-2" style="align-items:stretch; margin-bottom:22px; gap:18px;">
+        <!-- Left Column: Quick Action Toolbar + Infrastructure Matrix -->
         <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
             <div class="card" style="margin:0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -5459,148 +5557,87 @@ def render_dashboard():
                 </div>
             </div>
 
-            <div class="card" style="margin:0; flex:1; display:flex; flex-direction:column;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">📡 Real-Time Telemetry &amp; Activity Stream</h4>
-                        <span style="font-size:10px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">● LIVE FEED ACTIVE</span>
+            <div class="card" style="margin:0; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #123B35; padding-bottom:10px;">
+                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">🌐 Outreach Dispatch &amp; Safety Control</h4>
+                        <span style="font-size:10px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">ACTIVE POOL: 3 INBOXES</span>
                     </div>
-                    <div style="font-size:11px; color:var(--text-muted); display:flex; gap:6px;">
-                        <span class="log-account-pill" style="font-size:10px;">✉️ <b id="telemetry-node-label">business.inbox1@gmail.com</b></span>
-                        <span class="log-profile-pill" style="font-size:10px;">👤 <b id="telemetry-profile-label">👑 King Saab · Super Admin</b></span>
+                    <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <span>📍 <b>Territory Coverage:</b></span>
+                            <span style="color:#10B981; font-weight:700;">50 US States Active</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <span>⏱️ <b>Dispatch Simulation:</b></span>
+                            <span style="color:#38BDF8; font-weight:700;">Human Jitter (15-45s) ON</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <span>👤 <b>Active Administrator:</b></span>
+                            <span style="color:var(--accent-gold); font-weight:700;">👑 King Saab · Super Admin</span>
+                        </div>
                     </div>
                 </div>
-                <div class="log-box" style="flex:1; max-height:360px; overflow-y:auto;">
-                    <div class="log-row">
-                        <span class="log-time">[02:36:41]</span>
-                        <span class="log-badge log-badge-classify">CLASSIFY</span>
-                        <span class="log-account-pill">✉️ business.inbox1</span>
-                        <span class="log-profile-pill">👑 King Saab</span>
-                        <span class="log-msg">Positive reply sentiment (99.4%) classified from arch_design_fl.</span>
-                    </div>
-                    <div class="log-row">
-                        <span class="log-time">[02:36:32]</span>
-                        <span class="log-badge log-badge-dispatch">DISPATCH</span>
-                        <span class="log-account-pill">✉️ outreach.node2</span>
-                        <span class="log-profile-pill">🌟 Abdullah Khan</span>
-                        <span class="log-msg">Gmail Inbox #2 safely rotated next 15 contractor leads.</span>
-                    </div>
-                    <div class="log-row">
-                        <span class="log-time">[10:50:02]</span>
-                        <span class="log-badge log-badge-sync">SYNC</span>
-                        <span class="log-account-pill">✉️ business.inbox1</span>
-                        <span class="log-profile-pill">👑 King Saab</span>
-                        <span class="log-msg">Business Inbox #1 dispatched outreach batch (45 msgs).</span>
-                    </div>
-                    <div class="log-row">
-                        <span class="log-time">[10:48:15]</span>
-                        <span class="log-badge log-badge-reply">REPLY</span>
-                        <span class="log-account-pill">✉️ relay.personal</span>
-                        <span class="log-profile-pill">👑 King Saab</span>
-                        <span class="log-msg">Incoming positive response classified from client_id_884.</span>
-                    </div>
-                    <div class="log-row">
-                        <span class="log-time">[10:45:00]</span>
-                        <span class="log-badge log-badge-vault">VAULT</span>
-                        <span class="log-account-pill">✉️ Multi-Tenant</span>
-                        <span class="log-profile-pill">System Daemon</span>
-                        <span class="log-msg">OAuth Token verified securely via AES-256-GCM locker.</span>
-                    </div>
-                    <div class="log-row">
-                        <span class="log-time">[10:42:10]</span>
-                        <span class="log-badge log-badge-warmup">WARMUP</span>
-                        <span class="log-account-pill">✉️ business.inbox1</span>
-                        <span class="log-profile-pill">👑 King Saab</span>
-                        <span class="log-msg">Contractor territory assignment active across 50 US States.</span>
-                    </div>
+                <div style="margin-top:14px; pt-2;">
+                    <a href="/api/?tab=matrix" class="btn btn-gray" style="width:100%; justify-content:center; text-align:center; display:flex;">Explore All 22 Modules Matrix →</a>
                 </div>
             </div>
         </div>
 
-        <!-- Right Column: Vertical Segmented Quota, Velocity & Reputation Gauges -->
-        <div class="card" style="margin:0;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; border-bottom:1px solid #123B35; padding-bottom:12px;">
-                <div>
-                    <span class="eyebrow" style="color:var(--accent-green);">MULTI-TENANT TELEMETRY HUD (IMAGE 1 ARCHITECTURE)</span>
-                    <h3 style="margin:4px 0 0; font-size:18px; font-weight:800; color:#FFFFFF;">Vertical Segmented Quota, Velocity &amp; Reputation Gauges</h3>
+        <!-- Right Column: Real-Time Telemetry & Activity Stream (Seamlessly Fills Height) -->
+        <div class="card" style="margin:0; display:flex; flex-direction:column; min-width:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">📡 Real-Time Telemetry &amp; Activity Stream</h4>
+                    <span style="font-size:10px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">🟢 LIVE FEED ACTIVE</span>
                 </div>
-                <div style="display:flex; gap:8px;">
-                    <span style="font-size:11px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">● 3 Nodes Synced</span>
-                    <span style="font-size:11px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:3px 10px; border-radius:12px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">⚡ Pacing: 45 msgs/hr</span>
+                <div style="font-size:11px; color:var(--text-muted); display:flex; gap:6px;">
+                    <span class="log-account-pill" style="font-size:10px;">📬 <b id="telemetry-node-label">business.inbox1@gmail.com</b></span>
+                    <span class="log-profile-pill" style="font-size:10px;">👤 <b id="telemetry-profile-label">👑 King Saab · Super Admin</b></span>
                 </div>
             </div>
-
-            <div class="vertical-telemetry-hud">
-                <!-- Gauge 1: Business Inbox #1 -->
-                <div class="hud-gauge-card">
-                    <div class="hud-gauge-head">
-                        <span class="hud-gauge-title">✉️ Business Node #1</span>
-                        <span style="color:#10B981; font-weight:800;">● Active</span>
-                    </div>
-                    <div class="hud-chamber-wrap">
-                        <div class="hud-vertical-chamber" id="chamber-node1">
-                            <div class="hud-segment active-emerald">10%</div><div class="hud-segment active-emerald">20%</div><div class="hud-segment active-emerald">30%</div><div class="hud-segment active-emerald">40%</div><div class="hud-segment active-emerald">50%</div><div class="hud-segment active-emerald">60%</div><div class="hud-segment active-emerald">70%</div><div class="hud-segment active-emerald">80%</div><div class="hud-segment active-emerald">90%</div><div class="hud-segment">100%</div>
-                        </div>
-                        <div class="hud-pointer-badge">90%</div>
-                    </div>
-                    <div class="hud-gauge-footer">
-                        <span style="color:var(--text-muted);">Capacity</span>
-                        <strong style="color:#10B981;">45 / 50 Sent</strong>
-                    </div>
+            <div class="log-box" style="flex:1; min-height:290px; max-height:360px; overflow-y:auto;">
+                <div class="log-row">
+                    <span class="log-time">[02:36:41]</span>
+                    <span class="log-badge log-badge-classify">CLASSIFY</span>
+                    <span class="log-account-pill">📬 business.inbox1</span>
+                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-msg">Positive reply sentiment (99.4%) classified from arch_design_fl.</span>
                 </div>
-
-                <!-- Gauge 2: Outreach Node #2 -->
-                <div class="hud-gauge-card">
-                    <div class="hud-gauge-head">
-                        <span class="hud-gauge-title">✉️ Outreach Node #2</span>
-                        <span style="color:#38BDF8; font-weight:800;">● Rotating</span>
-                    </div>
-                    <div class="hud-chamber-wrap">
-                        <div class="hud-vertical-chamber" id="chamber-node2">
-                            <div class="hud-segment active-cyan">10%</div><div class="hud-segment active-cyan">20%</div><div class="hud-segment active-cyan">30%</div><div class="hud-segment active-cyan">40%</div><div class="hud-segment active-cyan">50%</div><div class="hud-segment active-cyan">60%</div><div class="hud-segment active-cyan">70%</div><div class="hud-segment">80%</div><div class="hud-segment">90%</div><div class="hud-segment">100%</div>
-                        </div>
-                        <div class="hud-pointer-badge" style="background:#38BDF8;">76%</div>
-                    </div>
-                    <div class="hud-gauge-footer">
-                        <span style="color:var(--text-muted);">Capacity</span>
-                        <strong style="color:#38BDF8;">38 / 50 Sent</strong>
-                    </div>
+                <div class="log-row">
+                    <span class="log-time">[02:36:32]</span>
+                    <span class="log-badge log-badge-dispatch">DISPATCH</span>
+                    <span class="log-account-pill">📨 outreach.node2</span>
+                    <span class="log-profile-pill">🌟 Abdullah Khan</span>
+                    <span class="log-msg">Gmail Inbox #2 safely rotated next 15 contractor leads.</span>
                 </div>
-
-                <!-- Gauge 3: Relay Personal Node #3 -->
-                <div class="hud-gauge-card">
-                    <div class="hud-gauge-head">
-                        <span class="hud-gauge-title">✉️ Relay Node #3</span>
-                        <span style="color:#F59E0B; font-weight:800;">● Standby</span>
-                    </div>
-                    <div class="hud-chamber-wrap">
-                        <div class="hud-vertical-chamber" id="chamber-node3">
-                            <div class="hud-segment active-gold">10%</div><div class="hud-segment active-gold">20%</div><div class="hud-segment active-gold">30%</div><div class="hud-segment">40%</div><div class="hud-segment">50%</div><div class="hud-segment">60%</div><div class="hud-segment">70%</div><div class="hud-segment">80%</div><div class="hud-segment">90%</div><div class="hud-segment">100%</div>
-                        </div>
-                        <div class="hud-pointer-badge badge-gold">30%</div>
-                    </div>
-                    <div class="hud-gauge-footer">
-                        <span style="color:var(--text-muted);">Capacity</span>
-                        <strong style="color:#F59E0B;">15 / 50 Sent</strong>
-                    </div>
+                <div class="log-row">
+                    <span class="log-time">[10:50:02]</span>
+                    <span class="log-badge log-badge-sync">SYNC</span>
+                    <span class="log-account-pill">📬 business.inbox1</span>
+                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-msg">Business Inbox #1 dispatched outreach batch (45 msgs).</span>
                 </div>
-
-                <!-- Gauge 4: Domain Health & Deliverability -->
-                <div class="hud-gauge-card">
-                    <div class="hud-gauge-head">
-                        <span class="hud-gauge-title">🛡️ Deliverability Index</span>
-                        <span style="color:#10B981; font-weight:800;">● Optimal</span>
-                    </div>
-                    <div class="hud-chamber-wrap">
-                        <div class="hud-vertical-chamber" id="chamber-health">
-                            <div class="hud-segment active-emerald">10%</div><div class="hud-segment active-emerald">20%</div><div class="hud-segment active-emerald">30%</div><div class="hud-segment active-emerald">40%</div><div class="hud-segment active-emerald">50%</div><div class="hud-segment active-emerald">60%</div><div class="hud-segment active-emerald">70%</div><div class="hud-segment active-emerald">80%</div><div class="hud-segment active-emerald">90%</div><div class="hud-segment active-emerald">100%</div>
-                        </div>
-                        <div class="hud-pointer-badge">98.4%</div>
-                    </div>
-                    <div class="hud-gauge-footer">
-                        <span style="color:var(--text-muted);">Reputation Tier</span>
-                        <strong style="color:#10B981;">0.08% Bounce</strong>
-                    </div>
+                <div class="log-row">
+                    <span class="log-time">[10:48:15]</span>
+                    <span class="log-badge log-badge-reply">REPLY</span>
+                    <span class="log-account-pill">📫 relay.personal</span>
+                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-msg">Incoming positive response classified from client_id_884.</span>
+                </div>
+                <div class="log-row">
+                    <span class="log-time">[10:45:00]</span>
+                    <span class="log-badge log-badge-vault">VAULT</span>
+                    <span class="log-account-pill">🔒 Multi-Tenant</span>
+                    <span class="log-profile-pill">System Daemon</span>
+                    <span class="log-msg">OAuth Token verified securely via AES-256-GCM locker.</span>
+                </div>
+                <div class="log-row">
+                    <span class="log-time">[10:42:10]</span>
+                    <span class="log-badge log-badge-warmup">WARMUP</span>
+                    <span class="log-account-pill">📬 business.inbox1</span>
+                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-msg">Contractor territory assignment active across 50 US States.</span>
                 </div>
             </div>
         </div>
