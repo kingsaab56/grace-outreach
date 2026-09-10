@@ -319,7 +319,17 @@ def run_tests():
     assert "logo-clickable-wrap" in dash_html, "Missing logo-clickable-wrap in dashboard"
     print("[PASS] Clickable Logo Centered Modal Popup & Close controls verified.")
 
-    print("\n[SUCCESS] ALL 22 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 23. Test Aesthetic Brightness Slider & Universal Light Theme Contrast Engine
+    print("Testing Aesthetic Brightness Slider & Universal Light Theme Contrast Engine...")
+    assert "brightness-control-pill" in dash_html, "Missing brightness-control-pill in ribbon"
+    assert "brightness-slider" in dash_html, "Missing brightness-slider in ribbon"
+    assert "adjustBrightness" in dash_html, "Missing adjustBrightness handler in JS"
+    assert "initBrightness" in dash_html, "Missing initBrightness handler in JS"
+    assert "--app-brightness" in dash_html, "Missing --app-brightness CSS variable"
+    assert "body.light #logo-modal-title" in dash_html, "Missing light mode modal title contrast fix"
+    print("[PASS] Aesthetic Brightness Slider & Universal Light Theme Contrast Engine verified.")
+
+    print("\n[SUCCESS] ALL 23 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

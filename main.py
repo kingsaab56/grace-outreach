@@ -525,6 +525,11 @@ def render_header():
             <button id="audio-btn" class="btn btn-gray" onclick="toggleAudio()">🔊 Audio: ON</button>
             <button class="btn btn-gray" onclick="openSoundscape()">♫ Soundscape</button>
             <button id="theme-btn" class="btn btn-gray" onclick="toggleExecutiveTheme()">🌓 Theme: <b id="theme-btn-label">DARK</b></button>
+            <div class="brightness-control-pill" id="brightness-control-pill" title="Aesthetic Display Brightness Controller" style="display:inline-flex; align-items:center; gap:8px; padding:5px 12px; border-radius:20px; background:rgba(0,26,23,0.85); border:1px solid var(--accent-gold); box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                <span style="font-size:13px; line-height:1; user-select:none;">☀️</span>
+                <input type="range" id="brightness-slider" min="60" max="140" value="100" oninput="adjustBrightness(this.value)" aria-label="Display Brightness" style="width:75px; height:4px; appearance:none; -webkit-appearance:none; background:linear-gradient(90deg, #10B981 0%, #D6A117 100%); border-radius:2px; outline:none; cursor:pointer;" />
+                <span id="brightness-val" style="font-size:11px; font-weight:800; color:var(--accent-gold); min-width:32px; font-variant-numeric:tabular-nums;">100%</span>
+            </div>
             <button class="btn btn-red" onclick="powerOff()">⏹ Power Off</button>
         </div>
     </div>
@@ -539,7 +544,7 @@ def render_header():
                         📥
                     </div>
                     <div>
-                        <h3 id="notifications-modal-title" style="margin:0; font-size:18px; font-weight:800; color:#FFFFFF;">Incoming Communications &amp; Sentiment Stream</h3>
+                        <h3 id="notifications-modal-title" style="margin:0; font-size:18px; font-weight:800; color:var(--text-primary);">Incoming Communications &amp; Sentiment Stream</h3>
                         <div style="font-size:12px; color:var(--accent-gold); font-weight:600; margin-top:2px;">Multi-Tenant Inbox Telemetry across 3 Connected Gmail Nodes</div>
                     </div>
                 </div>
@@ -703,14 +708,14 @@ def render_header():
             <button class="modal-close" onclick="closeLogoModal()" aria-label="Close Logo View" style="position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#FFFFFF; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
             <div style="margin-bottom:8px;">
                 <span class="eyebrow" style="color:var(--accent-gold); font-size:11px; letter-spacing:1px;">OFFICIAL 3D CREST SEAL</span>
-                <h3 id="logo-modal-title" style="margin:4px 0 0; font-size:18px; font-weight:800; color:#FFFFFF;">Grace Outreach Assistant</h3>
+                <h3 id="logo-modal-title" style="margin:4px 0 0; font-size:18px; font-weight:800; color:var(--text-primary);">Grace Outreach Assistant</h3>
             </div>
             <div style="width:100%; display:flex; justify-content:center; align-items:center; padding:12px 0;">
                 <img src="/api/assets/grace-logo.png?v=20260910_crisp" alt="Grace Outreach Official 3D Crest Emblem" style="max-width:360px; width:80%; height:auto; max-height:52vh; object-fit:contain; border-radius:20px; border:none; outline:none; background:transparent; display:block; box-shadow:none !important;" />
             </div>
             <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
                 <div style="color:var(--accent-green); font-weight:700; margin-bottom:3px;">● High-Resolution Vector &amp; 3D Identity Certified</div>
-                <div>Lead Architect: <strong style="color:var(--accent-gold);">King Saab</strong> · Strategic Guidance: <strong style="color:#FFFFFF;">Abdullah Khan</strong></div>
+                <div>Lead Architect: <strong style="color:var(--accent-gold);">King Saab</strong> · Strategic Guidance: <strong style="color:var(--text-primary);">Abdullah Khan</strong></div>
             </div>
         </div>
     </div>
@@ -1866,6 +1871,177 @@ BASE_CSS = """
         color: #059669 !important;
     }
 
+    
+    /* =========================================================================
+       AESTHETIC BRIGHTNESS CONTROLLER & COMPREHENSIVE LIGHT THEME ENGINE
+       ========================================================================= */
+    :root {
+        --app-brightness: 1;
+        --text-primary: #FFFFFF;
+        --text-secondary: #CBD5E1;
+    }
+
+    body {
+        filter: brightness(var(--app-brightness, 1));
+        transition: filter 0.15s ease-out;
+    }
+
+    .brightness-control-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: rgba(0, 26, 23, 0.85);
+        border: 1px solid var(--accent-gold);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        transition: all 0.2s ease;
+    }
+    .brightness-control-pill input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #D6A117;
+        box-shadow: 0 0 8px rgba(214, 161, 23, 0.9);
+        cursor: pointer;
+        border: 1.5px solid #FFFFFF;
+        transition: transform 0.15s ease;
+    }
+    .brightness-control-pill input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.25);
+    }
+    .brightness-control-pill input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #D6A117;
+        box-shadow: 0 0 8px rgba(214, 161, 23, 0.9);
+        cursor: pointer;
+        border: 1.5px solid #FFFFFF;
+    }
+
+    /* COMPREHENSIVE LIGHT THEME ENGINE (ZERO TEXT HIDING - 100% CONTRAST) */
+    body.light {
+        --text-primary: #0F172A !important;
+        --text-secondary: #334155 !important;
+        --text-muted: #64748B !important;
+    }
+
+    body.light .brightness-control-pill {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    }
+    body.light #brightness-val {
+        color: #047857 !important;
+    }
+
+    /* 1. Global Headings & Overrides for any inline #FFFFFF / #FFF styles */
+    body.light h1, body.light h2, body.light h3, body.light h4, body.light h5, body.light h6,
+    body.light .card h1, body.light .card h2, body.light .card h3, body.light .card h4,
+    body.light .modal-card h1, body.light .modal-card h2, body.light .modal-card h3, body.light .modal-card h4,
+    body.light #logo-modal-title, body.light #notifications-modal-title, body.light #auth-portal-title,
+    body.light [style*="color: #FFFFFF"], body.light [style*="color:#FFFFFF"],
+    body.light [style*="color: #fff"], body.light [style*="color:#fff"],
+    body.light [style*="color: white"], body.light [style*="color:white"],
+    body.light [style*="color:#FFF"], body.light [style*="color: #FFF"] {
+        color: #0F172A !important;
+    }
+
+    /* 2. Preserve White Text on Solid Colorful Action Buttons and Badges */
+    body.light .btn-blue, body.light .btn-red, body.light .btn-orange, body.light .btn-green,
+    body.light .badge-count,
+    body.light .hud-segment.active-emerald,
+    body.light .hud-segment.active-cyan,
+    body.light .hud-segment.active-gold,
+    body.light select option:checked {
+        color: #FFFFFF !important;
+    }
+
+    /* 3. Modal Cards & Containers Full Legibility */
+    body.light .modal-card {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15) !important;
+    }
+    body.light .modal-card strong:not(.btn),
+    body.light .modal-card b:not(.badge-count):not(.btn),
+    body.light .modal-card p,
+    body.light .modal-card div:not(.hud-segment):not(.badge-count):not(.btn) {
+        color: #0F172A !important;
+    }
+    body.light .modal-card span:not(.badge-count):not(.eyebrow):not(.btn):not(.tag):not(.badge) {
+        color: #334155 !important;
+    }
+
+    /* 4. Contrast boost for gold and green in light mode */
+    body.light [style*="color:var(--accent-gold)"],
+    body.light .creator-king b {
+        color: #B45309 !important; /* 7.2:1 contrast ratio against white */
+    }
+    body.light [style*="color:var(--accent-green)"],
+    body.light [style*="color:#10B981"],
+    body.light .creator-abdullah b {
+        color: #047857 !important; /* 7.1:1 contrast ratio against white */
+    }
+    body.light [style*="color:#38BDF8"] {
+        color: #0284C7 !important;
+    }
+    body.light [style*="color:#F59E0B"] {
+        color: #D97706 !important;
+    }
+
+    /* 5. Notification inbox cards */
+    body.light .notification-msg-card {
+        background: #F8FAFC !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .notification-msg-card strong,
+    body.light .notification-msg-card b,
+    body.light .notification-msg-card p {
+        color: #0F172A !important;
+    }
+    body.light .notification-msg-card .msg-time {
+        color: #64748B !important;
+    }
+
+    /* 6. Telemetry HUD Gauge Cards in Light Mode */
+    body.light .hud-gauge-card {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    }
+    body.light .hud-gauge-card:hover {
+        border-color: #059669 !important;
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.15) !important;
+    }
+    body.light .hud-gauge-title {
+        color: #0F172A !important;
+        font-weight: 800 !important;
+    }
+    body.light .hud-vertical-chamber {
+        background: #F1F5F9 !important;
+        border-color: #059669 !important;
+        box-shadow: inset 0 0 8px rgba(0,0,0,0.08) !important;
+    }
+    body.light .hud-segment {
+        background: rgba(15, 23, 42, 0.08) !important;
+        color: rgba(15, 23, 42, 0.45) !important;
+    }
+    body.light .modal-close {
+        background: #F1F5F9 !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .modal-close:hover {
+        background: #E2E8F0 !important;
+        color: #000000 !important;
+    }
+
     /* COMMON UTILITIES */
     .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .view-as-bar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin:-8px 0 22px; padding:14px 18px; border:1px solid var(--accent-gold); border-radius:12px; }
@@ -2680,6 +2856,7 @@ function updateNavColleagueVisibility() {
 
 // Hook into initial page hydration
 window.addEventListener('DOMContentLoaded', () => {
+    initBrightness();
     updateNavColleagueVisibility();
     if (isUserAuthenticated()) {
         const authedUser = getActiveAuthUser();
@@ -3060,6 +3237,33 @@ function setExecutiveTheme(mode) {
 
 function toggleTheme() {
     toggleExecutiveTheme();
+}
+
+
+/* =========================================================================
+   AESTHETIC DISPLAY BRIGHTNESS CONTROLLER
+   ========================================================================= */
+function adjustBrightness(val) {
+    const num = parseInt(val, 10) || 100;
+    const factor = num / 100;
+    document.documentElement.style.setProperty('--app-brightness', factor);
+    document.body.style.filter = 'brightness(' + factor + ')';
+    const label = document.getElementById('brightness-val');
+    if (label) label.textContent = num + '%';
+    const slider = document.getElementById('brightness-slider');
+    if (slider && slider.value != num) slider.value = num;
+    try {
+        localStorage.setItem('grace_brightness', num);
+    } catch (e) {}
+}
+
+function initBrightness() {
+    try {
+        const saved = localStorage.getItem('grace_brightness');
+        if (saved) {
+            adjustBrightness(saved);
+        }
+    } catch (e) {}
 }
 
 function toggleExecutiveTheme() {
