@@ -370,7 +370,106 @@ def run_tests():
     assert "aspect-ratio: 1 / 1 !important;" in dash_html, "Missing strict 1:1 circular aspect ratio override"
     print("[PASS] Circular Header Avatar, Current Profile Display & Dual-Vault Photo Persistence verified.")
 
-    print("\n[SUCCESS] ALL 26 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 27. Test Company Account Vault, 4-Class Lifecycle, Google Checkpoint & Migration Exporter
+    print("Testing Company Account Vault, 4-Class Lifecycle, Google Checkpoint & Migration Exporter...")
+    status, headers, body = wsgi_request("/api/state", "GET")
+    assert status == "200 OK"
+    state = json.loads(body.decode("utf-8"))
+    assert "companyAccounts" in state, "Missing companyAccounts in shared state"
+    assert len(state["companyAccounts"]) >= 4, "Expected pre-seeded company accounts"
+    assert "acc_king_01" in state["companyAccounts"]
+    assert state["companyAccounts"]["acc_king_01"]["status_class"] == "active"
+
+    # POST /api/state add new company account
+    new_acc_payload = {
+        "resource": "companyAccounts",
+        "action": "save",
+        "key": "acc_test_new",
+        "value": {
+            "id": "acc_test_new",
+            "colleague_key": "abdullah",
+            "colleague_name": "Abdullah Khan",
+            "email": "test.outreach@gracehub.io",
+            "username": "test_abdullah",
+            "password": "TestAppPassword2026#",
+            "provider": "Google Workspace",
+            "status_class": "active",
+            "notes": "Automated verification test account"
+        }
+    }
+    status, headers, body = wsgi_request("/api/state", "POST", body_dict=new_acc_payload)
+    assert status == "200 OK", f"Failed saving company account: {body}"
+    res = json.loads(body.decode("utf-8"))
+    assert res.get("state", {}).get("companyAccounts", {}).get("acc_test_new") is not None
+
+    # Shift class through all 4 lifecycle classes
+    for target_class in ["maintenance", "suspended", "restricted", "active"]:
+        shift_payload = {
+            "resource": "companyAccounts",
+            "action": "change_class",
+            "key": "acc_test_new",
+            "value": {
+                "id": "acc_test_new",
+                "colleague_key": "abdullah",
+                "colleague_name": "Abdullah Khan",
+                "email": "test.outreach@gracehub.io",
+                "password": "TestAppPassword2026#",
+                "status_class": target_class
+            }
+        }
+        status, headers, body = wsgi_request("/api/state", "POST", body_dict=shift_payload)
+        assert status == "200 OK"
+        res = json.loads(body.decode("utf-8"))
+        assert res["state"]["companyAccounts"]["acc_test_new"]["status_class"] == target_class
+
+    # Delete test account
+    del_payload = {
+        "resource": "companyAccounts",
+        "action": "delete",
+        "key": "acc_test_new",
+        "value": {}
+    }
+    status, headers, body = wsgi_request("/api/state", "POST", body_dict=del_payload)
+    assert status == "200 OK"
+    res = json.loads(body.decode("utf-8"))
+    assert "acc_test_new" not in res.get("state", {}).get("companyAccounts", {})
+
+    # Validation rejects invalid email
+    bad_payload = {
+        "resource": "companyAccounts",
+        "action": "save",
+        "value": {
+            "email": "not-an-email",
+            "password": "123",
+            "status_class": "active"
+        }
+    }
+    status, headers, body = wsgi_request("/api/state", "POST", body_dict=bad_payload)
+    assert status == "400 Bad Request", "Expected rejection for bad email"
+
+    # Verify rendered HTML elements across colleagues and dashboard
+    status_c, headers_c, data_c = wsgi_request("/api/", "GET", query_string="tab=colleagues")
+    assert status_c == "200 OK"
+    colleagues_html = data_c.decode("utf-8")
+    assert "company-account-modal" in colleagues_html, "Missing company-account-modal"
+    assert "google-verify-checkpoint-modal" in colleagues_html, "Missing google-verify-checkpoint-modal"
+    assert "admin-master-vault-modal" in colleagues_html, "Missing admin-master-vault-modal"
+    assert "account-appeal-modal" in colleagues_html, "Missing account-appeal-modal"
+    assert "ribbon-vault-btn" in colleagues_html, "Missing ribbon-vault-btn in header"
+    assert "colleagues-vault-btn" in colleagues_html, "Missing colleagues-vault-btn in colleague view"
+    assert "class-active" in colleagues_html, "Missing class-active CSS"
+    assert "class-maintenance" in colleagues_html, "Missing class-maintenance CSS"
+    assert "class-suspended" in colleagues_html, "Missing class-suspended CSS"
+    assert "class-restricted" in colleagues_html, "Missing class-restricted CSS"
+    assert "openAdminMasterVaultModal" in colleagues_html, "Missing openAdminMasterVaultModal JS"
+    assert "exportCompanyAccounts" in colleagues_html, "Missing exportCompanyAccounts JS"
+    assert "initiateGoogleVerificationCheckpoint" in colleagues_html, "Missing initiateGoogleVerificationCheckpoint JS"
+    assert "executeGoogleVerificationHandshake" in colleagues_html, "Missing executeGoogleVerificationHandshake JS"
+    assert "toggleAdminVaultMasterLock" in colleagues_html, "Missing toggleAdminVaultMasterLock JS"
+    assert "checkDuplicateAccountEmail" in colleagues_html, "Missing checkDuplicateAccountEmail JS"
+    print("[PASS] Company Account Vault, 4-Class Lifecycle, Google Checkpoint & Migration Exporter verified.")
+
+    print("\n[SUCCESS] ALL 27 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

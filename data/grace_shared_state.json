@@ -293,6 +293,84 @@
   },
   "auditLog": [
     {
+      "id": "AUD-8293",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-11 03:37:28 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8261",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-11 03:37:28 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8227",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-11 03:37:28 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8189",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-11 03:37:28 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8152",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-11 03:37:28 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "id": "AUD-8450",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-11 03:35:38 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
       "timestamp": "2026-09-10 01:00:00",
       "user": "King Saab",
       "action": "Campaign Dispatch",
@@ -354,5 +432,97 @@
       "role": "Watchdog",
       "status": "Verified"
     }
-  ]
+  ],
+  "companyAccounts": {
+    "acc_king_01": {
+      "id": "acc_king_01",
+      "colleague_key": "king",
+      "colleague_name": "King Saab",
+      "email": "kingsaab.outreach@graceassistant.io",
+      "username": "kingsaab_master",
+      "password": "GraceMaster2026!#Auth",
+      "provider": "Google Workspace",
+      "status_class": "active",
+      "created_at": "2026-09-10 10:00:00 PKT",
+      "last_verified": "2026-09-11 02:45:00 PKT",
+      "appeal_status": null,
+      "appeal_notes": "",
+      "notes": "Primary Root Dispatch Node (Tier-1 Dedicated Relay)"
+    },
+    "acc_abdullah_01": {
+      "id": "acc_abdullah_01",
+      "colleague_key": "abdullah",
+      "colleague_name": "Abdullah Khan",
+      "email": "abdullah.khan@graceconstruction.com",
+      "username": "abdullah_lead",
+      "password": "TexasStrategy2026#Secure",
+      "provider": "Google Workspace",
+      "status_class": "active",
+      "created_at": "2026-09-10 11:30:00 PKT",
+      "last_verified": "2026-09-11 01:20:00 PKT",
+      "appeal_status": null,
+      "appeal_notes": "",
+      "notes": "Texas & Florida Contractor Relationship Relay"
+    },
+    "acc_sarah_01": {
+      "id": "acc_sarah_01",
+      "colleague_key": "sarah",
+      "colleague_name": "Sarah Malik",
+      "email": "sarah.malik@graceoutreach.org",
+      "username": "sarah_growth",
+      "password": "SarahGrowth99@TokenKey",
+      "provider": "Gmail",
+      "status_class": "active",
+      "created_at": "2026-09-10 12:15:00 PKT",
+      "last_verified": "2026-09-10 22:10:00 PKT",
+      "appeal_status": null,
+      "appeal_notes": "",
+      "notes": "Illinois & Washington Enterprise Pipeline Hub"
+    },
+    "acc_sarah_02": {
+      "id": "acc_sarah_02",
+      "colleague_key": "sarah",
+      "colleague_name": "Sarah Malik",
+      "email": "sarah.backup@gracemedia.co",
+      "username": "sarah_backup",
+      "password": "AppPassword_Rotate2026$",
+      "provider": "Google Workspace",
+      "status_class": "maintenance",
+      "created_at": "2026-09-10 14:00:00 PKT",
+      "last_verified": "2026-09-11 02:00:00 PKT",
+      "appeal_status": null,
+      "appeal_notes": "Credential warmup and quota rebalance in progress",
+      "notes": "Scheduled for maintenance rotation after 1,000 pings"
+    },
+    "acc_hamza_01": {
+      "id": "acc_hamza_01",
+      "colleague_key": "hamza",
+      "colleague_name": "Hamza Ali",
+      "email": "hamza.outreach@gracenetwork.us",
+      "username": "hamza_collector",
+      "password": "HamzaCollectorSafe#12",
+      "provider": "Google Workspace",
+      "status_class": "restricted",
+      "created_at": "2026-09-09 16:20:00 PKT",
+      "last_verified": "2026-09-10 18:30:00 PKT",
+      "appeal_status": "in_review",
+      "appeal_notes": "Appeal filed: Re-authenticating DNS DKIM/SPF alignment with Google Admin.",
+      "notes": "Restricted due to temporary provider verification ping. Appeal under review."
+    },
+    "acc_hamza_02": {
+      "id": "acc_hamza_02",
+      "colleague_key": "hamza",
+      "colleague_name": "Hamza Ali",
+      "email": "hamza.relay.legacy@gmail.com",
+      "username": "hamza_legacy",
+      "password": "OldPassword_Suspended2025!",
+      "provider": "Gmail",
+      "status_class": "suspended",
+      "created_at": "2026-09-08 09:10:00 PKT",
+      "last_verified": "2026-09-09 12:00:00 PKT",
+      "appeal_status": null,
+      "appeal_notes": "Account suspended by Google for high rate-limit bounce.",
+      "notes": "Decommissioned legacy relay node. Needs admin reactivation."
+    }
+  }
 }
