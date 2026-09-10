@@ -327,9 +327,23 @@ def run_tests():
     assert "initBrightness" in dash_html, "Missing initBrightness handler in JS"
     assert "--app-brightness" in dash_html, "Missing --app-brightness CSS variable"
     assert "body.light #logo-modal-title" in dash_html, "Missing light mode modal title contrast fix"
-    print("[PASS] Aesthetic Brightness Slider & Universal Light Theme Contrast Engine verified.")
+    # 24. Test Ultra-HD Master, Retina Thumbnail, and Viewport-Docked Modal
+    print("Testing Ultra-HD Master, Retina Thumbnail & Viewport-Docked Modal...")
+    status_thumb, headers_thumb, data_thumb = wsgi_request("/api/assets/grace-logo-thumb.png", "GET")
+    assert status_thumb == "200 OK", f"Expected 200 OK for thumb, got {status_thumb}"
+    assert data_thumb.startswith(b"\x89PNG"), "Thumbnail must be valid PNG"
+    assert len(data_thumb) > 10000, "Thumbnail must contain valid image data"
 
-    print("\n[SUCCESS] ALL 23 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    status_master, headers_master, data_master = wsgi_request("/api/assets/grace-logo.png", "GET")
+    assert status_master == "200 OK", f"Expected 200 OK for master, got {status_master}"
+    assert data_master.startswith(b"\x89PNG"), "Master must be valid PNG"
+    assert len(data_master) > 1000000, "Master must be Ultra-HD (> 1MB)"
+
+    assert "grace-logo-thumb.png" in dash_html, "Missing grace-logo-thumb.png reference in HTML"
+    assert "brightness-overlay" in dash_html, "Missing brightness-overlay in JS"
+    print("[PASS] Ultra-HD Master, Retina Thumbnail, and Viewport-Docked Modal verified.")
+
+    print("\n[SUCCESS] ALL 24 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

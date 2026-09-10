@@ -491,9 +491,9 @@ def update_shared_state(payload):
         return state
 
 
-LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo.png?v=20260910_crisp" class="brand-crest-logo" alt="Grace Outreach Emblem" /></div>"""
+LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-thumb.png?v=20260911_hd" srcset="/api/assets/grace-logo-thumb.png?v=20260911_hd 1x, /api/assets/grace-logo-thumb.png?v=20260911_hd 2x, /api/assets/grace-logo.png?v=20260911_hd 3x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
-FAVICON_DATA_URI = "/api/assets/grace-logo.png?v=20260910_crisp" 
+FAVICON_DATA_URI = "/api/assets/grace-logo-thumb.png?v=20260911_hd" 
 
 
 def render_header():
@@ -704,14 +704,14 @@ def render_header():
 
         <!-- 3D Luxury Crest Logo Centered Full-View Modal (Popup on Click) -->
     <div id="logo-preview-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="logo-modal-title" onclick="if(event.target===this) closeLogoModal()">
-        <div class="modal-card" style="width:min(500px, 92vw); max-height:90vh; background:#001A17; border:1.5px solid #123B35; border-radius:20px; padding:24px; text-align:center; position:relative; box-shadow:0 24px 60px rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center;">
-            <button class="modal-close" onclick="closeLogoModal()" aria-label="Close Logo View" style="position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#FFFFFF; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+        <div class="modal-card" style="width:min(520px, 92vw); max-height:90vh; background:#001A17; border:1.5px solid #123B35; border-radius:22px; padding:22px 24px; text-align:center; position:relative; box-shadow:0 24px 60px rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center; margin:auto;">
+            <button class="modal-close" onclick="closeLogoModal()" aria-label="Close Logo View" style="position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#FFFFFF; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">✕</button>
             <div style="margin-bottom:8px;">
                 <span class="eyebrow" style="color:var(--accent-gold); font-size:11px; letter-spacing:1px;">OFFICIAL 3D CREST SEAL</span>
                 <h3 id="logo-modal-title" style="margin:4px 0 0; font-size:18px; font-weight:800; color:var(--text-primary);">Grace Outreach Assistant</h3>
             </div>
-            <div style="width:100%; display:flex; justify-content:center; align-items:center; padding:12px 0;">
-                <img src="/api/assets/grace-logo.png?v=20260910_crisp" alt="Grace Outreach Official 3D Crest Emblem" style="max-width:360px; width:80%; height:auto; max-height:52vh; object-fit:contain; border-radius:20px; border:none; outline:none; background:transparent; display:block; box-shadow:none !important;" />
+            <div style="width:100%; display:flex; justify-content:center; align-items:center; padding:10px 0;">
+                <img src="/api/assets/grace-logo.png?v=20260911_hd" alt="Grace Outreach Official 3D Crest Emblem" style="max-width:420px; width:85%; height:auto; max-height:54vh; object-fit:contain; border-radius:22px; border:none; outline:none; background:transparent; display:block; margin:0 auto; box-shadow:none !important; image-rendering:auto; image-rendering:-webkit-optimize-contrast;" />
             </div>
             <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
                 <div style="color:var(--accent-green); font-weight:700; margin-bottom:3px;">● High-Resolution Vector &amp; 3D Identity Certified</div>
@@ -1326,9 +1326,10 @@ BASE_CSS = """
         outline: none !important;
     }
     .brand-crest-logo {
-        width: 62px;
-        height: 62px;
+        width: 68px;
+        height: 68px;
         object-fit: contain;
+        aspect-ratio: 1 / 1;
         border-radius: 0 !important;
         border: none !important;
         outline: none !important;
@@ -1337,19 +1338,18 @@ BASE_CSS = """
         filter: none !important;
         vertical-align: middle;
         display: block;
+        image-rendering: auto;
         image-rendering: -webkit-optimize-contrast;
-        image-rendering: crisp-edges;
-        transform: translateZ(0);
-        backface-visibility: hidden;
         transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .brand-crest-logo:hover {
-        transform: scale(1.05);
+        transform: scale(1.04);
         box-shadow: none !important;
     }
     .auth-header .brand-crest-logo {
-        width: 64px;
-        height: 64px;
+        width: 68px;
+        height: 68px;
+        aspect-ratio: 1 / 1;
         border-radius: 0 !important;
         border: none !important;
         outline: none !important;
@@ -2057,7 +2057,37 @@ BASE_CSS = """
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 22px; }
     .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
     [hidden] { display: none !important; }
-    .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 23, .72); backdrop-filter: blur(8px); }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 23, .72); backdrop-filter: blur(8px); }
+    #logo-preview-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 999999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: rgba(2, 6, 23, 0.88) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 16px !important;
+    }
+    #logo-preview-modal[hidden] {
+        display: none !important;
+    }
+    #logo-preview-modal .modal-card {
+        margin: auto !important;
+        position: relative !important;
+        animation: logo-modal-zoom 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    @keyframes logo-modal-zoom {
+        from { opacity: 0; transform: scale(0.92); }
+        to { opacity: 1; transform: scale(1); }
+    }
     .modal-card { width: min(560px, 100%); padding: 26px; border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 24px 70px rgba(2, 6, 23, .4); }
     .wide-modal { width: min(780px, 100%); max-height: min(820px, calc(100vh - 40px)); overflow-y: auto; }
     .dialog-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
@@ -2540,12 +2570,24 @@ function populateColleaguePickers() {
    ========================================================================= */
 function openLogoModal() {
     const modal = document.getElementById('logo-preview-modal');
-    if (modal) modal.hidden = false;
+    if (!modal) return;
+    if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+    modal.hidden = false;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    const closeBtn = modal.querySelector('.modal-close');
+    if (closeBtn) closeBtn.focus();
 }
 
 function closeLogoModal() {
     const modal = document.getElementById('logo-preview-modal');
-    if (modal) modal.hidden = true;
+    if (modal) {
+        modal.hidden = true;
+        modal.style.display = 'none';
+    }
+    document.body.style.overflow = '';
 }
 
 function openNotificationsModal() {
@@ -3247,7 +3289,31 @@ function adjustBrightness(val) {
     const num = parseInt(val, 10) || 100;
     const factor = num / 100;
     document.documentElement.style.setProperty('--app-brightness', factor);
-    document.body.style.filter = 'brightness(' + factor + ')';
+    
+    // Dedicated non-intrusive brightness overlay that never breaks position:fixed
+    let overlay = document.getElementById('brightness-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'brightness-overlay';
+        overlay.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:99998; transition:background 0.1s ease;';
+        document.body.appendChild(overlay);
+    }
+    
+    if (factor < 1.0) {
+        const darkAlpha = (1.0 - factor) * 0.85;
+        overlay.style.background = 'rgba(0, 0, 0, ' + darkAlpha.toFixed(2) + ')';
+        overlay.style.mixBlendMode = 'normal';
+    } else if (factor > 1.0) {
+        const lightAlpha = ((factor - 1.0) / 0.5) * 0.25;
+        overlay.style.background = 'rgba(255, 255, 255, ' + lightAlpha.toFixed(2) + ')';
+        overlay.style.mixBlendMode = 'soft-light';
+    } else {
+        overlay.style.background = 'transparent';
+    }
+    
+    // Ensure body.style.filter is empty so fixed modals are always in true viewport center
+    document.body.style.filter = '';
+    
     const label = document.getElementById('brightness-val');
     if (label) label.textContent = num + '%';
     const slider = document.getElementById('brightness-slider');
@@ -7372,14 +7438,36 @@ def render_colleagues():
 def app(environ, start_response):
     path = environ.get("PATH_INFO", "")
 
-    # 1. Assets route (Grace 3D Crest Logo, Favicon, and Legacy endpoints)
-    if path.rstrip("/") in ("/api/assets/grace-logo.png", "/api/assets/grace-logo.jpg", "/api/assets/grace-logo.jfif", "/favicon.ico", "/favicon.png"):
+    # 1. Assets route (Grace 3D Crest Logo, Favicon, Retina Thumbnails, and Legacy endpoints)
+    cleaned_path = path.rstrip("/")
+    if cleaned_path in (
+        "/api/assets/grace-logo.png",
+        "/api/assets/grace-logo.jpg",
+        "/api/assets/grace-logo.jfif",
+        "/api/assets/grace-logo-thumb.png",
+        "/favicon.ico",
+        "/favicon.png",
+    ):
         app_dir = Path(__file__).resolve().parent
-        logo_candidates = [
-            app_dir / "assets" / "grace-logo.png",
-            app_dir / "data" / "grace-logo.png",
-            DATA_DIR / "grace-logo.png",
-        ]
+        if "thumb" in cleaned_path:
+            logo_candidates = [
+                app_dir / "assets" / "grace-logo-thumb.png",
+                app_dir / "data" / "grace-logo-thumb.png",
+                DATA_DIR / "grace-logo-thumb.png",
+                app_dir / "assets" / "grace-logo.png",
+            ]
+        elif "favicon" in cleaned_path:
+            logo_candidates = [
+                app_dir / "assets" / "favicon.ico",
+                app_dir / "assets" / "grace-logo-thumb.png",
+                app_dir / "assets" / "grace-logo.png",
+            ]
+        else:
+            logo_candidates = [
+                app_dir / "assets" / "grace-logo.png",
+                app_dir / "data" / "grace-logo.png",
+                DATA_DIR / "grace-logo.png",
+            ]
         logo_bytes = b""
         for cand in logo_candidates:
             if cand.exists():
@@ -7396,6 +7484,8 @@ def app(environ, start_response):
             content_type = "image/jpeg"
         elif logo_bytes.startswith(b"\x89PNG"):
             content_type = "image/png"
+        elif "favicon" in cleaned_path:
+            content_type = "image/x-icon"
         start_response(
             "200 OK",
             [
