@@ -358,7 +358,19 @@ def run_tests():
     assert "--text-main: #0F172A !important;" in m8_html, "Missing --text-main light mode variable"
     print("[PASS] Module Detail Vertical Segmented HUD (Image 3) and Pro Max Execution Controls verified.")
 
-    print("\n[SUCCESS] ALL 25 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 26. Test Circular Header Avatar, Current Profile Details & Dual-Vault Photo Persistence
+    print("Testing Circular Header Avatar, Current Profile Details & Dual-Vault Photo Persistence...")
+    assert "header-avatar-circle-wrap" in dash_html, "Missing header-avatar-circle-wrap in dashboard"
+    assert "header-avatar-cam-badge" in dash_html, "Missing header-avatar-cam-badge in dashboard"
+    assert "triggerActiveProfileUpload" in dash_html, "Missing triggerActiveProfileUpload handler in JS"
+    assert "header-active-name" in dash_html, "Missing header-active-name class in HTML"
+    assert "active-profile-role-tag" in dash_html, "Missing active-profile-role-tag in HTML"
+    assert "grace-profile-photos-vault" in dash_html, "Missing grace-profile-photos-vault dual persistence in JS"
+    assert "body.light .header-active-name" in dash_html, "Missing light mode active name contrast rule"
+    assert "aspect-ratio: 1 / 1 !important;" in dash_html, "Missing strict 1:1 circular aspect ratio override"
+    print("[PASS] Circular Header Avatar, Current Profile Display & Dual-Vault Photo Persistence verified.")
+
+    print("\n[SUCCESS] ALL 26 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

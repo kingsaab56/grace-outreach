@@ -511,9 +511,20 @@ def render_header():
                     <span class="creator-badge creator-abdullah">🌟 <b>Abdullah Khan</b> <small>Strategic Guidance</small></span>
                 </div>
                 <div class="active-profile-chip" id="active-profile-chip">
-                    <div class="avatar header-avatar" data-profile-avatar="king" id="header-profile-avatar" style="width:26px; height:26px; font-size:11px; border-radius:50%; border:1.5px solid var(--accent-gold); display:inline-flex; align-items:center; justify-content:center; margin-right:4px; background:#001A17; color:var(--accent-gold); font-weight:800;">KS</div>
-                    <i class="presence-dot online"></i>
-                    <span>Active Workspace: <strong id="active-profile-name" style="color:var(--accent-gold);">👑 King Saab · Super Admin</strong></span>
+                    <div class="header-avatar-circle-wrap" onclick="triggerActiveProfileUpload()" title="Click to update profile photo (Permanent Auto-Sync)">
+                        <div class="avatar header-avatar" data-profile-avatar="king" id="header-profile-avatar" data-initials="KS" style="width:32px; height:32px; font-size:11px; border-radius:50%; border:2px solid var(--accent-gold); display:inline-flex; align-items:center; justify-content:center; background:#001A17; color:var(--accent-gold); font-weight:800; cursor:pointer; aspect-ratio:1/1;">KS</div>
+                        <span class="header-avatar-cam-badge" title="Change Profile Photo">📷</span>
+                    </div>
+                    <div class="header-profile-text-wrap">
+                        <div class="header-profile-meta-row">
+                            <i class="presence-dot online"></i>
+                            <span class="header-profile-status-label">CURRENT PROFILE</span>
+                        </div>
+                        <div class="header-profile-identity-row">
+                            <strong id="active-profile-name" class="header-active-name">👑 King Saab</strong>
+                            <span id="active-profile-role-tag" class="header-active-role">Super Admin</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2148,6 +2159,35 @@ BASE_CSS = """
         color: #000000 !important;
     }
 
+    /* Light Theme Active Profile Chip & Circular Avatar */
+    body.light .active-profile-chip {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+    }
+    body.light .active-profile-chip:hover {
+        border-color: #059669 !important;
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15) !important;
+    }
+    body.light .header-avatar,
+    body.light #header-profile-avatar {
+        border-color: #059669 !important;
+        box-shadow: 0 0 8px rgba(5, 150, 105, 0.25) !important;
+        background: #F8FAFC !important;
+        color: #059669 !important;
+    }
+    body.light .header-profile-status-label {
+        color: #059669 !important;
+    }
+    body.light .header-active-name {
+        color: #0F172A !important;
+    }
+    body.light .header-active-role {
+        background: rgba(16, 185, 129, 0.12) !important;
+        color: #047857 !important;
+        border-color: rgba(16, 185, 129, 0.3) !important;
+    }
+
     /* COMMON UTILITIES */
     .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .view-as-bar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin:-8px 0 22px; padding:14px 18px; border:1px solid var(--accent-gold); border-radius:12px; }
@@ -2155,7 +2195,130 @@ BASE_CSS = """
     .view-as-bar small { display:block; margin-top:5px; color:var(--text-muted); font-size:12px; }
     .view-as-controls { display:flex; align-items:center; gap:12px; font-size:13px; font-weight:700; }
     .view-as-controls select { width:auto; min-width:290px; padding:9px 12px; font-size:13px; }
-    .active-profile-chip { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; font-weight:700; }
+
+    /* EXECUTIVE CIRCULAR AVATAR & CURRENT PROFILE CHIP */
+    .active-profile-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+        padding: 4px 12px 4px 5px;
+        border-radius: 24px;
+        background: rgba(0, 26, 23, 0.65);
+        border: 1px solid rgba(214, 161, 23, 0.3);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease;
+    }
+    .active-profile-chip:hover {
+        border-color: var(--accent-gold);
+        background: rgba(0, 26, 23, 0.85);
+        box-shadow: 0 4px 14px rgba(214, 161, 23, 0.2);
+    }
+    .header-avatar-circle-wrap {
+        position: relative;
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .header-avatar,
+    #header-profile-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+        flex: 0 0 32px !important;
+        border-radius: 50% !important;
+        aspect-ratio: 1 / 1 !important;
+        object-fit: cover !important;
+        overflow: hidden !important;
+        border: 2px solid var(--accent-gold) !important;
+        box-shadow: 0 0 10px rgba(214, 161, 23, 0.4) !important;
+        background: #001A17 !important;
+        color: var(--accent-gold) !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-size: cover !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        box-sizing: border-box !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .header-avatar-circle-wrap:hover .header-avatar {
+        transform: scale(1.06);
+        box-shadow: 0 0 14px rgba(214, 161, 23, 0.7) !important;
+    }
+    .header-avatar-cam-badge {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #D6A117;
+        color: #061510;
+        font-size: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #001A17;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        opacity: 0.85;
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .header-avatar-circle-wrap:hover .header-avatar-cam-badge {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+    .header-profile-text-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+    .header-profile-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .header-profile-status-label {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        color: var(--accent-green);
+        text-transform: uppercase;
+    }
+    .header-profile-identity-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .header-active-name {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--accent-gold);
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+    }
+    .header-active-role {
+        font-size: 10px;
+        font-weight: 700;
+        background: rgba(214, 161, 23, 0.15);
+        color: var(--accent-gold);
+        padding: 1px 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(214, 161, 23, 0.3);
+        white-space: nowrap;
+    }
     .btn { border: none; border-radius: 8px; padding: 9px 16px; font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; transition: 0.15s ease; }
     .btn:hover { opacity: 0.92; transform: translateY(-1px); }
     .btn-red { background: #DC2626; color: white; }
@@ -2613,10 +2776,37 @@ async function syncSharedState() {
         const response = await fetch(SHARED_STATE_ENDPOINT, {headers:{Accept:'application/json'}});
         if (!response.ok) throw new Error('Shared state unavailable');
         const shared = await response.json();
-        if (shared.photos) {
-            window.localStorage.setItem('grace-profile-photos', JSON.stringify(shared.photos));
-            Object.keys(shared.photos).forEach((key) => setAvatarImage(key, shared.photos[key]));
-        }
+        
+        // BULLETPROOF BIDIRECTIONAL PHOTO PRESERVATION (Zero accidental removals)
+        let localPhotos = {};
+        try { localPhotos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}'); } catch(e){}
+        if (!localPhotos || typeof localPhotos !== 'object') localPhotos = {};
+        try {
+            const vaultPhotos = JSON.parse(window.localStorage.getItem('grace-profile-photos-vault') || '{}');
+            Object.assign(localPhotos, vaultPhotos);
+        } catch(e){}
+
+        const serverPhotos = (shared && typeof shared.photos === 'object' && shared.photos !== null) ? shared.photos : {};
+
+        // Deep merge: local uploaded photos are preserved and NEVER overwritten by empty server state!
+        const mergedPhotos = Object.assign({}, serverPhotos, localPhotos);
+
+        // Permanently persist merged photos back into primary and recovery vaults
+        window.localStorage.setItem('grace-profile-photos', JSON.stringify(mergedPhotos));
+        window.localStorage.setItem('grace-profile-photos-vault', JSON.stringify(mergedPhotos));
+
+        // Auto-heal backend: if client has user photos that server is missing (e.g., container restart), push to server
+        Object.keys(localPhotos).forEach((k) => {
+            if (localPhotos[k] && (!serverPhotos[k] || serverPhotos[k] !== localPhotos[k])) {
+                publishSharedState('photos', localPhotos[k], k);
+            }
+        });
+
+        // Render all photos immediately
+        Object.keys(mergedPhotos).forEach((key) => {
+            if (mergedPhotos[key]) setAvatarImage(key, mergedPhotos[key]);
+        });
+
         if (shared.profiles) {
             Object.keys(shared.profiles).forEach((k) => {
                 if (PROFILE_DATA[k]) Object.assign(PROFILE_DATA[k], shared.profiles[k]);
@@ -3034,6 +3224,7 @@ function updateNavColleagueVisibility() {
 // Hook into initial page hydration
 window.addEventListener('DOMContentLoaded', () => {
     initBrightness();
+    hydrateProfilePhotos();
     updateNavColleagueVisibility();
     if (isUserAuthenticated()) {
         const authedUser = getActiveAuthUser();
@@ -4479,21 +4670,34 @@ function saveCroppedAvatar() {
         drawH * exportScale
     );
 
-    const croppedDataUri = exportCanvas.toDataURL('image/jpeg', 0.9);
+    const croppedDataUri = exportCanvas.toDataURL('image/jpeg', 0.92);
     const key = cropperState.key;
 
-    // Save to local & server
-    const photos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}');
+    // Save to local & dual vault protection (never lost across reloads)
+    let photos = {};
+    try { photos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}'); } catch(e){}
+    if (!photos || typeof photos !== 'object') photos = {};
     photos[key] = croppedDataUri;
     window.localStorage.setItem('grace-profile-photos', JSON.stringify(photos));
+    window.localStorage.setItem('grace-profile-photos-vault', JSON.stringify(photos));
+    
+    // Update live DOM avatars
     setAvatarImage(key, croppedDataUri);
     publishSharedState('photos', croppedDataUri, key);
 
     closeImageCropper();
-    showToast('Cropped avatar updated and synced across sessions.', 'success');
+    showToast('Profile photo permanently saved and synced.', 'success');
+}
+
+function triggerActiveProfileUpload() {
+    const userKey = window.localStorage.getItem('grace-view-as') ||
+                    window.localStorage.getItem('grace_auth_user') ||
+                    'king';
+    triggerAvatarUpload(userKey);
 }
 
 function setAvatarImage(key, data) {
+    if (!data) return;
     document.querySelectorAll('[data-profile-avatar="' + key + '"]').forEach((target) => {
         target.style.backgroundImage = 'url("' + data + '")';
         target.style.backgroundSize = 'cover';
@@ -4501,12 +4705,33 @@ function setAvatarImage(key, data) {
         target.innerText = '';
         target.dataset.uploaded = 'true';
     });
+    // Ensure the top header avatar is always synchronized if key matches active session
+    const currentViewer = window.localStorage.getItem('grace-view-as') ||
+                          window.localStorage.getItem('grace_auth_user') ||
+                          'king';
+    if (currentViewer === key) {
+        const headerAvatar = document.getElementById('header-profile-avatar');
+        if (headerAvatar) {
+            headerAvatar.style.backgroundImage = 'url("' + data + '")';
+            headerAvatar.innerText = '';
+            headerAvatar.dataset.uploaded = 'true';
+        }
+    }
 }
 function hydrateProfilePhotos() {
     try {
-        const photos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}');
-        Object.keys(photos).forEach((key) => setAvatarImage(key, photos[key]));
-    } catch (error) {}
+        let photos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}');
+        if (!photos || Object.keys(photos).length === 0) {
+            try { photos = JSON.parse(window.localStorage.getItem('grace-profile-photos-vault') || '{}'); } catch(e){}
+        }
+        if (photos && typeof photos === 'object') {
+            Object.keys(photos).forEach((key) => {
+                if (photos[key]) setAvatarImage(key, photos[key]);
+            });
+        }
+    } catch (error) {
+        console.warn('Hydrate photos fallback:', error);
+    }
 }
 
 /* =========================================================================
@@ -4694,12 +4919,36 @@ function updateViewAs() {
     const label = document.getElementById('view-as-label');
     if (label) label.innerText = profile.name + ' · ' + profile.role;
     const activeName = document.getElementById('active-profile-name');
+    const activeRole = document.getElementById('active-profile-role-tag');
     const activeBadge = document.getElementById('active-profile-badge');
-    if (activeName) activeName.innerText = profile.name + ' · ' + profile.role;
+    const displayName = (profile.name.startsWith('👑') ? '' : '👑 ') + profile.name;
+    if (activeName) activeName.innerText = displayName;
+    if (activeRole) activeRole.innerText = profile.role;
     if (activeBadge) activeBadge.innerText = profile.name + ' · ' + profile.role;
     const activeChip = document.getElementById('active-profile-chip');
     if (activeChip) activeChip.querySelector('.presence-dot')?.classList.toggle('online', profile.status === 'Online');
     document.body.dataset.activeProfile = value;
+
+    // Synchronize Header Circular Avatar for active profile
+    const headerAvatar = document.getElementById('header-profile-avatar');
+    if (headerAvatar) {
+        headerAvatar.dataset.profileAvatar = value;
+        headerAvatar.setAttribute('data-profile-avatar', value);
+        let photos = {};
+        try { photos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}'); } catch(e){}
+        if (!photos || Object.keys(photos).length === 0) {
+            try { photos = JSON.parse(window.localStorage.getItem('grace-profile-photos-vault') || '{}'); } catch(e){}
+        }
+        if (photos && photos[value]) {
+            headerAvatar.style.backgroundImage = 'url("' + photos[value] + '")';
+            headerAvatar.innerText = '';
+            headerAvatar.dataset.uploaded = 'true';
+        } else {
+            headerAvatar.style.backgroundImage = 'none';
+            headerAvatar.innerText = profile.initials || 'KS';
+            headerAvatar.dataset.uploaded = 'false';
+        }
+    }
     const allowed = ACCESS_MAP[value] || ACCESS_MAP.king;
     const scope = document.getElementById('active-scope-count');
     if (scope) scope.innerText = allowed.length === 22 ? 'All 22 modules enabled' : allowed.length + ' of 22 modules enabled';
