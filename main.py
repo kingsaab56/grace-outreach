@@ -1881,9 +1881,12 @@ BASE_CSS = """
         --text-secondary: #CBD5E1;
     }
 
-    body {
-        filter: brightness(var(--app-brightness, 1));
-        transition: filter 0.15s ease-out;
+    #brightness-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 99998;
+        transition: background 0.15s ease;
     }
 
     .brightness-control-pill {
