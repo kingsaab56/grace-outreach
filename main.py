@@ -491,9 +491,9 @@ def update_shared_state(payload):
         return state
 
 
-LOGO_SVG = """<img src="/api/assets/grace-logo.png" class="brand-crest-logo" alt="Grace Outreach Emblem" />"""
+LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo.png?v=20260910_clean" class="brand-crest-logo" alt="Grace Outreach Emblem" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
-FAVICON_DATA_URI = "/api/assets/grace-logo.png" 
+FAVICON_DATA_URI = "/api/assets/grace-logo.png?v=20260910_clean" 
 
 
 def render_header():
@@ -693,6 +693,24 @@ def render_header():
                     <button class="btn btn-gray" style="font-size:11px;" onclick="closeNotificationReply()">Cancel</button>
                     <button class="btn btn-blue" style="font-size:11px;" onclick="sendNotificationReply()">🚀 Dispatch Reply via Active Node</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- 3D Luxury Crest Logo Centered Full-View Modal (Popup on Click) -->
+    <div id="logo-preview-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="logo-modal-title" onclick="if(event.target===this) closeLogoModal()">
+        <div class="modal-card" style="width:min(500px, 92vw); max-height:90vh; background:#001A17; border:1.5px solid #123B35; border-radius:20px; padding:24px; text-align:center; position:relative; box-shadow:0 24px 60px rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center;">
+            <button class="modal-close" onclick="closeLogoModal()" aria-label="Close Logo View" style="position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#FFFFFF; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;">✕</button>
+            <div style="margin-bottom:8px;">
+                <span class="eyebrow" style="color:var(--accent-gold); font-size:11px; letter-spacing:1px;">OFFICIAL 3D CREST SEAL</span>
+                <h3 id="logo-modal-title" style="margin:4px 0 0; font-size:18px; font-weight:800; color:#FFFFFF;">Grace Outreach Assistant</h3>
+            </div>
+            <div style="width:100%; display:flex; justify-content:center; align-items:center; padding:12px 0;">
+                <img src="/api/assets/grace-logo.png?v=20260910_clean" alt="Grace Outreach Official 3D Crest Emblem" style="max-width:360px; width:80%; height:auto; max-height:52vh; object-fit:contain; border-radius:20px; border:none; outline:none; background:transparent; display:block; box-shadow:none !important;" />
+            </div>
+            <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
+                <div style="color:var(--accent-green); font-weight:700; margin-bottom:3px;">● High-Resolution Vector &amp; 3D Identity Certified</div>
+                <div>Lead Architect: <strong style="color:var(--accent-gold);">King Saab</strong> · Strategic Guidance: <strong style="color:#FFFFFF;">Abdullah Khan</strong></div>
             </div>
         </div>
     </div>
@@ -2336,6 +2354,20 @@ function populateColleaguePickers() {
 /* =========================================================================
    NOTIFICATIONS MODAL & INTENT CLASSIFICATION HANDLERS
    ========================================================================= */
+
+/* =========================================================================
+   3D LUXURY CREST LOGO FULL PREVIEW MODAL HANDLERS
+   ========================================================================= */
+function openLogoModal() {
+    const modal = document.getElementById('logo-preview-modal');
+    if (modal) modal.hidden = false;
+}
+
+function closeLogoModal() {
+    const modal = document.getElementById('logo-preview-modal');
+    if (modal) modal.hidden = true;
+}
+
 function openNotificationsModal() {
     const modal = document.getElementById('notifications-inbox-modal');
     if (modal) modal.hidden = false;
@@ -7161,7 +7193,7 @@ def app(environ, start_response):
             [
                 ("Content-Type", content_type),
                 ("Content-Length", str(len(logo_bytes))),
-                ("Cache-Control", "public, max-age=86400, immutable"),
+                ("Cache-Control", "no-cache, must-revalidate, max-age=0"),
             ],
         )
         return [logo_bytes]

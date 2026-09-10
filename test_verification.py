@@ -311,7 +311,15 @@ def run_tests():
     assert "rel=\"shortcut icon\"" in dash_html, "Missing rel='shortcut icon' in HTML head"
     print("[PASS] Modal loop prevention, persistent authentication guard, and borderless 3D logo verified.")
 
-    print("\n[SUCCESS] ALL 21 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 22. Test Clickable Logo Preview Modal (Center Popup with Close Button)
+    print("Testing Clickable Logo Preview Modal & Centered Popup...")
+    assert "logo-preview-modal" in dash_html, "Missing logo-preview-modal in dashboard"
+    assert "openLogoModal" in dash_html, "Missing openLogoModal handler in dashboard"
+    assert "closeLogoModal" in dash_html, "Missing closeLogoModal handler in dashboard"
+    assert "logo-clickable-wrap" in dash_html, "Missing logo-clickable-wrap in dashboard"
+    print("[PASS] Clickable Logo Centered Modal Popup & Close controls verified.")
+
+    print("\n[SUCCESS] ALL 22 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
