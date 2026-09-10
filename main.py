@@ -491,9 +491,9 @@ def update_shared_state(payload):
         return state
 
 
-LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo.png?v=20260910_clean" class="brand-crest-logo" alt="Grace Outreach Emblem" /></div>"""
+LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo.png?v=20260910_crisp" class="brand-crest-logo" alt="Grace Outreach Emblem" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
-FAVICON_DATA_URI = "/api/assets/grace-logo.png?v=20260910_clean" 
+FAVICON_DATA_URI = "/api/assets/grace-logo.png?v=20260910_crisp" 
 
 
 def render_header():
@@ -706,7 +706,7 @@ def render_header():
                 <h3 id="logo-modal-title" style="margin:4px 0 0; font-size:18px; font-weight:800; color:#FFFFFF;">Grace Outreach Assistant</h3>
             </div>
             <div style="width:100%; display:flex; justify-content:center; align-items:center; padding:12px 0;">
-                <img src="/api/assets/grace-logo.png?v=20260910_clean" alt="Grace Outreach Official 3D Crest Emblem" style="max-width:360px; width:80%; height:auto; max-height:52vh; object-fit:contain; border-radius:20px; border:none; outline:none; background:transparent; display:block; box-shadow:none !important;" />
+                <img src="/api/assets/grace-logo.png?v=20260910_crisp" alt="Grace Outreach Official 3D Crest Emblem" style="max-width:360px; width:80%; height:auto; max-height:52vh; object-fit:contain; border-radius:20px; border:none; outline:none; background:transparent; display:block; box-shadow:none !important;" />
             </div>
             <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
                 <div style="color:var(--accent-green); font-weight:700; margin-bottom:3px;">● High-Resolution Vector &amp; 3D Identity Certified</div>
@@ -1321,8 +1321,8 @@ BASE_CSS = """
         outline: none !important;
     }
     .brand-crest-logo {
-        width: 56px;
-        height: 56px;
+        width: 62px;
+        height: 62px;
         object-fit: contain;
         border-radius: 0 !important;
         border: none !important;
@@ -1332,7 +1332,11 @@ BASE_CSS = """
         filter: none !important;
         vertical-align: middle;
         display: block;
-        transition: transform 0.2s ease;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .brand-crest-logo:hover {
         transform: scale(1.05);
