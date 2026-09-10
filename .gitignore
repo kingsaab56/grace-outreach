@@ -16,3 +16,4 @@ cleaner/exports/
 reports/activity.log
 .vscode/
 tokens_vault_backup/
+*mcp_config.json
