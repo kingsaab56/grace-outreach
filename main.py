@@ -657,7 +657,9 @@ def update_shared_state(payload):
 
 LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-thumb.png?v=20260911_hd" srcset="/api/assets/grace-logo-thumb.png?v=20260911_hd 1x, /api/assets/grace-logo-thumb.png?v=20260911_hd 2x, /api/assets/grace-logo.png?v=20260911_hd 3x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
-FAVICON_DATA_URI = "/api/assets/grace-logo-thumb.png?v=20260911_hd" 
+FAVICON_DATA_URI = "/api/assets/grace-logo-thumb.png?v=20260911_hd"
+WA_CROWN_SRC = "/api/assets/crown.png?v=20260911_hd"
+WA_CROWN_IMG = f"""<img src="{WA_CROWN_SRC}" class="wa-crown-icon" alt="👑" width="18" height="18" loading="eager" decoding="async" />"""
 
 
 def render_header():
@@ -670,7 +672,7 @@ def render_header():
                     <span class="title-grace">GRACE</span> <span class="title-outreach">OUTREACH</span> <span class="title-sub">ASSISTANT</span>
                 </h1>
                 <div class="header-creators-line">
-                    <span class="creator-badge creator-king">👑 <b>King Saab</b> <small>Lead Architect</small></span>
+                    <span class="creator-badge creator-king">{WA_CROWN_IMG} <b>King Saab</b> <small>Lead Architect</small></span>
                     <span class="creator-sep">•</span>
                     <span class="creator-badge creator-abdullah">🌟 <b>Abdullah Khan</b> <small>Strategic Guidance</small></span>
                 </div>
@@ -684,7 +686,7 @@ def render_header():
                             <span class="header-profile-status-label">CURRENT PROFILE</span>
                         </div>
                         <div class="header-profile-identity-row">
-                            <strong id="active-profile-name" class="header-active-name">👑 King Saab</strong>
+                            <strong id="active-profile-name" class="header-active-name">{WA_CROWN_IMG}King Saab</strong>
                             <span id="active-profile-role-tag" class="header-active-role">Super Admin</span>
                         </div>
                     </div>
@@ -692,7 +694,7 @@ def render_header():
             </div>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <span class="btn btn-gray profile-session-badge" style="border:1px solid var(--accent-gold); background:rgba(214,161,23,0.12);">👑 <span id="active-profile-badge">King Saab · Super Admin</span></span>
+            <span class="btn btn-gray profile-session-badge" style="border:1px solid var(--accent-gold); background:rgba(214,161,23,0.12);"><span id="active-profile-badge">{WA_CROWN_IMG}King Saab · Super Admin</span></span>
             <button class="btn btn-gray" onclick="openNotificationsModal()" id="ribbon-notifications-btn" title="View Classified Incoming Contractor Replies">🔔 Notifications <b class="badge-count" style="background:#10B981; color:#061510; padding:2px 7px; border-radius:10px; font-size:11px; margin-left:4px;">4 New</b></button>
             <button class="btn btn-blue" onclick="openAdminMasterVaultModal()" id="ribbon-vault-btn" title="Super Admin Central Account Vault &amp; Migration Engine">🔐 Account Vault</button>
             <button class="btn btn-orange" onclick="openBroadcast()">📢 Broadcast Alert</button>
@@ -979,7 +981,7 @@ def render_header():
                 <div class="fast-login-tray">
                     <span class="eyebrow" style="font-size:10px; margin-bottom:6px;">QUICK 1-CLICK FAST-PASS LOGINS</span>
                     <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                        <button type="button" class="fast-pass-btn" onclick="fastPassLogin('king')">👑 King Saab</button>
+                        <button type="button" class="fast-pass-btn" onclick="fastPassLogin('king')">{WA_CROWN_IMG} King Saab</button>
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('abdullah')">🎯 Abdullah</button>
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('sarah')">📈 Sarah</button>
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('hamza')">🔍 Hamza</button>
@@ -1890,6 +1892,51 @@ BASE_CSS = """
     .creator-abdullah b { color: var(--accent-green); }
     .creator-abdullah small { color: #CBD5E1; font-weight: 500; }
     .creator-sep { color: var(--text-muted); font-size: 10px; }
+
+    /* WHATSAPP 3D AESTHETIC CROWN STYLING */
+    .wa-crown-icon {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        vertical-align: text-bottom;
+        object-fit: contain;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), filter 0.22s ease;
+        user-select: none;
+        pointer-events: none;
+        margin-right: 3px;
+        flex-shrink: 0;
+    }
+    .creator-badge .wa-crown-icon {
+        width: 15px;
+        height: 15px;
+        margin-right: 2px;
+        vertical-align: middle;
+    }
+    .header-active-name .wa-crown-icon {
+        width: 19px;
+        height: 19px;
+        margin-right: 4px;
+        vertical-align: -3px;
+    }
+    .profile-session-badge .wa-crown-icon {
+        width: 17px;
+        height: 17px;
+        margin-right: 4px;
+        vertical-align: -2px;
+    }
+    .creator-king:hover .wa-crown-icon,
+    .active-profile-chip:hover .wa-crown-icon,
+    .profile-session-badge:hover .wa-crown-icon {
+        transform: scale(1.18) rotate(-4deg);
+        filter: drop-shadow(0 2px 8px rgba(214, 161, 23, 0.8));
+    }
+    .log-profile-pill .wa-crown-icon {
+        width: 14px;
+        height: 14px;
+        margin-right: 2px;
+        vertical-align: -1px;
+    }
 
     /* VIEW-AS DROPDOWN LEGIBILITY FIX (IMAGE 4 FIX) */
     select, select option {
@@ -3211,6 +3258,9 @@ BASE_CSS = """
 
 COMMON_JS = r"""
 <script>
+const WA_CROWN_HTML = '<img src="/api/assets/crown.png?v=20260911_hd" class="wa-crown-icon" alt="👑" width="18" height="18" loading="eager" decoding="async" />';
+window.WA_CROWN_HTML = WA_CROWN_HTML;
+
 const US_STATES = [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
     "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
@@ -5526,10 +5576,23 @@ function updateViewAs() {
     const activeName = document.getElementById('active-profile-name');
     const activeRole = document.getElementById('active-profile-role-tag');
     const activeBadge = document.getElementById('active-profile-badge');
-    const displayName = (profile.name.startsWith('👑') ? '' : '👑 ') + profile.name;
-    if (activeName) activeName.innerText = displayName;
+    const isKing = (value === 'king' || (profile.name && profile.name.toLowerCase().includes('king')));
+    const cleanName = (profile.name || 'King Saab').replace(/^👑\s*/, '').trim();
+    if (activeName) {
+        if (isKing) {
+            activeName.innerHTML = (window.WA_CROWN_HTML || '') + cleanName;
+        } else {
+            activeName.innerText = cleanName;
+        }
+    }
     if (activeRole) activeRole.innerText = profile.role;
-    if (activeBadge) activeBadge.innerText = profile.name + ' · ' + profile.role;
+    if (activeBadge) {
+        if (isKing) {
+            activeBadge.innerHTML = (window.WA_CROWN_HTML || '') + cleanName + ' · ' + profile.role;
+        } else {
+            activeBadge.innerText = cleanName + ' · ' + profile.role;
+        }
+    }
     const activeChip = document.getElementById('active-profile-chip');
     if (activeChip) activeChip.querySelector('.presence-dot')?.classList.toggle('online', profile.status === 'Online');
     document.body.dataset.activeProfile = value;
@@ -7602,7 +7665,7 @@ def render_dashboard():
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
                             <span>👤 <b>Active Administrator:</b></span>
-                            <span style="color:var(--accent-gold); font-weight:700;">👑 King Saab · Super Admin</span>
+                            <span style="color:var(--accent-gold); font-weight:700;">{WA_CROWN_IMG} King Saab · Super Admin</span>
                         </div>
                     </div>
                 </div>
@@ -7621,7 +7684,7 @@ def render_dashboard():
                 </div>
                 <div style="font-size:11px; color:var(--text-muted); display:flex; gap:6px;">
                     <span class="log-account-pill" style="font-size:10px;">📬 <b id="telemetry-node-label">business.inbox1@gmail.com</b></span>
-                    <span class="log-profile-pill" style="font-size:10px;">👤 <b id="telemetry-profile-label">👑 King Saab · Super Admin</b></span>
+                    <span class="log-profile-pill" style="font-size:10px;">👤 <b id="telemetry-profile-label">{WA_CROWN_IMG} King Saab · Super Admin</b></span>
                 </div>
             </div>
             <div class="log-box" style="flex:1; min-height:290px; max-height:360px; overflow-y:auto;">
@@ -7629,7 +7692,7 @@ def render_dashboard():
                     <span class="log-time">[02:36:41]</span>
                     <span class="log-badge log-badge-classify">CLASSIFY</span>
                     <span class="log-account-pill">📬 business.inbox1</span>
-                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Positive reply sentiment (99.4%) classified from arch_design_fl.</span>
                 </div>
                 <div class="log-row">
@@ -7643,14 +7706,14 @@ def render_dashboard():
                     <span class="log-time">[10:50:02]</span>
                     <span class="log-badge log-badge-sync">SYNC</span>
                     <span class="log-account-pill">📬 business.inbox1</span>
-                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Business Inbox #1 dispatched outreach batch (45 msgs).</span>
                 </div>
                 <div class="log-row">
                     <span class="log-time">[10:48:15]</span>
                     <span class="log-badge log-badge-reply">REPLY</span>
                     <span class="log-account-pill">📫 relay.personal</span>
-                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Incoming positive response classified from client_id_884.</span>
                 </div>
                 <div class="log-row">
@@ -7664,7 +7727,7 @@ def render_dashboard():
                     <span class="log-time">[10:42:10]</span>
                     <span class="log-badge log-badge-warmup">WARMUP</span>
                     <span class="log-account-pill">📬 business.inbox1</span>
-                    <span class="log-profile-pill">👑 King Saab</span>
+                    <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Contractor territory assignment active across 50 US States.</span>
                 </div>
             </div>
@@ -9297,11 +9360,19 @@ def app(environ, start_response):
         "/api/assets/grace-logo.jpg",
         "/api/assets/grace-logo.jfif",
         "/api/assets/grace-logo-thumb.png",
+        "/api/assets/crown.png",
         "/favicon.ico",
         "/favicon.png",
     ):
         app_dir = Path(__file__).resolve().parent
-        if "thumb" in cleaned_path:
+        if "crown" in cleaned_path:
+            logo_candidates = [
+                app_dir / "assets" / "crown.png",
+                app_dir / "assets" / "crown-retina.png",
+                app_dir / "data" / "crown.png",
+                DATA_DIR / "crown.png",
+            ]
+        elif "thumb" in cleaned_path:
             logo_candidates = [
                 app_dir / "assets" / "grace-logo-thumb.png",
                 app_dir / "data" / "grace-logo-thumb.png",
