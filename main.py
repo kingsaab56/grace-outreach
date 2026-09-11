@@ -1713,19 +1713,149 @@ def render_header():
             </div>
         </div>
     </div>
-    <div id="ai-mascot" class="ai-mascot" onclick="toggleAIAssistant()" role="button" tabindex="0" aria-label="Open Grace AI Guide" onkeydown="if(event.key==='Enter' || event.key===' ') toggleAIAssistant()">
-        <span class="robot-3d" aria-hidden="true"><i class="robot-antenna"></i><i class="robot-head"></i><i class="robot-eye left"></i><i class="robot-eye right"></i><i class="robot-body"></i><i class="robot-arm left"></i><i class="robot-arm right"></i></span><span class="ai-ping"></span>
-    </div>
-    <aside id="ai-assistant" class="ai-drawer" aria-label="Grace AI Guide" aria-hidden="true">
-        <div class="ai-drawer-head"><div><span class="eyebrow">MODULE 11 · ONLINE</span><h3>Grace AI Guide</h3><small style="display:block;color:var(--text-muted);margin-top:4px;">Drag robot anywhere · bilingual workflow copilot</small></div><div style="display:flex;align-items:flex-start;gap:8px;"><select id="ai-language" aria-label="Guide language" onchange="setAILanguage(this.value)"><option value="en">English</option><option value="ur">Roman Urdu</option></select><button class="modal-close" onclick="closeAIAssistant()" aria-label="Close AI Guide">×</button></div></div>
-        <div id="ai-messages" class="ai-messages">
-            <div class="ai-response-block"><div class="ai-bubble ai-bubble-bot">Welcome. Select a module below and I will guide you step by step. Har module ka workflow neeche available hai.</div><button class="ai-response-audio" onclick="speakText(this.previousElementSibling.innerText, this)">🔊 Play response</button></div>
+    
+    <!-- =========================================================================
+         INTELLIGENT ANIMATED 3D AI AGENT COMPANION (TITAN & ALARA)
+         ========================================================================= -->
+    <div id="ai-agent-widget" class="ai-agent-widget" data-persona="calvin" data-lang="ur">
+        <!-- Floating Draggable Mascot with Energy Pedestal -->
+        <div id="ai-agent-avatar-wrap" class="ai-agent-avatar-wrap" onclick="handleAgentAvatarClick(event)" title="Drag anywhere to reposition · Click to chat or start tour">
+            <div class="agent-pedestal-halo"></div>
+            <div class="agent-pedestal-ring"></div>
+            <img id="ai-agent-img" class="ai-agent-mascot-img" src="/api/assets/ai-agent-titan.png" alt="Grace 3D AI Assistant">
+            <!-- Speaking Equalizer Wave Bars -->
+            <div class="agent-speaking-waves" id="agent-speaking-waves" title="Speaking aloud">
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+            </div>
+            <!-- Online Vitality Ring / Status -->
+            <span class="agent-status-badge" id="agent-status-badge" title="AI Agent Active">⚡ Active</span>
         </div>
-        <div class="ai-library-head"><span class="eyebrow">22-MODULE WORKFLOW LIBRARY</span><small>Choose any module for runbook</small></div>
-        <div id="ai-workflow-library" class="ai-workflow-library"></div>
-        <div class="ai-suggestions"><button onclick="askAI('How do I use Module 12?', 12)">Module 12 walkthrough</button><button onclick="askAI('Show restricted modules')">Explain access</button></div>
-        <div class="ai-compose"><input id="ai-input" placeholder="Ask in English or Roman Urdu..." onkeydown="if(event.key==='Enter') sendAIMessage()"><button class="btn btn-blue" onclick="sendAIMessage()">Send</button></div>
-        <button class="tts-button" onclick="speakGuide()">🔊 Play voice guidance</button>
+
+        <!-- Mini Floating Action Toolbelt -->
+        <div class="ai-agent-toolbelt" id="ai-agent-toolbelt">
+            <button type="button" class="agent-tool-btn" id="agent-tour-trigger-btn" onclick="startAppTour()" title="🧭 Start A-to-Z Interactive App Tour (Bol kar tour karwaye)">
+                <span class="tool-icon">🧭</span>
+                <span class="tool-text">Tour</span>
+            </button>
+            <button type="button" class="agent-tool-btn" id="agent-chat-trigger-btn" onclick="toggleAgentChat()" title="💬 Ask Question / Chat (Roman Urdu, Urdu, English)">
+                <span class="tool-icon">💬</span>
+                <span class="tool-text">Chat</span>
+            </button>
+            <button type="button" class="agent-tool-btn" id="agent-mic-btn" onclick="toggleAgentVoiceRecognition()" title="🎙️ Speak to Agent (Microphone)">
+                <span class="tool-icon">🎙️</span>
+                <span class="tool-text">Mic</span>
+            </button>
+            <button type="button" class="agent-tool-btn" id="agent-lang-btn" onclick="toggleAgentLanguage()" title="🌐 Switch Language (Urdu / English)">
+                <span class="tool-icon" id="agent-lang-flag">🇵🇰</span>
+                <span class="tool-text" id="agent-lang-text">UR</span>
+            </button>
+            <button type="button" class="agent-tool-btn" id="agent-settings-btn" onclick="openAgentPersonaModal()" title="⚙️ Select Voice Persona & Custom Name">
+                <span class="tool-icon">⚙️</span>
+                <span class="tool-text">Voice</span>
+            </button>
+        </div>
+
+        <!-- Interactive Conversational Speech Bubble & Step Card HUD -->
+        <div id="ai-agent-bubble" class="ai-agent-bubble" hidden>
+            <div class="bubble-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img id="bubble-mini-avatar" src="/api/assets/ai-agent-titan.png" alt="Avatar" style="width:28px; height:28px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.8); border:1.5px solid var(--accent-green);">
+                    <div>
+                        <strong id="bubble-agent-name" style="font-size:13px; color:var(--accent-gold);">Calvin</strong>
+                        <span id="bubble-agent-tag" style="font-size:10px; color:var(--accent-green); display:block;">Prime Resonance · Executive Guide</span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button type="button" class="bubble-btn-icon" id="bubble-speech-toggle" onclick="toggleAgentSpeechMute()" title="Mute / Unmute Voice">🔊</button>
+                    <button type="button" class="bubble-btn-icon" onclick="closeAgentBubble()" title="Close Bubble">✕</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Body: Step Cards, Visual Diagrams, or Answers -->
+            <div class="bubble-body" id="bubble-content-area">
+                <div class="bubble-welcome-msg">
+                    <div style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:4px;">Salam! Main aapka Grace AI Agent hoon. 🤖</div>
+                    <div style="font-size:12px; color:var(--text-secondary); line-height:1.45;">Neeche se <b>🧭 Poora App Tour</b> karein ya koi bhi sawal poochein (Roman Urdu, Urdu, ya English mein). Main bol kar guide karunga!</div>
+                </div>
+            </div>
+
+            <!-- Tour Navigation Controls (Shown during App Tour) -->
+            <div id="bubble-tour-controls" class="bubble-tour-controls" style="display:none;">
+                <button type="button" class="btn btn-sm btn-gray" onclick="prevTourStep()" id="tour-prev-btn">⏮️ Prev</button>
+                <span id="tour-step-counter" style="font-size:11px; font-family:monospace; color:var(--accent-gold); font-weight:700;">Step 1 / 6</span>
+                <button type="button" class="btn btn-sm btn-blue" onclick="nextTourStep()" id="tour-next-btn">Next ⏭️</button>
+            </div>
+
+            <!-- Chat Compose Bar -->
+            <div class="bubble-compose-bar">
+                <input type="text" id="agent-user-input" placeholder="Poochhein (e.g. colleague kaise save karein?)..." onkeydown="if(event.key==='Enter') handleAgentUserSubmit()">
+                <button type="button" class="bubble-send-btn" onclick="handleAgentUserSubmit()" title="Send">➤</button>
+            </div>
+
+            <!-- Quick Question Suggestion Chips -->
+            <div class="bubble-chips-bar" id="bubble-chips-bar">
+                <button type="button" class="bubble-chip" onclick="askAgentQuestion('tour')">🧭 Poora App Tour</button>
+                <button type="button" class="bubble-chip" onclick="askAgentQuestion('colleagues')">👥 Colleagues Help</button>
+                <button type="button" class="bubble-chip" onclick="askAgentQuestion('music')">🎵 Music Studio</button>
+                <button type="button" class="bubble-chip" onclick="askAgentQuestion('campaign')">✉️ Campaign Studio</button>
+                <button type="button" class="bubble-chip" onclick="askAgentQuestion('vault')">🛡️ Account Vault</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI AGENT VOICE PERSONA & CUSTOM IDENTITY MODAL -->
+    <div id="ai-agent-persona-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="persona-modal-title">
+        <div class="modal-card" style="width:min(580px, 94vw); max-height:90vh; overflow-y:auto; background:rgba(0,20,18,0.98); border:1.5px solid var(--accent-green); border-radius:16px; padding:22px 24px; box-shadow:0 24px 70px rgba(0,0,0,0.85);">
+            <div class="modal-header" style="border-bottom:1px solid #123B35; padding-bottom:12px; margin-bottom:14px;">
+                <div>
+                    <span class="eyebrow" style="font-size:10px; color:var(--accent-green);">BILINGUAL SPEECH &amp; SYNTHESIS ENGINE</span>
+                    <h3 id="persona-modal-title" style="margin:2px 0 0; font-size:18px; font-weight:800; color:var(--accent-gold);">AI Agent Voice Studio &amp; Identity</h3>
+                </div>
+                <button class="modal-close" onclick="closeAgentPersonaModal()" aria-label="Close Persona Modal">×</button>
+            </div>
+            <p class="modal-copy" style="font-size:12px; margin-bottom:14px;">Select from 5 AI voice timbres. Click <b>▶ Sample</b> to listen aloud in your chosen language. The 3D robot character avatar automatically adapts to your selected persona.</p>
+
+            <!-- Language Toggle & Customizable Name Inputs -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; background:rgba(0,12,10,0.6); border:1px solid #123B35; border-radius:10px; padding:12px 14px;">
+                <div>
+                    <label style="font-size:11px; color:var(--accent-gold); font-weight:700; display:block; margin-bottom:5px;">SPOKEN LANGUAGE (بولنے کی زبان):</label>
+                    <div style="display:flex; gap:8px;">
+                        <button type="button" id="persona-lang-ur" class="btn btn-sm btn-blue" onclick="setAgentLanguage('ur')" style="flex:1; font-size:11.5px;">🇵🇰 Urdu (اردو)</button>
+                        <button type="button" id="persona-lang-en" class="btn btn-sm btn-gray" onclick="setAgentLanguage('en')" style="flex:1; font-size:11.5px;">🇬🇧 English</button>
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:11px; color:var(--accent-gold); font-weight:700; display:block; margin-bottom:5px;">CUSTOM AGENT NAME:</label>
+                    <input id="persona-custom-name-input" type="text" value="Calvin" placeholder="Enter custom name..." style="width:100%; padding:6px 10px; font-size:12.5px; border-radius:6px; background:var(--bg-card); border:1px solid #123B35; color:var(--text-primary);" oninput="updateAgentCustomName(this.value)">
+                </div>
+            </div>
+
+            <!-- 5 AI Voice Personas List with Live Audio Preview -->
+            <label style="font-size:11px; color:var(--text-muted); font-weight:800; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:8px;">
+                5 Voice Profiles (Click ▶ Sample to listen aloud):
+            </label>
+            <div class="persona-cards-list" id="persona-cards-list" style="display:flex; flex-direction:column; gap:8px; max-height:270px; overflow-y:auto; padding-right:4px;">
+                <!-- Dynamically populated and rendered with active highlight -->
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid #123B35;">
+                <span id="persona-active-summary" style="font-size:12px; color:var(--accent-green); font-weight:700;">Active: Calvin · Prime Resonance</span>
+                <button type="button" class="btn btn-blue" onclick="saveAndApplyAgentPersona()">✓ Confirm &amp; Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compatibility containers for legacy references -->
+    <div id="ai-mascot" style="display:none;"></div>
+    <aside id="ai-assistant" style="display:none;" aria-hidden="true">
+        <select id="ai-language" style="display:none;"><option value="en">English</option><option value="ur">Roman Urdu</option></select>
+        <div id="ai-messages"></div>
+        <div id="ai-workflow-library"></div>
+        <input id="ai-input" type="hidden">
     </aside>
 
     <!-- Floating Minimalist Soundscape Player Widget (Main Application) -->
@@ -3500,6 +3630,368 @@ BASE_CSS = """
         text-decoration: underline;
     }
 
+    /* =========================================================================
+       INTELLIGENT ANIMATED 3D AI AGENT COMPANION (TITAN & ALARA)
+       ========================================================================= */
+    .ai-agent-widget {
+        position: fixed;
+        bottom: 24px;
+        right: 28px;
+        z-index: 68;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        user-select: none;
+        touch-action: none;
+        transition: opacity 0.3s ease;
+    }
+    .ai-agent-avatar-wrap {
+        position: relative;
+        width: 92px;
+        height: 138px;
+        cursor: grab;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        touch-action: none;
+    }
+    .ai-agent-avatar-wrap:active {
+        cursor: grabbing;
+        transform: scale(0.97);
+    }
+    .ai-agent-mascot-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 22px rgba(0, 168, 255, 0.45));
+        pointer-events: none;
+        animation: agent-float 3.6s ease-in-out infinite;
+        transition: filter 0.3s ease;
+    }
+    .ai-agent-widget:hover .ai-agent-mascot-img {
+        filter: drop-shadow(0 12px 30px rgba(0, 220, 255, 0.7));
+    }
+    .ai-agent-widget.is-speaking .ai-agent-mascot-img {
+        filter: drop-shadow(0 0 28px rgba(0, 220, 255, 0.85));
+        animation: agent-speaking-pulse 1.3s ease-in-out infinite;
+    }
+    @keyframes agent-float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(-0.5deg); }
+    }
+    @keyframes agent-speaking-pulse {
+        0%, 100% { transform: translateY(-4px) scale(1.02); }
+        50% { transform: translateY(-8px) scale(1.05); }
+    }
+    .agent-pedestal-halo {
+        position: absolute;
+        bottom: 2px;
+        width: 76px;
+        height: 18px;
+        border-radius: 50%;
+        background: radial-gradient(ellipse at center, rgba(0, 180, 255, 0.7) 0%, rgba(0, 180, 255, 0.25) 45%, transparent 75%);
+        filter: blur(4px);
+        animation: pedestal-pulse 3.6s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .agent-pedestal-ring {
+        position: absolute;
+        bottom: 3px;
+        width: 66px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(0, 220, 255, 0.8);
+        box-shadow: 0 0 14px rgba(0, 220, 255, 0.85), inset 0 0 8px rgba(0, 220, 255, 0.5);
+        pointer-events: none;
+    }
+    @keyframes pedestal-pulse {
+        0%, 100% { transform: scale(1); opacity: 0.75; }
+        50% { transform: scale(1.18); opacity: 1; }
+    }
+    .agent-speaking-waves {
+        position: absolute;
+        top: -12px;
+        display: none;
+        align-items: flex-end;
+        gap: 3px;
+        height: 16px;
+        padding: 3px 8px;
+        background: rgba(0, 26, 23, 0.92);
+        border: 1.5px solid var(--accent-green);
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+        pointer-events: none;
+    }
+    .ai-agent-widget.is-speaking .agent-speaking-waves {
+        display: inline-flex;
+    }
+    .agent-speaking-waves .wave-bar {
+        width: 3px;
+        height: 4px;
+        background: var(--accent-green);
+        border-radius: 2px;
+        animation: wave-bar-dance 0.7s infinite alternate ease-in-out;
+    }
+    .agent-speaking-waves .wave-bar:nth-child(1) { animation-delay: 0.05s; }
+    .agent-speaking-waves .wave-bar:nth-child(2) { animation-delay: 0.2s; }
+    .agent-speaking-waves .wave-bar:nth-child(3) { animation-delay: 0.35s; }
+    .agent-speaking-waves .wave-bar:nth-child(4) { animation-delay: 0.15s; }
+    .agent-speaking-waves .wave-bar:nth-child(5) { animation-delay: 0.28s; }
+    @keyframes wave-bar-dance {
+        0% { height: 4px; }
+        100% { height: 13px; }
+    }
+    .agent-status-badge {
+        position: absolute;
+        bottom: -7px;
+        font-size: 9px;
+        font-weight: 800;
+        color: #061510;
+        background: var(--accent-green);
+        padding: 1px 7px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.6);
+        pointer-events: none;
+        white-space: nowrap;
+    }
+    .ai-agent-toolbelt {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 8px;
+        background: rgba(0, 20, 18, 0.94);
+        border: 1px solid var(--accent-green);
+        border-radius: 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        margin-top: 8px;
+    }
+    .agent-tool-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 7px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.18s ease;
+        line-height: 1.1;
+    }
+    .agent-tool-btn:hover {
+        background: rgba(16, 185, 129, 0.22);
+        border-color: var(--accent-green);
+        color: var(--accent-gold);
+        transform: translateY(-2px);
+    }
+    .agent-tool-btn .tool-icon { font-size: 13px; }
+    .agent-tool-btn .tool-text { font-size: 9px; font-weight: 700; margin-top: 2px; }
+    .ai-agent-bubble {
+        position: absolute;
+        bottom: 180px;
+        right: 0;
+        width: min(390px, 92vw);
+        max-height: 520px;
+        background: rgba(0, 20, 18, 0.96);
+        border: 1.5px solid var(--accent-green);
+        border-radius: 16px;
+        padding: 14px 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        backdrop-filter: blur(14px);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 70;
+        animation: bubble-pop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes bubble-pop {
+        from { opacity: 0; transform: scale(0.9) translateY(12px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .bubble-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #123B35;
+        padding-bottom: 8px;
+    }
+    .bubble-btn-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+        padding: 0;
+        transition: all 0.15s;
+    }
+    .bubble-btn-icon:hover {
+        background: rgba(16, 185, 129, 0.2);
+        border-color: var(--accent-green);
+        color: #FFFFFF;
+    }
+    .bubble-body {
+        max-height: 260px;
+        overflow-y: auto;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--text-primary);
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-green) transparent;
+    }
+    .bubble-tour-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid #123B35;
+        border-radius: 8px;
+    }
+    .bubble-compose-bar {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+    .bubble-compose-bar input {
+        flex: 1;
+        padding: 7px 10px;
+        font-size: 12px;
+        background: rgba(0, 10, 8, 0.6);
+        border: 1px solid #123B35;
+        border-radius: 8px;
+        color: var(--text-primary);
+        outline: none;
+    }
+    .bubble-compose-bar input:focus {
+        border-color: var(--accent-green);
+    }
+    .bubble-send-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--accent-green);
+        border: none;
+        color: #061510;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s;
+    }
+    .bubble-send-btn:hover {
+        transform: scale(1.08);
+    }
+    .bubble-chips-bar {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+    }
+    .bubble-chip {
+        font-size: 10.5px;
+        font-weight: 600;
+        padding: 4px 9px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+    }
+    .bubble-chip:hover {
+        background: rgba(214, 161, 23, 0.15);
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+    }
+    .persona-card-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: rgba(0, 26, 23, 0.5);
+        border: 1px solid #123B35;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .persona-card-item:hover {
+        background: rgba(0, 26, 23, 0.85);
+        border-color: rgba(214, 161, 23, 0.5);
+    }
+    .persona-card-item.is-selected {
+        background: rgba(16, 185, 129, 0.12);
+        border-color: var(--accent-green);
+        box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+    }
+    /* Tour radar spotlight beacon */
+    .tour-spotlight-active {
+        outline: 3px solid var(--accent-gold) !important;
+        box-shadow: 0 0 25px rgba(214, 161, 23, 0.8) !important;
+        position: relative;
+        z-index: 55;
+        animation: tour-pulse-beacon 1.5s infinite alternate ease-in-out;
+    }
+    @keyframes tour-pulse-beacon {
+        from { box-shadow: 0 0 10px rgba(214, 161, 23, 0.5); }
+        to { box-shadow: 0 0 30px rgba(214, 161, 23, 0.95); }
+    }
+    /* Light mode adaptations */
+    body.light .ai-agent-bubble {
+        background: #FFFFFF !important;
+        border-color: #CBD5E1 !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18) !important;
+    }
+    body.light .bubble-header {
+        border-bottom-color: #E2E8F0 !important;
+    }
+    body.light .bubble-btn-icon {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .bubble-compose-bar input {
+        background: #F8FAFC !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .ai-agent-toolbelt {
+        background: #FFFFFF !important;
+        border-color: #CBD5E1 !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+    body.light .agent-tool-btn {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+        color: #0F172A !important;
+    }
+    body.light .agent-tool-btn:hover {
+        background: #E2E8F0 !important;
+        border-color: var(--accent-gold) !important;
+    }
+    body.light .persona-card-item {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+    }
+    body.light .persona-card-item.is-selected {
+        background: rgba(16, 185, 129, 0.12) !important;
+        border-color: #10B981 !important;
+    }
+
     /* GATEWAY FLOATING AUDIO & MANDATORY BANNER */
     .gateway-sound-toggle { position:absolute; top:18px; right:18px; background:rgba(16,185,129,0.12); border:1px solid var(--accent-green); color:var(--accent-green); font-size:11px; font-weight:700; border-radius:999px; padding:6px 12px; cursor:pointer; transition:0.15s; }
     .gateway-sound-toggle:hover { background:rgba(16,185,129,0.25); }
@@ -4415,6 +4907,7 @@ window.addEventListener('DOMContentLoaded', () => {
     updateNavColleagueVisibility();
     renderSoundscapePlaylist();
     syncAllAudioControlsUI();
+    initAIAgent();
     if (isUserAuthenticated()) {
         const authedUser = getActiveAuthUser();
         if (!window.sessionStorage.getItem('grace_auth_user')) {
@@ -4424,13 +4917,20 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Auto-collapse floating mini-player when clicking outside
+// Auto-collapse floating mini-player and agent bubble when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.floating-audio-widget')) {
         ['main', 'gateway'].forEach(t => {
             const ctrls = document.getElementById('floating-audio-controls-' + t);
             if (ctrls) ctrls.hidden = true;
         });
+    }
+    if (!e.target.closest('#ai-agent-widget') && !e.target.closest('#ai-agent-persona-modal')) {
+        const bubble = document.getElementById('ai-agent-bubble');
+        if (bubble && !bubble.hidden && !isTourActive) {
+            bubble.hidden = true;
+            stopAgentSpeech();
+        }
     }
 });
 
@@ -5840,6 +6340,717 @@ function syncAllAudioControlsUI() {
 
     // Re-render playlist queue
     renderSoundscapePlaylist();
+}
+
+/* =========================================================================
+   INTELLIGENT ANIMATED 3D AI AGENT COMPANION (TITAN & ALARA)
+   Fluent Bilingual Speech Synthesis (Urdu/English), Audio Sample Previews,
+   Draggable Physics HUD, A-to-Z Guided Tour, and Multi-Dialect NLP
+   ========================================================================= */
+
+const AI_VOICE_PERSONAS = {
+    alara: {
+        id: 'alara',
+        name: 'Alara',
+        tag: 'Silk Harmony',
+        desc: 'Smooth, warm, expressive feminine tone',
+        avatar: '/api/assets/ai-agent-alara.png',
+        genderType: 'f',
+        pitch: 1.25,
+        rate: 0.98,
+        previewUrdu: 'اسلام علیکم! میں الارا ہوں۔ گریس آؤٹ ریچ آپریشنز میں آپ کی پرسنل ایگزیکٹو گائیڈ۔',
+        previewEnglish: 'Hello! I am Alara, your sophisticated executive outreach guide.'
+    },
+    calvin: {
+        id: 'calvin',
+        name: 'Calvin',
+        tag: 'Prime Resonance',
+        desc: 'Confident, clear, energetic executive resonance',
+        avatar: '/api/assets/ai-agent-titan.png',
+        genderType: 'm',
+        pitch: 0.95,
+        rate: 1.02,
+        previewUrdu: 'سلام جناب! میں کیلون ہوں۔ گریس آؤٹ ریچ کا پرائم اسسٹنٹ۔ بتائیے آج کیا پلان ہے؟',
+        previewEnglish: 'Greetings! I am Calvin, your prime outreach strategist. Ready for high-velocity operations.'
+    },
+    opus2: {
+        id: 'opus2',
+        name: 'Opus 2',
+        tag: 'Cyber Intelligence',
+        desc: 'Futuristic, ultra-precise analytical synth timbre',
+        avatar: '/api/assets/ai-agent-titan.png',
+        genderType: 'm',
+        pitch: 0.88,
+        rate: 1.05,
+        previewUrdu: 'اوپس ٹو ایکٹیویٹڈ۔ سسٹم کے بائیس ماڈیولز اور ٹیلی میٹری کی درست نگرانی جاری ہے۔',
+        previewEnglish: 'Opus 2 online. Analyzing all 22 modules and telemetry parameters with zero error margin.'
+    },
+    aura: {
+        id: 'aura',
+        name: 'Aura',
+        tag: 'Velvet Flow',
+        desc: 'Gentle, friendly, calm feminine flow',
+        avatar: '/api/assets/ai-agent-alara.png',
+        genderType: 'f',
+        pitch: 1.35,
+        rate: 0.94,
+        previewUrdu: 'خوش آمدید! میرا نام اورا ہے۔ پرسکون انداز میں ایپ کے ہر فیچر کو سمجھنے کے لیے حاضر ہوں۔',
+        previewEnglish: 'Welcome! I am Aura. Bringing calm focus and seamless guidance to your outreach workflow.'
+    },
+    zephyr: {
+        id: 'zephyr',
+        name: 'Zephyr',
+        tag: 'Echo Velocity',
+        desc: 'Deep, steady, authoritative velocity',
+        avatar: '/api/assets/ai-agent-titan.png',
+        genderType: 'm',
+        pitch: 0.78,
+        rate: 1.00,
+        previewUrdu: 'زیفر آن لائن۔ اکاؤنٹ والٹ اور ہارڈویئر سیکیورٹی کے معاملات مکمل محفوظ ہیں۔',
+        previewEnglish: 'Zephyr standing by. Robust infrastructure and multi-channel campaign dispatch secured.'
+    }
+};
+
+let currentAgentPersonaKey = 'calvin';
+let currentAgentLang = 'ur';
+let currentAgentCustomName = 'Calvin';
+let agentSpeechMuted = false;
+let currentTourStep = 0;
+let isTourActive = false;
+let agentActiveSpeech = null;
+let agentDrag = {
+    active: false,
+    moved: false,
+    startX: 0,
+    startY: 0,
+    left: 0,
+    top: 0,
+    suppressClick: false
+};
+
+const APP_TOUR_STEPS = [
+    {
+        title: "👑 1. Super Admin & Telemetry HUD",
+        targetSelector: ".vertical-telemetry-hud",
+        diagramIcon: "📊",
+        urduAudio: "گریس آؤٹ ریچ میں خوش آمدید! اوپر ہیڈر میں دس ٹیئر ٹیلی میٹری ہَڈ موجود ہے جو تمام بائیس ماڈیولز، سرور اور میموری کی لائیو ہیلتھ دکھاتا ہے۔",
+        englishAudio: "Welcome to Grace Outreach Assistant! The header features our 10-tier telemetry HUD displaying live health for all 22 modules, server uptime, and memory.",
+        urduDesc: "<b>10-Tier Telemetry HUD</b>: لائیو کنٹریکٹرز، سسٹم میموری، اور بائیس ماڈیولز کا ریئل ٹائم مانیٹر۔",
+        englishDesc: "<b>10-Tier Telemetry HUD</b>: Real-time telemetry monitoring 22 modules, active contractors, and server uptime."
+    },
+    {
+        title: "🧭 2. 22-Module Outreach Matrix",
+        targetSelector: "a[href*='matrix']",
+        diagramIcon: "⚡",
+        urduAudio: "ماڈیول میٹرکس میں تمام بائیس آؤٹ ریچ ماڈیولز کے ڈیڈیکیٹڈ ورک اسپیس اور تفصیلی رن بکس موجود ہیں۔",
+        englishAudio: "The 22-Module Matrix provides dedicated workspaces, operational runbooks, and lead pipelines for comprehensive outreach.",
+        urduDesc: "<b>22-Module Control Matrix</b>: واٹس ایپ، ای میل، ڈیٹا جنریشن اور فیلڈ آپریشنز کے لیے 22 مکمل ٹولز۔",
+        englishDesc: "<b>22-Module Control Matrix</b>: Comprehensive suite of 22 tools covering WhatsApp, email, lead extraction, and student pipelines."
+    },
+    {
+        title: "👥 3. Colleague Management Hub",
+        targetSelector: "#nav-colleagues",
+        diagramIcon: "👥",
+        urduAudio: "یہاں آپ کولیگز کے پروفائل، نام، اور کنٹریکٹرز مینیج کرتے ہیں۔ تمام تبدیلیاں ڈوئل والٹ میں مستقل محفوظ رہتی ہیں اور کبھی خود نہیں بدلتیں۔",
+        englishAudio: "In Colleague Management, update staff names and assign up to 2 contractors. Edits are permanently stored in our dual-vault and never revert.",
+        urduDesc: "<b>Colleague Management</b>: مستقل پروفائل سیونگ (Dual-Vault Auto-Heal)، سرچ بار، اور 2 کنٹریکٹرز کی اسائنمنٹ۔",
+        englishDesc: "<b>Colleague Hub</b>: Permanent dual-vault profile persistence, instant search, and strict 2-contractor assignment."
+    },
+    {
+        title: "🎵 4. Soundscape & Music Studio",
+        targetSelector: "#floating-audio-main",
+        diagramIcon: "🎵",
+        urduAudio: "میوزک اسٹوڈیو میں تین الگ باکسز ہیں: بلٹ اِن فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو لوکل اپلوڈ۔ فلوٹنگ بٹن کو آپ سکرین پر کہیں بھی ڈریگ کر سکتے ہیں۔",
+        englishAudio: "The Soundscape Studio features 3 distinct boxes: Built-in focus presets, active playlist queue with shuffle mode, and universal local audio/video player.",
+        urduDesc: "<b>Soundscape Studio</b>: 3 علیحدہ باکسز (Presets, Playlist, Media Studio)، شفّل موڈ، اور سکرین پر کہیں بھی ڈریگ ایبل فلوٹنگ بٹن۔",
+        englishDesc: "<b>Soundscape Studio</b>: 3 standalone cards, shuffle playback, universal MP3/MP4 decoding, and draggable floating mini-player."
+    },
+    {
+        title: "✉️ 5. Enterprise Campaign Studio",
+        targetSelector: "#campaign-studio-modal",
+        diagramIcon: "🚀",
+        urduAudio: "کمپین اسٹوڈیو میں اسپن ٹیکس ٹیکسٹ جنریٹر اور ہیومن جِٹر ڈسپیچر ہے جو نمبرز بین ہونے سے بچاتا ہے۔",
+        englishAudio: "The Campaign Studio features automated Spintax variations and human jitter dispatching to prevent carrier filtering and WhatsApp bans.",
+        urduDesc: "<b>Campaign Studio</b>: اسپن ٹیکس میسج ویریئنٹس اور ہیومن جِٹر ڈسپیچر جو محفوظ بلک میسجنگ یقینی بناتا ہے۔",
+        englishDesc: "<b>Campaign Studio</b>: Spintax template spinning, anti-ban jitter pacing, and audit-logged recipient delivery."
+    },
+    {
+        title: "🛡️ 6. Account Vault & Checkpoints",
+        targetSelector: "#admin-master-vault-modal",
+        diagramIcon: "🛡️",
+        urduAudio: "اکاؤنٹ والٹ میں 4 کلاس لائف سائیکل ہے: ایکٹیو، ریسٹرکٹڈ، سسپینڈڈ، اور مینٹیننس، مع گوگل ڈیٹا مائیگریشن۔ آپ کا ٹور مکمل ہو چکا ہے!",
+        englishAudio: "The Account Vault protects outreach identities across 4 lifecycle states with Google Checkpoint cloud migration. Your tour is complete!",
+        urduDesc: "<b>Account Vault</b>: چار لائف سائیکل اسٹیٹس (Active, Restricted, Suspended, Maintenance) اور ون کلک گوگل ایکسپورٹ۔",
+        englishDesc: "<b>Account Vault</b>: 4-class lifecycle security desk and Google Workspace migration checkpoints."
+    }
+];
+
+function initAIAgent() {
+    // Restore preferences
+    try {
+        currentAgentPersonaKey = window.localStorage.getItem('grace-ai-voice-persona') || 'calvin';
+        if (!AI_VOICE_PERSONAS[currentAgentPersonaKey]) currentAgentPersonaKey = 'calvin';
+        currentAgentLang = window.localStorage.getItem('grace-ai-lang') || 'ur';
+        currentAgentCustomName = window.localStorage.getItem('grace-ai-custom-name') || AI_VOICE_PERSONAS[currentAgentPersonaKey].name;
+    } catch(e) {}
+
+    const widget = document.getElementById('ai-agent-widget');
+    if (!widget) return;
+
+    // Restore saved position
+    try {
+        const savedPos = JSON.parse(window.localStorage.getItem('grace-ai-agent-pos'));
+        if (savedPos && Number.isFinite(savedPos.left) && Number.isFinite(savedPos.top)) {
+            const maxL = Math.max(10, window.innerWidth - widget.offsetWidth - 10);
+            const maxT = Math.max(10, window.innerHeight - widget.offsetHeight - 10);
+            const l = Math.max(10, Math.min(maxL, savedPos.left));
+            const t = Math.max(10, Math.min(maxT, savedPos.top));
+            widget.style.left = l + 'px';
+            widget.style.top = t + 'px';
+            widget.style.right = 'auto';
+            widget.style.bottom = 'auto';
+        }
+    } catch(e) {}
+
+    applyAgentPersonaUI();
+    renderPersonaModalCards();
+    initAIAgentDrag();
+}
+
+function applyAgentPersonaUI() {
+    const persona = AI_VOICE_PERSONAS[currentAgentPersonaKey] || AI_VOICE_PERSONAS.calvin;
+    const widget = document.getElementById('ai-agent-widget');
+    const img = document.getElementById('ai-agent-img');
+    const miniAvatar = document.getElementById('bubble-mini-avatar');
+    const nameEl = document.getElementById('bubble-agent-name');
+    const tagEl = document.getElementById('bubble-agent-tag');
+    const inputEl = document.getElementById('persona-custom-name-input');
+    const langFlag = document.getElementById('agent-lang-flag');
+    const langText = document.getElementById('agent-lang-text');
+
+    if (widget) {
+        widget.dataset.persona = currentAgentPersonaKey;
+        widget.dataset.lang = currentAgentLang;
+    }
+    if (img) img.src = persona.avatar;
+    if (miniAvatar) miniAvatar.src = persona.avatar;
+    if (nameEl) nameEl.innerText = currentAgentCustomName;
+    if (tagEl) tagEl.innerText = persona.tag + ' · ' + (currentAgentLang === 'ur' ? 'اردو آؤٹ ریچ اسسٹنٹ' : 'Executive Guide');
+    if (inputEl) inputEl.value = currentAgentCustomName;
+    if (langFlag) langFlag.innerText = currentAgentLang === 'ur' ? '🇵🇰' : '🇬🇧';
+    if (langText) langText.innerText = currentAgentLang.toUpperCase();
+
+    const summaryEl = document.getElementById('persona-active-summary');
+    if (summaryEl) summaryEl.innerText = 'Active: ' + currentAgentCustomName + ' · ' + persona.tag;
+
+    const urBtn = document.getElementById('persona-lang-ur');
+    const enBtn = document.getElementById('persona-lang-en');
+    if (urBtn) urBtn.className = (currentAgentLang === 'ur') ? 'btn btn-sm btn-blue' : 'btn btn-sm btn-gray';
+    if (enBtn) enBtn.className = (currentAgentLang === 'en') ? 'btn btn-sm btn-blue' : 'btn btn-sm btn-gray';
+}
+
+function renderPersonaModalCards() {
+    const container = document.getElementById('persona-cards-list');
+    if (!container) return;
+
+    let html = '';
+    Object.keys(AI_VOICE_PERSONAS).forEach(key => {
+        const p = AI_VOICE_PERSONAS[key];
+        const isSel = (key === currentAgentPersonaKey);
+        html += `
+        <div class="persona-card-item ${isSel ? 'is-selected' : ''}" onclick="selectVoicePersona('${key}')">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${p.avatar}" alt="${p.name}" style="width:34px; height:34px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.7); border:1.5px solid ${isSel ? 'var(--accent-green)' : 'rgba(255,255,255,0.1)'};">
+                <div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <strong style="font-size:13px; color:var(--text-main);">${p.name}</strong>
+                        <span style="font-size:10px; color:var(--accent-gold); background:rgba(214,161,23,0.12); padding:1px 6px; border-radius:6px; border:1px solid rgba(214,161,23,0.25);">${p.tag}</span>
+                    </div>
+                    <small style="font-size:11px; color:var(--text-muted); display:block; margin-top:2px;">${p.desc}</small>
+                </div>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+                <button type="button" class="btn btn-sm btn-gray" onclick="event.stopPropagation(); previewPersonaVoice('${key}')" style="font-size:11px; padding:3px 9px;">▶ Sample</button>
+                <span style="font-size:13px; color:var(--accent-green);">${isSel ? '✓' : ''}</span>
+            </div>
+        </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function selectVoicePersona(key) {
+    if (!AI_VOICE_PERSONAS[key]) return;
+    currentAgentPersonaKey = key;
+    currentAgentCustomName = AI_VOICE_PERSONAS[key].name;
+    window.localStorage.setItem('grace-ai-voice-persona', key);
+    window.localStorage.setItem('grace-ai-custom-name', currentAgentCustomName);
+    applyAgentPersonaUI();
+    renderPersonaModalCards();
+    previewPersonaVoice(key);
+}
+
+function previewPersonaVoice(key) {
+    const p = AI_VOICE_PERSONAS[key];
+    if (!p) return;
+    const sampleText = (currentAgentLang === 'ur') ? p.previewUrdu : p.previewEnglish;
+    speakAloud(sampleText, key);
+}
+
+function updateAgentCustomName(val) {
+    const trimmed = (val || '').trim();
+    if (!trimmed) return;
+    currentAgentCustomName = trimmed;
+    window.localStorage.setItem('grace-ai-custom-name', trimmed);
+    applyAgentPersonaUI();
+}
+
+function setAgentLanguage(lang) {
+    currentAgentLang = (lang === 'en') ? 'en' : 'ur';
+    window.localStorage.setItem('grace-ai-lang', currentAgentLang);
+    applyAgentPersonaUI();
+    showToast(currentAgentLang === 'ur' ? 'زبان اردو پر سیٹ کردی گئی ہے۔' : 'Language set to English.', 'info');
+    if (isTourActive) {
+        showTourStep(currentTourStep);
+    }
+}
+
+function toggleAgentLanguage() {
+    setAgentLanguage(currentAgentLang === 'ur' ? 'en' : 'ur');
+}
+
+function openAgentPersonaModal() {
+    const modal = document.getElementById('ai-agent-persona-modal');
+    if (modal) {
+        modal.hidden = false;
+        renderPersonaModalCards();
+    }
+}
+
+function closeAgentPersonaModal() {
+    const modal = document.getElementById('ai-agent-persona-modal');
+    if (modal) modal.hidden = true;
+}
+
+function saveAndApplyAgentPersona() {
+    closeAgentPersonaModal();
+    showToast('AI Agent Persona & Voice updated!', 'success');
+}
+
+/* =========================================================================
+   REAL-TIME VOCAL SPEECH SYNTHESIS ENGINE (BOL KAR BATANA)
+   ========================================================================= */
+function speakAloud(text, personaKey, onEnd) {
+    if (agentSpeechMuted || !text) {
+        if (onEnd) onEnd();
+        return;
+    }
+
+    const persona = AI_VOICE_PERSONAS[personaKey || currentAgentPersonaKey] || AI_VOICE_PERSONAS.calvin;
+    const widget = document.getElementById('ai-agent-widget');
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = persona.rate;
+        utter.pitch = persona.pitch;
+
+        // Voice picking
+        const voices = window.speechSynthesis.getVoices() || [];
+        if (currentAgentLang === 'ur') {
+            const urVoice = voices.find(v => v.lang.startsWith('ur') || v.lang.startsWith('hi')) ||
+                            voices.find(v => v.name.toLowerCase().includes('urdu') || v.name.toLowerCase().includes('hindi')) ||
+                            voices[0];
+            if (urVoice) utter.voice = urVoice;
+        } else {
+            const enVoice = voices.find(v => (v.lang.startsWith('en') && (persona.genderType === 'f' ? v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') : true))) ||
+                            voices.find(v => v.lang.startsWith('en')) ||
+                            voices[0];
+            if (enVoice) utter.voice = enVoice;
+        }
+
+        utter.onstart = () => {
+            if (widget) widget.classList.add('is-speaking');
+        };
+
+        const handleSpeechDone = () => {
+            if (widget) widget.classList.remove('is-speaking');
+            if (onEnd) onEnd();
+        };
+
+        utter.onend = handleSpeechDone;
+        utter.onerror = handleSpeechDone;
+        agentActiveSpeech = utter;
+        window.speechSynthesis.speak(utter);
+    } else {
+        // Web Audio synthesized procedural fallback
+        if (widget) widget.classList.add('is-speaking');
+        playChime();
+        setTimeout(() => {
+            if (widget) widget.classList.remove('is-speaking');
+            if (onEnd) onEnd();
+        }, 1800);
+    }
+}
+
+function stopAgentSpeech() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+    const widget = document.getElementById('ai-agent-widget');
+    if (widget) widget.classList.remove('is-speaking');
+}
+
+function toggleAgentSpeechMute() {
+    agentSpeechMuted = !agentSpeechMuted;
+    const btn = document.getElementById('bubble-speech-toggle');
+    if (btn) btn.innerText = agentSpeechMuted ? '🔇' : '🔊';
+    if (agentSpeechMuted) stopAgentSpeech();
+    showToast(agentSpeechMuted ? 'Agent voice muted.' : 'Agent voice unmuted.', 'info');
+}
+
+/* =========================================================================
+   INTERACTIVE A-TO-Z GUIDED APP TOUR
+   ========================================================================= */
+function startAppTour() {
+    isTourActive = true;
+    currentTourStep = 0;
+    openAgentBubble();
+    showTourStep(0);
+}
+
+function showTourStep(index) {
+    if (index < 0 || index >= APP_TOUR_STEPS.length) {
+        endAppTour();
+        return;
+    }
+    currentTourStep = index;
+    const step = APP_TOUR_STEPS[index];
+
+    // Remove previous highlights
+    document.querySelectorAll('.tour-spotlight-active').forEach(el => el.classList.remove('tour-spotlight-active'));
+
+    // Highlight target element
+    if (step.targetSelector) {
+        const target = document.querySelector(step.targetSelector);
+        if (target) {
+            target.classList.add('tour-spotlight-active');
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Update bubble body
+    const body = document.getElementById('bubble-content-area');
+    const controls = document.getElementById('bubble-tour-controls');
+    const counter = document.getElementById('tour-step-counter');
+    const prevBtn = document.getElementById('tour-prev-btn');
+    const nextBtn = document.getElementById('tour-next-btn');
+
+    if (controls) controls.style.display = 'flex';
+    if (counter) counter.innerText = `Step ${index + 1} / ${APP_TOUR_STEPS.length}`;
+    if (prevBtn) prevBtn.disabled = (index === 0);
+    if (nextBtn) nextBtn.innerText = (index === APP_TOUR_STEPS.length - 1) ? 'Finish Tour ✓' : 'Next ⏭️';
+
+    const desc = (currentAgentLang === 'ur') ? step.urduDesc : step.englishDesc;
+    const audioText = (currentAgentLang === 'ur') ? step.urduAudio : step.englishAudio;
+
+    if (body) {
+        body.innerHTML = `
+        <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:12px; margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <strong style="color:var(--accent-gold); font-size:13px;">${step.title}</strong>
+                <span style="font-size:18px;">${step.diagramIcon}</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-primary); line-height:1.5;">${desc}</div>
+        </div>
+        `;
+    }
+
+    // Speak explanation aloud
+    speakAloud(audioText);
+}
+
+function nextTourStep() {
+    if (currentTourStep >= APP_TOUR_STEPS.length - 1) {
+        endAppTour();
+    } else {
+        showTourStep(currentTourStep + 1);
+    }
+}
+
+function prevTourStep() {
+    if (currentTourStep > 0) {
+        showTourStep(currentTourStep - 1);
+    }
+}
+
+function endAppTour() {
+    isTourActive = false;
+    document.querySelectorAll('.tour-spotlight-active').forEach(el => el.classList.remove('tour-spotlight-active'));
+    const controls = document.getElementById('bubble-tour-controls');
+    if (controls) controls.style.display = 'none';
+
+    const finishMsg = (currentAgentLang === 'ur') ?
+        'بہت خوب! آپ کا گریس آؤٹ ریچ ٹور مکمل ہو چکا ہے۔ کوئی بھی سوال ہو تو نیچے ٹائپ کریں یا مائیک دبائیں۔' :
+        'Tour completed! You are ready to manage campaigns, colleagues, and outreach workflows.';
+
+    const body = document.getElementById('bubble-content-area');
+    if (body) {
+        body.innerHTML = `
+        <div class="bubble-welcome-msg">
+            <div style="font-size:13px; font-weight:700; color:var(--accent-green); margin-bottom:4px;">🎉 Tour Complete!</div>
+            <div style="font-size:12px; color:var(--text-secondary); line-height:1.45;">${finishMsg}</div>
+        </div>
+        `;
+    }
+    speakAloud(finishMsg);
+}
+
+/* =========================================================================
+   MULTI-DIALECT NLP Q&A ENGINE (ROMAN URDU, URDU, ENGLISH)
+   ========================================================================= */
+function askAgentQuestion(topic) {
+    openAgentBubble();
+    const query = topic.toLowerCase();
+    let replyText = '';
+    let speechAudio = '';
+    let actionBtn = '';
+
+    if (query.includes('tour') || query.includes('guide')) {
+        startAppTour();
+        return;
+    } else if (query.includes('colleague') || query.includes('naam') || query.includes('name') || query.includes('profile')) {
+        if (currentAgentLang === 'ur') {
+            replyText = `
+            <b>👥 کولیگ پروفائل اور نام کا طریقہ:</b><br>
+            1. <b>Colleague Management</b> ٹیب پر جائیں۔<br>
+            2. جس کولیگ کا نام بدلنا ہو، <b>✏️ Edit Settings</b> پر کلک کریں۔<br>
+            3. نیا نام ٹائپ کریں اور <b>✓ Save Profile Changes</b> دبائیں۔<br>
+            4. ڈوئل والٹ خود بخود سرور اور لوکل اسٹوریج میں مستقل سیو کر دے گا!
+            `;
+            speechAudio = 'کولیگ کا نام تبدیل کرنے کے لیے کولیگ مینجمنٹ میں ایڈٹ سیٹنگز پر کلک کریں اور نام لکھ کر سیو کریں۔ یہ ہمیشہ کے لیے مستقل سیو ہو جائے گا۔';
+        } else {
+            replyText = `
+            <b>👥 Updating Colleague Profiles:</b><br>
+            1. Navigate to <b>Colleague Management</b>.<br>
+            2. Click <b>✏️ Edit Settings</b> on the target staff member.<br>
+            3. Type the new name and click <b>✓ Save Profile Changes</b>.<br>
+            4. Our dual-vault auto-heals and locks the edit permanently!
+            `;
+            speechAudio = 'To update a colleague, go to Colleague Management, click Edit Settings, enter the new name, and click Save.';
+        }
+        actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="location.href='/api/?tab=colleagues'" style="margin-top:6px;">Go to Colleagues 👥</button>`;
+    } else if (query.includes('music') || query.includes('sound') || query.includes('audio') || query.includes('mp4') || query.includes('gana')) {
+        if (currentAgentLang === 'ur') {
+            replyText = `
+            <b>🎵 ساؤنڈ اسکیپ اور بیک گراؤنڈ میوزک:</b><br>
+            1. اسکرین پر موجود <b>🎵 فلوٹنگ ڈاٹ</b> کو کہیں بھی ڈریگ کریں۔<br>
+            2. ساؤنڈ اسٹوڈیو میں <b>3 الگ باکسز</b> ہیں: Built-in فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو اپلوڈر۔<br>
+            3. لوکل MP3 یا MP4 فائل چنیں اور <b>🔀 Shuffle</b> سے مکس کریں۔
+            `;
+            speechAudio = 'میوزک کے لیے فلوٹنگ ڈاٹ پر کلک کریں یا کسٹم میڈیا اسٹوڈیو میں کوئی بھی آڈیو یا ویڈیو فائل اپلوڈ کریں۔';
+        } else {
+            replyText = `
+            <b>🎵 Soundscape & Background Audio:</b><br>
+            1. Drag the <b>🎵 floating audio dot</b> anywhere on screen.<br>
+            2. Features <b>3 standalone boxes</b>: Built-in focus synths, active queue with shuffle, and local audio/video player.<br>
+            3. Supports native MP3 and MP4 decoding!
+            `;
+            speechAudio = 'Click the floating music dot or open Soundscape to select presets or upload local MP3 and MP4 files.';
+        }
+        actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openSoundscape()" style="margin-top:6px;">Open Soundscape 🎵</button>`;
+    } else if (query.includes('campaign') || query.includes('broadcast') || query.includes('spintax') || query.includes('message')) {
+        if (currentAgentLang === 'ur') {
+            replyText = `
+            <b>✉️ انٹرپرائز کمپین اسٹوڈیو:</b><br>
+            1. کمپین اسٹوڈیو اسپن ٹیکس ٹیکسٹ کی مدد سے میسجز کو خود بخود تبدیل کرتا ہے۔<br>
+            2. ہیومن جِٹر ڈسپیچر ریسیپینٹس کے درمیان وقفہ رکھ کر واٹس ایپ بین ہونے سے بچاتا ہے۔
+            `;
+            speechAudio = 'کمپین اسٹوڈیو میں اسپن ٹیکس اور ہیومن جِٹر ڈسپیچر ہے جو محفوظ بلک میسجنگ یقینی بناتا ہے۔';
+        } else {
+            replyText = `
+            <b>✉️ Enterprise Campaign Studio:</b><br>
+            1. Generate Spintax variants to prevent spam filters.<br>
+            2. Human jitter dispatching injects natural delays between recipients.
+            `;
+            speechAudio = 'The Campaign Studio uses Spintax variations and human jitter to deliver outreach messages safely.';
+        }
+        actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openCampaignStudio()" style="margin-top:6px;">Open Campaign Studio 🚀</button>`;
+    } else if (query.includes('vault') || query.includes('account') || query.includes('google')) {
+        if (currentAgentLang === 'ur') {
+            replyText = `
+            <b>🛡️ ملٹی ٹیننٹ اکاؤنٹ والٹ:</b><br>
+            1. 4 لائف سائیکل کلاسیز: Active, Restricted, Suspended, Maintenance.<br>
+            2. گوگل اکاؤنٹ ویریفکیشن اور سنگل کلک مائیگریشن ایکسپورٹ۔
+            `;
+            speechAudio = 'اکاؤنٹ والٹ آؤٹ ریچ اکاونٹس کو چار کلاسز میں محفوظ رکھتا ہے اور گوگل ڈیٹا ایکسپورٹ فراہم کرتا ہے۔';
+        } else {
+            replyText = `
+            <b>🛡️ Multi-Tenant Account Vault:</b><br>
+            1. 4-Class lifecycle management (Active, Restricted, Suspended, Maintenance).<br>
+            2. Interactive Google checkpoint verification and instant CSV/TXT export.
+            `;
+            speechAudio = 'The Account Vault manages accounts across 4 lifecycle stages with cloud migration tools.';
+        }
+        actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openAdminMasterVaultModal()" style="margin-top:6px;">Open Account Vault 🛡️</button>`;
+    } else {
+        if (currentAgentLang === 'ur') {
+            replyText = `
+            آپ کے سوال <i>"${topic}"</i> کے لیے ہم مدد کے لیے تیار ہیں۔<br>
+            اوپر سے <b>🧭 Poora App Tour</b> شروع کریں یا نیچے کولیگز، میوزک، اور کمپین کے شارٹ کٹس دیکھیں۔
+            `;
+            speechAudio = 'آپ کا سوال موصول ہوا۔ آپ پوورا ایپ ٹور کر سکتے ہیں یا نیچے دیے گئے بٹنز سے رہنمائی حاصل کریں۔';
+        } else {
+            replyText = `
+            Regarding <i>"${topic}"</i>, you can trigger the <b>A-to-Z App Tour</b> or explore dedicated workspaces for Colleagues, Soundscapes, and Campaigns.
+            `;
+            speechAudio = 'Here is guidance for your request. You can take the full app tour or select a specific tool.';
+        }
+    }
+
+    const body = document.getElementById('bubble-content-area');
+    if (body) {
+        body.innerHTML = `
+        <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:12px;">
+            ${replyText}
+            ${actionBtn}
+        </div>
+        `;
+    }
+    speakAloud(speechAudio);
+}
+
+function handleAgentUserSubmit() {
+    const input = document.getElementById('agent-user-input');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) return;
+    input.value = '';
+    askAgentQuestion(val);
+}
+
+function toggleAgentChat() {
+    const bubble = document.getElementById('ai-agent-bubble');
+    if (!bubble) return;
+    if (bubble.hidden) {
+        openAgentBubble();
+    } else {
+        closeAgentBubble();
+    }
+}
+
+function openAgentBubble() {
+    const bubble = document.getElementById('ai-agent-bubble');
+    if (bubble) bubble.hidden = false;
+}
+
+function closeAgentBubble() {
+    const bubble = document.getElementById('ai-agent-bubble');
+    if (bubble) bubble.hidden = true;
+    stopAgentSpeech();
+    if (isTourActive) endAppTour();
+}
+
+function handleAgentAvatarClick(event) {
+    if (agentDrag.suppressClick) return;
+    toggleAgentChat();
+}
+
+/* Draggable Physics for AI Agent Mascot */
+function initAIAgentDrag() {
+    const widget = document.getElementById('ai-agent-widget');
+    const avatar = document.getElementById('ai-agent-avatar-wrap');
+    if (!widget || !avatar || widget.dataset.dragInit) return;
+    widget.dataset.dragInit = 'true';
+
+    avatar.addEventListener('pointerdown', function(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        agentDrag.active = true;
+        agentDrag.moved = false;
+        agentDrag.startX = e.clientX;
+        agentDrag.startY = e.clientY;
+        const rect = widget.getBoundingClientRect();
+        agentDrag.left = rect.left;
+        agentDrag.top = rect.top;
+        avatar.setPointerCapture?.(e.pointerId);
+    });
+
+    avatar.addEventListener('pointermove', function(e) {
+        if (!agentDrag.active) return;
+        const dx = e.clientX - agentDrag.startX;
+        const dy = e.clientY - agentDrag.startY;
+        if (Math.abs(dx) + Math.abs(dy) > 5) {
+            agentDrag.moved = true;
+        }
+        if (!agentDrag.moved) return;
+
+        const maxL = Math.max(10, window.innerWidth - widget.offsetWidth - 10);
+        const maxT = Math.max(10, window.innerHeight - widget.offsetHeight - 10);
+        const newL = Math.max(10, Math.min(maxL, agentDrag.left + dx));
+        const newT = Math.max(10, Math.min(maxT, agentDrag.top + dy));
+
+        widget.style.left = newL + 'px';
+        widget.style.top = newT + 'px';
+        widget.style.right = 'auto';
+        widget.style.bottom = 'auto';
+    });
+
+    const handlePointerEnd = function() {
+        if (!agentDrag.active) return;
+        if (agentDrag.moved) {
+            agentDrag.suppressClick = true;
+            setTimeout(() => { agentDrag.suppressClick = false; }, 160);
+            const rect = widget.getBoundingClientRect();
+            const pos = { left: Math.round(rect.left), top: Math.round(rect.top) };
+            window.localStorage.setItem('grace-ai-agent-pos', JSON.stringify(pos));
+        }
+        agentDrag.active = false;
+    };
+
+    avatar.addEventListener('pointerup', handlePointerEnd);
+    avatar.addEventListener('pointercancel', handlePointerEnd);
+}
+
+/* Voice Recognition (Mic) */
+function toggleAgentVoiceRecognition() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+        showToast('Speech recognition not supported in this browser. Please type your question.', 'warning');
+        openAgentBubble();
+        return;
+    }
+
+    const rec = new SpeechRec();
+    rec.lang = (currentAgentLang === 'ur') ? 'ur-PK' : 'en-US';
+    rec.continuous = false;
+    rec.interimResults = false;
+
+    const micBtn = document.getElementById('agent-mic-btn');
+    if (micBtn) micBtn.style.background = 'rgba(239, 68, 68, 0.4)';
+    showToast('Listening... Bolna shuru karein', 'info');
+
+    rec.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        if (micBtn) micBtn.style.background = '';
+        if (transcript) {
+            askAgentQuestion(transcript);
+        }
+    };
+
+    rec.onerror = function() {
+        if (micBtn) micBtn.style.background = '';
+        showToast('Voice input ended.', 'info');
+    };
+
+    rec.onend = function() {
+        if (micBtn) micBtn.style.background = '';
+    };
+
+    try {
+        rec.start();
+    } catch(e) {
+        if (micBtn) micBtn.style.background = '';
+    }
 }
 
 /* =========================================================================
@@ -10639,11 +11850,25 @@ def app(environ, start_response):
         "/api/assets/grace-logo.jfif",
         "/api/assets/grace-logo-thumb.png",
         "/api/assets/crown.png",
+        "/api/assets/ai-agent-titan.png",
+        "/api/assets/ai-agent-alara.png",
         "/favicon.ico",
         "/favicon.png",
     ):
         app_dir = Path(__file__).resolve().parent
-        if "crown" in cleaned_path:
+        if "ai-agent-titan" in cleaned_path:
+            logo_candidates = [
+                app_dir / "assets" / "ai-agent-titan.png",
+                app_dir / "data" / "ai-agent-titan.png",
+                DATA_DIR / "ai-agent-titan.png",
+            ]
+        elif "ai-agent-alara" in cleaned_path:
+            logo_candidates = [
+                app_dir / "assets" / "ai-agent-alara.png",
+                app_dir / "data" / "ai-agent-alara.png",
+                DATA_DIR / "ai-agent-alara.png",
+            ]
+        elif "crown" in cleaned_path:
             logo_candidates = [
                 app_dir / "assets" / "crown.png",
                 app_dir / "assets" / "crown-retina.png",

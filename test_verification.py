@@ -587,7 +587,46 @@ def run_tests():
     assert "touch-action: none;" in dash_html
     print("[PASS] Soundscape Multi-Box Architecture, Native Video/Audio Decoding, Shuffle Engine & Draggable Mini-Player verified.")
 
-    print("\n[SUCCESS] ALL 32 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 33. Verify 3D Animated AI Agent Companion, Bilingual Vocal Speech, 5 Personas & A-to-Z App Tour
+    print("Testing 3D Animated AI Agent Companion, Bilingual Vocal Speech, 5 Personas & A-to-Z App Tour...")
+    # Verify asset endpoints
+    status, headers, data = wsgi_request("/api/assets/ai-agent-titan.png", "GET")
+    assert status == "200 OK"
+    assert len(data) > 50000
+    assert data.startswith(b"\x89PNG")
+
+    status, headers, data = wsgi_request("/api/assets/ai-agent-alara.png", "GET")
+    assert status == "200 OK"
+    assert len(data) > 50000
+    assert data.startswith(b"\x89PNG")
+
+    # Verify dashboard markup
+    status, headers, data = wsgi_request("/api/", "GET", query_string="tab=dashboard")
+    assert status == "200 OK"
+    html = data.decode("utf-8")
+
+    assert "ai-agent-widget" in html
+    assert "ai-agent-avatar-wrap" in html
+    assert "ai-agent-img" in html
+    assert "agent-speaking-waves" in html
+    assert "ai-agent-toolbelt" in html
+    assert "ai-agent-bubble" in html
+    assert "ai-agent-persona-modal" in html
+    assert "AI_VOICE_PERSONAS" in html
+    assert "APP_TOUR_STEPS" in html
+    assert "speakAloud" in html
+    assert "previewPersonaVoice" in html
+    assert "startAppTour" in html
+    assert "askAgentQuestion" in html
+    assert "initAIAgentDrag" in html
+    assert "alara" in html
+    assert "calvin" in html
+    assert "opus2" in html
+    assert "aura" in html
+    assert "zephyr" in html
+    print("[PASS] 3D Animated AI Agent Companion, Bilingual Vocal Speech, 5 Personas & A-to-Z App Tour verified.")
+
+    print("\n[SUCCESS] ALL 33 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
