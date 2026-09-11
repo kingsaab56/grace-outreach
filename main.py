@@ -2724,6 +2724,45 @@ BASE_CSS = """
         background: #F8FAFC !important;
         border-color: #CBD5E1 !important;
     }
+    body.light .colleague-card {
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+    body.light .colleague-card:hover {
+        border-color: rgba(214,161,23,0.6) !important;
+    }
+    body.light .colleague-card.is-expanded {
+        border-color: var(--accent-gold) !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+    }
+    body.light .colleague-head {
+        background: #F8FAFC !important;
+    }
+    body.light .colleague-head:hover {
+        background: #F1F5F9 !important;
+    }
+    body.light .colleague-expand-btn {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
+        color: #475569 !important;
+    }
+    body.light .colleague-expand-btn:hover {
+        background: #E2E8F0 !important;
+        border-color: var(--accent-gold) !important;
+        color: var(--accent-gold) !important;
+    }
+    body.light .colleague-toolbar-card {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+    }
+    body.light #colleague-search-input {
+        background: #FFFFFF !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .colleague-details-drawer {
+        border-top-color: #E2E8F0 !important;
+    }
 
     /* COMPANY ACCOUNTS VAULT & 4-CLASS BADGES */
     .class-active {
@@ -3061,8 +3100,17 @@ BASE_CSS = """
 
     /* COLLEAGUES & TERRITORIES */
     .colleague-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; }
-    .colleague-card { padding:20px; border:1px solid var(--border-color); border-radius:14px; background:rgba(16,185,129,.04); }
-    .colleague-head { display:flex; align-items:center; gap:14px; }
+    .colleague-card { padding:0 !important; border:1px solid var(--border-color); border-radius:14px; background:rgba(16,185,129,.04); overflow:hidden; transition:border-color 0.2s ease, box-shadow 0.2s ease; }
+    .colleague-card:hover { border-color:rgba(214,161,23,0.45); }
+    .colleague-card.is-expanded { border-color:var(--accent-gold); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+    .colleague-head { display:flex; align-items:center; gap:14px; padding:16px 20px; background:rgba(0,26,23,0.45); cursor:pointer; transition:background 0.2s ease; user-select:none; }
+    .colleague-head:hover { background:rgba(0,26,23,0.8); }
+    .colleague-expand-btn { width:34px; height:34px; border-radius:8px; background:#111827; border:1px solid #1F2937; color:#94A3B8; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0; transition:background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease; flex-shrink:0; }
+    .colleague-expand-btn:hover { background:#1F2937; border-color:var(--accent-gold); color:var(--accent-gold); transform:scale(1.08); }
+    .colleague-chevron-icon { transition:transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); display:block; }
+    .colleague-card.is-expanded .colleague-chevron-icon { transform:rotate(180deg); color:var(--accent-gold); }
+    .colleague-details-drawer { padding:18px 20px 20px; border-top:1px solid rgba(18,59,53,0.7); animation:colleague-drawer-slide 0.24s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes colleague-drawer-slide { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
     .avatar { width:54px; height:54px; object-fit:cover; display:grid; place-items:center; flex:0 0 54px; border-radius:50%; background:linear-gradient(145deg,#075642,#D6A117); color:#fff; font-size:16px; font-weight:800; border:2px solid var(--accent-gold); box-shadow: 0 0 12px rgba(214,161,23,.3); background-size:cover; background-position:center center; background-repeat:no-repeat; }
     .colleague-name { font-size:16px; font-weight:800; }
     .colleague-role { margin-top:3px; color:var(--text-muted); font-size:12px; font-weight:600; }
@@ -3897,6 +3945,92 @@ function updateNavColleagueVisibility() {
         navCol.style.display = 'inline-flex';
     } else {
         navCol.style.display = 'none';
+    }
+}
+
+function toggleColleagueExpand(key) {
+    const card = document.getElementById('colleague-card-' + key);
+    const drawer = document.getElementById('colleague-details-' + key);
+    const btn = document.getElementById('expand-btn-' + key);
+    if (!drawer) return;
+    const isHidden = drawer.hidden;
+    if (isHidden) {
+        drawer.hidden = false;
+        if (card) card.classList.add('is-expanded');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+    } else {
+        drawer.hidden = true;
+        if (card) card.classList.remove('is-expanded');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+}
+
+function expandAllColleagues(expandBool) {
+    const cards = document.querySelectorAll('.colleague-card');
+    cards.forEach(card => {
+        const key = card.getAttribute('data-colleague-card');
+        const drawer = document.getElementById('colleague-details-' + key);
+        const btn = document.getElementById('expand-btn-' + key);
+        if (!drawer) return;
+        if (expandBool) {
+            drawer.hidden = false;
+            card.classList.add('is-expanded');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+        } else {
+            drawer.hidden = true;
+            card.classList.remove('is-expanded');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+    });
+}
+
+function filterColleagues(query) {
+    const q = (query || '').trim().toLowerCase();
+    const clearBtn = document.getElementById('colleague-search-clear');
+    const counter = document.getElementById('colleague-match-counter');
+    const noResults = document.getElementById('colleague-no-results');
+    
+    if (clearBtn) {
+        clearBtn.style.display = q ? 'inline-block' : 'none';
+    }
+    
+    const cards = document.querySelectorAll('.colleague-card');
+    let matchCount = 0;
+    
+    cards.forEach(card => {
+        const text = (card.innerText || '').toLowerCase();
+        const key = (card.getAttribute('data-colleague-card') || '').toLowerCase();
+        const isMatch = !q || text.includes(q) || key.includes(q);
+        
+        if (isMatch) {
+            card.style.display = '';
+            matchCount++;
+            if (q) {
+                const drawer = document.getElementById('colleague-details-' + card.getAttribute('data-colleague-card'));
+                const btn = document.getElementById('expand-btn-' + card.getAttribute('data-colleague-card'));
+                if (drawer) drawer.hidden = false;
+                card.classList.add('is-expanded');
+                if (btn) btn.setAttribute('aria-expanded', 'true');
+            }
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    if (counter) {
+        counter.innerText = 'Showing ' + matchCount + ' of ' + cards.length + ' colleagues';
+    }
+    if (noResults) {
+        noResults.style.display = (matchCount === 0 && cards.length > 0) ? 'block' : 'none';
+    }
+}
+
+function clearColleagueSearch() {
+    const input = document.getElementById('colleague-search-input');
+    if (input) {
+        input.value = '';
+        filterColleagues('');
+        input.focus();
     }
 }
 
@@ -9235,61 +9369,84 @@ def render_colleagues():
         )
         online_class = "online" if status == "Online" else ""
 
+        name_display = f"{WA_CROWN_IMG} {name}" if (key == "king" or "king" in name.lower()) else name
+        contractors_summary = f"{len(assigned_contractors)}/2 Contractors" if assigned_contractors else "0/2 Contractors"
+        states_summary = f"{len(assigned_states)}/2 States" if assigned_states else "0/2 States"
+
         cards_html += f"""
-        <article class="colleague-card" data-colleague-card="{key}">
-            <div class="colleague-head">
-                <div id="avatar-{key}" class="avatar" role="img" aria-label="{name} profile picture" data-profile-avatar="{key}" data-initials="{initials}" onclick="openProfilePhotoPreviewModal('{key}')" title="Click to view full profile photo" style="cursor:pointer;">{initials}</div>
-                <div>
-                    <div class="colleague-name">{name}</div>
-                    <div class="colleague-role">{role}</div>
+        <article class="colleague-card" data-colleague-card="{key}" id="colleague-card-{key}">
+            <div class="colleague-head" onclick="toggleColleagueExpand('{key}')" title="Click to expand/collapse full profile details">
+                <div id="avatar-{key}" class="avatar" role="img" aria-label="{name} profile picture" data-profile-avatar="{key}" data-initials="{initials}" onclick="event.stopPropagation(); openProfilePhotoPreviewModal('{key}')" title="Click to view full profile photo" style="cursor:pointer;">{initials}</div>
+                <div class="colleague-head-info" style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <div class="colleague-name">{name_display}</div>
+                        <span class="colleague-role-tag" style="font-size:11px; padding:2px 8px; border-radius:6px; background:rgba(16,185,129,0.12); color:var(--accent-green); border:1px solid rgba(16,185,129,0.25); font-weight:700;">{role}</span>
+                        <span class="colleague-id-tag" style="font-size:10.5px; font-family:monospace; color:var(--text-muted);">{software_id}</span>
+                    </div>
+                    <div class="colleague-quick-summary" style="display:flex; gap:8px; align-items:center; margin-top:5px; flex-wrap:wrap;">
+                        <span style="font-size:11px; color:var(--accent-gold); font-weight:600;">🏗️ {contractors_summary}</span>
+                        <span style="color:var(--text-muted); font-size:10px;">•</span>
+                        <span style="font-size:11px; color:var(--accent-green); font-weight:600;">📍 {states_summary}</span>
+                        <span style="color:var(--text-muted); font-size:10px;">•</span>
+                        <span style="font-size:11px; color:var(--text-muted);">⚡ {len(allowed_modules)}/22 Modules</span>
+                    </div>
                 </div>
-                <span class="presence"><i class="presence-dot {online_class}"></i>{status}</span>
-            </div>
-            <div class="colleague-meta">
-                <span>Software ID: <b>{software_id}</b></span>
-                <span>Access scope: <b>{len(allowed_modules)} of 22 modules</b></span>
-                <div class="tag-list">{tags_html}</div>
-                <div style="margin-top:4px;">
-                    <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">CONTRACTOR TERRITORY (MAX 2 STATES)</span>
-                    <div class="tag-list colleague-states-list">{states_badges}</div>
-                </div>
-                <div style="margin-top:6px;">
-                    <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">US WORKING CONTRACTORS (MAX 2)</span>
-                    <div class="tag-list colleague-contractors-list">{contractors_badges}</div>
-                </div>
-            </div>
-            <div class="colleague-actions">
-                <button class="btn btn-blue" onclick="openColleagueSettings('{key}')">⚙️ Settings &amp; Territories</button>
-                <button class="btn btn-gold" onclick="openAddAccountModal('{key}', '{name}')">🔑 Add Account</button>
-                <button class="btn btn-gray" onclick="triggerAvatarUpload('{key}')">📷 Update Photo</button>
-                <button class="btn btn-gray" onclick="changeViewAs('{key}')">👁️ View As</button>
-            </div>
-            <div class="colleague-vault-box" style="margin-top:12px; padding:12px 14px; background:rgba(0,26,23,0.7); border-radius:10px; border:1px solid #123B35;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span class="eyebrow" style="font-size:10px; color:var(--accent-gold); margin:0;">COMPANY ACCOUNT VAULT (MASKED)</span>
-                    <button type="button" class="btn btn-gray" style="font-size:10.5px; padding:2px 8px;" onclick="openAddAccountModal('{key}', '{name}')">➕ Register</button>
-                </div>
-                <div id="colleague-accounts-container-{key}" class="colleague-accounts-list">
-                    <small style="color:var(--text-muted);">Loading company accounts...</small>
+                <div style="display:flex; align-items:center; gap:12px; margin-left:auto; flex-shrink:0;">
+                    <span class="presence"><i class="presence-dot {online_class}"></i>{status}</span>
+                    <button type="button" class="colleague-expand-btn" id="expand-btn-{key}" onclick="event.stopPropagation(); toggleColleagueExpand('{key}')" aria-label="Toggle details for {name}" title="Click to toggle full details">
+                        <svg class="colleague-chevron-icon" id="chevron-{key}" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <!-- Admin Delegation Switch & Forensics Audit -->
-            <div style="margin-top:10px; padding:8px 12px; background:rgba(0,20,18,0.6); border-radius:8px; border:1px solid #123B35; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <div style="font-size:11px; color:#94A3B8;">
-                    <span style="font-weight:700; color:var(--accent-gold);">HUB ACCESS:</span>
-                    <span id="delegation-status-{key}">Restricted (Admin Only)</span>
+            <div class="colleague-details-drawer" id="colleague-details-{key}" hidden>
+                <div class="colleague-meta">
+                    <span>Software ID: <b>{software_id}</b></span>
+                    <span>Access scope: <b>{len(allowed_modules)} of 22 modules</b></span>
+                    <div class="tag-list">{tags_html}</div>
+                    <div style="margin-top:4px;">
+                        <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">CONTRACTOR TERRITORY (MAX 2 STATES)</span>
+                        <div class="tag-list colleague-states-list">{states_badges}</div>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <span class="eyebrow" style="font-size:10px; margin-bottom:4px;">US WORKING CONTRACTORS (MAX 2)</span>
+                        <div class="tag-list colleague-contractors-list">{contractors_badges}</div>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-sm" id="delegation-btn-{key}" onclick="toggleColleagueManagementDelegation('{key}')" style="font-size:11px; padding:3px 9px; background:#0B1E19; border:1px solid #123B35; color:#F8FAFC;">
-                    🔐 Allow Colleague Hub: OFF
-                </button>
-            </div>
-            <div class="registration-forensics-box" style="margin-top:6px; padding:6px 10px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:10.5px; color:#94A3B8; border:1px dashed #123B35;">
-                <div>🛡️ <b>Client IP:</b> <span class="ip-tag" style="color:var(--accent-green); font-family:monospace;">{info.get('metadata', {}).get('ip', '103.255.4.12')}</span> • <b>Software ID:</b> <span style="color:var(--accent-gold);">{software_id}</span></div>
-                <div>⏱️ <b>Registered:</b> <span style="color:#CBD5E1;">{info.get('metadata', {}).get('created_at', '2026-09-10 03:52 PKT')}</span></div>
-            </div>
-            <div class="permission-card">
-                <div class="permission-card-head"><strong>RBAC Permissions</strong><small>Toggle Module Access</small></div>
-                <div class="permission-grid">{permission_html}</div>
+                <div class="colleague-actions">
+                    <button class="btn btn-blue" onclick="openColleagueSettings('{key}')">⚙️ Settings &amp; Territories</button>
+                    <button class="btn btn-gold" onclick="openAddAccountModal('{key}', '{name}')">🔑 Add Account</button>
+                    <button class="btn btn-gray" onclick="triggerAvatarUpload('{key}')">📷 Update Photo</button>
+                    <button class="btn btn-gray" onclick="changeViewAs('{key}')">👁️ View As</button>
+                </div>
+                <div class="colleague-vault-box" style="margin-top:12px; padding:12px 14px; background:rgba(0,26,23,0.7); border-radius:10px; border:1px solid #123B35;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span class="eyebrow" style="font-size:10px; color:var(--accent-gold); margin:0;">COMPANY ACCOUNT VAULT (MASKED)</span>
+                        <button type="button" class="btn btn-gray" style="font-size:10.5px; padding:2px 8px;" onclick="openAddAccountModal('{key}', '{name}')">➕ Register</button>
+                    </div>
+                    <div id="colleague-accounts-container-{key}" class="colleague-accounts-list">
+                        <small style="color:var(--text-muted);">Loading company accounts...</small>
+                    </div>
+                </div>
+                <!-- Admin Delegation Switch & Forensics Audit -->
+                <div style="margin-top:10px; padding:8px 12px; background:rgba(0,20,18,0.6); border-radius:8px; border:1px solid #123B35; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div style="font-size:11px; color:#94A3B8;">
+                        <span style="font-weight:700; color:var(--accent-gold);">HUB ACCESS:</span>
+                        <span id="delegation-status-{key}">Restricted (Admin Only)</span>
+                    </div>
+                    <button type="button" class="btn btn-sm" id="delegation-btn-{key}" onclick="toggleColleagueManagementDelegation('{key}')" style="font-size:11px; padding:3px 9px; background:#0B1E19; border:1px solid #123B35; color:#F8FAFC;">
+                        🔐 Allow Colleague Hub: OFF
+                    </button>
+                </div>
+                <div class="registration-forensics-box" style="margin-top:6px; padding:6px 10px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:10.5px; color:#94A3B8; border:1px dashed #123B35;">
+                    <div>🛡️ <b>Client IP:</b> <span class="ip-tag" style="color:var(--accent-green); font-family:monospace;">{info.get('metadata', {}).get('ip', '103.255.4.12')}</span> • <b>Software ID:</b> <span style="color:var(--accent-gold);">{software_id}</span></div>
+                    <div>⏱️ <b>Registered:</b> <span style="color:#CBD5E1;">{info.get('metadata', {}).get('created_at', '2026-09-10 03:52 PKT')}</span></div>
+                </div>
+                <div class="permission-card">
+                    <div class="permission-card-head"><strong>RBAC Permissions</strong><small>Toggle Module Access</small></div>
+                    <div class="permission-grid">{permission_html}</div>
+                </div>
             </div>
         </article>
         """
@@ -9319,7 +9476,7 @@ def render_colleagues():
     {render_navigation("colleagues")}
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:18px; flex-wrap:wrap;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:14px; flex-wrap:wrap;">
             <div>
                 <span class="eyebrow">ACCESS &amp; TERRITORY GOVERNANCE</span>
                 <h3 style="margin:6px 0 0; font-size:20px;">Colleague Profiles &amp; Contractor Management</h3>
@@ -9331,6 +9488,30 @@ def render_colleagues():
                 <span style="color:var(--accent-green); font-size:12px; font-weight:700; margin-left:8px;">4 Identities · Live Monitored</span>
             </div>
         </div>
+
+        <!-- Colleague Real-Time Search & Accordion Controls Toolbar -->
+        <div class="colleague-toolbar-card" style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; padding:12px 16px; background:rgba(0,26,23,0.55); border:1px solid #123B35; border-radius:12px; flex-wrap:wrap;">
+            <div class="colleague-search-box-wrap" style="position:relative; flex:1; min-width:240px; max-width:480px;">
+                <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none; opacity:0.8;">🔍</span>
+                <input type="text" id="colleague-search-input" placeholder="Search colleague by name, role, software ID, or contractor..." oninput="filterColleagues(this.value)" style="width:100%; padding:9px 34px 9px 36px; background:rgba(0,18,15,0.85); border:1px solid #123B35; border-radius:8px; color:#F8FAFC; font-size:13px; outline:none; transition:border-color 0.2s, box-shadow 0.2s;" onfocus="this.style.borderColor='var(--accent-gold)'; this.style.boxShadow='0 0 10px rgba(214,161,23,0.25)';" onblur="this.style.borderColor='#123B35'; this.style.boxShadow='none';" />
+                <button type="button" id="colleague-search-clear" onclick="clearColleagueSearch()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:13px; display:none;" title="Clear search">✕</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span id="colleague-match-counter" style="font-size:12px; color:var(--accent-green); font-weight:700;">Showing 4 of 4 colleagues</span>
+                <div style="display:flex; gap:6px;">
+                    <button type="button" class="btn btn-sm btn-gray" onclick="expandAllColleagues(true)" title="Expand all colleague profiles" style="font-size:11.5px; padding:5px 11px;">⊞ Expand All</button>
+                    <button type="button" class="btn btn-sm btn-gray" onclick="expandAllColleagues(false)" title="Collapse all profiles to basic view" style="font-size:11.5px; padding:5px 11px;">⊟ Collapse All</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="colleague-no-results" style="display:none; text-align:center; padding:32px; background:rgba(0,26,23,0.3); border:1px dashed #123B35; border-radius:12px; margin-bottom:16px;">
+            <div style="font-size:28px; margin-bottom:6px;">🔍</div>
+            <h4 style="margin:0 0 4px; color:#F8FAFC; font-size:15px;">No colleague profile matches found</h4>
+            <p style="margin:0; font-size:12px; color:var(--text-muted);">Try searching with another name, role, ID, contractor, or click Clear.</p>
+            <button type="button" class="btn btn-sm btn-gray" onclick="clearColleagueSearch()" style="margin-top:10px;">Clear Search</button>
+        </div>
+
         <div class="colleague-grid">{cards_html}</div>
     </div>
 

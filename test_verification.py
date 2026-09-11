@@ -485,7 +485,21 @@ def run_tests():
     assert "WA_CROWN_HTML" in dash_html, "Missing WA_CROWN_HTML in client-side script"
     print("[PASS] WhatsApp Aesthetic 3D Royal Crown & High-Res Asset Pipeline verified.")
 
-    print("\n[SUCCESS] ALL 28 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 29. Test Colleague Real-Time Search & Accordion Expand/Collapse Drawer
+    assert "colleague-search-input" in colleagues_html, "Missing colleague-search-input in colleague management"
+    assert "colleague-toolbar-card" in colleagues_html, "Missing colleague-toolbar-card in colleague management"
+    assert "colleague-match-counter" in colleagues_html, "Missing colleague-match-counter in toolbar"
+    assert "colleague-expand-btn" in colleagues_html, "Missing colleague-expand-btn on colleague cards"
+    assert "colleague-chevron-icon" in colleagues_html, "Missing colleague-chevron-icon SVG in expand button"
+    assert "colleague-details-drawer" in colleagues_html, "Missing colleague-details-drawer container"
+    assert "toggleColleagueExpand" in colleagues_html, "Missing toggleColleagueExpand JS handler"
+    assert "filterColleagues" in colleagues_html, "Missing filterColleagues JS handler"
+    assert "expandAllColleagues" in colleagues_html, "Missing expandAllColleagues JS handler"
+    assert "clearColleagueSearch" in colleagues_html, "Missing clearColleagueSearch JS handler"
+    assert "body.light .colleague-expand-btn" in colleagues_html, "Missing light mode colleague-expand-btn styling"
+    print("[PASS] Colleague Real-Time Search, Match Counter & Accordion Expand/Collapse Drawers verified.")
+
+    print("\n[SUCCESS] ALL 29 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
