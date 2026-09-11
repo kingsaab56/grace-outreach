@@ -615,6 +615,9 @@ def update_shared_state(payload):
                 }
             else:
                 state["profiles"][key].update(value)
+                if "name" in value and value["name"]:
+                    parts = value["name"].split()
+                    state["profiles"][key]["initials"] = "".join(p[0].upper() for p in parts[:2]) if parts else "CO"
         elif resource == "attendance":
             for profile, days in value.items():
                 state["attendance"][profile] = days
@@ -3725,14 +3728,52 @@ async function syncSharedState() {
             if (mergedPhotos[key]) setAvatarImage(key, mergedPhotos[key]);
         });
 
+        // BULLETPROOF BIDIRECTIONAL PROFILE PRESERVATION & AUTO-HEAL
+        let customProfilesVault = {};
+        try { customProfilesVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}'); } catch(e){}
+        if (!customProfilesVault || typeof customProfilesVault !== 'object') customProfilesVault = {};
+
         if (shared.profiles) {
             Object.keys(shared.profiles).forEach((k) => {
                 if (PROFILE_DATA[k]) Object.assign(PROFILE_DATA[k], shared.profiles[k]);
                 else PROFILE_DATA[k] = shared.profiles[k];
             });
+
+            // Re-apply local user customizations so server defaults NEVER overwrite user edits!
+            Object.keys(customProfilesVault).forEach((k) => {
+                if (PROFILE_DATA[k] && customProfilesVault[k]) {
+                    const custom = customProfilesVault[k];
+                    if (custom.name) PROFILE_DATA[k].name = custom.name;
+                    if (custom.role) PROFILE_DATA[k].role = custom.role;
+                    if (custom.assigned_states) PROFILE_DATA[k].assigned_states = custom.assigned_states;
+                    if (custom.assigned_contractors) PROFILE_DATA[k].assigned_contractors = custom.assigned_contractors;
+                }
+            });
+
             window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
             hydrateColleagueCards();
             populateColleaguePickers();
+
+            // Auto-heal backend: if server state differs from custom user edits, sync them back to server
+            Object.keys(customProfilesVault).forEach((k) => {
+                const custom = customProfilesVault[k];
+                const sProf = shared.profiles[k];
+                if (custom && custom.name) {
+                    const needsHeal = !sProf || 
+                        sProf.name !== custom.name || 
+                        sProf.role !== custom.role ||
+                        JSON.stringify(sProf.assigned_states || []) !== JSON.stringify(custom.assigned_states || []) ||
+                        JSON.stringify(sProf.assigned_contractors || []) !== JSON.stringify(custom.assigned_contractors || []);
+                    if (needsHeal) {
+                        publishSharedState('profiles', {
+                            name: custom.name,
+                            role: custom.role,
+                            assigned_states: custom.assigned_states || [],
+                            assigned_contractors: custom.assigned_contractors || []
+                        }, k);
+                    }
+                }
+            });
         }
         if (shared.attendance) window.localStorage.setItem('grace-attendance', JSON.stringify(shared.attendance));
         if (shared.leaves) window.localStorage.setItem('grace-leave-requests', JSON.stringify(shared.leaves));
@@ -3758,13 +3799,14 @@ async function syncSharedState() {
 }
 
 function publishSharedState(resource, value, key) {
-    fetch(SHARED_STATE_ENDPOINT, {
+    return fetch(SHARED_STATE_ENDPOINT, {
         method:'POST',
         headers:{'Content-Type':'application/json', Accept:'application/json'},
         body:JSON.stringify({resource, value, key})
     }).then(function(response) {
         if (!response.ok) throw new Error('Shared state update rejected');
         sharedStateAvailable = true;
+        return response.json();
     }).catch(function(err) {
         console.warn('Backend sync failed, state preserved in browser:', err);
     });
@@ -4550,6 +4592,17 @@ function submitCreateAccount() {
     storedPasswords[cleanKey] = pwd;
     window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
     window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
+    try {
+        const customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}');
+        customVault[cleanKey] = {
+            name: name,
+            role: role,
+            assigned_states: Array.from(regSelectedStates),
+            assigned_contractors: Array.from(regSelectedContractors),
+            updated_at: Date.now()
+        };
+        window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
+    } catch(e) {}
     publishSharedState('profiles', newProfile, cleanKey);
     publishAuditEvent('Account Registration', 'Registered new colleague ' + name + ' (' + cleanKey + ')');
     populateColleaguePickers();
@@ -5680,8 +5733,25 @@ function hydrateLocalProfiles() {
         const saved = JSON.parse(window.localStorage.getItem('grace-profiles') || '{}');
         Object.keys(saved).forEach((k) => {
             if (PROFILE_DATA[k]) Object.assign(PROFILE_DATA[k], saved[k]);
+            else PROFILE_DATA[k] = saved[k];
         });
+
+        // Always prioritize custom profile vault so user explicit edits are immediately visible on page load
+        let customVault = {};
+        try { customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}'); } catch(e){}
+        if (customVault && typeof customVault === 'object') {
+            Object.keys(customVault).forEach((k) => {
+                if (PROFILE_DATA[k] && customVault[k]) {
+                    const c = customVault[k];
+                    if (c.name) PROFILE_DATA[k].name = c.name;
+                    if (c.role) PROFILE_DATA[k].role = c.role;
+                    if (c.assigned_states) PROFILE_DATA[k].assigned_states = c.assigned_states;
+                    if (c.assigned_contractors) PROFILE_DATA[k].assigned_contractors = c.assigned_contractors;
+                }
+            });
+        }
         hydrateColleagueCards();
+        populateColleaguePickers();
     } catch (error) {}
 }
 
@@ -5691,10 +5761,19 @@ function hydrateColleagueCards() {
         const card = document.querySelector('[data-colleague-card="' + key + '"]');
         if (!card) return;
         const nameEl = card.querySelector('.colleague-name');
-        const roleEl = card.querySelector('.colleague-role');
+        const roleEl = card.querySelector('.colleague-role-tag') || card.querySelector('.colleague-role');
         const stateWrap = card.querySelector('.colleague-states-list');
         const contractorWrap = card.querySelector('.colleague-contractors-list');
-        if (nameEl) nameEl.innerText = prof.name;
+        if (nameEl) {
+            const hasCrown = (key === 'king' || (prof.name && prof.name.toLowerCase().includes('king')));
+            const cleanName = (prof.name || '').replace(/^👑\s*/, '').trim();
+            if (hasCrown) {
+                const crownHtml = window.WA_CROWN_HTML || '<img src="/api/assets/crown.png" class="wa-crown-icon" alt="👑" style="width:20px;height:20px;vertical-align:-3px;margin-right:4px;">';
+                nameEl.innerHTML = crownHtml + ' ' + cleanName;
+            } else {
+                nameEl.innerText = cleanName;
+            }
+        }
         if (roleEl) roleEl.innerText = prof.role;
         if (stateWrap) {
             const states = prof.assigned_states || [];
@@ -5707,6 +5786,25 @@ function hydrateColleagueCards() {
             contractorWrap.innerHTML = contractors.length
                 ? contractors.map((c) => '<span class="state-badge" style="border-color:var(--accent-gold); color:var(--accent-gold);">🏗️ ' + c + '</span>').join('')
                 : '<span style="color:var(--text-muted);font-size:11px;">No contractors assigned (Max 2)</span>';
+        }
+        const quickSummary = card.querySelector('.colleague-quick-summary');
+        if (quickSummary) {
+            const contractors = prof.assigned_contractors || [];
+            const states = prof.assigned_states || [];
+            const allowed = prof.allowed || [1, 2, 6, 7, 13, 16];
+            quickSummary.innerHTML = '<span style="font-size:11px; color:var(--accent-gold); font-weight:600;">🏗️ ' + contractors.length + '/2 Contractors</span>' +
+                '<span style="color:var(--text-muted); font-size:10px;">•</span>' +
+                '<span style="font-size:11px; color:var(--accent-green); font-weight:600;">📍 ' + states.length + '/2 States</span>' +
+                '<span style="color:var(--text-muted); font-size:10px;">•</span>' +
+                '<span style="font-size:11px; color:var(--text-muted);">⚡ ' + allowed.length + '/22 Modules</span>';
+        }
+        const avatarEl = card.querySelector('.avatar');
+        if (avatarEl && prof.name) {
+            const initials = prof.name.split(' ').filter(Boolean).map(p => p[0].toUpperCase()).slice(0, 2).join('') || 'CO';
+            avatarEl.setAttribute('data-initials', initials);
+            if (!avatarEl.querySelector('img') && !avatarEl.style.backgroundImage) {
+                avatarEl.innerText = initials;
+            }
         }
     });
 }
@@ -5855,6 +5953,23 @@ function saveColleagueSettings() {
     PROFILE_DATA[key].role = role;
     PROFILE_DATA[key].assigned_states = Array.from(tempSelectedStates);
     PROFILE_DATA[key].assigned_contractors = Array.from(tempSelectedContractors);
+
+    // DUAL-VAULT PERSISTENCE FOR USER EDITED PROFILES
+    try {
+        let customVault = {};
+        try { customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}'); } catch(e){}
+        if (!customVault || typeof customVault !== 'object') customVault = {};
+        customVault[key] = {
+            name: name,
+            role: role,
+            assigned_states: Array.from(tempSelectedStates),
+            assigned_contractors: Array.from(tempSelectedContractors),
+            updated_at: Date.now()
+        };
+        window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
+    } catch(e) {
+        console.warn('Failed to save to grace-custom-profiles-vault:', e);
+    }
 
     window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
     publishSharedState('profiles', {name, role, assigned_states: tempSelectedStates, assigned_contractors: tempSelectedContractors}, key);

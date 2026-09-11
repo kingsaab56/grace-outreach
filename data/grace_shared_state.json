@@ -91,22 +91,22 @@
     },
     "sarah": {
       "key": "sarah",
-      "name": "Sarah Malik",
-      "role": "Growth Marketer",
+      "name": "Sarah Jenkins - Growth Lead",
+      "role": "Principal Outreach Strategist",
       "software_id": "GRA-MKT-003",
       "status": "Online",
-      "initials": "SM",
+      "initials": "SJ",
       "tags": [
         "Marketer",
         "Growth"
       ],
       "assigned_states": [
-        "Illinois",
-        "Washington"
+        "Washington",
+        "Illinois"
       ],
       "assigned_contractors": [
-        "Gilbane Building Company",
-        "DPR Construction"
+        "Turner Construction Co.",
+        "Bechtel Corporation"
       ],
       "allowed": [
         1,
@@ -292,6 +292,52 @@
     ]
   },
   "auditLog": [
+    {
+      "id": "AUD-5679",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-12 00:05:45 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-5636",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-12 00:05:45 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-5603",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-12 00:05:45 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-5559",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-12 00:05:45 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-5522",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-12 00:05:45 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
     {
       "id": "AUD-5896",
       "user": "Abdullah Khan",
@@ -688,30 +734,6 @@
       "action": "System Kernel Initialized",
       "timestamp": "2026-09-10 00:00:01 PKT",
       "role": "Super Admin",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1002",
-      "user": "King Saab",
-      "action": "AES-256 Vault Locker Armed",
-      "timestamp": "2026-09-10 00:01:15 PKT",
-      "role": "Super Admin",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1003",
-      "user": "Abdullah Khan",
-      "action": "Contractor Outreach Pool Synced",
-      "timestamp": "2026-09-10 00:05:22 PKT",
-      "role": "Strategic Lead",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1004",
-      "user": "System Daemon",
-      "action": "US Working Contractors Catalog (30) Staged",
-      "timestamp": "2026-09-10 00:10:00 PKT",
-      "role": "Watchdog",
       "status": "Verified"
     }
   ],

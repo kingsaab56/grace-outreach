@@ -522,9 +522,41 @@ def run_tests():
     assert ".floating-audio-dot" in dash_html, "Missing .floating-audio-dot CSS styling"
     assert "body.light .floating-audio-dot" in dash_html, "Missing light mode .floating-audio-dot styling"
     assert "body.light .soundscape-playlist-box" in dash_html, "Missing light mode .soundscape-playlist-box styling"
-    print("[PASS] Interactive Soundscape Playlist Queue & Floating Minimalist Mini-Player verified.")
+    # 31. Test Colleague Permanent Profile Persistence, Custom Vault & Card Hydration
+    print("Testing Colleague Permanent Profile Persistence & Dual-Vault Auto-Heal...")
+    assert "grace-custom-profiles-vault" in dash_html, "Missing grace-custom-profiles-vault in client script"
+    assert "colleague-role-tag" in dash_html, "Missing colleague-role-tag class in HTML/JS"
+    
+    colleague_payload = {
+        "resource": "profiles",
+        "key": "sarah",
+        "value": {
+            "name": "Sarah Jenkins - Growth Lead",
+            "role": "Principal Outreach Strategist",
+            "assigned_states": ["Washington", "Illinois"],
+            "assigned_contractors": ["Turner Construction Co.", "Bechtel Corporation"]
+        }
+    }
+    status, headers, body = wsgi_request("/api/state", "POST", body_dict=colleague_payload)
+    assert status == "200 OK", f"Expected 200 OK, got {status}"
+    persisted_state = read_shared_state()
+    assert persisted_state["profiles"]["sarah"]["name"] == "Sarah Jenkins - Growth Lead"
+    assert persisted_state["profiles"]["sarah"]["role"] == "Principal Outreach Strategist"
+    assert persisted_state["profiles"]["sarah"]["initials"] == "SJ"
+    assert persisted_state["profiles"]["sarah"]["assigned_states"] == ["Washington", "Illinois"]
+    assert persisted_state["profiles"]["sarah"]["assigned_contractors"] == ["Turner Construction Co.", "Bechtel Corporation"]
 
-    print("\n[SUCCESS] ALL 30 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # Verify Colleague Management HTML reflects the persisted update
+    status, headers, data = wsgi_request("/api/", "GET", query_string="tab=colleagues")
+    assert status == "200 OK"
+    colleagues_page = data.decode("utf-8")
+    assert "Sarah Jenkins - Growth Lead" in colleagues_page
+    assert "Principal Outreach Strategist" in colleagues_page
+    assert "wa-crown-icon" in colleagues_page
+    assert "King Saab" in colleagues_page
+    print("[PASS] Colleague Permanent Profile Persistence, Custom Vault & Card Hydration verified.")
+
+    print("\n[SUCCESS] ALL 31 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
