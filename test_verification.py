@@ -499,7 +499,32 @@ def run_tests():
     assert "body.light .colleague-expand-btn" in colleagues_html, "Missing light mode colleague-expand-btn styling"
     print("[PASS] Colleague Real-Time Search, Match Counter & Accordion Expand/Collapse Drawers verified.")
 
-    print("\n[SUCCESS] ALL 29 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 30. Test Interactive Soundscape Playlist Queue & Floating Minimalist Mini-Player
+    assert "soundscape-playlist-container" in dash_html, "Missing soundscape-playlist-container in soundscape modal"
+    assert "soundscape-playlist-box" in dash_html, "Missing soundscape-playlist-box CSS or HTML"
+    assert "floating-audio-main" in dash_html, "Missing floating-audio-main widget on main pages"
+    assert "floating-audio-gateway" in dash_html, "Missing floating-audio-gateway widget in Auth Gateway"
+    assert "audio-dot-main" in dash_html, "Missing audio-dot-main floating button"
+    assert "audio-dot-gateway" in dash_html, "Missing audio-dot-gateway floating button"
+    assert "floating-audio-controls-main" in dash_html, "Missing floating-audio-controls-main container"
+    assert "floating-audio-controls-gateway" in dash_html, "Missing floating-audio-controls-gateway container"
+    assert "mini-play-btn-main" in dash_html, "Missing mini-play-btn-main control button"
+    assert "mini-play-btn-gateway" in dash_html, "Missing mini-play-btn-gateway control button"
+    assert "mini-track-label-main" in dash_html, "Missing mini-track-label-main element"
+    assert "mini-track-label-gateway" in dash_html, "Missing mini-track-label-gateway element"
+    assert "renderSoundscapePlaylist" in dash_html, "Missing renderSoundscapePlaylist JS function"
+    assert "removeTrackFromPlaylist" in dash_html, "Missing removeTrackFromPlaylist JS function"
+    assert "playTrackAtIndex" in dash_html, "Missing playTrackAtIndex JS function"
+    assert "playNextTrack" in dash_html, "Missing playNextTrack JS function"
+    assert "playPrevTrack" in dash_html, "Missing playPrevTrack JS function"
+    assert "toggleFloatingAudioControls" in dash_html, "Missing toggleFloatingAudioControls JS function"
+    assert "syncAllAudioControlsUI" in dash_html, "Missing syncAllAudioControlsUI JS function"
+    assert ".floating-audio-dot" in dash_html, "Missing .floating-audio-dot CSS styling"
+    assert "body.light .floating-audio-dot" in dash_html, "Missing light mode .floating-audio-dot styling"
+    assert "body.light .soundscape-playlist-box" in dash_html, "Missing light mode .soundscape-playlist-box styling"
+    print("[PASS] Interactive Soundscape Playlist Queue & Floating Minimalist Mini-Player verified.")
+
+    print("\n[SUCCESS] ALL 30 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

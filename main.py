@@ -921,8 +921,19 @@ def render_header():
 
     <!-- Executive Authentication & Lock Screen Portal -->
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title">
-        <div class="modal-card auth-card" style="position:relative;">
-            <button type="button" id="gateway-sound-toggle" class="gateway-sound-toggle" onclick="toggleGatewayAudio()">🔇 Ambient Sound: OFF</button>
+            <!-- Gateway Minimalist Floating Audio Widget -->
+            <div class="floating-audio-widget gateway-floating-audio" id="floating-audio-gateway" style="position:absolute; top:18px; right:18px; z-index:10; display:flex; align-items:center; gap:8px; flex-direction:row-reverse;">
+                <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls">
+                    <span class="audio-dot-icon">🎵</span>
+                </button>
+                <div class="floating-audio-controls" id="floating-audio-controls-gateway" hidden onmouseenter="resetFloatingAudioTimer('gateway')" onmouseleave="startFloatingAudioAutoCollapse('gateway')">
+                    <button type="button" class="mini-ctrl-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
+                    <button type="button" class="mini-ctrl-btn mini-play-btn" id="mini-play-btn-gateway" onclick="toggleSoundscape()" title="Play / Pause">▶️</button>
+                    <button type="button" class="mini-ctrl-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
+                    <span class="mini-track-label" id="mini-track-label-gateway" onclick="openSoundscape()" title="Click to open full Soundscape modal">Calm Focus</span>
+                </div>
+            </div>
+            <button type="button" id="gateway-sound-toggle" class="gateway-sound-toggle" onclick="toggleGatewayAudio()" style="display:none;">🔇 Ambient Sound: OFF</button>
             <div class="auth-header">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
                     {LOGO_SVG}
@@ -1187,25 +1198,55 @@ def render_header():
         </div>
     </div>
     <div id="soundscape-panel" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="soundscape-title">
-        <div class="modal-card wide-modal">
+        <div class="modal-card wide-modal" style="max-height:90vh; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--accent-green) var(--bg-card);">
             <div class="modal-header"><h3 id="soundscape-title">Audio &amp; Background Soundscape Engine</h3><button class="modal-close" onclick="closeSoundscape()" aria-label="Close soundscape">×</button></div>
-            <p class="modal-copy">Choose an ambient operating track or load a local audio/video file. Clip points apply to active media session.</p>
+            <p class="modal-copy">Choose an ambient operating track or load a local audio/video file. Queued tracks play sequentially in playlist mode or loop individually.</p>
+            
+            <!-- Interactive Playlist Queue Section -->
+            <div class="soundscape-playlist-box" style="margin-bottom:14px; padding:12px 14px; background:rgba(0,18,15,0.7); border:1px solid #123B35; border-radius:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <span class="eyebrow" style="font-size:10px; color:var(--accent-gold);">ACTIVE PLAYLIST QUEUE</span>
+                        <strong id="playlist-queue-count" style="font-size:11.5px; color:var(--accent-green); margin-left:6px;">4 Tracks Loaded</strong>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="btn btn-sm btn-gray" onclick="resetDefaultSoundscapePlaylist()" title="Reset to standard 4 focus ambient tracks" style="font-size:11px; padding:3px 9px;">↺ Default</button>
+                        <button type="button" class="btn btn-sm btn-gray" onclick="clearSoundscapePlaylist()" title="Clear all tracks from playlist" style="font-size:11px; padding:3px 9px; color:#EF4444;">🗑️ Clear All</button>
+                    </div>
+                </div>
+                <div id="soundscape-playlist-container" class="playlist-items-list" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; padding-right:4px;">
+                    <!-- Populated dynamically by renderSoundscapePlaylist() -->
+                </div>
+            </div>
+
+            <!-- Loop & Queue Navigation Controls -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;">
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <span class="eyebrow" style="font-size:10px;">PLAYBACK MODE:</span>
+                    <button type="button" id="loop-single-btn" class="btn btn-gray" style="font-size:11px; padding:5px 12px;" onclick="setLoopMode('single')">🔁 Repeat Track (Repeat One)</button>
+                    <button type="button" id="loop-ambient-btn" class="btn btn-blue" style="font-size:11px; padding:5px 12px;" onclick="setLoopMode('playlist')">🔀 Playlist Loop (Play All)</button>
+                </div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button type="button" class="btn btn-sm btn-gray" onclick="playPrevTrack()" title="Previous Track" style="font-size:12px; padding:5px 10px;">⏮️ Prev</button>
+                    <button type="button" class="btn btn-sm btn-gray" onclick="playNextTrack()" title="Next Track" style="font-size:12px; padding:5px 10px;">⏭️ Next</button>
+                </div>
+            </div>
+
+            <div class="audio-player-shell">
+                <div><span class="eyebrow">ACTIVE SOUNDSCAPE</span><strong id="soundscape-status">Calm Focus · Ready</strong></div>
+                <div class="audio-controls"><button class="btn btn-blue" id="modal-play-toggle-btn" onclick="toggleSoundscape()">▶ Start / Pause</button><span id="soundscape-time">00:00 / 00:00</span></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:14px 0 8px;">
+                <span class="eyebrow" style="font-size:10px;">AMBIENT FOCUS CATALOG (CLICK TO TOGGLE / ADD TO PLAYLIST)</span>
+            </div>
             <div class="soundscape-options">
                 <button class="soundscape-option active" data-track="focus" onclick="selectSoundscape('focus')"><b>Calm Focus</b><small>Soft executive pulse</small></button>
                 <button class="soundscape-option" data-track="pulse" onclick="selectSoundscape('pulse')"><b>Emerald Pulse</b><small>High-velocity operations</small></button>
                 <button class="soundscape-option" data-track="strategy" onclick="selectSoundscape('strategy')"><b>Strategic Flow</b><small>Measured planning ambience</small></button>
                 <button class="soundscape-option" data-track="night" onclick="selectSoundscape('night')"><b>Night Shift</b><small>Low-light focus mode</small></button>
             </div>
-            <div style="display:flex; gap:10px; margin:14px 0 6px; align-items:center;">
-                <span class="eyebrow" style="font-size:10px;">LOOP MODE:</span>
-                <button type="button" id="loop-single-btn" class="btn btn-gray" style="font-size:11px; padding:6px 12px;" onclick="setLoopMode('single')">🔁 Repeat Track</button>
-                <button type="button" id="loop-ambient-btn" class="btn btn-blue" style="font-size:11px; padding:6px 12px;" onclick="setLoopMode('ambient')">🔀 Ambient Playlist Loop</button>
-            </div>
-            <div class="audio-player-shell">
-                <div><span class="eyebrow">ACTIVE SOUNDSCAPE</span><strong id="soundscape-status">Calm Focus · Ready</strong></div>
-                <div class="audio-controls"><button class="btn btn-blue" onclick="toggleSoundscape()">▶ Start / Pause</button><span id="soundscape-time">00:00 / 00:00</span></div>
-            </div>
-            <label class="upload-zone"><span>＋ Load custom audio or video</span><small>Audio/video files are previewed locally; video soundtracks are routed through clip controls.</small><input id="custom-media-input" type="file" accept="audio/*,video/*" onchange="loadCustomMedia(event)"></label>
+            <label class="upload-zone"><span>＋ Load custom audio or video</span><small>Audio/video files are added to your playlist queue and previewed locally.</small><input id="custom-media-input" type="file" accept="audio/*,video/*" onchange="loadCustomMedia(event)"></label>
             <div class="clip-grid">
                 <label>Start (seconds)<input id="clip-start" type="number" min="0" step="1" value="0"></label>
                 <label>End (seconds)<input id="clip-end" type="number" min="0" step="1" placeholder="Track end"></label>
@@ -1629,6 +1670,19 @@ def render_header():
         <div class="ai-compose"><input id="ai-input" placeholder="Ask in English or Roman Urdu..." onkeydown="if(event.key==='Enter') sendAIMessage()"><button class="btn btn-blue" onclick="sendAIMessage()">Send</button></div>
         <button class="tts-button" onclick="speakGuide()">🔊 Play voice guidance</button>
     </aside>
+
+    <!-- Floating Minimalist Soundscape Player Widget (Main Application) -->
+    <div class="floating-audio-widget" id="floating-audio-main">
+        <button type="button" class="floating-audio-dot" id="audio-dot-main" onclick="toggleFloatingAudioControls('main')" title="🎵 Soundscape Player Controls (Click to expand)" aria-label="Audio Controls">
+            <span class="audio-dot-icon">🎵</span>
+        </button>
+        <div class="floating-audio-controls" id="floating-audio-controls-main" hidden onmouseenter="resetFloatingAudioTimer('main')" onmouseleave="startFloatingAudioAutoCollapse('main')">
+            <button type="button" class="mini-ctrl-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
+            <button type="button" class="mini-ctrl-btn mini-play-btn" id="mini-play-btn-main" onclick="toggleSoundscape()" title="Play / Pause">▶️</button>
+            <button type="button" class="mini-ctrl-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
+            <span class="mini-track-label" id="mini-track-label-main" onclick="openSoundscape()" title="Click to open full Soundscape modal">Calm Focus</span>
+        </div>
+    </div>
     """
 
 
@@ -2763,6 +2817,50 @@ BASE_CSS = """
     body.light .colleague-details-drawer {
         border-top-color: #E2E8F0 !important;
     }
+    body.light .soundscape-playlist-box {
+        background: #F8FAFC !important;
+        border-color: #E2E8F0 !important;
+    }
+    body.light .playlist-item {
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+    body.light .playlist-item:hover {
+        background: #F1F5F9 !important;
+        border-color: rgba(214, 161, 23, 0.6) !important;
+    }
+    body.light .playlist-item.is-active {
+        background: rgba(214, 161, 23, 0.1) !important;
+        border-color: var(--accent-gold) !important;
+    }
+    body.light .playlist-del-btn {
+        background: #FEE2E2 !important;
+        border-color: #FCA5A5 !important;
+        color: #DC2626 !important;
+    }
+    body.light .floating-audio-dot {
+        background: #FFFFFF !important;
+        border-color: #10B981 !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+    }
+    body.light .floating-audio-controls {
+        background: #FFFFFF !important;
+        border-color: var(--accent-gold) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+    body.light .mini-ctrl-btn {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+    body.light .mini-ctrl-btn:hover {
+        background: #E2E8F0 !important;
+        border-color: var(--accent-gold) !important;
+        color: var(--accent-gold) !important;
+    }
+    body.light .mini-track-label {
+        color: #0F172A !important;
+    }
 
     /* COMPANY ACCOUNTS VAULT & 4-CLASS BADGES */
     .class-active {
@@ -3164,6 +3262,180 @@ BASE_CSS = """
     #brand-palette-modal .modal-card::-webkit-scrollbar { width:8px; }
     #brand-palette-modal .modal-card::-webkit-scrollbar-thumb { background:#10B981; border-radius:4px; }
     #brand-palette-modal .modal-card::-webkit-scrollbar-track { background:#001A17; }
+
+    /* SOUNDSCAPE PLAYLIST QUEUE & FLOATING MINI-PLAYER */
+    .soundscape-playlist-box {
+        background: rgba(0, 18, 15, 0.7);
+        border: 1px solid #123B35;
+        border-radius: 12px;
+        transition: border-color 0.2s ease;
+    }
+    .playlist-items-list::-webkit-scrollbar { width: 6px; }
+    .playlist-items-list::-webkit-scrollbar-thumb { background: #10B981; border-radius: 3px; }
+    .playlist-items-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+    .playlist-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(0, 26, 23, 0.45);
+        border: 1px solid #123B35;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .playlist-item:hover {
+        background: rgba(0, 26, 23, 0.85);
+        border-color: rgba(214, 161, 23, 0.45);
+        transform: translateX(2px);
+    }
+    .playlist-item.is-active {
+        background: rgba(214, 161, 23, 0.12);
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 12px rgba(214, 161, 23, 0.2);
+    }
+    .playlist-del-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #F87171;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 11px;
+        padding: 0;
+        transition: all 0.18s ease;
+        flex-shrink: 0;
+    }
+    .playlist-del-btn:hover {
+        background: #EF4444;
+        color: #FFFFFF;
+        border-color: #EF4444;
+        transform: scale(1.15);
+    }
+
+    /* FLOATING MINIMALIST SOUNDSCAPE MINI-PLAYER */
+    .floating-audio-widget {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        z-index: 65;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+    }
+    .floating-audio-dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(0, 26, 23, 0.92);
+        border: 1.5px solid var(--accent-green);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+        color: var(--accent-green);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        font-size: 15px;
+        backdrop-filter: blur(10px);
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        flex-shrink: 0;
+    }
+    .floating-audio-dot:hover {
+        transform: scale(1.12);
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+        box-shadow: 0 0 16px rgba(214, 161, 23, 0.4);
+    }
+    .floating-audio-dot.is-playing {
+        border-color: var(--accent-green);
+        box-shadow: 0 0 14px rgba(16, 185, 129, 0.7);
+        animation: audio-dot-pulse 1.8s infinite ease-in-out;
+    }
+    @keyframes audio-dot-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .floating-audio-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px 5px 10px;
+        background: rgba(0, 20, 18, 0.95);
+        border: 1px solid var(--accent-gold);
+        border-radius: 30px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(12px);
+        animation: floating-ctrls-slide 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+    }
+    @keyframes floating-ctrls-slide {
+        from { opacity: 0; transform: scale(0.92) translateX(-8px); }
+        to { opacity: 1; transform: scale(1) translateX(0); }
+    }
+    .gateway-floating-audio .floating-audio-controls {
+        animation: gateway-ctrls-slide 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes gateway-ctrls-slide {
+        from { opacity: 0; transform: scale(0.92) translateX(8px); }
+        to { opacity: 1; transform: scale(1) translateX(0); }
+    }
+    .mini-ctrl-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #F8FAFC;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        font-size: 11.5px;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+    }
+    .mini-ctrl-btn:hover {
+        background: rgba(214, 161, 23, 0.2);
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+        transform: scale(1.1);
+    }
+    .mini-play-btn {
+        background: rgba(16, 185, 129, 0.18);
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+    }
+    .mini-play-btn:hover {
+        background: rgba(16, 185, 129, 0.35);
+        border-color: var(--accent-green);
+        color: #FFFFFF;
+    }
+    .mini-track-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--accent-gold);
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        margin-left: 2px;
+        transition: color 0.15s;
+    }
+    .mini-track-label:hover {
+        color: var(--accent-green);
+        text-decoration: underline;
+    }
 
     /* GATEWAY FLOATING AUDIO & MANDATORY BANNER */
     .gateway-sound-toggle { position:absolute; top:18px; right:18px; background:rgba(16,185,129,0.12); border:1px solid var(--accent-green); color:var(--accent-green); font-size:11px; font-weight:700; border-radius:999px; padding:6px 12px; cursor:pointer; transition:0.15s; }
@@ -4039,12 +4311,24 @@ window.addEventListener('DOMContentLoaded', () => {
     initBrightness();
     hydrateProfilePhotos();
     updateNavColleagueVisibility();
+    renderSoundscapePlaylist();
+    syncAllAudioControlsUI();
     if (isUserAuthenticated()) {
         const authedUser = getActiveAuthUser();
         if (!window.sessionStorage.getItem('grace_auth_user')) {
             window.sessionStorage.setItem('grace_auth_user', authedUser);
         }
         closeAuthGateway();
+    }
+});
+
+// Auto-collapse floating mini-player when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.floating-audio-widget')) {
+        ['main', 'gateway'].forEach(t => {
+            const ctrls = document.getElementById('floating-audio-controls-' + t);
+            if (ctrls) ctrls.hidden = true;
+        });
     }
 });
 
@@ -4315,38 +4599,63 @@ let selectedTheme = 'midnight';
 let ambientContext = null;
 let ambientNodes = [];
 let soundscapePlaying = false;
-let loopMode = 'ambient';
+let loopMode = window.localStorage.getItem('grace-soundscape-loop-mode') || 'playlist';
 let gatewayAudioActive = false;
 let customMediaUrl = null;
 let aiLanguage = window.localStorage.getItem('grace-ai-language') || 'en';
 let mascotDrag = {active:false, moved:false, startX:0, startY:0, left:0, top:0, suppressClick:false};
 
+const DEFAULT_SOUNDSCAPES = [
+    { id: 'focus', title: 'Calm Focus', sub: 'Soft executive pulse · 220Hz', type: 'synth' },
+    { id: 'pulse', title: 'Emerald Pulse', sub: 'High-velocity operations · 146Hz', type: 'synth' },
+    { id: 'strategy', title: 'Strategic Flow', sub: 'Measured planning ambience · 174Hz', type: 'synth' },
+    { id: 'night', title: 'Night Shift', sub: 'Low-light focus mode · 110Hz', type: 'synth' }
+];
+
+let soundscapePlaylist = (function() {
+    try {
+        const saved = JSON.parse(window.localStorage.getItem('grace-soundscape-playlist'));
+        if (Array.isArray(saved) && saved.length > 0) return saved;
+    } catch (e) {}
+    return [...DEFAULT_SOUNDSCAPES];
+})();
+
+let currentTrackIndex = (function() {
+    const idx = parseInt(window.localStorage.getItem('grace-soundscape-index') || '0', 10);
+    return (idx >= 0 && idx < soundscapePlaylist.length) ? idx : 0;
+})();
+
+let ambientCycleTimer = null;
+let floatingAudioHideTimer = null;
+
 function setLoopMode(mode) {
     loopMode = mode;
+    window.localStorage.setItem('grace-soundscape-loop-mode', mode);
     const singleBtn = document.getElementById('loop-single-btn');
     const ambientBtn = document.getElementById('loop-ambient-btn');
     if (singleBtn && ambientBtn) {
         if (mode === 'single') {
             singleBtn.className = 'btn btn-blue';
             ambientBtn.className = 'btn btn-gray';
-            showToast('Loop mode: Repeat current soundscape track.', 'info');
+            showToast('Loop mode: Repeat Single Track (Repeat One).', 'info');
         } else {
             singleBtn.className = 'btn btn-gray';
             ambientBtn.className = 'btn btn-blue';
-            showToast('Loop mode: Continuous ambient soundscape playlist.', 'info');
+            showToast('Loop mode: Sequential Playlist Loop (Play All).', 'info');
         }
     }
+    syncAllAudioControlsUI();
 }
 
 function toggleGatewayAudio() {
     const btn = document.getElementById('gateway-sound-toggle');
     gatewayAudioActive = !gatewayAudioActive;
     if (gatewayAudioActive) {
-        startAmbient();
+        if (!soundscapePlaying) toggleSoundscape();
         if (btn) btn.innerText = '🔊 Ambient Sound: ON';
         showToast('Gateway background soundscape playing.', 'success');
     } else {
-        stopAmbient();
+        if (soundscapePlaying) toggleSoundscape();
         if (btn) btn.innerText = '🔇 Ambient Sound: OFF';
         showToast('Gateway background soundscape muted.', 'info');
     }
@@ -4762,30 +5071,202 @@ function addPipelineOpportunity() {
    ========================================================================= */
 function openSoundscape() {
     const panel = document.getElementById('soundscape-panel');
-    if (panel) panel.hidden = false;
+    if (panel) {
+        panel.hidden = false;
+        renderSoundscapePlaylist();
+        syncAllAudioControlsUI();
+    }
 }
+
 function closeSoundscape() {
     const panel = document.getElementById('soundscape-panel');
     if (panel) panel.hidden = true;
 }
-function selectSoundscape(track) {
-    document.querySelectorAll('.soundscape-option').forEach((button) => button.classList.toggle('active', button.dataset.track === track));
-    const labels = {focus:'Calm Focus', pulse:'Emerald Pulse', strategy:'Strategic Flow', night:'Night Shift'};
-    window.localStorage.setItem('grace-soundscape', track);
-    const status = document.getElementById('soundscape-status');
-    if (status) status.innerText = labels[track] + ' · Ready';
-    if (soundscapePlaying) { stopAmbient(); startAmbient(track); }
-    showToast(labels[track] + ' selected for the background soundscape.', 'info');
+
+function escapeAudioText(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-function startAmbient(track) {
-    track = track || window.localStorage.getItem('grace-soundscape') || 'focus';
+
+function renderSoundscapePlaylist() {
+    const container = document.getElementById('soundscape-playlist-container');
+    const countEl = document.getElementById('playlist-queue-count');
+    if (countEl) {
+        countEl.innerText = soundscapePlaylist.length + (soundscapePlaylist.length === 1 ? ' Track Loaded' : ' Tracks Loaded');
+    }
+    if (!container) return;
+
+    if (soundscapePlaylist.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:14px; color:var(--text-muted); font-size:11.5px; font-style:italic;">' +
+            'Playlist queue is empty. Click any soundscape card below or load local audio/video to add to queue.' +
+            '</div>';
+        return;
+    }
+
+    let html = '';
+    soundscapePlaylist.forEach((item, index) => {
+        const isActive = (index === currentTrackIndex);
+        const icon = (isActive && soundscapePlaying) ? '🔊' : '🎵';
+        const nowPlayingTag = (isActive && soundscapePlaying)
+            ? '<span style="font-size:9.5px; padding:2px 6px; border-radius:4px; background:rgba(16,185,129,0.2); color:#10B981; font-weight:800; letter-spacing:0.5px; border:1px solid rgba(16,185,129,0.4);">● PLAYING</span>'
+            : (isActive ? '<span style="font-size:9.5px; padding:2px 6px; border-radius:4px; background:rgba(214,161,23,0.15); color:var(--accent-gold); font-weight:800; border:1px solid rgba(214,161,23,0.35);">CURRENT</span>' : '');
+
+        html += `<div class="playlist-item ${isActive ? 'is-active' : ''}" onclick="playTrackAtIndex(${index})" title="Click to play ${escapeAudioText(item.title)}">
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+                <span style="font-size:13px; line-height:1; flex-shrink:0;">${icon}</span>
+                <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">
+                    <b class="playlist-item-title" style="font-size:12px; color:${isActive ? 'var(--accent-gold)' : 'var(--text-main)'};">${index + 1}. ${escapeAudioText(item.title)}</b>
+                    <small class="playlist-item-desc" style="display:block; font-size:10px; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis;">${escapeAudioText(item.sub || '')}</small>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                ${nowPlayingTag}
+                <button type="button" class="playlist-del-btn" onclick="event.stopPropagation(); removeTrackFromPlaylist(${index})" title="Remove from playlist" aria-label="Remove ${escapeAudioText(item.title)} from playlist">✕</button>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function addToSoundscapePlaylist(track) {
+    if (!track || !track.id) return;
+    const exists = soundscapePlaylist.find(t => t.id === track.id);
+    if (!exists) {
+        soundscapePlaylist.push(track);
+        window.localStorage.setItem('grace-soundscape-playlist', JSON.stringify(soundscapePlaylist));
+        renderSoundscapePlaylist();
+        showToast(track.title + ' added to active playlist queue.', 'info');
+    }
+}
+
+function removeTrackFromPlaylist(index) {
+    if (index < 0 || index >= soundscapePlaylist.length) return;
+    const removed = soundscapePlaylist.splice(index, 1)[0];
+    window.localStorage.setItem('grace-soundscape-playlist', JSON.stringify(soundscapePlaylist));
+
+    if (soundscapePlaylist.length === 0) {
+        stopAmbient();
+        currentTrackIndex = 0;
+    } else if (index === currentTrackIndex) {
+        currentTrackIndex = currentTrackIndex % soundscapePlaylist.length;
+        if (soundscapePlaying) {
+            playTrackAtIndex(currentTrackIndex);
+        }
+    } else if (index < currentTrackIndex) {
+        currentTrackIndex--;
+    }
+    window.localStorage.setItem('grace-soundscape-index', currentTrackIndex);
+    renderSoundscapePlaylist();
+    syncAllAudioControlsUI();
+    showToast(removed.title + ' removed from playlist.', 'info');
+}
+
+function clearSoundscapePlaylist() {
+    soundscapePlaylist = [];
+    window.localStorage.setItem('grace-soundscape-playlist', JSON.stringify([]));
+    stopAmbient();
+    currentTrackIndex = 0;
+    window.localStorage.setItem('grace-soundscape-index', '0');
+    renderSoundscapePlaylist();
+    syncAllAudioControlsUI();
+    showToast('Playlist queue cleared.', 'info');
+}
+
+function resetDefaultSoundscapePlaylist() {
+    soundscapePlaylist = [...DEFAULT_SOUNDSCAPES];
+    window.localStorage.setItem('grace-soundscape-playlist', JSON.stringify(soundscapePlaylist));
+    currentTrackIndex = 0;
+    window.localStorage.setItem('grace-soundscape-index', '0');
+    renderSoundscapePlaylist();
+    syncAllAudioControlsUI();
+    showToast('Default focus soundscapes restored to playlist.', 'success');
+}
+
+function playTrackAtIndex(index) {
+    if (soundscapePlaylist.length === 0) return;
+    currentTrackIndex = Math.max(0, Math.min(index, soundscapePlaylist.length - 1));
+    window.localStorage.setItem('grace-soundscape-index', currentTrackIndex);
+    const track = soundscapePlaylist[currentTrackIndex];
+    if (track) {
+        if (track.type === 'media' && track.src) {
+            playCustomMediaTrack(track);
+        } else {
+            startAmbient(track.id);
+        }
+    }
+    renderSoundscapePlaylist();
+    syncAllAudioControlsUI();
+}
+
+function playNextTrack() {
+    if (soundscapePlaylist.length === 0) {
+        showToast('Playlist is empty.', 'warning');
+        return;
+    }
+    const nextIdx = (currentTrackIndex + 1) % soundscapePlaylist.length;
+    playTrackAtIndex(nextIdx);
+    const track = soundscapePlaylist[nextIdx];
+    showToast('Next track: ' + track.title, 'info');
+}
+
+function playPrevTrack() {
+    if (soundscapePlaylist.length === 0) {
+        showToast('Playlist is empty.', 'warning');
+        return;
+    }
+    const prevIdx = (currentTrackIndex - 1 + soundscapePlaylist.length) % soundscapePlaylist.length;
+    playTrackAtIndex(prevIdx);
+    const track = soundscapePlaylist[prevIdx];
+    showToast('Previous track: ' + track.title, 'info');
+}
+
+function selectSoundscape(trackId) {
+    const labels = {focus:'Calm Focus', pulse:'Emerald Pulse', strategy:'Strategic Flow', night:'Night Shift'};
+    const title = labels[trackId] || trackId;
+    const currentTrack = soundscapePlaylist[currentTrackIndex];
+
+    // Toggle check: if already active and playing, unselect / pause!
+    if (soundscapePlaying && currentTrack && currentTrack.id === trackId) {
+        stopAmbient();
+        document.querySelectorAll('.soundscape-option').forEach(b => b.classList.remove('active'));
+        const status = document.getElementById('soundscape-status');
+        if (status) status.innerText = title + ' · Unselected / Paused';
+        syncAllAudioControlsUI();
+        showToast(title + ' unselected and paused.', 'info');
+        return;
+    }
+
+    // Otherwise, ensure track is in playlist and play it
+    let foundIdx = soundscapePlaylist.findIndex(t => t.id === trackId);
+    if (foundIdx === -1) {
+        const subs = {focus:'Soft executive pulse · 220Hz', pulse:'High-velocity operations · 146Hz', strategy:'Measured planning ambience · 174Hz', night:'Low-light focus mode · 110Hz'};
+        soundscapePlaylist.push({ id: trackId, title: title, sub: subs[trackId] || 'Ambient Synthesizer', type: 'synth' });
+        window.localStorage.setItem('grace-soundscape-playlist', JSON.stringify(soundscapePlaylist));
+        foundIdx = soundscapePlaylist.length - 1;
+    }
+    playTrackAtIndex(foundIdx);
+}
+
+function startAmbient(trackId) {
+    trackId = trackId || (soundscapePlaylist[currentTrackIndex] ? soundscapePlaylist[currentTrackIndex].id : 'focus');
     const frequencies = {focus:[220,330], pulse:[146,220], strategy:[174,261], night:[110,165]};
+    const labels = {focus:'Calm Focus', pulse:'Emerald Pulse', strategy:'Strategic Flow', night:'Night Shift'};
+    
+    // Stop any custom media audio element if playing
+    const customMedia = document.getElementById('custom-media');
+    if (customMedia && !customMedia.paused) customMedia.pause();
+
+    stopAmbientNodes();
+
     try {
         ambientContext = ambientContext || new (window.AudioContext || window.webkitAudioContext)();
+        if (ambientContext.state === 'suspended') {
+            ambientContext.resume();
+        }
         const gain = ambientContext.createGain();
         gain.gain.value = 0.018;
         gain.connect(ambientContext.destination);
-        ambientNodes = (frequencies[track] || frequencies.focus).map((frequency, index) => {
+        ambientNodes = (frequencies[trackId] || frequencies.focus).map((frequency, index) => {
             const oscillator = ambientContext.createOscillator();
             oscillator.type = index ? 'sine' : 'triangle';
             oscillator.frequency.value = frequency;
@@ -4795,27 +5276,79 @@ function startAmbient(track) {
             return oscillator;
         });
         soundscapePlaying = true;
-        const status = document.getElementById('soundscape-status');
-        if (status) status.innerText = ({focus:'Calm Focus', pulse:'Emerald Pulse', strategy:'Strategic Flow', night:'Night Shift'}[track] || 'Calm Focus') + ' · Playing';
-        showToast('Background soundscape started.', 'success');
+        window.localStorage.setItem('grace-soundscape', trackId);
+
+        // Schedule auto-advance in playlist loop mode (75-second ambient cycle)
+        clearTimeout(ambientCycleTimer);
+        if (loopMode === 'playlist' && soundscapePlaylist.length > 1) {
+            ambientCycleTimer = setTimeout(() => {
+                if (soundscapePlaying && loopMode !== 'single') {
+                    playNextTrack();
+                }
+            }, 75000);
+        }
+
+        syncAllAudioControlsUI();
+        showToast('Background soundscape: ' + (labels[trackId] || trackId) + ' playing.', 'success');
     } catch (error) {
         showToast('Audio playback requires browser user interaction permission.', 'warning');
     }
 }
-function stopAmbient() {
+
+function playCustomMediaTrack(track) {
+    stopAmbientNodes();
+    const media = document.getElementById('custom-media');
+    if (!media || !track.src) return;
+    media.src = track.src;
+    media.currentTime = 0;
+    media.play().then(() => {
+        soundscapePlaying = true;
+        syncAllAudioControlsUI();
+        showToast('Now playing custom media: ' + track.title, 'success');
+    }).catch(err => {
+        showToast('Unable to auto-play media track: ' + err.message, 'warning');
+    });
+
+    media.onended = function() {
+        if (loopMode === 'single') {
+            media.currentTime = 0;
+            media.play();
+        } else {
+            playNextTrack();
+        }
+    };
+}
+
+function stopAmbientNodes() {
     ambientNodes.forEach((node) => { try { node.stop(); } catch (error) {} });
     ambientNodes = [];
+    clearTimeout(ambientCycleTimer);
+}
+
+function stopAmbient() {
+    stopAmbientNodes();
+    const customMedia = document.getElementById('custom-media');
+    if (customMedia && !customMedia.paused) {
+        customMedia.pause();
+    }
     soundscapePlaying = false;
-    const status = document.getElementById('soundscape-status');
-    if (status) status.innerText = 'Soundscape · Paused';
+    syncAllAudioControlsUI();
 }
+
 function toggleSoundscape() {
-    if (soundscapePlaying) stopAmbient(); else startAmbient();
+    if (soundscapePlaying) {
+        stopAmbient();
+        showToast('Background soundscape paused.', 'info');
+    } else {
+        playTrackAtIndex(currentTrackIndex);
+    }
 }
+
 function formatSeconds(value) {
     if (!Number.isFinite(value)) return '00:00';
     return String(Math.floor(value / 60)).padStart(2, '0') + ':' + String(Math.floor(value % 60)).padStart(2, '0');
 }
+
 function loadCustomMedia(event) {
     const file = event.target.files && event.target.files[0];
     const media = document.getElementById('custom-media');
@@ -4824,12 +5357,29 @@ function loadCustomMedia(event) {
     customMediaUrl = URL.createObjectURL(file);
     media.src = customMediaUrl;
     media.hidden = false;
+
+    // Add to playlist queue
+    const customTrack = {
+        id: 'custom_' + Date.now(),
+        title: file.name,
+        sub: 'Custom local media · ' + (file.type || 'audio'),
+        type: 'media',
+        src: customMediaUrl
+    };
+    soundscapePlaylist.push(customTrack);
+    window.localStorage.setItem('grace-soundscape-playlist', JSON.stringify(soundscapePlaylist));
+    currentTrackIndex = soundscapePlaylist.length - 1;
+    window.localStorage.setItem('grace-soundscape-index', currentTrackIndex);
+
     media.onloadedmetadata = function() {
-        document.getElementById('clip-end').value = Math.floor(media.duration || 0);
-        document.getElementById('soundscape-status').innerText = file.name + ' · Audio track detected';
-        showToast('Local media soundtrack loaded for preview and clipping.', 'success');
+        const clipEnd = document.getElementById('clip-end');
+        if (clipEnd) clipEnd.value = Math.floor(media.duration || 0);
+        renderSoundscapePlaylist();
+        playTrackAtIndex(currentTrackIndex);
+        showToast('Local media soundtrack added to playlist and playing!', 'success');
     };
 }
+
 function applyClip() {
     const media = document.getElementById('custom-media');
     if (!media || !media.src) { showToast('Load an audio or video file before applying clip points.', 'warning'); return; }
@@ -4838,6 +5388,91 @@ function applyClip() {
     if (end <= start || start < 0) { showToast('Clip end must be greater than clip start.', 'warning'); return; }
     media.currentTime = start;
     showToast('Custom clip applied: ' + formatSeconds(start) + ' to ' + formatSeconds(end) + '.', 'success');
+}
+
+/* Floating Minimalist Mini-Player Controls with Auto-Hide */
+function toggleFloatingAudioControls(target) {
+    const controls = document.getElementById('floating-audio-controls-' + target);
+    if (!controls) return;
+    const isHidden = controls.hidden;
+    if (isHidden) {
+        controls.hidden = false;
+        startFloatingAudioAutoCollapse(target);
+    } else {
+        controls.hidden = true;
+        clearTimeout(floatingAudioHideTimer);
+    }
+}
+
+function startFloatingAudioAutoCollapse(target) {
+    clearTimeout(floatingAudioHideTimer);
+    floatingAudioHideTimer = setTimeout(() => {
+        const controls = document.getElementById('floating-audio-controls-' + target);
+        if (controls) controls.hidden = true;
+    }, 4000);
+}
+
+function resetFloatingAudioTimer(target) {
+    clearTimeout(floatingAudioHideTimer);
+}
+
+function syncAllAudioControlsUI() {
+    const currentTrack = soundscapePlaylist[currentTrackIndex] || { title: 'Calm Focus', id: 'focus' };
+    const trackTitle = currentTrack.title || 'Calm Focus';
+    const playSymbol = soundscapePlaying ? '⏸️' : '▶️';
+
+    // Mini controls
+    ['main', 'gateway'].forEach(target => {
+        const miniPlayBtn = document.getElementById('mini-play-btn-' + target);
+        const miniTrackLabel = document.getElementById('mini-track-label-' + target);
+        const dot = document.getElementById('audio-dot-' + target);
+
+        if (miniPlayBtn) miniPlayBtn.innerText = playSymbol;
+        if (miniTrackLabel) miniTrackLabel.innerText = trackTitle;
+        if (dot) dot.classList.toggle('is-playing', soundscapePlaying);
+    });
+
+    // Soundscape modal status
+    const status = document.getElementById('soundscape-status');
+    if (status) {
+        status.innerText = trackTitle + (soundscapePlaying ? ' · Playing' : ' · Ready');
+    }
+    const modalPlayBtn = document.getElementById('modal-play-toggle-btn');
+    if (modalPlayBtn) {
+        modalPlayBtn.innerText = soundscapePlaying ? '⏸ Pause Soundscape' : '▶ Start / Pause';
+    }
+
+    // Top ribbon button & gateway button
+    const ribbonBtn = document.getElementById('audio-btn');
+    if (ribbonBtn) {
+        ribbonBtn.innerText = soundscapePlaying ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+    }
+    const gatewayBtn = document.getElementById('gateway-sound-toggle');
+    if (gatewayBtn) {
+        gatewayBtn.innerText = soundscapePlaying ? '🔊 Ambient Sound: ON' : '🔇 Ambient Sound: OFF';
+    }
+
+    // Soundscape options active highlights
+    document.querySelectorAll('.soundscape-option').forEach(btn => {
+        const t = btn.getAttribute('data-track');
+        btn.classList.toggle('active', soundscapePlaying && (t === currentTrack.id));
+    });
+
+    // Loop mode buttons
+    const singleBtn = document.getElementById('loop-single-btn');
+    const ambientBtn = document.getElementById('loop-ambient-btn');
+    if (singleBtn && ambientBtn) {
+        if (loopMode === 'single') {
+            singleBtn.className = 'btn btn-blue';
+            ambientBtn.className = 'btn btn-gray';
+        } else {
+            singleBtn.className = 'btn btn-gray';
+            ambientBtn.className = 'btn btn-blue';
+        }
+    }
+
+    // Re-render playlist queue
+    renderSoundscapePlaylist();
 }
 
 /* =========================================================================
