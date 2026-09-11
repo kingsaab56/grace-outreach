@@ -675,11 +675,10 @@ def render_header():
                     <span class="creator-badge creator-abdullah">🌟 <b>Abdullah Khan</b> <small>Strategic Guidance</small></span>
                 </div>
                 <div class="active-profile-chip" id="active-profile-chip">
-                    <div class="header-avatar-circle-wrap" onclick="triggerActiveProfileUpload()" title="Click to update profile photo (Permanent Auto-Sync)">
+                    <div class="header-avatar-circle-wrap" onclick="openProfilePhotoPreviewModal()" title="Click to view full profile photo" style="cursor:pointer;">
                         <div class="avatar header-avatar" data-profile-avatar="king" id="header-profile-avatar" data-initials="KS" style="width:32px; height:32px; font-size:11px; border-radius:50%; border:2px solid var(--accent-gold); display:inline-flex; align-items:center; justify-content:center; background:#001A17; color:var(--accent-gold); font-weight:800; cursor:pointer; aspect-ratio:1/1;">KS</div>
-                        <span class="header-avatar-cam-badge" title="Change Profile Photo">📷</span>
                     </div>
-                    <div class="header-profile-text-wrap">
+                    <div class="header-profile-text-wrap" onclick="openProfilePhotoPreviewModal()" title="Click to view full profile photo" style="cursor:pointer;">
                         <div class="header-profile-meta-row">
                             <i class="presence-dot online"></i>
                             <span class="header-profile-status-label">CURRENT PROFILE</span>
@@ -892,6 +891,28 @@ def render_header():
             <div style="margin-top:10px; font-size:12px; color:var(--text-muted);">
                 <div style="color:var(--accent-green); font-weight:700; margin-bottom:3px;">● High-Resolution Vector &amp; 3D Identity Certified</div>
                 <div>Lead Architect: <strong style="color:var(--accent-gold);">King Saab</strong> · Strategic Guidance: <strong style="color:var(--text-primary);">Abdullah Khan</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Centered Full-View Profile Photo Modal (Popup on Click) -->
+    <div id="profile-photo-preview-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="profile-photo-modal-title" onclick="if(event.target===this) closeProfilePhotoPreviewModal()">
+        <div class="modal-card" style="width:min(500px, 92vw); max-height:90vh; background:#001A17; border:1.5px solid #123B35; border-radius:22px; padding:22px 24px; text-align:center; position:relative; box-shadow:0 24px 60px rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center; margin:auto;">
+            <button class="modal-close" onclick="closeProfilePhotoPreviewModal()" aria-label="Close Profile Photo View" style="position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#FFFFFF; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">✕</button>
+            <div style="margin-bottom:10px;">
+                <span class="eyebrow" style="color:var(--accent-gold); font-size:11px; letter-spacing:1px;">OFFICIAL PROFILE IDENTITY</span>
+                <h3 id="profile-photo-modal-title" style="margin:4px 0 0; font-size:20px; font-weight:800; color:var(--text-primary);">King Saab</h3>
+                <small id="profile-photo-modal-role" style="color:var(--accent-green); font-weight:700; font-size:12px;">Super Admin · Master Access</small>
+            </div>
+            <div style="width:100%; display:flex; justify-content:center; align-items:center; padding:12px 0;">
+                <div id="profile-photo-modal-img-wrap" style="width:260px; height:260px; max-width:70vw; max-height:70vw; border-radius:50%; border:3.5px solid var(--accent-gold); box-shadow:0 12px 40px rgba(214,161,23,0.35); overflow:hidden; display:flex; align-items:center; justify-content:center; background:#001A17; position:relative; aspect-ratio:1/1;">
+                    <img id="profile-photo-modal-img" src="" alt="Profile Photo" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;" />
+                    <div id="profile-photo-modal-fallback" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:68px; font-weight:800; color:var(--accent-gold); background:linear-gradient(145deg,#075642,#D6A117); text-shadow:0 2px 8px rgba(0,0,0,0.5);">KS</div>
+                </div>
+            </div>
+            <div style="margin-top:10px; font-size:12px; color:var(--text-muted); width:100%;">
+                <div style="color:var(--accent-green); font-weight:700; margin-bottom:3px;">● High-Resolution Verified Operating Identity</div>
+                <div>Active Profile: <strong id="profile-photo-modal-user" style="color:var(--accent-gold);">King Saab</strong> · <span id="profile-photo-modal-scope" style="color:var(--text-primary);">Super Admin</span></div>
             </div>
         </div>
     </div>
@@ -2626,11 +2647,15 @@ BASE_CSS = """
     body.light #admin-master-vault-modal .modal-card,
     body.light #company-account-modal .modal-card,
     body.light #account-appeal-modal .modal-card,
-    body.light #google-verify-checkpoint-modal .modal-card {
+    body.light #google-verify-checkpoint-modal .modal-card,
+    body.light #profile-photo-preview-modal .modal-card {
         background: #FFFFFF !important;
         border-color: #CBD5E1 !important;
         color: #0F172A !important;
         box-shadow: 0 16px 50px rgba(0,0,0,0.12) !important;
+    }
+    body.light #profile-photo-modal-title {
+        color: #0F172A !important;
     }
     body.light #admin-master-vault-modal table th {
         color: #334155 !important;
@@ -2776,29 +2801,6 @@ BASE_CSS = """
         transform: scale(1.06);
         box-shadow: 0 0 14px rgba(214, 161, 23, 0.7) !important;
     }
-    .header-avatar-cam-badge {
-        position: absolute;
-        bottom: -2px;
-        right: -2px;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: #D6A117;
-        color: #061510;
-        font-size: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #001A17;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-        opacity: 0.85;
-        pointer-events: none;
-        transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    .header-avatar-circle-wrap:hover .header-avatar-cam-badge {
-        opacity: 1;
-        transform: scale(1.15);
-    }
     .header-profile-text-wrap {
         display: flex;
         flex-direction: column;
@@ -2846,7 +2848,8 @@ BASE_CSS = """
     .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
     [hidden] { display: none !important; }
     .modal-backdrop { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 23, .72); backdrop-filter: blur(8px); }
-    #logo-preview-modal {
+    #logo-preview-modal,
+    #profile-photo-preview-modal {
         position: fixed !important;
         inset: 0 !important;
         top: 0 !important;
@@ -2864,10 +2867,12 @@ BASE_CSS = """
         margin: 0 !important;
         padding: 16px !important;
     }
-    #logo-preview-modal[hidden] {
+    #logo-preview-modal[hidden],
+    #profile-photo-preview-modal[hidden] {
         display: none !important;
     }
-    #logo-preview-modal .modal-card {
+    #logo-preview-modal .modal-card,
+    #profile-photo-preview-modal .modal-card {
         margin: auto !important;
         position: relative !important;
         animation: logo-modal-zoom 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -3434,6 +3439,80 @@ function openLogoModal() {
 
 function closeLogoModal() {
     const modal = document.getElementById('logo-preview-modal');
+    if (modal) {
+        modal.hidden = true;
+        modal.style.display = 'none';
+    }
+    document.body.style.overflow = '';
+}
+
+/* =========================================================================
+   PROFILE PHOTO FULL PREVIEW MODAL HANDLERS (POPUP ON CLICK)
+   ========================================================================= */
+function openProfilePhotoPreviewModal(targetKey) {
+    const modal = document.getElementById('profile-photo-preview-modal');
+    if (!modal) return;
+    if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+    const currentViewer = targetKey ||
+                          window.localStorage.getItem('grace-view-as') ||
+                          window.localStorage.getItem('grace_auth_user') ||
+                          'king';
+    const profile = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[currentViewer]) ?
+                    PROFILE_DATA[currentViewer] :
+                    { name: 'King Saab', role: 'Super Admin', initials: 'KS' };
+
+    let photoData = '';
+    try {
+        const photos = JSON.parse(window.localStorage.getItem('grace-profile-photos') || '{}');
+        photoData = photos[currentViewer] || '';
+    } catch(e) {}
+    if (!photoData) {
+        try {
+            const vaultPhotos = JSON.parse(window.localStorage.getItem('grace-profile-photos-vault') || '{}');
+            photoData = vaultPhotos[currentViewer] || '';
+        } catch(e) {}
+    }
+
+    const titleEl = document.getElementById('profile-photo-modal-title');
+    const roleEl = document.getElementById('profile-photo-modal-role');
+    const userEl = document.getElementById('profile-photo-modal-user');
+    const scopeEl = document.getElementById('profile-photo-modal-scope');
+    const imgEl = document.getElementById('profile-photo-modal-img');
+    const fallbackEl = document.getElementById('profile-photo-modal-fallback');
+
+    if (titleEl) titleEl.innerText = profile.name || currentViewer.toUpperCase();
+    if (roleEl) roleEl.innerText = (profile.role || 'Colleague') + ' · Verified Identity';
+    if (userEl) userEl.innerText = profile.name || currentViewer.toUpperCase();
+    if (scopeEl) scopeEl.innerText = profile.role || 'Colleague';
+
+    if (photoData) {
+        if (imgEl) {
+            imgEl.src = photoData;
+            imgEl.style.display = 'block';
+        }
+        if (fallbackEl) fallbackEl.style.display = 'none';
+    } else {
+        if (imgEl) {
+            imgEl.style.display = 'none';
+            imgEl.src = '';
+        }
+        if (fallbackEl) {
+            fallbackEl.style.display = 'flex';
+            fallbackEl.innerText = profile.initials || currentViewer.slice(0, 2).toUpperCase();
+        }
+    }
+
+    modal.hidden = false;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    const closeBtn = modal.querySelector('.modal-close');
+    if (closeBtn) closeBtn.focus();
+}
+
+function closeProfilePhotoPreviewModal() {
+    const modal = document.getElementById('profile-photo-preview-modal');
     if (modal) {
         modal.hidden = true;
         modal.style.display = 'none';
@@ -9063,7 +9142,7 @@ def render_colleagues():
         cards_html += f"""
         <article class="colleague-card" data-colleague-card="{key}">
             <div class="colleague-head">
-                <div id="avatar-{key}" class="avatar" role="img" aria-label="{name} profile picture" data-profile-avatar="{key}" data-initials="{initials}">{initials}</div>
+                <div id="avatar-{key}" class="avatar" role="img" aria-label="{name} profile picture" data-profile-avatar="{key}" data-initials="{initials}" onclick="openProfilePhotoPreviewModal('{key}')" title="Click to view full profile photo" style="cursor:pointer;">{initials}</div>
                 <div>
                     <div class="colleague-name">{name}</div>
                     <div class="colleague-role">{role}</div>

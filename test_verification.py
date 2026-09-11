@@ -361,8 +361,9 @@ def run_tests():
     # 26. Test Circular Header Avatar, Current Profile Details & Dual-Vault Photo Persistence
     print("Testing Circular Header Avatar, Current Profile Details & Dual-Vault Photo Persistence...")
     assert "header-avatar-circle-wrap" in dash_html, "Missing header-avatar-circle-wrap in dashboard"
-    assert "header-avatar-cam-badge" in dash_html, "Missing header-avatar-cam-badge in dashboard"
-    assert "triggerActiveProfileUpload" in dash_html, "Missing triggerActiveProfileUpload handler in JS"
+    assert "openProfilePhotoPreviewModal" in dash_html, "Missing openProfilePhotoPreviewModal in HTML"
+    assert "profile-photo-preview-modal" in dash_html, "Missing profile-photo-preview-modal in HTML"
+    assert "header-avatar-cam-badge" not in dash_html, "Camera badge should be removed from header avatar"
     assert "header-active-name" in dash_html, "Missing header-active-name class in HTML"
     assert "active-profile-role-tag" in dash_html, "Missing active-profile-role-tag in HTML"
     assert "grace-profile-photos-vault" in dash_html, "Missing grace-profile-photos-vault dual persistence in JS"
