@@ -369,6 +369,9 @@ def run_tests():
     assert "grace-profile-photos-vault" in dash_html, "Missing grace-profile-photos-vault dual persistence in JS"
     assert "body.light .header-active-name" in dash_html, "Missing light mode active name contrast rule"
     assert "aspect-ratio: 1 / 1 !important;" in dash_html, "Missing strict 1:1 circular aspect ratio override"
+    assert "body.light .header-avatar:not([data-uploaded=\"true\"])" in dash_html, "Missing light mode not-uploaded guard"
+    assert ".header-avatar[data-uploaded=\"true\"]" in dash_html, "Missing uploaded avatar transparent background rule"
+    assert ".header-avatar img" in dash_html, "Missing header-avatar img rule"
     print("[PASS] Circular Header Avatar, Current Profile Display & Dual-Vault Photo Persistence verified.")
 
     # 27. Test Company Account Vault, 4-Class Lifecycle, Google Checkpoint & Migration Exporter

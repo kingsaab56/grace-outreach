@@ -678,7 +678,7 @@ def render_header():
                 </div>
                 <div class="active-profile-chip" id="active-profile-chip">
                     <div class="header-avatar-circle-wrap" onclick="openProfilePhotoPreviewModal()" title="Click to view full profile photo" style="cursor:pointer;">
-                        <div class="avatar header-avatar" data-profile-avatar="king" id="header-profile-avatar" data-initials="KS" style="width:32px; height:32px; font-size:11px; border-radius:50%; border:2px solid var(--accent-gold); display:inline-flex; align-items:center; justify-content:center; background:#001A17; color:var(--accent-gold); font-weight:800; cursor:pointer; aspect-ratio:1/1;">KS</div>
+                        <div class="avatar header-avatar" data-profile-avatar="king" id="header-profile-avatar" data-initials="KS" style="width:32px; height:32px; font-size:11px; border-radius:50%; border:2px solid var(--accent-gold); display:inline-flex; align-items:center; justify-content:center; color:var(--accent-gold); font-weight:800; cursor:pointer; aspect-ratio:1/1; overflow:hidden; padding:0;">KS</div>
                     </div>
                     <div class="header-profile-text-wrap" onclick="openProfilePhotoPreviewModal()" title="Click to view full profile photo" style="cursor:pointer;">
                         <div class="header-profile-meta-row">
@@ -2675,8 +2675,16 @@ BASE_CSS = """
     body.light #header-profile-avatar {
         border-color: #059669 !important;
         box-shadow: 0 0 8px rgba(5, 150, 105, 0.25) !important;
-        background: #F8FAFC !important;
         color: #059669 !important;
+    }
+    body.light .header-avatar:not([data-uploaded="true"]),
+    body.light #header-profile-avatar:not([data-uploaded="true"]) {
+        background: #F8FAFC !important;
+    }
+    body.light .header-avatar[data-uploaded="true"],
+    body.light #header-profile-avatar[data-uploaded="true"] {
+        background: transparent !important;
+        background-color: transparent !important;
     }
     body.light .header-profile-status-label {
         color: #059669 !important;
@@ -2831,7 +2839,6 @@ BASE_CSS = """
         overflow: hidden !important;
         border: 2px solid var(--accent-gold) !important;
         box-shadow: 0 0 10px rgba(214, 161, 23, 0.4) !important;
-        background: #001A17 !important;
         color: var(--accent-gold) !important;
         font-size: 11px !important;
         font-weight: 800 !important;
@@ -2843,6 +2850,23 @@ BASE_CSS = """
         background-repeat: no-repeat !important;
         box-sizing: border-box !important;
         transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    .header-avatar:not([data-uploaded="true"]),
+    #header-profile-avatar:not([data-uploaded="true"]) {
+        background: #001A17 !important;
+    }
+    .header-avatar[data-uploaded="true"],
+    #header-profile-avatar[data-uploaded="true"] {
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+    .header-avatar img,
+    #header-profile-avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        display: block !important;
     }
     .header-avatar-circle-wrap:hover .header-avatar {
         transform: scale(1.06);
@@ -5354,10 +5378,11 @@ function triggerActiveProfileUpload() {
 function setAvatarImage(key, data) {
     if (!data) return;
     document.querySelectorAll('[data-profile-avatar="' + key + '"]').forEach((target) => {
-        target.style.backgroundImage = 'url("' + data + '")';
+        target.style.setProperty('background-image', 'url("' + data + '")', 'important');
+        target.style.setProperty('background-color', 'transparent', 'important');
         target.style.backgroundSize = 'cover';
         target.style.backgroundPosition = 'center center';
-        target.innerText = '';
+        target.innerHTML = '<img src="' + data + '" alt="' + key + '" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; pointer-events:none;" />';
         target.dataset.uploaded = 'true';
     });
     // Ensure the top header avatar is always synchronized if key matches active session
@@ -5367,8 +5392,9 @@ function setAvatarImage(key, data) {
     if (currentViewer === key) {
         const headerAvatar = document.getElementById('header-profile-avatar');
         if (headerAvatar) {
-            headerAvatar.style.backgroundImage = 'url("' + data + '")';
-            headerAvatar.innerText = '';
+            headerAvatar.style.setProperty('background-image', 'url("' + data + '")', 'important');
+            headerAvatar.style.setProperty('background-color', 'transparent', 'important');
+            headerAvatar.innerHTML = '<img src="' + data + '" alt="' + key + '" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; pointer-events:none;" />';
             headerAvatar.dataset.uploaded = 'true';
         }
     }
@@ -5383,6 +5409,12 @@ function hydrateProfilePhotos() {
             Object.keys(photos).forEach((key) => {
                 if (photos[key]) setAvatarImage(key, photos[key]);
             });
+        }
+        const currentViewer = window.localStorage.getItem('grace-view-as') ||
+                              window.localStorage.getItem('grace_auth_user') ||
+                              'king';
+        if (photos && photos[currentViewer]) {
+            setAvatarImage(currentViewer, photos[currentViewer]);
         }
     } catch (error) {
         console.warn('Hydrate photos fallback:', error);
@@ -5608,12 +5640,13 @@ function updateViewAs() {
             try { photos = JSON.parse(window.localStorage.getItem('grace-profile-photos-vault') || '{}'); } catch(e){}
         }
         if (photos && photos[value]) {
-            headerAvatar.style.backgroundImage = 'url("' + photos[value] + '")';
-            headerAvatar.innerText = '';
+            headerAvatar.style.setProperty('background-image', 'url("' + photos[value] + '")', 'important');
+            headerAvatar.style.setProperty('background-color', 'transparent', 'important');
+            headerAvatar.innerHTML = '<img src="' + photos[value] + '" alt="' + (profile.name || value) + '" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; pointer-events:none;" />';
             headerAvatar.dataset.uploaded = 'true';
         } else {
             headerAvatar.style.backgroundImage = 'none';
-            headerAvatar.innerText = profile.initials || 'KS';
+            headerAvatar.innerHTML = profile.initials || 'KS';
             headerAvatar.dataset.uploaded = 'false';
         }
     }
