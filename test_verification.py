@@ -556,7 +556,38 @@ def run_tests():
     assert "King Saab" in colleagues_page
     print("[PASS] Colleague Permanent Profile Persistence, Custom Vault & Card Hydration verified.")
 
-    print("\n[SUCCESS] ALL 31 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 32. Verify Soundscape Multi-Box Architecture, Video/Audio Native Decoding, Shuffle Engine & Draggable Mini-Player
+    print("Testing Soundscape Multi-Box Architecture, Video/Audio Native Decoding, Shuffle Engine & Draggable Mini-Player...")
+    status, headers, data = wsgi_request("/api/", "GET", query_string="tab=dashboard")
+    assert status == "200 OK"
+    dash_html = data.decode("utf-8")
+    
+    # Check 3 standalone boxes
+    assert "default-soundscape-box" in dash_html
+    assert "soundscape-playlist-box" in dash_html
+    assert "custom-media-studio-box" in dash_html
+    
+    # Check native video/audio decode element
+    assert '<video id="custom-media"' in dash_html
+    
+    # Check shuffle mode & controls
+    assert "shuffleSoundscapePlaylist" in dash_html
+    assert "loop-shuffle-btn" in dash_html
+    assert "playShuffleTrack" in dash_html
+    assert "setLoopMode('shuffle')" in dash_html
+    
+    # Check draggable mini-player engine and CSS
+    assert "initFloatingAudioDrag" in dash_html
+    assert "audioDrag" in dash_html
+    assert "grace-floating-audio-pos" in dash_html
+    assert "floating-audio-widget" in dash_html
+    assert "floating-audio-dot" in dash_html
+    assert "cursor: grab;" in dash_html
+    assert "cursor: grabbing;" in dash_html
+    assert "touch-action: none;" in dash_html
+    print("[PASS] Soundscape Multi-Box Architecture, Native Video/Audio Decoding, Shuffle Engine & Draggable Mini-Player verified.")
+
+    print("\n[SUCCESS] ALL 32 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
