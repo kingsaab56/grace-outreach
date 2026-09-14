@@ -293,6 +293,52 @@
   },
   "auditLog": [
     {
+      "id": "AUD-2740",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 02:08:42 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2702",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 02:08:42 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2664",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 02:08:42 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2627",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 02:08:42 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2596",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 02:08:42 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
       "id": "AUD-6792",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
@@ -697,52 +743,6 @@
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
       "timestamp": "2026-09-11 21:25:48 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-4198",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:14 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4170",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:14 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4145",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:14 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4121",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:14 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4088",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:14 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },

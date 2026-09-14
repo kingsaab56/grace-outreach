@@ -11107,49 +11107,7 @@ def render_dashboard():
 
     <!-- ZERO EMPTY SPACE: BALANCED DUAL-COLUMN WORKSPACE -->
     <div class="grid-2" style="align-items:stretch; margin-bottom:22px; gap:18px;">
-        <!-- Left Column: Quick Action Toolbar + Infrastructure Matrix -->
-        <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
-            <div class="card" style="margin:0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">⚡ Quick Action Toolbar</h4>
-                    <span style="font-size:11px; color:var(--accent-gold); font-weight:700;">4 Mission Controls</span>
-                </div>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn btn-gold" data-required-module="4" onclick="openCampaignStudio()">🚀 Launch Campaign Studio</button>
-                    <button class="btn btn-blue" data-required-module="2" onclick="manualSync()">Trigger Manual Sync</button>
-                    <button class="btn btn-red" data-required-module="4" onclick="pauseOutreach()">Pause All Outreaches</button>
-                    <button class="btn btn-orange" data-required-module="17" onclick="testBroadcast()">Test Broadcast</button>
-                </div>
-            </div>
-
-            <div class="card" style="margin:0; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
-                <div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #123B35; padding-bottom:10px;">
-                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">🌐 Outreach Dispatch &amp; Safety Control</h4>
-                        <span style="font-size:10px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">ACTIVE POOL: 3 INBOXES</span>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                            <span>📍 <b>Territory Coverage:</b></span>
-                            <span style="color:#10B981; font-weight:700;">50 US States Active</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                            <span>⏱️ <b>Dispatch Simulation:</b></span>
-                            <span style="color:#38BDF8; font-weight:700;">Human Jitter (15-45s) ON</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                            <span>👤 <b>Active Administrator:</b></span>
-                            <span style="color:var(--accent-gold); font-weight:700;">{WA_CROWN_IMG} King Saab · Super Admin</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="margin-top:14px; pt-2;">
-                    <a href="/api/?tab=matrix" class="btn btn-gray" style="width:100%; justify-content:center; text-align:center; display:flex;">Explore All 22 Modules Matrix →</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Real-Time Telemetry & Activity Stream (Seamlessly Fills Height) -->
+        <!-- Left Column: Real-Time Telemetry & Activity Stream (Seamlessly Fills Height) -->
         <div class="card" style="margin:0; display:flex; flex-direction:column; min-width:0;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -11203,6 +11161,48 @@ def render_dashboard():
                     <span class="log-account-pill">📬 business.inbox1</span>
                     <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Contractor territory assignment active across 50 US States.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Quick Action Toolbar + Infrastructure Matrix -->
+        <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+            <div class="card" style="margin:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">⚡ Quick Action Toolbar</h4>
+                    <span style="font-size:11px; color:var(--accent-gold); font-weight:700;">4 Mission Controls</span>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-gold" data-required-module="4" onclick="openCampaignStudio()">🚀 Launch Campaign Studio</button>
+                    <button class="btn btn-blue" data-required-module="2" onclick="manualSync()">Trigger Manual Sync</button>
+                    <button class="btn btn-red" data-required-module="4" onclick="pauseOutreach()">Pause All Outreaches</button>
+                    <button class="btn btn-orange" data-required-module="17" onclick="testBroadcast()">Test Broadcast</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin:0; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #123B35; padding-bottom:10px;">
+                        <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">🌐 Outreach Dispatch &amp; Safety Control</h4>
+                        <span style="font-size:10px; background:rgba(214,161,23,0.15); color:var(--accent-gold); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(214,161,23,0.3);">ACTIVE POOL: 3 INBOXES</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <span>📍 <b>Territory Coverage:</b></span>
+                            <span style="color:#10B981; font-weight:700;">50 US States Active</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <span>⏱️ <b>Dispatch Simulation:</b></span>
+                            <span style="color:#38BDF8; font-weight:700;">Human Jitter (15-45s) ON</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <span>👤 <b>Active Administrator:</b></span>
+                            <span style="color:var(--accent-gold); font-weight:700;">{WA_CROWN_IMG} King Saab · Super Admin</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:14px; pt-2;">
+                    <a href="/api/?tab=matrix" class="btn btn-gray" style="width:100%; justify-content:center; text-align:center; display:flex;">Explore All 22 Modules Matrix →</a>
                 </div>
             </div>
         </div>
