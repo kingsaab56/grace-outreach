@@ -693,12 +693,24 @@ def run_tests():
     assert "isVoiceMale" in html, "Missing isVoiceMale gender discriminator"
     assert "lyve" in html, "Missing lyve phonetic normalization"
     assert "H U D" in html, "Missing H U D phonetic normalization"
-    print("[PASS] Fluent Urdu Speech Engine, Opus 2 Default, Gender Voices & Mic-to-Mike Normalization verified.")
+    # 37. Verify Executive Telemetry & Activity Stream Redesign (Coloring, Dynamic Badges & Theme Harmony)
+    print("Testing Executive Activity Stream, Dynamic Badges, Custom Scrollbars & Light/Dark Theming...")
+    assert "telemetry-card-title" in html, "Missing telemetry-card-title class"
+    assert "telemetry-live-badge" in html, "Missing telemetry-live-badge class"
+    assert "body.light .telemetry-card-title" in html, "Missing body.light .telemetry-card-title theme rule"
+    assert "body.light .log-box" in html, "Missing body.light .log-box theme rule"
+    assert "body.light .log-box .log-row" in html, "Missing body.light .log-box .log-row rule"
+    assert "log-row-dispatch" in html, "Missing log-row-dispatch class"
+    assert "log-row-classify" in html, "Missing log-row-classify class"
+    assert "flex-basis: 100%" in html, "Missing flex-basis: 100% on log-msg for proper row wrapping"
+    assert "scrollbar-color" in html, "Missing custom scrollbar color rule on log-box"
+    print("[PASS] Executive Activity Stream, Dynamic Badges, Custom Scrollbars & Light/Dark Theming verified.")
 
-    print("\n[SUCCESS] ALL 36 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    print("\n[SUCCESS] ALL 37 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
+
 
 
 

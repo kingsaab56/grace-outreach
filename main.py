@@ -2187,89 +2187,154 @@ BASE_CSS = """
     .toast-close-btn { background:transparent; border:none; color:#94A3B8; font-size:15px; line-height:1; cursor:pointer; padding:2px 5px; border-radius:4px; margin-left:6px; align-self:flex-start; }
     .toast-close-btn:hover { color:#FFFFFF; background:rgba(255,255,255,0.12); }
 
-    /* REAL-TIME TELEMETRY & ACTIVITY STREAM REDESIGN (IMAGE 1 FIX) */
+    /* REAL-TIME TELEMETRY & ACTIVITY STREAM REDESIGN - EXECUTIVE COMMAND TERMINAL */
+    .telemetry-card-title {
+        color: #FFFFFF;
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: -0.2px;
+    }
+    .telemetry-live-badge {
+        font-size: 10px;
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--accent-green);
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-weight: 800;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        letter-spacing: 0.3px;
+    }
     .log-box {
-        background: #02110E !important;
-        border: 1.5px solid #123B35 !important;
+        background: #071118 !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
         border-radius: 12px !important;
         color: #F8FAFC !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", monospace !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif !important;
         font-size: 12.5px !important;
         font-weight: 500 !important;
-        line-height: 1.6 !important;
-        max-height: 250px !important;
+        line-height: 1.5 !important;
+        max-height: 290px !important;
         overflow-y: auto !important;
-        padding: 10px 12px !important;
-        box-shadow: inset 0 2px 8px rgba(0,0,0,0.5) !important;
+        padding: 10px 12px 30px 12px !important;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(56, 189, 248, 0.35) transparent;
+    }
+    .log-box::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    .log-box::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .log-box::-webkit-scrollbar-thumb {
+        background: rgba(56, 189, 248, 0.3);
+        border-radius: 10px;
+    }
+    .log-box::-webkit-scrollbar-thumb:hover {
+        background: rgba(56, 189, 248, 0.6);
     }
     .log-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 6px;
-        margin-bottom: 4px;
-        background: rgba(255, 255, 255, 0.02);
-        border-left: 3px solid #10B981;
-        transition: background 0.15s ease;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 6px 8px !important;
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        margin-bottom: 6px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-left: 3.5px solid #10B981 !important;
+        transition: all 0.15s ease !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
     }
     .log-row:hover {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+        transform: translateX(2px);
     }
+    /* Dynamic Action Borders */
+    .log-row.log-row-dispatch, .log-row:has(.log-badge-dispatch) { border-left-color: #10B981 !important; }
+    .log-row.log-row-classify, .log-row:has(.log-badge-classify) { border-left-color: #38BDF8 !important; }
+    .log-row.log-row-vault,    .log-row:has(.log-badge-vault)    { border-left-color: #A855F7 !important; }
+    .log-row.log-row-warmup,   .log-row:has(.log-badge-warmup)   { border-left-color: #F59E0B !important; }
+    .log-row.log-row-sync,     .log-row:has(.log-badge-sync)     { border-left-color: #6366F1 !important; }
+    .log-row.log-row-reply,    .log-row:has(.log-badge-reply)    { border-left-color: #F43F5E !important; }
+    .log-row.log-row-welcome,  .log-row:has(.log-badge-welcome)  { border-left-color: #14B8A6 !important; }
+
     .log-time {
-        color: #64748B;
-        font-size: 11px;
-        font-weight: 600;
-        font-family: monospace;
-        white-space: nowrap;
+        color: #7DD3FC !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        white-space: nowrap !important;
+        background: rgba(56, 189, 248, 0.1) !important;
+        padding: 1.5px 6px !important;
+        border-radius: 4px !important;
+        border: 1px solid rgba(56, 189, 248, 0.22) !important;
+        letter-spacing: 0.3px !important;
     }
     .log-badge {
-        display: inline-block;
-        padding: 2px 7px;
-        border-radius: 4px;
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        white-space: nowrap;
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 2px 7px !important;
+        border-radius: 4px !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.6px !important;
+        text-transform: uppercase !important;
+        white-space: nowrap !important;
+        line-height: 1.2 !important;
     }
-    .log-badge-dispatch { background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid #10B981; }
-    .log-badge-classify { background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid #38BDF8; }
-    .log-badge-vault { background: rgba(168, 85, 247, 0.2); color: #A855F7; border: 1px solid #A855F7; }
-    .log-badge-warmup { background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid #F59E0B; }
-    .log-badge-sync { background: rgba(214, 161, 23, 0.2); color: #D6A117; border: 1px solid #D6A117; }
-    .log-badge-reply { background: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid #EF4444; }
+    .log-badge-dispatch { background: rgba(16, 185, 129, 0.16) !important; color: #34D399 !important; border: 1px solid rgba(16, 185, 129, 0.4) !important; }
+    .log-badge-classify { background: rgba(56, 189, 248, 0.16) !important; color: #38BDF8 !important; border: 1px solid rgba(56, 189, 248, 0.4) !important; }
+    .log-badge-vault    { background: rgba(168, 85, 247, 0.16) !important; color: #C084FC !important; border: 1px solid rgba(168, 85, 247, 0.4) !important; }
+    .log-badge-warmup   { background: rgba(245, 158, 11, 0.16) !important; color: #FBBF24 !important; border: 1px solid rgba(245, 158, 11, 0.4) !important; }
+    .log-badge-sync     { background: rgba(99, 102, 241, 0.16) !important; color: #818CF8 !important; border: 1px solid rgba(99, 102, 241, 0.4) !important; }
+    .log-badge-reply    { background: rgba(244, 63, 94, 0.16) !important; color: #FB7185 !important; border: 1px solid rgba(244, 63, 94, 0.4) !important; }
+    .log-badge-welcome  { background: rgba(20, 184, 166, 0.16) !important; color: #2DD4BF !important; border: 1px solid rgba(20, 184, 166, 0.4) !important; }
+
     .log-account-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: rgba(214, 161, 23, 0.12);
-        color: var(--accent-gold);
-        border: 1px solid rgba(214, 161, 23, 0.3);
-        padding: 1px 7px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 700;
-        white-space: nowrap;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        background: rgba(56, 189, 248, 0.1) !important;
+        color: #38BDF8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.25) !important;
+        padding: 1.5px 7px !important;
+        border-radius: 5px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
     }
     .log-profile-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: rgba(16, 185, 129, 0.12);
-        color: var(--accent-green);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        padding: 1px 7px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 700;
-        white-space: nowrap;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        background: rgba(245, 158, 11, 0.1) !important;
+        color: #FBBF24 !important;
+        border: 1px solid rgba(245, 158, 11, 0.25) !important;
+        padding: 1.5px 7px !important;
+        border-radius: 5px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
     }
     .log-msg {
-        color: #F1F5F9;
-        font-size: 12.5px;
-        font-weight: 500;
-        flex: 1;
+        flex-basis: 100% !important;
+        width: 100% !important;
+        color: #E2E8F0 !important;
+        font-size: 12.5px !important;
+        font-weight: 500 !important;
+        line-height: 1.45 !important;
+        letter-spacing: 0.1px !important;
+        margin-top: 3px !important;
+        padding-left: 1px !important;
+        word-break: break-word !important;
     }
 
     :root {
@@ -2420,20 +2485,14 @@ BASE_CSS = """
     }
     table td b { color: #FFFFFF !important; }
 
-    .log-box {
-        background: #051412 !important;
-        border: 1px solid #123B35 !important;
-        border-radius: 10px !important;
-        color: #34D399 !important;
-        font-family: monospace !important;
-        font-size: 13px !important;
-        line-height: 1.6 !important;
-        max-height: 220px !important;
-        overflow-y: auto !important;
-    }
-    .log-box div {
-        color: #34D399 !important;
-        margin-bottom: 4px !important;
+    /* Module Panel Generic Stream Monitor Boxes */
+    .log-box > div:not(.log-row) {
+        color: #34D399;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 4px;
+        padding: 2px 4px;
     }
 
     select, textarea, input[type="text"], input[type="number"], input[type="password"] {
@@ -2582,11 +2641,6 @@ BASE_CSS = """
     }
     body.light table td b {
         color: #0F172A !important;
-    }
-    body.light .log-box {
-        background: #0F172A !important;
-        border: 1px solid #334155 !important;
-        color: #34D399 !important;
     }
     body.light select, body.light textarea, body.light input[type="text"], body.light input[type="number"], body.light input[type="password"] {
         background: #FFFFFF !important;
@@ -2842,38 +2896,80 @@ BASE_CSS = """
         color: #0F172A !important;
     }
 
-    /* 8. Pro Cyber Activity Terminal (Image 1 Crystal Clarity) */
-    .log-box, body.light .log-box, body.dark .log-box {
-        background: #061512 !important;
-        border: 1.5px solid #123B35 !important;
-        box-shadow: inset 0 2px 10px rgba(0,0,0,0.6) !important;
+    /* 8. Executive Real-Time Activity & Telemetry Stream (High-Contrast Theme Symphony) */
+    body.light .telemetry-card-title {
+        color: #0F172A !important;
     }
-    .log-box .log-row, body.light .log-box .log-row {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border-left: 3.5px solid #10B981 !important;
+    body.light .telemetry-live-badge {
+        background: #ECFDF5 !important;
+        color: #047857 !important;
+        border: 1px solid #A7F3D0 !important;
     }
-    .log-box .log-row:hover, body.light .log-box .log-row:hover {
-        background: rgba(16, 185, 129, 0.08) !important;
+    body.light .log-box {
+        background: #F8FAFC !important;
+        border: 1.5px solid #CBD5E1 !important;
+        box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+        color: #0F172A !important;
+        scrollbar-color: #CBD5E1 transparent !important;
     }
-    .log-box .log-msg, body.light .log-box .log-msg, body.dark .log-box .log-msg {
-        color: #F1F5F9 !important;
-        font-size: 13px !important;
+    body.light .log-box::-webkit-scrollbar-thumb {
+        background: #CBD5E1 !important;
+    }
+    body.light .log-box::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8 !important;
+    }
+    body.light .log-box .log-row {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+        border-left: 3.5px solid #059669 !important;
+    }
+    body.light .log-box .log-row:hover {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+        transform: translateX(2px);
+    }
+    /* Dynamic Action Borders in Light Mode */
+    body.light .log-row.log-row-dispatch, body.light .log-row:has(.log-badge-dispatch) { border-left-color: #059669 !important; }
+    body.light .log-row.log-row-classify, body.light .log-row:has(.log-badge-classify) { border-left-color: #0284C7 !important; }
+    body.light .log-row.log-row-vault,    body.light .log-row:has(.log-badge-vault)    { border-left-color: #7E22CE !important; }
+    body.light .log-row.log-row-warmup,   body.light .log-row:has(.log-badge-warmup)   { border-left-color: #D97706 !important; }
+    body.light .log-row.log-row-sync,     body.light .log-row:has(.log-badge-sync)     { border-left-color: #4F46E5 !important; }
+    body.light .log-row.log-row-reply,    body.light .log-row:has(.log-badge-reply)    { border-left-color: #E11D48 !important; }
+    body.light .log-row.log-row-welcome,  body.light .log-row:has(.log-badge-welcome)  { border-left-color: #0D9488 !important; }
+
+    body.light .log-box .log-time {
+        color: #0369A1 !important;
+        background: #E0F2FE !important;
+        border: 1px solid #BAE6FD !important;
+    }
+    body.light .log-badge-dispatch { background: #ECFDF5 !important; color: #047857 !important; border: 1px solid #A7F3D0 !important; }
+    body.light .log-badge-classify { background: #F0F9FF !important; color: #0284C7 !important; border: 1px solid #BAE6FD !important; }
+    body.light .log-badge-vault    { background: #FAF5FF !important; color: #6B21A8 !important; border: 1px solid #E9D5FF !important; }
+    body.light .log-badge-warmup   { background: #FFFBEB !important; color: #B45309 !important; border: 1px solid #FDE68A !important; }
+    body.light .log-badge-sync     { background: #EEF2FF !important; color: #4338CA !important; border: 1px solid #C7D2FE !important; }
+    body.light .log-badge-reply    { background: #FFF1F2 !important; color: #BE123C !important; border: 1px solid #FECDD3 !important; }
+    body.light .log-badge-welcome  { background: #F0FDFA !important; color: #0F766E !important; border: 1px solid #99F6E4 !important; }
+
+    body.light .log-box .log-account-pill {
+        background: #F0F9FF !important;
+        color: #0369A1 !important;
+        border: 1px solid #BAE6FD !important;
+    }
+    body.light .log-box .log-profile-pill {
+        background: #FEF3C7 !important;
+        color: #92400E !important;
+        border: 1px solid #FDE68A !important;
+    }
+    body.light .log-box .log-msg {
+        color: #0F172A !important;
         font-weight: 600 !important;
     }
-    .log-box .log-time, body.light .log-box .log-time {
-        color: #38BDF8 !important;
-        font-weight: 700 !important;
-        font-family: monospace !important;
-    }
-    .log-box .log-account-pill {
-        background: rgba(56, 189, 248, 0.15) !important;
-        color: #38BDF8 !important;
-        border: 1px solid rgba(56, 189, 248, 0.35) !important;
-    }
-    .log-box .log-profile-pill {
-        background: rgba(214, 161, 23, 0.15) !important;
-        color: #FBBF24 !important;
-        border: 1px solid rgba(214, 161, 23, 0.35) !important;
+    body.light .log-box > div:not(.log-row) {
+        color: #047857 !important;
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.15);
     }
 
     body.light .modal-close {
@@ -4978,9 +5074,9 @@ function dispatchWelcomeAutoReply(name, role) {
     if (box) {
         const now = new Date().toTimeString().split(' ')[0];
         const row = document.createElement('div');
-        row.className = 'log-row';
-        row.innerHTML = '<span class="log-time">[' + now + ']</span>' +
-            '<span class="log-badge log-badge-dispatch">WELCOME</span>' +
+        row.className = 'log-row log-row-welcome';
+        row.innerHTML = '<span class="log-time">' + now + '</span>' +
+            '<span class="log-badge log-badge-welcome">WELCOME</span>' +
             '<span class="log-account-pill">✉️ auto.reply</span>' +
             '<span class="log-profile-pill">👤 ' + name + '</span>' +
             '<span class="log-msg">Colleague ' + name + ' (' + role + ') onboarded with verified territory and 50 msgs/day quota.</span>';
@@ -5773,19 +5869,19 @@ function startTelemetryFeed() {
     const box = document.querySelector('.log-box');
     if (!box) return;
     const samples = [
-        {tag:'DISPATCH', badgeClass:'log-badge-dispatch', acc:'outreach.node2', prof:'Abdullah Khan', msg:'Gmail Inbox #2 safely rotated next 15 contractor leads.'},
-        {tag:'CLASSIFY', badgeClass:'log-badge-classify', acc:'business.inbox1', prof:'King Saab', msg:'Positive reply sentiment (99.4%) classified from arch_design_fl.'},
-        {tag:'VAULT', badgeClass:'log-badge-vault', acc:'Multi-Tenant', prof:'System Daemon', msg:'AES-256 credential token heartbeat verified (0.0% drift).'},
-        {tag:'WARMUP', badgeClass:'log-badge-warmup', acc:'business.inbox1', prof:'King Saab', msg:'Reputation ramp thread peer engagement healthy at 98.4%.'},
-        {tag:'SYNC', badgeClass:'log-badge-sync', acc:'relay.personal', prof:'Abdullah Khan', msg:'Enterprise webhook synced 12 deal updates with CRM pipeline.'}
+        {tag:'DISPATCH', rowClass:'log-row-dispatch', badgeClass:'log-badge-dispatch', acc:'outreach.node2', prof:'Abdullah Khan', msg:'Gmail Inbox #2 safely rotated next 15 contractor leads.'},
+        {tag:'CLASSIFY', rowClass:'log-row-classify', badgeClass:'log-badge-classify', acc:'business.inbox1', prof:'King Saab', msg:'Positive reply sentiment (99.4%) classified from arch_design_fl.'},
+        {tag:'VAULT', rowClass:'log-row-vault', badgeClass:'log-badge-vault', acc:'Multi-Tenant', prof:'System Daemon', msg:'AES-256 credential token heartbeat verified (0.0% drift).'},
+        {tag:'WARMUP', rowClass:'log-row-warmup', badgeClass:'log-badge-warmup', acc:'business.inbox1', prof:'King Saab', msg:'Reputation ramp thread peer engagement healthy at 98.4%.'},
+        {tag:'SYNC', rowClass:'log-row-sync', badgeClass:'log-badge-sync', acc:'relay.personal', prof:'Abdullah Khan', msg:'Enterprise webhook synced 12 deal updates with CRM pipeline.'}
     ];
     let idx = 0;
     setInterval(() => {
         const now = new Date().toTimeString().split(' ')[0];
         const item = samples[idx % samples.length];
         const row = document.createElement('div');
-        row.className = 'log-row';
-        row.innerHTML = '<span class="log-time">[' + now + ']</span>' +
+        row.className = 'log-row ' + item.rowClass;
+        row.innerHTML = '<span class="log-time">' + now + '</span>' +
             '<span class="log-badge ' + item.badgeClass + '">' + item.tag + '</span>' +
             '<span class="log-account-pill">✉️ ' + item.acc + '</span>' +
             '<span class="log-profile-pill">👤 ' + item.prof + '</span>' +
@@ -11057,8 +11153,8 @@ def render_dashboard():
         <div class="card" style="margin:0; display:flex; flex-direction:column; min-width:0;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <h4 style="margin:0; font-size:15px; font-weight:800; color:#FFFFFF;">📡 Real-Time Telemetry &amp; Activity Stream</h4>
-                    <span style="font-size:10px; background:rgba(16,185,129,0.15); color:var(--accent-green); padding:2px 8px; border-radius:10px; font-weight:800; border:1px solid rgba(16,185,129,0.3);">🟢 LIVE FEED ACTIVE</span>
+                    <h4 class="telemetry-card-title" style="margin:0;">📡 Real-Time Telemetry &amp; Activity Stream</h4>
+                    <span class="telemetry-live-badge">🟢 LIVE FEED ACTIVE</span>
                 </div>
                 <div style="font-size:11px; color:var(--text-muted); display:flex; gap:6px;">
                     <span class="log-account-pill" style="font-size:10px;">📬 <b id="telemetry-node-label">business.inbox1@gmail.com</b></span>
@@ -11066,43 +11162,43 @@ def render_dashboard():
                 </div>
             </div>
             <div class="log-box" style="flex:1; min-height:290px; max-height:360px; overflow-y:auto;">
-                <div class="log-row">
-                    <span class="log-time">[02:36:41]</span>
+                <div class="log-row log-row-classify">
+                    <span class="log-time">02:36:41</span>
                     <span class="log-badge log-badge-classify">CLASSIFY</span>
                     <span class="log-account-pill">📬 business.inbox1</span>
                     <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Positive reply sentiment (99.4%) classified from arch_design_fl.</span>
                 </div>
-                <div class="log-row">
-                    <span class="log-time">[02:36:32]</span>
+                <div class="log-row log-row-dispatch">
+                    <span class="log-time">02:36:32</span>
                     <span class="log-badge log-badge-dispatch">DISPATCH</span>
                     <span class="log-account-pill">📨 outreach.node2</span>
                     <span class="log-profile-pill">🌟 Abdullah Khan</span>
                     <span class="log-msg">Gmail Inbox #2 safely rotated next 15 contractor leads.</span>
                 </div>
-                <div class="log-row">
-                    <span class="log-time">[10:50:02]</span>
+                <div class="log-row log-row-sync">
+                    <span class="log-time">10:50:02</span>
                     <span class="log-badge log-badge-sync">SYNC</span>
                     <span class="log-account-pill">📬 business.inbox1</span>
                     <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Business Inbox #1 dispatched outreach batch (45 msgs).</span>
                 </div>
-                <div class="log-row">
-                    <span class="log-time">[10:48:15]</span>
+                <div class="log-row log-row-reply">
+                    <span class="log-time">10:48:15</span>
                     <span class="log-badge log-badge-reply">REPLY</span>
                     <span class="log-account-pill">📫 relay.personal</span>
                     <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
                     <span class="log-msg">Incoming positive response classified from client_id_884.</span>
                 </div>
-                <div class="log-row">
-                    <span class="log-time">[10:45:00]</span>
+                <div class="log-row log-row-vault">
+                    <span class="log-time">10:45:00</span>
                     <span class="log-badge log-badge-vault">VAULT</span>
                     <span class="log-account-pill">🔒 Multi-Tenant</span>
                     <span class="log-profile-pill">System Daemon</span>
                     <span class="log-msg">OAuth Token verified securely via AES-256-GCM locker.</span>
                 </div>
-                <div class="log-row">
-                    <span class="log-time">[10:42:10]</span>
+                <div class="log-row log-row-warmup">
+                    <span class="log-time">10:42:10</span>
                     <span class="log-badge log-badge-warmup">WARMUP</span>
                     <span class="log-account-pill">📬 business.inbox1</span>
                     <span class="log-profile-pill">{WA_CROWN_IMG} King Saab</span>
