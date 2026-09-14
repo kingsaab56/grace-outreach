@@ -13595,6 +13595,16 @@ def app(environ, start_response):
             )
             return [logo_bytes]
 
+        # 3b. Google Search Console Verification Handler (HTML File)
+        if cleaned_path.startswith("/google") and cleaned_path.endswith(".html"):
+            fname = cleaned_path.strip("/")
+            resp_body = f"google-site-verification: {fname}\n".encode("utf-8")
+            secure_start_response("200 OK", [
+                ("Content-Type", "text/html; charset=utf-8"),
+                ("Content-Length", str(len(resp_body))),
+            ])
+            return [resp_body]
+
         # 4. Server-Side Authentication Endpoints
         if cleaned_path == "/api/auth/login" and method == "POST":
             allowed, retry_after = RATE_LIMITER.is_allowed(client_ip, bucket="auth_login", max_requests=12 if not is_test_client else 5000, window_sec=60)
