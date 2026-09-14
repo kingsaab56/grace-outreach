@@ -819,7 +819,8 @@ LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Cli
 LOGO_SVG_MODAL = """<div class="logo-modal-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-thumb.png?v=20260911_hd" srcset="/api/assets/grace-logo-thumb.png?v=20260911_hd 1x, /api/assets/grace-logo-thumb.png?v=20260911_hd 2x, /api/assets/grace-logo.png?v=20260911_hd 3x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
 FAVICON_DATA_URI = "/api/assets/grace-logo-thumb.png?v=20260911_hd"
-SEO_HEAD_TAGS = """    <meta name="description" content="Grace Outreach Assistant - Enterprise AI-powered multi-tenant email campaign orchestration, Spintax generator, CRM pipeline, and contractor territory management.">
+SEO_HEAD_TAGS = """    <meta name="google-site-verification" content="5rcqutwYX42ms4pRfl4mADBYeJiuh2Tvc4Y6Q7tkfFQ" />
+    <meta name="description" content="Grace Outreach Assistant - Enterprise AI-powered multi-tenant email campaign orchestration, Spintax generator, CRM pipeline, and contractor territory management.">
     <meta name="keywords" content="Grace Outreach Assistant, Grace Outreach, Outreach CRM, Email Campaign Orchestration, Contractor Outreach">
     <meta name="author" content="Grace Outreach Enterprise">
     <meta property="og:type" content="website">
@@ -13496,7 +13497,16 @@ def app(environ, start_response):
             "/favicon.png",
             "/robots.txt",
             "/sitemap.xml",
+            "/google5rcqutwYX42ms4pRfl4mADBYeJiuh2Tvc4Y6Q7tkfFQ.html",
         ):
+            if cleaned_path == "/google5rcqutwYX42ms4pRfl4mADBYeJiuh2Tvc4Y6Q7tkfFQ.html":
+                g_body = b"google-site-verification: google5rcqutwYX42ms4pRfl4mADBYeJiuh2Tvc4Y6Q7tkfFQ.html\n"
+                secure_start_response("200 OK", [
+                    ("Content-Type", "text/html; charset=utf-8"),
+                    ("Content-Length", str(len(g_body))),
+                ])
+                return [g_body]
+
             if cleaned_path == "/robots.txt":
                 robots_txt = (
                     "User-agent: *\n"
