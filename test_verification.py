@@ -719,7 +719,23 @@ def run_tests():
     assert "widget.classList.add('dock-right')" in html, "Missing auto-docking right class on drag end"
     print("[PASS] Senior Dev Deep Audit: DOM Balance, Single Logo ID, applyTheme, Voice GC Shield & Auto-Docking verified.")
 
-    print("\n[SUCCESS] ALL 38 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 39. Verify 7-Day Deliverability Radar & Pacing Histogram Visualizations (User Uploaded Metric Cards)
+    print("Testing 7-Day Deliverability Radar & Outbound Dispatch Velocity Pacing Histogram...")
+    assert "telemetry-radar-card" in html, "Missing telemetry-radar-card in dashboard HTML"
+    assert "pacing-histogram-card" in html, "Missing pacing-histogram-card in dashboard HTML"
+    assert "7-Day Deliverability &amp; Reputation Curve" in html, "Missing 7-Day Deliverability & Reputation Curve title"
+    assert "Outbound Dispatch Velocity &amp; Jitter" in html, "Missing Outbound Dispatch Velocity & Jitter title"
+    assert "Optimal (98.4% Avg)" in html, "Missing Optimal (98.4% Avg) badge"
+    assert "Human-Like Pacing" in html, "Missing Human-Like Pacing badge"
+    assert "TELEMETRY RADAR" in html, "Missing TELEMETRY RADAR eyebrow"
+    assert "PACING HISTOGRAM" in html, "Missing PACING HISTOGRAM eyebrow"
+    assert "reputation-fill-grad" in html, "Missing reputation area gradient in SVG"
+    assert "hist-bar" in html, "Missing hist-bar styling class"
+    assert "curve-dot" in html, "Missing curve-dot styling class"
+    assert ".charts-grid-2 { grid-template-columns: 1fr !important; }" in html, "Missing responsive mobile breakpoint for charts"
+    print("[PASS] 7-Day Deliverability Radar & Outbound Dispatch Velocity Pacing Histogram verified.")
+
+    print("\n[SUCCESS] ALL 39 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
