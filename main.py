@@ -6573,18 +6573,18 @@ function syncAllAudioControlsUI() {
    ========================================================================= */
 
 const AI_VOICE_PERSONAS = {
-    alara: {
-        id: 'alara',
-        name: 'Alara',
-        tag: 'Silk Harmony',
-        desc: 'Smooth, warm, expressive feminine tone',
-        avatar: '/api/assets/ai-agent-alara.png',
-        genderType: 'f',
-        pitch: 1.25,
-        rate: 0.98,
-        previewUrdu: 'اسلام علیکم! میں الارا ہوں۔ گریس آؤٹ ریچ آپریشنز میں آپ کی پرسنل ایگزیکٹو گائیڈ۔',
-        previewUrduPhonetic: 'Assalam-o-Alaikum! Main Alara hoon. Grace Outreach operations mein aapki personal executive guide.',
-        previewEnglish: 'Hello! I am Alara, your sophisticated executive outreach guide.'
+    opus2: {
+        id: 'opus2',
+        name: 'Opus 2',
+        tag: 'Cyber Intelligence ⭐',
+        desc: 'Futuristic, ultra-precise analytical synth resonance',
+        avatar: '/api/assets/ai-agent-titan.png',
+        genderType: 'm',
+        pitch: 0.88,
+        rate: 1.02,
+        previewUrdu: 'اوپس ٹو ایکٹیویٹڈ۔ سسٹم کے بائیس ماڈیولز اور ٹیلی میٹری کی درست نگرانی جاری ہے۔',
+        previewUrduPhonetic: 'Opus Two activated! System ke baais modules, aur telemetry ki durust nigrani jaari hai.',
+        previewEnglish: 'Opus 2 online. Analyzing all 22 modules and telemetry parameters with zero error margin.'
     },
     calvin: {
         id: 'calvin',
@@ -6593,24 +6593,24 @@ const AI_VOICE_PERSONAS = {
         desc: 'Confident, clear, energetic executive resonance',
         avatar: '/api/assets/ai-agent-titan.png',
         genderType: 'm',
-        pitch: 0.95,
+        pitch: 0.92,
         rate: 1.02,
         previewUrdu: 'سلام جناب! میں کیلون ہوں۔ گریس آؤٹ ریچ کا پرائم اسسٹنٹ۔ بتائیے آج کیا پلان ہے؟',
-        previewUrduPhonetic: 'Salam janab! Main Calvin hoon. Grace Outreach ka prime assistant. Bataiye aaj kya plan hai?',
+        previewUrduPhonetic: 'Salam janab! Main Calvin hoon, Grace Outreach ka prime assistant. Bataiye aaj kya plan hai?',
         previewEnglish: 'Greetings! I am Calvin, your prime outreach strategist. Ready for high-velocity operations.'
     },
-    opus2: {
-        id: 'opus2',
-        name: 'Opus 2',
-        tag: 'Cyber Intelligence',
-        desc: 'Futuristic, ultra-precise analytical synth timbre',
-        avatar: '/api/assets/ai-agent-titan.png',
-        genderType: 'm',
-        pitch: 0.88,
-        rate: 1.05,
-        previewUrdu: 'اوپس ٹو ایکٹیویٹڈ۔ سسٹم کے بائیس ماڈیولز اور ٹیلی میٹری کی درست نگرانی جاری ہے۔',
-        previewUrduPhonetic: 'Opus Two activated. System ke baais modules aur telemetry ki durust nigrani jaari hai.',
-        previewEnglish: 'Opus 2 online. Analyzing all 22 modules and telemetry parameters with zero error margin.'
+    alara: {
+        id: 'alara',
+        name: 'Alara',
+        tag: 'Silk Harmony',
+        desc: 'Smooth, warm, expressive feminine tone',
+        avatar: '/api/assets/ai-agent-alara.png',
+        genderType: 'f',
+        pitch: 1.10,
+        rate: 0.98,
+        previewUrdu: 'اسلام علیکم! میں الارا ہوں۔ گریس آؤٹ ریچ آپریشنز میں آپ کی پرسنل ایگزیکٹو گائیڈ۔',
+        previewUrduPhonetic: 'Assalam-o-Alaikum! Main Alara hoon, Grace Outreach operations mein aap ki personal executive guide.',
+        previewEnglish: 'Hello! I am Alara, your sophisticated executive outreach guide.'
     },
     aura: {
         id: 'aura',
@@ -6619,10 +6619,10 @@ const AI_VOICE_PERSONAS = {
         desc: 'Gentle, friendly, calm feminine flow',
         avatar: '/api/assets/ai-agent-alara.png',
         genderType: 'f',
-        pitch: 1.35,
-        rate: 0.94,
+        pitch: 1.12,
+        rate: 0.96,
         previewUrdu: 'خوش آمدید! میرا نام اورا ہے۔ پرسکون انداز میں ایپ کے ہر فیچر کو سمجھنے کے لیے حاضر ہوں۔',
-        previewUrduPhonetic: 'Khush aamdeed! Mera naam Aura hai. Pursukoon andaaz mein app ke har feature ko samajhne k liye haazir hoon.',
+        previewUrduPhonetic: 'Khush aamdeed! Mera naam Aura hai. Pursukoon andaaz mein, app ke har feature ko samajhne ke liye haazir hoon.',
         previewEnglish: 'Welcome! I am Aura. Bringing calm focus and seamless guidance to your outreach workflow.'
     },
     zephyr: {
@@ -6632,17 +6632,17 @@ const AI_VOICE_PERSONAS = {
         desc: 'Deep, steady, authoritative velocity',
         avatar: '/api/assets/ai-agent-titan.png',
         genderType: 'm',
-        pitch: 0.78,
+        pitch: 0.84,
         rate: 1.00,
         previewUrdu: 'زیفر آن لائن۔ اکاؤنٹ والٹ اور ہارڈویئر سیکیورٹی کے معاملات مکمل محفوظ ہیں۔',
-        previewUrduPhonetic: 'Zephyr online. Account vault aur hardware security k mamlaat mukammal mehfooz hain.',
+        previewUrduPhonetic: 'Zephyr online! Account vault aur hardware security ke mamlaat, mukammal mehfooz hain.',
         previewEnglish: 'Zephyr standing by. Robust infrastructure and multi-channel campaign dispatch secured.'
     }
 };
 
-let currentAgentPersonaKey = 'calvin';
+let currentAgentPersonaKey = 'opus2';
 let currentAgentLang = 'ur';
-let currentAgentCustomName = 'Calvin';
+let currentAgentCustomName = 'Opus 2';
 let agentSpeechMuted = false;
 let currentTourStep = 0;
 let isTourActive = false;
@@ -6678,7 +6678,7 @@ const APP_TOUR_STEPS = [
 │  STATUS: 22 Nodes Online ● Latency < 14ms ● Healthy    │
 └────────────────────────────────────────────────────────┘`,
         urduAudio: "گریس آؤٹ ریچ میں خوش آمدید! اوپر ہیڈر میں دس ٹیئر ٹیلی میٹری ہَڈ موجود ہے جو تمام بائیس ماڈیولز، سرور اور میموری کی لائیو ہیلتھ دکھاتا ہے۔",
-        urduPhoneticAudio: "Grace Outreach mein khush aamdeed! Ooper header mein das-tier telemetry HUD mojood hai jo tamaam baais modules, server aur memory ki live health dikhata hai.",
+        urduPhoneticAudio: "Grace Outreach mein khush aamdeed! Ooper header mein das tier telemetry H U D mojood hai, jo tamaam baais modules, server, aur memory ki lyve health dikhata hai.",
         englishAudio: "Welcome to Grace Outreach Assistant! The header features our 10-tier telemetry HUD displaying live health for all 22 modules, server uptime, and memory.",
         urduDesc: "<b>10-Tier Telemetry HUD</b>: لائیو کنٹریکٹرز، سسٹم میموری، اور بائیس ماڈیولز کا ریئل ٹائم مانیٹر۔",
         englishDesc: "<b>10-Tier Telemetry HUD</b>: Real-time telemetry monitoring 22 modules, active contractors, and server uptime.",
@@ -6706,7 +6706,7 @@ const APP_TOUR_STEPS = [
 │  STATUS: Active Workspaces: 22/22 ● Runbooks Verified  │
 └────────────────────────────────────────────────────────┘`,
         urduAudio: "ماڈیول میٹرکس میں تمام بائیس آؤٹ ریچ ماڈیولز کے ڈیڈیکیٹڈ ورک اسپیس اور تفصیلی رن بکس موجود ہیں۔",
-        urduPhoneticAudio: "Module matrix mein tamaam baais outreach modules ke dedicated workspaces aur detailed runbooks mojood hain.",
+        urduPhoneticAudio: "Module matrix mein tamaam baais outreach modules ke dedicated workspaces, aur detailed runbooks mojood hain.",
         englishAudio: "The 22-Module Matrix provides dedicated workspaces, operational runbooks, and lead pipelines for comprehensive outreach.",
         urduDesc: "<b>22-Module Control Matrix</b>: واٹس ایپ، ای میل، ڈیٹا جنریشن اور فیلڈ آپریشنز کے لیے 22 مکمل ٹولز۔",
         englishDesc: "<b>22-Module Control Matrix</b>: Comprehensive suite of 22 tools covering WhatsApp, email, lead extraction, and student pipelines.",
@@ -6731,7 +6731,7 @@ const APP_TOUR_STEPS = [
 │  SECURITY: Auto-Heal Active ● Reverts Blocked (100%)   │
 └────────────────────────────────────────────────────────┘`,
         urduAudio: "یہاں آپ کولیگز کے پروفائل، نام، اور کنٹریکٹرز مینیج کرتے ہیں۔ تمام تبدیلیاں ڈوئل والٹ میں مستقل محفوظ رہتی ہیں اور کبھی خود نہیں بدلتیں۔",
-        urduPhoneticAudio: "Yahan aap colleagues ke profile, naam aur contractors manage karte hain. Tamaam tabdeelian dual-vault mein mustaqil save rehti hain aur kabhi khud nahi badalteen.",
+        urduPhoneticAudio: "Yahan aap colleagues ke profile, naam, aur contractors manage karte hain. Tamaam tabdeelian Dual Vault mein mustaqil save rehti hain, aur kabhi khud nahi badalteen.",
         englishAudio: "In Colleague Management, update staff names and assign up to 2 contractors. Edits are permanently stored in our dual-vault and never revert.",
         urduDesc: "<b>Colleague Management</b>: مستقل پروفائل سیونگ (Dual-Vault Auto-Heal)، سرچ بار، اور 2 کنٹریکٹرز کی اسائنمنٹ۔",
         englishDesc: "<b>Colleague Hub</b>: Permanent dual-vault profile persistence, instant search, and strict 2-contractor assignment.",
@@ -6759,7 +6759,7 @@ const APP_TOUR_STEPS = [
 │  PLAYBACK: Draggable Mini-Orb ● Zero Sound Leaks       │
 └────────────────────────────────────────────────────────┘`,
         urduAudio: "میوزک اسٹوڈیو میں تین الگ باکسز ہیں: بلٹ اِن فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو لوکل اپلوڈ۔ فلوٹنگ بٹن کو آپ سکرین پر کہیں بھی ڈریگ کر سکتے ہیں۔",
-        urduPhoneticAudio: "Music studio mein teen alag boxes hain: built-in focus sounds, live playlist, aur video audio local upload. Floating button ko aap screen par kahin bhi drag kar sakte hain.",
+        urduPhoneticAudio: "Music studio mein teen alag boxes hain: built-in focus sounds, lyve play-list, aur video audio local upload. Floating button ko aap screen par kahin bhi drag kar sakte hain.",
         englishAudio: "The Soundscape Studio features 3 distinct boxes: Built-in focus presets, active playlist queue with shuffle mode, and universal local audio/video player.",
         urduDesc: "<b>Soundscape Studio</b>: 3 علیحدہ باکسز (Presets, Playlist, Media Studio)، شفّل موڈ، اور سکرین پر کہیں بھی ڈریگ ایبل فلوٹنگ بٹن۔",
         englishDesc: "<b>Soundscape Studio</b>: 3 standalone cards, shuffle playback, universal MP3/MP4 decoding, and draggable floating mini-player.",
@@ -6785,7 +6785,7 @@ const APP_TOUR_STEPS = [
 │  PROTECTION: Human Pacing Active ● Anti-Ban Shield ON  │
 └────────────────────────────────────────────────────────┘`,
         urduAudio: "کمپین اسٹوڈیو میں اسپن ٹیکس ٹیکسٹ جنریٹر اور ہیومن جِٹر ڈسپیچر ہے جو نمبرز بین ہونے سے بچاتا ہے۔",
-        urduPhoneticAudio: "Campaign studio mein Spintax text generator aur Human Jitter dispatcher hai jo numbers ban hone se bachata hai.",
+        urduPhoneticAudio: "Campaign studio mein Spin-tax text generator aur Human Jitter dispatcher hai, jo numbers ban hone se bachata hai.",
         englishAudio: "The Campaign Studio features automated Spintax variations and human jitter dispatching to prevent carrier filtering and WhatsApp bans.",
         urduDesc: "<b>Campaign Studio</b>: اسپن ٹیکس میسج ویریئنٹس اور ہیومن جِٹر ڈسپیچر جو محفوظ بلک میسجنگ یقینی بناتا ہے۔",
         englishDesc: "<b>Campaign Studio</b>: Spintax template spinning, anti-ban jitter pacing, and audit-logged recipient delivery.",
@@ -6811,7 +6811,7 @@ const APP_TOUR_STEPS = [
 │  COMPLIANCE: 4-Tier Auditing ● Instant Data Export     │
 └────────────────────────────────────────────────────────┘`,
         urduAudio: "اکاؤنٹ والٹ میں 4 کلاس لائف سائیکل ہے: ایکٹیو، ریسٹرکٹڈ، سسپینڈڈ، اور مینٹیننس، مع گوگل ڈیٹا مائیگریشن۔ آپ کا ٹور مکمل ہو چکا ہے!",
-        urduPhoneticAudio: "Account vault mein chaar lifecycle classes hain: Active, Restricted, Suspended, aur Maintenance, ba-ma Google data migration. Aap ka tour mukammal ho chuka hai!",
+        urduPhoneticAudio: "Account Vault mein chaar lifecycle classes hain: Active, Restricted, Suspended, aur Maintenance, ba-ma Google data migration. Aap ka tour mukammal ho chuka hai!",
         englishAudio: "The Account Vault protects outreach identities across 4 lifecycle states with Google Checkpoint cloud migration. Your tour is complete!",
         urduDesc: "<b>Account Vault</b>: چار لائف سائیکل اسٹیٹس (Active, Restricted, Suspended, Maintenance) اور ون کلک گوگل ایکسپورٹ۔",
         englishDesc: "<b>Account Vault</b>: 4-class lifecycle security desk and Google Workspace migration checkpoints.",
@@ -6967,8 +6967,8 @@ function restoreAgentDefaultPosition() {
    ========================================================================= */
 function initAIAgent() {
     try {
-        currentAgentPersonaKey = window.localStorage.getItem('grace-ai-voice-persona') || 'calvin';
-        if (!AI_VOICE_PERSONAS[currentAgentPersonaKey]) currentAgentPersonaKey = 'calvin';
+        currentAgentPersonaKey = window.localStorage.getItem('grace-ai-voice-persona') || 'opus2';
+        if (!AI_VOICE_PERSONAS[currentAgentPersonaKey]) currentAgentPersonaKey = 'opus2';
         currentAgentLang = window.localStorage.getItem('grace-ai-lang') || 'ur';
         
         // Permanent Custom Name Vault Isolation
@@ -7196,8 +7196,44 @@ function initAutoMinimizeObserver() {
 }
 
 /* =========================================================================
-   100% FLUENT NATURAL URDU & ENGLISH VOCAL SPEECH SYNTHESIS ENGINE
+   100% FLUENT NATURAL URDU & PHONETIC SYNTHESIS ENGINE
    ========================================================================= */
+function sanitizePhoneticUrdu(text) {
+    if (!text) return '';
+    let t = text;
+
+    // 1. Fix "mic" -> "mike" bug (specifically requested by user: "mic mik bol raha hai")
+    t = t.replace(/\bmic\b/gi, 'mike')
+         .replace(/\bmik\b/gi, 'mike')
+         .replace(/مائیک/g, 'mike');
+
+    // 2. Fix technical acronyms & abbreviations so TTS speaks them with natural human fluency
+    t = t.replace(/\blive\b/gi, 'lyve')
+         .replace(/\bHUD\b/gi, 'H U D')
+         .replace(/\bMP3\b/gi, 'Em Pee Three')
+         .replace(/\bMP4\b/gi, 'Em Pee Four')
+         .replace(/\bUI\b/gi, 'U I')
+         .replace(/\bAI\b/gi, 'A I')
+         .replace(/\bCSV\b/gi, 'C S V')
+         .replace(/\bdual-vault\b/gi, 'Dual Vault')
+         .replace(/\bspintax\b/gi, 'Spin-tax')
+         .replace(/\bjitter\b/gi, 'jit-ter')
+         .replace(/\bauto-heal\b/gi, 'Auto Heal')
+         .replace(/\bopus\s*2\b/gi, 'Opus Two')
+         .replace(/\bopus2\b/gi, 'Opus Two');
+
+    // 3. Smooth out Urdu phonetic flow, conjunctions and punctuation pauses
+    t = t.replace(/\baapki\b/gi, 'aap ki')
+         .replace(/\buski\b/gi, 'us ki')
+         .replace(/\bunki\b/gi, 'un ki')
+         .replace(/\biski\b/gi, 'is ki')
+         .replace(/\bapne\b/gi, 'apnay')
+         .replace(/\bk\s+liye\b/gi, 'ke liye')
+         .replace(/\bkr\s+skte\b/gi, 'kar sakte');
+
+    return t;
+}
+
 function toRomanUrduPhonetic(text) {
     if (!text) return '';
     let clean = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -7213,11 +7249,101 @@ function toRomanUrduPhonetic(text) {
         [/کمپین اسٹوڈیو/g, 'campaign studio'],
         [/اکاؤنٹ والٹ/g, 'account vault'],
         [/رہنمائی/g, 'rehnumai'],
-        [/شکریہ/g, 'shukriya']
+        [/شکریہ/g, 'shukriya'],
+        [/مائیک/g, 'mike'],
+        [/لائیو/g, 'lyve'],
+        [/اوپس ٹو/g, 'Opus Two'],
+        [/کیلون/g, 'Calvin'],
+        [/الارا/g, 'Alara'],
+        [/اورا/g, 'Aura'],
+        [/زیفر/g, 'Zephyr'],
+        [/بائیس/g, 'baais'],
+        [/دس/g, 'das'],
+        [/چار/g, 'chaar'],
+        [/تین/g, 'teen'],
+        [/دو/g, 'do'],
+        [/ماڈیولز/g, 'modules'],
+        [/ٹیلی میٹری/g, 'telemetry'],
+        [/اسٹیپس/g, 'steps'],
+        [/بٹن/g, 'button'],
+        [/کلک/g, 'click'],
+        [/اسٹوڈیو/g, 'studio'],
+        [/شفّل/g, 'shuffle'],
+        [/پلے لسٹ/g, 'play-list'],
+        [/فوکس/g, 'focus'],
+        [/اسپن ٹیکس/g, 'Spin-tax'],
+        [/جِٹر/g, 'jitter'],
+        [/ڈسپیچر/g, 'dispatcher'],
+        [/چیک پوائنٹس/g, 'checkpoints'],
+        [/گوگل/g, 'Google'],
+        [/ٹور/g, 'tour'],
+        [/مکمل/g, 'mukammal'],
+        [/بہت خوب/g, 'Bohat khoob!']
     ];
     let res = clean;
     map.forEach(([r, s]) => { res = res.replace(r, s); });
-    return res;
+    return sanitizePhoneticUrdu(res);
+}
+
+/* Intelligent Voice Selector Matching Language & Persona Gender */
+function findBestSpeechVoice(voices, lang, persona) {
+    if (!voices || !voices.length) return null;
+    const isFemale = (persona && persona.genderType === 'f');
+
+    const isVoiceFemale = (v) => {
+        const n = (v.name + ' ' + (v.lang || '')).toLowerCase();
+        return n.includes('female') || n.includes('heera') || n.includes('kalpana') ||
+               n.includes('swara') || n.includes('neerja') || n.includes('priya') ||
+               n.includes('zira') || n.includes('samantha') || n.includes('hazel') ||
+               n.includes('susan') || n.includes('jenny') || n.includes('kavya');
+    };
+
+    const isVoiceMale = (v) => {
+        const n = (v.name + ' ' + (v.lang || '')).toLowerCase();
+        if (isVoiceFemale(v)) return false;
+        return n.includes('male') || n.includes('ravi') || n.includes('hemant') ||
+               n.includes('madhur') || n.includes('david') || n.includes('george') ||
+               n.includes('mark') || n.includes('guy') || n.includes('prabhat');
+    };
+
+    if (lang === 'ur') {
+        // 1. Try native Urdu matching gender
+        const urduVoices = voices.filter(v => (v.lang && v.lang.toLowerCase().startsWith('ur')) || (v.name && v.name.toLowerCase().includes('urdu')));
+        if (urduVoices.length) {
+            const genderMatch = urduVoices.find(v => isFemale ? isVoiceFemale(v) : isVoiceMale(v));
+            if (genderMatch) return genderMatch;
+            return urduVoices[0];
+        }
+
+        // 2. High-quality South Asian / Indian neural voice matching gender (ideal for fluent Roman Urdu)
+        const indianVoices = voices.filter(v => {
+            const n = (v.name + ' ' + (v.lang || '')).toLowerCase();
+            return (v.lang && (v.lang.toLowerCase().startsWith('hi') || v.lang.toLowerCase().includes('in'))) ||
+                   n.includes('india') || n.includes('hindi') || n.includes('pakistan');
+        });
+
+        if (indianVoices.length) {
+            const match = indianVoices.find(v => isFemale ? isVoiceFemale(v) : isVoiceMale(v));
+            if (match) return match;
+            if (!isFemale) {
+                const notFemale = indianVoices.find(v => !isVoiceFemale(v));
+                if (notFemale) return notFemale;
+            }
+            return indianVoices[0];
+        }
+
+        // 3. Fallback to English voice matching gender
+        const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+        const enMatch = enVoices.find(v => isFemale ? isVoiceFemale(v) : isVoiceMale(v));
+        if (enMatch) return enMatch;
+    } else {
+        // English voice matching gender
+        const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+        const enMatch = enVoices.find(v => isFemale ? isVoiceFemale(v) : isVoiceMale(v));
+        if (enMatch) return enMatch;
+    }
+
+    return voices[0] || null;
 }
 
 function speakAloud(text, personaKey, onEnd, phoneticOverride) {
@@ -7227,7 +7353,7 @@ function speakAloud(text, personaKey, onEnd, phoneticOverride) {
     }
 
     resetAgentInactivityTimer();
-    const persona = AI_VOICE_PERSONAS[personaKey || currentAgentPersonaKey] || AI_VOICE_PERSONAS.calvin;
+    const persona = AI_VOICE_PERSONAS[personaKey || currentAgentPersonaKey] || AI_VOICE_PERSONAS.opus2;
     const widget = document.getElementById('ai-agent-widget');
     if (widget && widget.classList.contains('is-minimized')) {
         restoreAgentFromMiniBot();
@@ -7240,23 +7366,19 @@ function speakAloud(text, personaKey, onEnd, phoneticOverride) {
         let selectedVoice = null;
 
         if (currentAgentLang === 'ur') {
-            const nativeUrdu = voices.find(v => (v.lang && v.lang.toLowerCase().startsWith('ur')) || (v.name && v.name.toLowerCase().includes('urdu')));
-            if (nativeUrdu) {
-                selectedVoice = nativeUrdu;
+            selectedVoice = findBestSpeechVoice(voices, 'ur', persona);
+            const isNativeUrduVoice = selectedVoice && selectedVoice.lang && selectedVoice.lang.toLowerCase().startsWith('ur');
+
+            if (isNativeUrduVoice) {
                 textToSpeak = text;
             } else {
-                // Universal Fluent Roman-Urdu fallback (speaks aloud naturally without silent failure)
-                textToSpeak = phoneticOverride || toRomanUrduPhonetic(text);
-                selectedVoice = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('hi') || v.lang.toLowerCase().includes('in'))) ||
-                                voices.find(v => v.name && (v.name.toLowerCase().includes('india') || v.name.toLowerCase().includes('pakistan') || v.name.toLowerCase().includes('hindi') || v.name.toLowerCase().includes('ravi') || v.name.toLowerCase().includes('heera'))) ||
-                                voices.find(v => (persona.genderType === 'f' ? (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Google UK English Female')) : true)) ||
-                                voices[0];
+                // Universal Fluent Roman-Urdu fallback with automatic phonetic refinement (fixes 'mic' -> 'mike', 'live' -> 'lyve')
+                const rawPhonetic = phoneticOverride || toRomanUrduPhonetic(text);
+                textToSpeak = sanitizePhoneticUrdu(rawPhonetic);
             }
         } else {
+            selectedVoice = findBestSpeechVoice(voices, 'en', persona);
             textToSpeak = text;
-            selectedVoice = voices.find(v => (v.lang && v.lang.startsWith('en') && (persona.genderType === 'f' ? (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha')) : true))) ||
-                            voices.find(v => v.lang && v.lang.startsWith('en')) ||
-                            voices[0];
         }
 
         const utter = new SpeechSynthesisUtterance(textToSpeak);
@@ -7404,7 +7526,7 @@ function endAppTour() {
         'بہت خوب! آپ کا گریس آؤٹ ریچ ٹور مکمل ہو چکا ہے۔ کوئی بھی سوال ہو تو نیچے ٹائپ کریں یا مائیک دبائیں۔' :
         'Tour completed! You are ready to manage campaigns, colleagues, and outreach workflows.';
     const finishPhonetic = (currentAgentLang === 'ur') ?
-        'Bohat khoob! Aap ka Grace Outreach tour mukammal ho chuka hai. Koi bhi sawal ho to poochhein ya mic dabayein.' : null;
+        'Bohat khoob! Aap ka Grace Outreach tour mukammal ho chuka hai. Koi bhi sawal ho to poochhein, ya mike dabayein.' : null;
 
     const body = document.getElementById('bubble-content-area');
     if (body) {
@@ -7459,7 +7581,7 @@ function askAgentQuestion(topic) {
         if (currentAgentLang === 'ur') {
             replyText = `<b>👥 کولیگ پروفائل اور نام کا طریقہ:</b><br>نیچے اسٹیپس دیکھیں اور ٹارگٹ بٹن پر کلک کریں:`;
             speechAudio = 'کولیگ کا نام تبدیل کرنے کے لیے کولیگ مینجمنٹ میں ایڈٹ سیٹنگز پر کلک کریں اور نام لکھ کر سیو کریں۔ یہ ڈوئل والٹ میں مستقل سیو ہو جائے گا۔';
-            phoneticAudio = 'Colleague ka naam tabdeel karne k liye Colleague Management mein Edit Settings par click karein aur naam likh kar Save karein. Yeh Dual-Vault mein mustaqil save ho jayega.';
+            phoneticAudio = 'Colleague ka naam tabdeel karne ke liye, Colleague Management mein Edit Settings par click karein aur naam likh kar Save karein. Yeh Dual Vault mein mustaqil save ho jayega.';
         } else {
             replyText = `<b>👥 Updating Colleague Profiles:</b><br>Follow the sequence below or click target buttons:`;
             speechAudio = 'To update a colleague, go to Colleague Management, click Edit Settings, enter the new name, and click Save.';
@@ -7489,7 +7611,7 @@ function askAgentQuestion(topic) {
         if (currentAgentLang === 'ur') {
             replyText = `<b>🎵 ساؤنڈ اسکیپ اور میوزک کنٹرول:</b><br>اسکرین پر 3 علیحدہ باکسز موجود ہیں:`;
             speechAudio = 'میوزک کے لیے فلوٹنگ ڈاٹ پر کلک کریں، لوکل MP3 یا MP4 فائل چنیں اور شفّل بٹن دبائیں۔';
-            phoneticAudio = 'Music k liye floating dot par click karein, local MP3 ya MP4 file chunein aur shuffle button dabayein.';
+            phoneticAudio = 'Music ke liye floating dot par click karein, local Em Pee Three ya Em Pee Four file chunein, aur shuffle button dabayein.';
         } else {
             replyText = `<b>🎵 Soundscape & Background Audio:</b><br>Features 3 standalone cards and draggable floating orb:`;
             speechAudio = 'Click the floating music dot or open Soundscape to select presets or upload local MP3 and MP4 files.';
@@ -7517,7 +7639,7 @@ function askAgentQuestion(topic) {
         if (currentAgentLang === 'ur') {
             replyText = `<b>✉️ انٹرپرائز کمپین اسٹوڈیو:</b><br>اسپن ٹیکس اور ہیومن جٹر ڈسپیچ:`;
             speechAudio = 'کمپین اسٹوڈیو میں اسپن ٹیکس اور ہیومن جِٹر ڈسپیچر ہے جو نمبرز بین ہونے سے بچاتا ہے۔';
-            phoneticAudio = 'Campaign Studio mein Spintax aur human jitter dispatcher hai jo numbers ban hone se bachata hai.';
+            phoneticAudio = 'Campaign Studio mein Spin-tax aur human jitter dispatcher hai, jo numbers ban hone se bachata hai.';
         } else {
             replyText = `<b>✉️ Enterprise Campaign Studio:</b><br>Anti-ban Spintax variations and human jitter:`;
             speechAudio = 'The Campaign Studio uses Spintax variations and human jitter to deliver outreach messages safely.';
@@ -7545,7 +7667,7 @@ function askAgentQuestion(topic) {
         if (currentAgentLang === 'ur') {
             replyText = `<b>🛡️ ملٹی ٹیننٹ اکاؤنٹ والٹ:</b><br>4 لائف سائیکل کلاسیز اور کلاؤڈ مائیگریشن:`;
             speechAudio = 'اکاؤنٹ والٹ آؤٹ ریچ اکاونٹس کو چار کلاسز میں محفوظ رکھتا ہے اور گوگل ڈیٹا ایکسپورٹ فراہم کرتا ہے۔';
-            phoneticAudio = 'Account Vault outreach accounts ko chaar classes mein mehfooz rakhta hai aur Google data export deta hai.';
+            phoneticAudio = 'Account Vault outreach accounts ko chaar classes mein mehfooz rakhta hai, aur Google data export deta hai.';
         } else {
             replyText = `<b>🛡️ Multi-Tenant Account Vault:</b><br>4-Class lifecycle security and Google Checkpoint export:`;
             speechAudio = 'The Account Vault manages accounts across 4 lifecycle stages with cloud migration tools.';
@@ -7567,7 +7689,7 @@ function askAgentQuestion(topic) {
         if (currentAgentLang === 'ur') {
             replyText = `آپ کے سوال <i>"${topic}"</i> کے لیے مدد حاضر ہے۔ نیچے سے ورک اسپیس چنیں یا ٹور دیکھیں:`;
             speechAudio = 'آپ کا سوال موصول ہوا۔ آپ پوورا ایپ ٹور کر سکتے ہیں یا نیچے دیے گئے بٹنز سے رہنمائی حاصل کریں۔';
-            phoneticAudio = 'Aap ka sawal mil gaya. Aap poora app tour kar sakte hain ya neeche diye gaye buttons se madad lein.';
+            phoneticAudio = 'Aap ka sawal mil gaya hai. Aap poora app tour kar sakte hain, ya neeche diye gaye buttons se madad lein.';
         } else {
             replyText = `Guidance for <i>"${topic}"</i>: Trigger the full guided tour or select a specialized workspace:`;
             speechAudio = 'Here is guidance for your request. You can take the full app tour or select a specific workspace.';
@@ -7767,7 +7889,7 @@ function initProactiveContextTriggers() {
                 {
                     text: 'کولیگ کا نام اور کنٹریکٹرز یہاں تبدیل کریں۔ سیو کرنے پر ڈوئل والٹ مستقل محفوظ رکھے گا!',
                     audio: 'کولیگ کا نام یہاں تبدیل کریں۔ سیو کرنے پر یہ ڈوئل والٹ میں مستقل محفوظ رہے گا۔',
-                    phonetic: 'Colleague ka naam yahan tabdeel karein. Save karne par yeh Dual-Vault mein mustaqil mehfooz rahega.'
+                    phonetic: 'Colleague ka naam yahan tabdeel karein. Save karne par yeh Dual Vault mein mustaqil mehfooz rahega.'
                 },
                 {
                     text: 'Updating colleague details: Save changes to lock them permanently in our Dual-Vault.',
@@ -7792,7 +7914,7 @@ function initProactiveContextTriggers() {
                 {
                     text: 'ساؤنڈ اسٹوڈیو اوپن ہوا ہے! یہاں 3 الگ باکسز ہیں: فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو اپلوڈ۔',
                     audio: 'ساؤنڈ اسٹوڈیو اوپن ہوا ہے! لوکل MP3 یا MP4 فائل اپلوڈ کریں یا شفّل موڈ آن کریں۔',
-                    phonetic: 'Sound Studio open hua hai! Local MP3 ya MP4 upload karein ya shuffle mode on karein.'
+                    phonetic: 'Sound Studio open hua hai! Local Em Pee Three ya Em Pee Four upload karein, ya shuffle mode on karein.'
                 },
                 {
                     text: 'Soundscape Studio online: Explore focus sounds, local media upload, and playlist shuffle.',

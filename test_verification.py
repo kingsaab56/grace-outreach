@@ -682,7 +682,20 @@ def run_tests():
     assert avg_diff_b_r < 40, f"Blue cast on armor too strong: {avg_diff_b_r}"
     print("[PASS] Collision Avoidance, Screen-Adaptive HUD, Terminal Wireframe Blueprints & Natural Colors verified.")
 
-    print("\n[SUCCESS] ALL 35 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 36. Verify Fluent Urdu Speech Engine, Opus 2 Default Persona, Gender-Matched Neural Voices & Mic-to-Mike Normalization
+    print("Testing Fluent Urdu Speech Engine, Opus 2 Default, Gender Voices & Mic-to-Mike Normalization...")
+    assert "sanitizePhoneticUrdu" in html, "Missing sanitizePhoneticUrdu in html"
+    assert "findBestSpeechVoice" in html, "Missing findBestSpeechVoice in html"
+    assert "currentAgentPersonaKey = 'opus2'" in html, "Opus 2 should be default persona in JS"
+    assert "mike dabayein" in html, "Tour finish should use 'mike dabayein' instead of 'mic'"
+    assert "Cyber Intelligence ⭐" in html, "Opus 2 tag updated with highlight star"
+    assert "isVoiceFemale" in html, "Missing isVoiceFemale gender discriminator"
+    assert "isVoiceMale" in html, "Missing isVoiceMale gender discriminator"
+    assert "lyve" in html, "Missing lyve phonetic normalization"
+    assert "H U D" in html, "Missing H U D phonetic normalization"
+    print("[PASS] Fluent Urdu Speech Engine, Opus 2 Default, Gender Voices & Mic-to-Mike Normalization verified.")
+
+    print("\n[SUCCESS] ALL 36 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
