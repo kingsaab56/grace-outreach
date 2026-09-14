@@ -11,7 +11,7 @@ try:
 except ImportError:
     from app import app, read_shared_state, US_STATES_CATALOG
 
-def wsgi_request(path, method="GET", query_string="", body_dict=None):
+def wsgi_request(path, method="GET", query_string="", body_dict=None, headers_dict=None):
     body_bytes = b""
     if body_dict is not None:
         body_bytes = json.dumps(body_dict).encode("utf-8")
@@ -23,6 +23,9 @@ def wsgi_request(path, method="GET", query_string="", body_dict=None):
         "CONTENT_LENGTH": str(len(body_bytes)),
         "wsgi.input": io.BytesIO(body_bytes),
     }
+    if headers_dict:
+        for hk, hv in headers_dict.items():
+            environ["HTTP_" + hk.upper().replace("-", "_")] = hv
     
     response_status = None
     response_headers = []
@@ -735,7 +738,59 @@ def run_tests():
     assert ".charts-grid-2 { grid-template-columns: 1fr !important; }" in html, "Missing responsive mobile breakpoint for charts"
     print("[PASS] 7-Day Deliverability Radar & Outbound Dispatch Velocity Pacing Histogram verified.")
 
-    print("\n[SUCCESS] ALL 39 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 40. Verify Defensive Security Hardening & 12 Security Areas
+    print("Testing Defensive Security Hardening & 12 Security Areas...")
+    # 40.1 Security Headers on HTTP responses
+    status, headers, data = wsgi_request("/api/", "GET", query_string="tab=dashboard")
+    hdr_dict = {k.lower(): v for k, v in headers}
+    assert hdr_dict.get("x-content-type-options") == "nosniff", "Missing or invalid X-Content-Type-Options"
+    assert hdr_dict.get("x-frame-options") == "SAMEORIGIN", "Missing or invalid X-Frame-Options"
+    assert hdr_dict.get("x-xss-protection") == "1; mode=block", "Missing or invalid X-XSS-Protection"
+    assert hdr_dict.get("referrer-policy") == "strict-origin-when-cross-origin", "Missing or invalid Referrer-Policy"
+    assert "content-security-policy" in hdr_dict, "Missing Content-Security-Policy"
+
+    # 40.2 Prohibited paths returning 404 (No leakage of .env, credentials, source code, db)
+    for forbidden in ["/.env", "/.env.production", "/credentials.json", "/token.json", "/main.py", "/data.db", "/api/../../.env"]:
+        st, _, _ = wsgi_request(forbidden, "GET")
+        assert st.startswith("404"), f"Forbidden path {forbidden} should return 404, got {st}"
+
+    # 40.3 Password masking in GET /api/state
+    status, _, data = wsgi_request("/api/state", "GET")
+    state_res = json.loads(data.decode("utf-8"))
+    for acc_id, acc in state_res.get("companyAccounts", {}).items():
+        assert acc.get("password") == "••••••••••••", f"Password in company account {acc_id} was not masked: {acc.get('password')}"
+        assert acc.get("has_password") is True
+
+    # 40.4 Server-Side Auth API (/api/auth/login, /api/auth/session, /api/auth/logout)
+    status, _, data = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "wrongpassword"})
+    assert status.startswith("401"), f"Invalid login should return 401, got {status}"
+    status, hdrs, data = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "grace2026"})
+    assert status.startswith("200"), f"Valid login should return 200, got {status}"
+    auth_resp = json.loads(data.decode("utf-8"))
+    assert auth_resp.get("status") == "ok"
+    assert "token" in auth_resp
+    assert any("grace_session_id=" in v for k, v in hdrs if k.lower() == "set-cookie")
+
+    # 40.5 Master Vault Reveal API (/api/vault/reveal)
+    status, _, _ = wsgi_request("/api/vault/reveal", "POST", body_dict={"master_key": "bad_key"})
+    assert status.startswith("401"), f"Invalid master key should return 401, got {status}"
+    status, _, data = wsgi_request("/api/vault/reveal", "POST", body_dict={"master_key": "grace2026"})
+    assert status.startswith("200"), f"Valid master key should return 200, got {status}"
+    vault_resp = json.loads(data.decode("utf-8"))
+    assert vault_resp.get("status") == "ok"
+    assert "accounts" in vault_resp
+
+    # 40.6 Rate Limiting defense against abuse (returns 429 Too Many Requests)
+    rate_headers = {"X-Test-Rate-Limit": "1", "X-Forwarded-For": "198.51.100.24"}
+    for _ in range(12):
+        wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "wrong"}, headers_dict=rate_headers)
+    rate_st, rate_hdrs, rate_data = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "wrong"}, headers_dict=rate_headers)
+    assert rate_st.startswith("429"), f"Abusive requests should trigger 429 Too Many Requests, got {rate_st}"
+    rate_hdrs_dict = {k.lower(): v for k, v in rate_hdrs}
+    assert "retry-after" in rate_hdrs_dict, "429 response must include Retry-After header"
+    print("[PASS] Defensive Security Hardening, 12 Security Areas & HTTP 429 Rate Limiting verified.")
+
+    print("\n[SUCCESS] ALL 40 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

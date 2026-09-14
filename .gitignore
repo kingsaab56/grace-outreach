@@ -1,19 +1,54 @@
+# Credentials & Tokens
+%LOCALAPPDATA%/
 credentials/
 credentials.json
 accounts/
 token.json
+tokens_vault_backup/
+*token*.json
+*.secret
+*.key
+*.pem
+*.cert
+*.pfx
+*.p12
+
+# Environment files
 .env
+.env.*
+*.env
+.env.local
+.env.development
+.env.production
+
+# Python artifacts
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Databases & local state dumps
 *.db
+*.sqlite
+*.sqlite3
 *.log
+reports/activity.log
+cleaner/exports/
+
+# Build & packaging
 build/
 dist/
+*.spec
 backups/
 backup/
+BACKUP_*/
 sessions/
-cleaner/exports/
-reports/activity.log
+
+# IDE & MCP configuration
 .vscode/
-tokens_vault_backup/
+.idea/
 *mcp_config.json
