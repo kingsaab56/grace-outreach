@@ -819,6 +819,13 @@ LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Cli
 LOGO_SVG_MODAL = """<div class="logo-modal-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-thumb.png?v=20260911_hd" srcset="/api/assets/grace-logo-thumb.png?v=20260911_hd 1x, /api/assets/grace-logo-thumb.png?v=20260911_hd 2x, /api/assets/grace-logo.png?v=20260911_hd 3x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
 FAVICON_DATA_URI = "/api/assets/grace-logo-thumb.png?v=20260911_hd"
+SEO_HEAD_TAGS = """    <meta name="description" content="Grace Outreach Assistant - Enterprise AI-powered multi-tenant email campaign orchestration, Spintax generator, CRM pipeline, and contractor territory management.">
+    <meta name="keywords" content="Grace Outreach Assistant, Grace Outreach, Outreach CRM, Email Campaign Orchestration, Contractor Outreach">
+    <meta name="author" content="Grace Outreach Enterprise">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Grace Outreach Assistant - Enterprise Hub">
+    <meta property="og:description" content="Enterprise AI-powered email campaign orchestration, Spintax generation, and real-time deliverability telemetry.">
+    <meta property="og:image" content="/api/assets/grace-logo.png">"""
 WA_CROWN_SRC = "/api/assets/crown.png?v=20260911_hd"
 WA_CROWN_IMG = f"""<img src="{WA_CROWN_SRC}" class="wa-crown-icon" alt="👑" width="18" height="18" loading="eager" decoding="async" />"""
 
@@ -11541,6 +11548,7 @@ def render_dashboard():
     <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
     <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - Dashboard Hub</title>
+{SEO_HEAD_TAGS}
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
@@ -11793,6 +11801,7 @@ def render_matrix():
     <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
     <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - 22-Module Control Matrix</title>
+{SEO_HEAD_TAGS}
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
@@ -13130,6 +13139,7 @@ def render_module_detail(mod_id):
     <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
     <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - Module {m_id}: {mod_info["name"]}</title>
+{SEO_HEAD_TAGS}
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
@@ -13331,6 +13341,7 @@ def render_colleagues():
     <link rel="shortcut icon" href="{FAVICON_DATA_URI}">
     <link rel="apple-touch-icon" href="{FAVICON_DATA_URI}">
     <title>Grace Outreach Assistant - Colleague Management</title>
+{SEO_HEAD_TAGS}
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
@@ -13484,14 +13495,38 @@ def app(environ, start_response):
             "/favicon.ico",
             "/favicon.png",
             "/robots.txt",
+            "/sitemap.xml",
         ):
             if cleaned_path == "/robots.txt":
-                robots_txt = b"User-agent: *\nDisallow: /api/\n"
+                robots_txt = (
+                    "User-agent: *\n"
+                    "Allow: /\n"
+                    "Disallow: /api/state\n"
+                    "Disallow: /api/auth/\n"
+                    "Disallow: /api/vault/\n"
+                    "Sitemap: /sitemap.xml\n"
+                ).encode("utf-8")
                 secure_start_response("200 OK", [
                     ("Content-Type", "text/plain; charset=utf-8"),
                     ("Content-Length", str(len(robots_txt))),
                 ])
                 return [robots_txt]
+
+            if cleaned_path == "/sitemap.xml":
+                sitemap_xml = (
+                    '<?xml version="1.0" encoding="UTF-8"?>\n'
+                    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                    '  <url><loc>/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>\n'
+                    '  <url><loc>/?tab=dashboard</loc><changefreq>daily</changefreq><priority>0.9</priority></url>\n'
+                    '  <url><loc>/?tab=matrix</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n'
+                    '  <url><loc>/?tab=colleagues</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n'
+                    '</urlset>'
+                ).encode("utf-8")
+                secure_start_response("200 OK", [
+                    ("Content-Type", "application/xml; charset=utf-8"),
+                    ("Content-Length", str(len(sitemap_xml))),
+                ])
+                return [sitemap_xml]
 
             app_dir = Path(__file__).resolve().parent
             if "ai-agent-titan" in cleaned_path:
