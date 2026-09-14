@@ -1718,8 +1718,8 @@ def render_header():
          INTELLIGENT ANIMATED 3D AI AGENT COMPANION (TITAN & ALARA)
          ========================================================================= -->
     <div id="ai-agent-widget" class="ai-agent-widget" data-persona="calvin" data-lang="ur">
-        <!-- Floating Draggable Mascot with Energy Pedestal -->
-        <div id="ai-agent-avatar-wrap" class="ai-agent-avatar-wrap" onclick="handleAgentAvatarClick(event)" title="Drag anywhere to reposition · Click to chat or start tour">
+        <!-- Floating Draggable Mascot with Energy Pedestal (Clicks expand or chat) -->
+        <div id="ai-agent-avatar-wrap" class="ai-agent-avatar-wrap" onclick="handleAgentAvatarClick(event)" title="Drag to reposition · Click to chat or open guide">
             <div class="agent-pedestal-halo"></div>
             <div class="agent-pedestal-ring"></div>
             <img id="ai-agent-img" class="ai-agent-mascot-img" src="/api/assets/ai-agent-titan.png" alt="Grace 3D AI Assistant">
@@ -1735,42 +1735,20 @@ def render_header():
             <span class="agent-status-badge" id="agent-status-badge" title="AI Agent Active">⚡ Active</span>
         </div>
 
-        <!-- Mini Floating Action Toolbelt -->
-        <div class="ai-agent-toolbelt" id="ai-agent-toolbelt">
-            <button type="button" class="agent-tool-btn" id="agent-tour-trigger-btn" onclick="startAppTour()" title="🧭 Start A-to-Z Interactive App Tour (Bol kar tour karwaye)">
-                <span class="tool-icon">🧭</span>
-                <span class="tool-text">Tour</span>
-            </button>
-            <button type="button" class="agent-tool-btn" id="agent-chat-trigger-btn" onclick="toggleAgentChat()" title="💬 Ask Question / Chat (Roman Urdu, Urdu, English)">
-                <span class="tool-icon">💬</span>
-                <span class="tool-text">Chat</span>
-            </button>
-            <button type="button" class="agent-tool-btn" id="agent-mic-btn" onclick="toggleAgentVoiceRecognition()" title="🎙️ Speak to Agent (Microphone)">
-                <span class="tool-icon">🎙️</span>
-                <span class="tool-text">Mic</span>
-            </button>
-            <button type="button" class="agent-tool-btn" id="agent-lang-btn" onclick="toggleAgentLanguage()" title="🌐 Switch Language (Urdu / English)">
-                <span class="tool-icon" id="agent-lang-flag">🇵🇰</span>
-                <span class="tool-text" id="agent-lang-text">UR</span>
-            </button>
-            <button type="button" class="agent-tool-btn" id="agent-settings-btn" onclick="openAgentPersonaModal()" title="⚙️ Select Voice Persona & Custom Name">
-                <span class="tool-icon">⚙️</span>
-                <span class="tool-text">Voice</span>
-            </button>
-        </div>
-
         <!-- Interactive Conversational Speech Bubble & Step Card HUD -->
         <div id="ai-agent-bubble" class="ai-agent-bubble" hidden>
             <div class="bubble-header">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <img id="bubble-mini-avatar" src="/api/assets/ai-agent-titan.png" alt="Avatar" style="width:28px; height:28px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.8); border:1.5px solid var(--accent-green);">
+                    <img id="bubble-mini-avatar" src="/api/assets/ai-agent-titan.png" alt="Avatar" style="width:30px; height:30px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.8); border:1.5px solid var(--accent-green);">
                     <div>
                         <strong id="bubble-agent-name" style="font-size:13px; color:var(--accent-gold);">Calvin</strong>
                         <span id="bubble-agent-tag" style="font-size:10px; color:var(--accent-green); display:block;">Prime Resonance · Executive Guide</span>
                     </div>
                 </div>
                 <div style="display:flex; gap:6px; align-items:center;">
+                    <button type="button" class="bubble-btn-icon" id="bubble-lang-toggle" onclick="toggleAgentLanguage()" title="🌐 Switch Language (Urdu / English)" style="font-size:11px; width:auto; padding:2px 6px; font-weight:700;">🇵🇰 UR</button>
                     <button type="button" class="bubble-btn-icon" id="bubble-speech-toggle" onclick="toggleAgentSpeechMute()" title="Mute / Unmute Voice">🔊</button>
+                    <button type="button" class="bubble-btn-icon" id="bubble-settings-btn" onclick="openAgentPersonaModal()" title="⚙️ AI Settings (Voice Personas, Spoken Language & Custom Name)" style="width:auto; padding:2px 8px; font-size:11px; font-weight:700; background:rgba(0,180,216,0.18); border:1px solid #00b4d8; color:#00e5ff; border-radius:6px;">⚙️ AI Settings</button>
                     <button type="button" class="bubble-btn-icon" onclick="closeAgentBubble()" title="Close Bubble">✕</button>
                 </div>
             </div>
@@ -1779,7 +1757,7 @@ def render_header():
             <div class="bubble-body" id="bubble-content-area">
                 <div class="bubble-welcome-msg">
                     <div style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:4px;">Salam! Main aapka Grace AI Agent hoon. 🤖</div>
-                    <div style="font-size:12px; color:var(--text-secondary); line-height:1.45;">Neeche se <b>🧭 Poora App Tour</b> karein ya koi bhi sawal poochein (Roman Urdu, Urdu, ya English mein). Main bol kar guide karunga!</div>
+                    <div style="font-size:12px; color:var(--text-secondary); line-height:1.45;">Neeche se <b>🧭 Poora App Tour</b> karein, <b>🎙️ Mic</b> se bol kar sawal poochein, ya settings se robot & voice change karein!</div>
                 </div>
             </div>
 
@@ -1790,8 +1768,11 @@ def render_header():
                 <button type="button" class="btn btn-sm btn-blue" onclick="nextTourStep()" id="tour-next-btn">Next ⏭️</button>
             </div>
 
-            <!-- Chat Compose Bar -->
+            <!-- Chat Compose Bar with Microphone Voice Recording -->
             <div class="bubble-compose-bar">
+                <button type="button" class="bubble-mic-btn" id="bubble-mic-btn" onclick="toggleAgentVoiceRecognition()" title="🎙️ Bol kar batayein (Voice Input)">
+                    <span id="bubble-mic-icon">🎙️</span>
+                </button>
                 <input type="text" id="agent-user-input" placeholder="Poochhein (e.g. colleague kaise save karein?)..." onkeydown="if(event.key==='Enter') handleAgentUserSubmit()">
                 <button type="button" class="bubble-send-btn" onclick="handleAgentUserSubmit()" title="Send">➤</button>
             </div>
@@ -1799,7 +1780,7 @@ def render_header():
             <!-- Quick Question Suggestion Chips -->
             <div class="bubble-chips-bar" id="bubble-chips-bar">
                 <button type="button" class="bubble-chip" onclick="askAgentQuestion('tour')">🧭 Poora App Tour</button>
-                <button type="button" class="bubble-chip" onclick="askAgentQuestion('colleagues')">👥 Colleagues Help</button>
+                <button type="button" class="bubble-chip" onclick="askAgentQuestion('colleagues')">👥 Colleague Save Steps</button>
                 <button type="button" class="bubble-chip" onclick="askAgentQuestion('music')">🎵 Music Studio</button>
                 <button type="button" class="bubble-chip" onclick="askAgentQuestion('campaign')">✉️ Campaign Studio</button>
                 <button type="button" class="bubble-chip" onclick="askAgentQuestion('vault')">🛡️ Account Vault</button>
@@ -1813,11 +1794,11 @@ def render_header():
             <div class="modal-header" style="border-bottom:1px solid #123B35; padding-bottom:12px; margin-bottom:14px;">
                 <div>
                     <span class="eyebrow" style="font-size:10px; color:var(--accent-green);">BILINGUAL SPEECH &amp; SYNTHESIS ENGINE</span>
-                    <h3 id="persona-modal-title" style="margin:2px 0 0; font-size:18px; font-weight:800; color:var(--accent-gold);">AI Agent Voice Studio &amp; Identity</h3>
+                    <h3 id="persona-modal-title" style="margin:2px 0 0; font-size:18px; font-weight:800; color:var(--accent-gold);">⚙️ AI Agent Settings &amp; Voice Studio</h3>
                 </div>
                 <button class="modal-close" onclick="closeAgentPersonaModal()" aria-label="Close Persona Modal">×</button>
             </div>
-            <p class="modal-copy" style="font-size:12px; margin-bottom:14px;">Select from 5 AI voice timbres. Click <b>▶ Sample</b> to listen aloud in your chosen language. The 3D robot character avatar automatically adapts to your selected persona.</p>
+            <p class="modal-copy" style="font-size:12px; margin-bottom:14px;">Select from 5 AI voice timbres. Click <b>▶ Sample</b> to listen aloud in your chosen language. The 4K 3D robot character avatar automatically adapts to your selected persona.</p>
 
             <!-- Language Toggle & Customizable Name Inputs -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; background:rgba(0,12,10,0.6); border:1px solid #123B35; border-radius:10px; padding:12px 14px;">
@@ -1829,7 +1810,10 @@ def render_header():
                     </div>
                 </div>
                 <div>
-                    <label style="font-size:11px; color:var(--accent-gold); font-weight:700; display:block; margin-bottom:5px;">CUSTOM AGENT NAME:</label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <label style="font-size:11px; color:var(--accent-gold); font-weight:700; margin:0;">CUSTOM AGENT NAME:</label>
+                        <button type="button" class="btn btn-sm btn-gray" onclick="resetAgentCustomName()" title="Reset name to persona default" style="font-size:10px; padding:1px 6px; height:auto; line-height:1.2;">↺ Reset</button>
+                    </div>
                     <input id="persona-custom-name-input" type="text" value="Calvin" placeholder="Enter custom name..." style="width:100%; padding:6px 10px; font-size:12.5px; border-radius:6px; background:var(--bg-card); border:1px solid #123B35; color:var(--text-primary);" oninput="updateAgentCustomName(this.value)">
                 </div>
             </div>
@@ -3754,18 +3738,46 @@ BASE_CSS = """
         box-shadow: 0 2px 8px rgba(16, 185, 129, 0.6);
         pointer-events: none;
         white-space: nowrap;
+        transition: all 0.3s ease;
+    }
+    /* Auto-Minimize Mini-Bot Badge (After 5s Inactivity) */
+    .ai-agent-widget.is-minimized .ai-agent-avatar-wrap {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 180, 216, 0.35) 0%, rgba(0, 20, 18, 0.95) 75%);
+        border: 2px solid #00e5ff;
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.6), inset 0 0 10px rgba(0, 229, 255, 0.4);
+        padding: 3px;
+        cursor: pointer;
+        animation: mini-bot-pulse 2.4s infinite ease-in-out;
+    }
+    .ai-agent-widget.is-minimized .ai-agent-mascot-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        animation: none;
+        filter: drop-shadow(0 2px 6px rgba(0, 229, 255, 0.8));
+    }
+    .ai-agent-widget.is-minimized .agent-pedestal-halo,
+    .ai-agent-widget.is-minimized .agent-pedestal-ring,
+    .ai-agent-widget.is-minimized .agent-speaking-waves,
+    .ai-agent-widget.is-minimized .ai-agent-bubble {
+        display: none !important;
+    }
+    .ai-agent-widget.is-minimized .agent-status-badge {
+        bottom: -5px;
+        font-size: 8px;
+        padding: 0 4px;
+        background: #00e5ff;
+        color: #001217;
+    }
+    @keyframes mini-bot-pulse {
+        0%, 100% { box-shadow: 0 0 12px rgba(0, 229, 255, 0.5), inset 0 0 6px rgba(0, 229, 255, 0.3); transform: scale(1); }
+        50% { box-shadow: 0 0 24px rgba(0, 229, 255, 0.9), inset 0 0 12px rgba(0, 229, 255, 0.6); transform: scale(1.06); }
     }
     .ai-agent-toolbelt {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 8px;
-        background: rgba(0, 20, 18, 0.94);
-        border: 1px solid var(--accent-green);
-        border-radius: 24px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(12px);
-        margin-top: 8px;
+        display: none;
     }
     .agent-tool-btn {
         display: flex;
@@ -3789,6 +3801,114 @@ BASE_CSS = """
     }
     .agent-tool-btn .tool-icon { font-size: 13px; }
     .agent-tool-btn .tool-text { font-size: 9px; font-weight: 700; margin-top: 2px; }
+    /* In-Chat Voice Recording Button */
+    .bubble-mic-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+    .bubble-mic-btn:hover {
+        background: rgba(0, 229, 255, 0.2);
+        border-color: #00e5ff;
+        color: #00e5ff;
+    }
+    .bubble-mic-btn.is-recording {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: #ef4444;
+        color: #ff4d4d;
+        animation: mic-pulse 1s infinite alternate ease-in-out;
+    }
+    @keyframes mic-pulse {
+        0% { transform: scale(1); box-shadow: 0 0 4px rgba(239, 68, 68, 0.4); }
+        100% { transform: scale(1.12); box-shadow: 0 0 16px rgba(239, 68, 68, 0.9); }
+    }
+    /* Visual Step Sketch Cards & Diagrams */
+    .step-sketch-flow {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 8px 0;
+        background: rgba(0, 12, 10, 0.7);
+        border: 1px dashed rgba(0, 229, 255, 0.35);
+        border-radius: 10px;
+        padding: 8px 10px;
+    }
+    .step-sketch-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 26, 23, 0.85);
+        border: 1px solid rgba(0, 229, 255, 0.25);
+        border-radius: 8px;
+        padding: 6px 9px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .step-sketch-item:hover {
+        border-color: #00e5ff;
+        background: rgba(0, 40, 35, 0.95);
+        transform: translateX(3px);
+    }
+    .step-sketch-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #00e5ff;
+        color: #001217;
+        font-size: 10.5px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+    .step-sketch-content {
+        flex: 1;
+        font-size: 11px;
+        line-height: 1.35;
+        color: var(--text-primary);
+    }
+    .step-sketch-btn-mockup {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
+        padding: 1px 5px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--accent-gold);
+    }
+    .step-sketch-arrow {
+        align-self: center;
+        color: #00e5ff;
+        font-size: 11px;
+        line-height: 1;
+        opacity: 0.8;
+    }
+    /* Radar Beacon Pulsing on Target Elements */
+    .beacon-radar-target {
+        position: relative !important;
+        outline: 2px solid #00e5ff !important;
+        box-shadow: 0 0 24px rgba(0, 229, 255, 0.85), inset 0 0 12px rgba(0, 229, 255, 0.4) !important;
+        animation: beacon-radar-glow 1.4s infinite alternate ease-in-out !important;
+        z-index: 55 !important;
+    }
+    @keyframes beacon-radar-glow {
+        0% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.4); }
+        100% { box-shadow: 0 0 28px rgba(0, 229, 255, 0.95), 0 0 40px rgba(0, 180, 216, 0.6); }
+    }
     .ai-agent-bubble {
         position: absolute;
         bottom: 180px;
@@ -6359,6 +6479,7 @@ const AI_VOICE_PERSONAS = {
         pitch: 1.25,
         rate: 0.98,
         previewUrdu: 'اسلام علیکم! میں الارا ہوں۔ گریس آؤٹ ریچ آپریشنز میں آپ کی پرسنل ایگزیکٹو گائیڈ۔',
+        previewUrduPhonetic: 'Assalam-o-Alaikum! Main Alara hoon. Grace Outreach operations mein aapki personal executive guide.',
         previewEnglish: 'Hello! I am Alara, your sophisticated executive outreach guide.'
     },
     calvin: {
@@ -6371,6 +6492,7 @@ const AI_VOICE_PERSONAS = {
         pitch: 0.95,
         rate: 1.02,
         previewUrdu: 'سلام جناب! میں کیلون ہوں۔ گریس آؤٹ ریچ کا پرائم اسسٹنٹ۔ بتائیے آج کیا پلان ہے؟',
+        previewUrduPhonetic: 'Salam janab! Main Calvin hoon. Grace Outreach ka prime assistant. Bataiye aaj kya plan hai?',
         previewEnglish: 'Greetings! I am Calvin, your prime outreach strategist. Ready for high-velocity operations.'
     },
     opus2: {
@@ -6383,6 +6505,7 @@ const AI_VOICE_PERSONAS = {
         pitch: 0.88,
         rate: 1.05,
         previewUrdu: 'اوپس ٹو ایکٹیویٹڈ۔ سسٹم کے بائیس ماڈیولز اور ٹیلی میٹری کی درست نگرانی جاری ہے۔',
+        previewUrduPhonetic: 'Opus Two activated. System ke baais modules aur telemetry ki durust nigrani jaari hai.',
         previewEnglish: 'Opus 2 online. Analyzing all 22 modules and telemetry parameters with zero error margin.'
     },
     aura: {
@@ -6395,6 +6518,7 @@ const AI_VOICE_PERSONAS = {
         pitch: 1.35,
         rate: 0.94,
         previewUrdu: 'خوش آمدید! میرا نام اورا ہے۔ پرسکون انداز میں ایپ کے ہر فیچر کو سمجھنے کے لیے حاضر ہوں۔',
+        previewUrduPhonetic: 'Khush aamdeed! Mera naam Aura hai. Pursukoon andaaz mein app ke har feature ko samajhne k liye haazir hoon.',
         previewEnglish: 'Welcome! I am Aura. Bringing calm focus and seamless guidance to your outreach workflow.'
     },
     zephyr: {
@@ -6407,6 +6531,7 @@ const AI_VOICE_PERSONAS = {
         pitch: 0.78,
         rate: 1.00,
         previewUrdu: 'زیفر آن لائن۔ اکاؤنٹ والٹ اور ہارڈویئر سیکیورٹی کے معاملات مکمل محفوظ ہیں۔',
+        previewUrduPhonetic: 'Zephyr online. Account vault aur hardware security k mamlaat mukammal mehfooz hain.',
         previewEnglish: 'Zephyr standing by. Robust infrastructure and multi-channel campaign dispatch secured.'
     }
 };
@@ -6418,6 +6543,10 @@ let agentSpeechMuted = false;
 let currentTourStep = 0;
 let isTourActive = false;
 let agentActiveSpeech = null;
+let agentInactivityTimer = null;
+let isAgentListening = false;
+let agentVoiceRecInstance = null;
+let lastProactiveGuidanceTime = 0;
 let agentDrag = {
     active: false,
     moved: false,
@@ -6434,64 +6563,146 @@ const APP_TOUR_STEPS = [
         targetSelector: ".vertical-telemetry-hud",
         diagramIcon: "📊",
         urduAudio: "گریس آؤٹ ریچ میں خوش آمدید! اوپر ہیڈر میں دس ٹیئر ٹیلی میٹری ہَڈ موجود ہے جو تمام بائیس ماڈیولز، سرور اور میموری کی لائیو ہیلتھ دکھاتا ہے۔",
+        urduPhoneticAudio: "Grace Outreach mein khush aamdeed! Ooper header mein das-tier telemetry HUD mojood hai jo tamaam baais modules, server aur memory ki live health dikhata hai.",
         englishAudio: "Welcome to Grace Outreach Assistant! The header features our 10-tier telemetry HUD displaying live health for all 22 modules, server uptime, and memory.",
         urduDesc: "<b>10-Tier Telemetry HUD</b>: لائیو کنٹریکٹرز، سسٹم میموری، اور بائیس ماڈیولز کا ریئل ٹائم مانیٹر۔",
-        englishDesc: "<b>10-Tier Telemetry HUD</b>: Real-time telemetry monitoring 22 modules, active contractors, and server uptime."
+        englishDesc: "<b>10-Tier Telemetry HUD</b>: Real-time telemetry monitoring 22 modules, active contractors, and server uptime.",
+        diagramSteps: [
+            { num: 1, label: "Header Telemetry", icon: "📊", action: "Review server & database latency", selector: ".vertical-telemetry-hud" },
+            { num: 2, label: "System Nodes", icon: "⚡", action: "Track live background health", selector: ".vertical-telemetry-hud" }
+        ]
     },
     {
         title: "🧭 2. 22-Module Outreach Matrix",
         targetSelector: "a[href*='matrix']",
         diagramIcon: "⚡",
         urduAudio: "ماڈیول میٹرکس میں تمام بائیس آؤٹ ریچ ماڈیولز کے ڈیڈیکیٹڈ ورک اسپیس اور تفصیلی رن بکس موجود ہیں۔",
+        urduPhoneticAudio: "Module matrix mein tamaam baais outreach modules ke dedicated workspaces aur detailed runbooks mojood hain.",
         englishAudio: "The 22-Module Matrix provides dedicated workspaces, operational runbooks, and lead pipelines for comprehensive outreach.",
         urduDesc: "<b>22-Module Control Matrix</b>: واٹس ایپ، ای میل، ڈیٹا جنریشن اور فیلڈ آپریشنز کے لیے 22 مکمل ٹولز۔",
-        englishDesc: "<b>22-Module Control Matrix</b>: Comprehensive suite of 22 tools covering WhatsApp, email, lead extraction, and student pipelines."
+        englishDesc: "<b>22-Module Control Matrix</b>: Comprehensive suite of 22 tools covering WhatsApp, email, lead extraction, and student pipelines.",
+        diagramSteps: [
+            { num: 1, label: "Matrix View", icon: "🧭", action: "Navigate to 22-Module Matrix", selector: "a[href*='matrix']" },
+            { num: 2, label: "Module Card", icon: "⚡", action: "Launch workspace or runbook", selector: ".module-card" }
+        ]
     },
     {
         title: "👥 3. Colleague Management Hub",
         targetSelector: "#nav-colleagues",
         diagramIcon: "👥",
         urduAudio: "یہاں آپ کولیگز کے پروفائل، نام، اور کنٹریکٹرز مینیج کرتے ہیں۔ تمام تبدیلیاں ڈوئل والٹ میں مستقل محفوظ رہتی ہیں اور کبھی خود نہیں بدلتیں۔",
+        urduPhoneticAudio: "Yahan aap colleagues ke profile, naam aur contractors manage karte hain. Tamaam tabdeelian dual-vault mein mustaqil save rehti hain aur kabhi khud nahi badalteen.",
         englishAudio: "In Colleague Management, update staff names and assign up to 2 contractors. Edits are permanently stored in our dual-vault and never revert.",
         urduDesc: "<b>Colleague Management</b>: مستقل پروفائل سیونگ (Dual-Vault Auto-Heal)، سرچ بار، اور 2 کنٹریکٹرز کی اسائنمنٹ۔",
-        englishDesc: "<b>Colleague Hub</b>: Permanent dual-vault profile persistence, instant search, and strict 2-contractor assignment."
+        englishDesc: "<b>Colleague Hub</b>: Permanent dual-vault profile persistence, instant search, and strict 2-contractor assignment.",
+        diagramSteps: [
+            { num: 1, label: "Colleagues Tab", icon: "👥", action: "Open Colleague Management", selector: "#nav-colleagues" },
+            { num: 2, label: "Edit Settings", icon: "✏️", action: "Click pencil icon to edit name", selector: ".colleague-card" },
+            { num: 3, label: "Save Profile", icon: "💾", action: "Lock permanently in Dual-Vault", selector: "#save-colleague-btn" }
+        ]
     },
     {
         title: "🎵 4. Soundscape & Music Studio",
         targetSelector: "#floating-audio-main",
         diagramIcon: "🎵",
         urduAudio: "میوزک اسٹوڈیو میں تین الگ باکسز ہیں: بلٹ اِن فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو لوکل اپلوڈ۔ فلوٹنگ بٹن کو آپ سکرین پر کہیں بھی ڈریگ کر سکتے ہیں۔",
+        urduPhoneticAudio: "Music studio mein teen alag boxes hain: built-in focus sounds, live playlist, aur video audio local upload. Floating button ko aap screen par kahin bhi drag kar sakte hain.",
         englishAudio: "The Soundscape Studio features 3 distinct boxes: Built-in focus presets, active playlist queue with shuffle mode, and universal local audio/video player.",
         urduDesc: "<b>Soundscape Studio</b>: 3 علیحدہ باکسز (Presets, Playlist, Media Studio)، شفّل موڈ، اور سکرین پر کہیں بھی ڈریگ ایبل فلوٹنگ بٹن۔",
-        englishDesc: "<b>Soundscape Studio</b>: 3 standalone cards, shuffle playback, universal MP3/MP4 decoding, and draggable floating mini-player."
+        englishDesc: "<b>Soundscape Studio</b>: 3 standalone cards, shuffle playback, universal MP3/MP4 decoding, and draggable floating mini-player.",
+        diagramSteps: [
+            { num: 1, label: "Music Dot", icon: "🎵", action: "Click or drag floating music orb", selector: "#floating-audio-main" },
+            { num: 2, label: "Presets / Media", icon: "📁", action: "Select synth preset or local MP3/MP4", selector: "#soundscape-modal" },
+            { num: 3, label: "Shuffle Play", icon: "🔀", action: "Mix queue with cross-page audio", selector: "#soundscape-shuffle-btn" }
+        ]
     },
     {
         title: "✉️ 5. Enterprise Campaign Studio",
         targetSelector: "#campaign-studio-modal",
         diagramIcon: "🚀",
         urduAudio: "کمپین اسٹوڈیو میں اسپن ٹیکس ٹیکسٹ جنریٹر اور ہیومن جِٹر ڈسپیچر ہے جو نمبرز بین ہونے سے بچاتا ہے۔",
+        urduPhoneticAudio: "Campaign studio mein Spintax text generator aur Human Jitter dispatcher hai jo numbers ban hone se bachata hai.",
         englishAudio: "The Campaign Studio features automated Spintax variations and human jitter dispatching to prevent carrier filtering and WhatsApp bans.",
         urduDesc: "<b>Campaign Studio</b>: اسپن ٹیکس میسج ویریئنٹس اور ہیومن جِٹر ڈسپیچر جو محفوظ بلک میسجنگ یقینی بناتا ہے۔",
-        englishDesc: "<b>Campaign Studio</b>: Spintax template spinning, anti-ban jitter pacing, and audit-logged recipient delivery."
+        englishDesc: "<b>Campaign Studio</b>: Spintax template spinning, anti-ban jitter pacing, and audit-logged recipient delivery.",
+        diagramSteps: [
+            { num: 1, label: "Campaign Studio", icon: "✉️", action: "Open Campaign dispatcher", selector: "#btn-campaign-studio" },
+            { num: 2, label: "Spintax Spin", icon: "📝", action: "Generate dynamic variations", selector: "#campaign-studio-modal" },
+            { num: 3, label: "Jitter Dispatch", icon: "🚀", action: "Inject natural human intervals", selector: "#campaign-studio-modal" }
+        ]
     },
     {
         title: "🛡️ 6. Account Vault & Checkpoints",
         targetSelector: "#admin-master-vault-modal",
         diagramIcon: "🛡️",
         urduAudio: "اکاؤنٹ والٹ میں 4 کلاس لائف سائیکل ہے: ایکٹیو، ریسٹرکٹڈ، سسپینڈڈ، اور مینٹیننس، مع گوگل ڈیٹا مائیگریشن۔ آپ کا ٹور مکمل ہو چکا ہے!",
+        urduPhoneticAudio: "Account vault mein chaar lifecycle classes hain: Active, Restricted, Suspended, aur Maintenance, ba-ma Google data migration. Aap ka tour mukammal ho chuka hai!",
         englishAudio: "The Account Vault protects outreach identities across 4 lifecycle states with Google Checkpoint cloud migration. Your tour is complete!",
         urduDesc: "<b>Account Vault</b>: چار لائف سائیکل اسٹیٹس (Active, Restricted, Suspended, Maintenance) اور ون کلک گوگل ایکسپورٹ۔",
-        englishDesc: "<b>Account Vault</b>: 4-class lifecycle security desk and Google Workspace migration checkpoints."
+        englishDesc: "<b>Account Vault</b>: 4-class lifecycle security desk and Google Workspace migration checkpoints.",
+        diagramSteps: [
+            { num: 1, label: "Master Vault", icon: "🛡️", action: "Open multi-account repository", selector: "#admin-master-vault-modal" },
+            { num: 2, label: "Cloud Sync", icon: "☁️", action: "Export Google Checkpoints & CSV", selector: "#admin-master-vault-modal" }
+        ]
     }
 ];
 
+/* Helper: Render Interactive Step Sketch Diagram Flow */
+function renderStepSketchFlow(steps) {
+    if (!Array.isArray(steps) || !steps.length) return '';
+    let html = '<div class="step-sketch-flow">';
+    steps.forEach((st, idx) => {
+        const targetAttr = st.selector ? `onclick="highlightScreenTarget('${st.selector}')"` : '';
+        html += `
+        <div class="step-sketch-item" ${targetAttr} title="${st.selector ? 'Click to highlight on screen' : ''}">
+            <span class="step-sketch-num">${st.num || (idx + 1)}</span>
+            <div class="step-sketch-content">
+                <span class="step-sketch-btn-mockup">${st.icon || '🔘'} ${st.label}</span>
+                <span style="color:var(--text-secondary); margin-left:4px;">${st.action}</span>
+            </div>
+            ${st.selector ? '<span style="font-size:10px; color:#00e5ff;">🎯</span>' : ''}
+        </div>
+        `;
+        if (idx < steps.length - 1) {
+            html += '<div class="step-sketch-arrow">▼</div>';
+        }
+    });
+    html += '</div>';
+    return html;
+}
+
+/* Helper: Highlight Screen Element with Pulsing Radar Beacon */
+function highlightScreenTarget(selector) {
+    if (!selector) return;
+    try {
+        const el = document.querySelector(selector);
+        if (!el) return;
+        document.querySelectorAll('.beacon-radar-target').forEach(e => e.classList.remove('beacon-radar-target'));
+        el.classList.add('beacon-radar-target');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+            el.classList.remove('beacon-radar-target');
+        }, 4500);
+    } catch(e) {}
+}
+
+/* =========================================================================
+   INITIALIZATION & PERSISTENCE (PERMANENT CUSTOM NAME VAULT)
+   ========================================================================= */
 function initAIAgent() {
-    // Restore preferences
     try {
         currentAgentPersonaKey = window.localStorage.getItem('grace-ai-voice-persona') || 'calvin';
         if (!AI_VOICE_PERSONAS[currentAgentPersonaKey]) currentAgentPersonaKey = 'calvin';
         currentAgentLang = window.localStorage.getItem('grace-ai-lang') || 'ur';
-        currentAgentCustomName = window.localStorage.getItem('grace-ai-custom-name') || AI_VOICE_PERSONAS[currentAgentPersonaKey].name;
+        
+        // Permanent Custom Name Vault Isolation
+        const isCustom = window.localStorage.getItem('grace-ai-name-is-custom') === 'true';
+        const vaultName = window.localStorage.getItem('grace-ai-custom-name-vault');
+        if (isCustom && vaultName) {
+            currentAgentCustomName = vaultName;
+        } else {
+            currentAgentCustomName = AI_VOICE_PERSONAS[currentAgentPersonaKey].name;
+        }
     } catch(e) {}
 
     const widget = document.getElementById('ai-agent-widget');
@@ -6515,6 +6726,8 @@ function initAIAgent() {
     applyAgentPersonaUI();
     renderPersonaModalCards();
     initAIAgentDrag();
+    initAutoMinimizeObserver();
+    initProactiveContextTriggers();
 }
 
 function applyAgentPersonaUI() {
@@ -6525,8 +6738,7 @@ function applyAgentPersonaUI() {
     const nameEl = document.getElementById('bubble-agent-name');
     const tagEl = document.getElementById('bubble-agent-tag');
     const inputEl = document.getElementById('persona-custom-name-input');
-    const langFlag = document.getElementById('agent-lang-flag');
-    const langText = document.getElementById('agent-lang-text');
+    const langToggleBtn = document.getElementById('bubble-lang-toggle');
 
     if (widget) {
         widget.dataset.persona = currentAgentPersonaKey;
@@ -6537,8 +6749,10 @@ function applyAgentPersonaUI() {
     if (nameEl) nameEl.innerText = currentAgentCustomName;
     if (tagEl) tagEl.innerText = persona.tag + ' · ' + (currentAgentLang === 'ur' ? 'اردو آؤٹ ریچ اسسٹنٹ' : 'Executive Guide');
     if (inputEl) inputEl.value = currentAgentCustomName;
-    if (langFlag) langFlag.innerText = currentAgentLang === 'ur' ? '🇵🇰' : '🇬🇧';
-    if (langText) langText.innerText = currentAgentLang.toUpperCase();
+    if (langToggleBtn) {
+        langToggleBtn.innerText = currentAgentLang === 'ur' ? '🇵🇰 UR' : '🇬🇧 EN';
+        langToggleBtn.title = currentAgentLang === 'ur' ? 'Current: Urdu (Click for English)' : 'Current: English (Click for Urdu)';
+    }
 
     const summaryEl = document.getElementById('persona-active-summary');
     if (summaryEl) summaryEl.innerText = 'Active: ' + currentAgentCustomName + ' · ' + persona.tag;
@@ -6560,7 +6774,7 @@ function renderPersonaModalCards() {
         html += `
         <div class="persona-card-item ${isSel ? 'is-selected' : ''}" onclick="selectVoicePersona('${key}')">
             <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${p.avatar}" alt="${p.name}" style="width:34px; height:34px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.7); border:1.5px solid ${isSel ? 'var(--accent-green)' : 'rgba(255,255,255,0.1)'};">
+                <img src="${p.avatar}" alt="${p.name}" style="width:36px; height:36px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.7); border:1.5px solid ${isSel ? 'var(--accent-green)' : 'rgba(255,255,255,0.1)'};">
                 <div>
                     <div style="display:flex; align-items:center; gap:6px;">
                         <strong style="font-size:13px; color:var(--text-main);">${p.name}</strong>
@@ -6582,9 +6796,14 @@ function renderPersonaModalCards() {
 function selectVoicePersona(key) {
     if (!AI_VOICE_PERSONAS[key]) return;
     currentAgentPersonaKey = key;
-    currentAgentCustomName = AI_VOICE_PERSONAS[key].name;
     window.localStorage.setItem('grace-ai-voice-persona', key);
-    window.localStorage.setItem('grace-ai-custom-name', currentAgentCustomName);
+
+    // Only update agent name to default persona name if user has not explicitly locked a custom name
+    const isCustom = window.localStorage.getItem('grace-ai-name-is-custom') === 'true';
+    if (!isCustom) {
+        currentAgentCustomName = AI_VOICE_PERSONAS[key].name;
+    }
+
     applyAgentPersonaUI();
     renderPersonaModalCards();
     previewPersonaVoice(key);
@@ -6594,15 +6813,25 @@ function previewPersonaVoice(key) {
     const p = AI_VOICE_PERSONAS[key];
     if (!p) return;
     const sampleText = (currentAgentLang === 'ur') ? p.previewUrdu : p.previewEnglish;
-    speakAloud(sampleText, key);
+    const phonetic = (currentAgentLang === 'ur') ? p.previewUrduPhonetic : null;
+    speakAloud(sampleText, key, null, phonetic);
 }
 
 function updateAgentCustomName(val) {
     const trimmed = (val || '').trim();
     if (!trimmed) return;
     currentAgentCustomName = trimmed;
-    window.localStorage.setItem('grace-ai-custom-name', trimmed);
+    window.localStorage.setItem('grace-ai-custom-name-vault', trimmed);
+    window.localStorage.setItem('grace-ai-name-is-custom', 'true');
     applyAgentPersonaUI();
+}
+
+function resetAgentCustomName() {
+    window.localStorage.removeItem('grace-ai-custom-name-vault');
+    window.localStorage.setItem('grace-ai-name-is-custom', 'false');
+    currentAgentCustomName = AI_VOICE_PERSONAS[currentAgentPersonaKey].name;
+    applyAgentPersonaUI();
+    showToast('Agent name reset to default ' + currentAgentCustomName + '.', 'info');
 }
 
 function setAgentLanguage(lang) {
@@ -6634,60 +6863,151 @@ function closeAgentPersonaModal() {
 
 function saveAndApplyAgentPersona() {
     closeAgentPersonaModal();
-    showToast('AI Agent Persona & Voice updated!', 'success');
+    showToast('AI Agent Persona & Voice settings saved!', 'success');
 }
 
 /* =========================================================================
-   REAL-TIME VOCAL SPEECH SYNTHESIS ENGINE (BOL KAR BATANA)
+   AUTO-MINIMIZE ENGINE (5-SECOND INACTIVITY TIMER TO MINI-BOT BADGE)
    ========================================================================= */
-function speakAloud(text, personaKey, onEnd) {
+function startAgentInactivityTimer() {
+    clearTimeout(agentInactivityTimer);
+    agentInactivityTimer = setTimeout(() => {
+        minimizeAgentToMiniBot();
+    }, 5000);
+}
+
+function resetAgentInactivityTimer() {
+    clearTimeout(agentInactivityTimer);
+    const widget = document.getElementById('ai-agent-widget');
+    if (widget && !widget.classList.contains('is-minimized')) {
+        startAgentInactivityTimer();
+    }
+}
+
+function minimizeAgentToMiniBot() {
+    const widget = document.getElementById('ai-agent-widget');
+    const bubble = document.getElementById('ai-agent-bubble');
+    if (!widget) return;
+    // Never auto-minimize if bubble open, tour active, agent speaking, or dragging
+    if ((bubble && !bubble.hidden) || isTourActive || widget.classList.contains('is-speaking') || agentDrag.active) {
+        return;
+    }
+    widget.classList.add('is-minimized');
+    const wrap = document.getElementById('ai-agent-avatar-wrap');
+    if (wrap) wrap.setAttribute('title', '🤖 AI Agent (Click to expand & chat)');
+}
+
+function restoreAgentFromMiniBot() {
+    const widget = document.getElementById('ai-agent-widget');
+    if (!widget) return;
+    widget.classList.remove('is-minimized');
+    const wrap = document.getElementById('ai-agent-avatar-wrap');
+    if (wrap) wrap.setAttribute('title', 'Drag to reposition · Click to chat or open guide');
+    resetAgentInactivityTimer();
+}
+
+function initAutoMinimizeObserver() {
+    startAgentInactivityTimer();
+    // User activity listeners
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+        window.addEventListener(evt, () => {
+            const widget = document.getElementById('ai-agent-widget');
+            if (widget && !widget.classList.contains('is-minimized')) {
+                resetAgentInactivityTimer();
+            }
+        }, { passive: true });
+    });
+}
+
+/* =========================================================================
+   100% FLUENT NATURAL URDU & ENGLISH VOCAL SPEECH SYNTHESIS ENGINE
+   ========================================================================= */
+function toRomanUrduPhonetic(text) {
+    if (!text) return '';
+    let clean = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const map = [
+        [/سلام جناب|اسلام علیکم|السلام علیکم/g, 'Assalam-o-Alaikum!'],
+        [/خوش آمدید/g, 'Khush aamdeed!'],
+        [/کولیگ|ساتھی/g, 'colleague'],
+        [/پروفائل/g, 'profile'],
+        [/تبدیل|بدلنا/g, 'tabdeel'],
+        [/سیو|محفوظ/g, 'save'],
+        [/مستقل/g, 'mustaqil'],
+        [/ساؤنڈ اسکیپ|میوزک/g, 'soundscape music'],
+        [/کمپین اسٹوڈیو/g, 'campaign studio'],
+        [/اکاؤنٹ والٹ/g, 'account vault'],
+        [/رہنمائی/g, 'rehnumai'],
+        [/شکریہ/g, 'shukriya']
+    ];
+    let res = clean;
+    map.forEach(([r, s]) => { res = res.replace(r, s); });
+    return res;
+}
+
+function speakAloud(text, personaKey, onEnd, phoneticOverride) {
     if (agentSpeechMuted || !text) {
         if (onEnd) onEnd();
         return;
     }
 
+    resetAgentInactivityTimer();
     const persona = AI_VOICE_PERSONAS[personaKey || currentAgentPersonaKey] || AI_VOICE_PERSONAS.calvin;
     const widget = document.getElementById('ai-agent-widget');
+    if (widget && widget.classList.contains('is-minimized')) {
+        restoreAgentFromMiniBot();
+    }
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices() || [];
+        let textToSpeak = text;
+        let selectedVoice = null;
+
+        if (currentAgentLang === 'ur') {
+            const nativeUrdu = voices.find(v => (v.lang && v.lang.toLowerCase().startsWith('ur')) || (v.name && v.name.toLowerCase().includes('urdu')));
+            if (nativeUrdu) {
+                selectedVoice = nativeUrdu;
+                textToSpeak = text;
+            } else {
+                // Universal Fluent Roman-Urdu fallback (speaks aloud naturally without silent failure)
+                textToSpeak = phoneticOverride || toRomanUrduPhonetic(text);
+                selectedVoice = voices.find(v => v.lang && (v.lang.toLowerCase().startsWith('hi') || v.lang.toLowerCase().includes('in'))) ||
+                                voices.find(v => v.name && (v.name.toLowerCase().includes('india') || v.name.toLowerCase().includes('pakistan') || v.name.toLowerCase().includes('hindi') || v.name.toLowerCase().includes('ravi') || v.name.toLowerCase().includes('heera'))) ||
+                                voices.find(v => (persona.genderType === 'f' ? (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Google UK English Female')) : true)) ||
+                                voices[0];
+            }
+        } else {
+            textToSpeak = text;
+            selectedVoice = voices.find(v => (v.lang && v.lang.startsWith('en') && (persona.genderType === 'f' ? (v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha')) : true))) ||
+                            voices.find(v => v.lang && v.lang.startsWith('en')) ||
+                            voices[0];
+        }
+
+        const utter = new SpeechSynthesisUtterance(textToSpeak);
         utter.rate = persona.rate;
         utter.pitch = persona.pitch;
-
-        // Voice picking
-        const voices = window.speechSynthesis.getVoices() || [];
-        if (currentAgentLang === 'ur') {
-            const urVoice = voices.find(v => v.lang.startsWith('ur') || v.lang.startsWith('hi')) ||
-                            voices.find(v => v.name.toLowerCase().includes('urdu') || v.name.toLowerCase().includes('hindi')) ||
-                            voices[0];
-            if (urVoice) utter.voice = urVoice;
-        } else {
-            const enVoice = voices.find(v => (v.lang.startsWith('en') && (persona.genderType === 'f' ? v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') : true))) ||
-                            voices.find(v => v.lang.startsWith('en')) ||
-                            voices[0];
-            if (enVoice) utter.voice = enVoice;
-        }
+        if (selectedVoice) utter.voice = selectedVoice;
 
         utter.onstart = () => {
             if (widget) widget.classList.add('is-speaking');
         };
 
-        const handleSpeechDone = () => {
+        const handleDone = () => {
             if (widget) widget.classList.remove('is-speaking');
+            resetAgentInactivityTimer();
             if (onEnd) onEnd();
         };
 
-        utter.onend = handleSpeechDone;
-        utter.onerror = handleSpeechDone;
+        utter.onend = handleDone;
+        utter.onerror = handleDone;
         agentActiveSpeech = utter;
         window.speechSynthesis.speak(utter);
     } else {
-        // Web Audio synthesized procedural fallback
         if (widget) widget.classList.add('is-speaking');
         playChime();
         setTimeout(() => {
             if (widget) widget.classList.remove('is-speaking');
+            resetAgentInactivityTimer();
             if (onEnd) onEnd();
         }, 1800);
     }
@@ -6710,9 +7030,10 @@ function toggleAgentSpeechMute() {
 }
 
 /* =========================================================================
-   INTERACTIVE A-TO-Z GUIDED APP TOUR
+   INTERACTIVE A-TO-Z GUIDED APP TOUR (WITH VISUAL STEP SKETCH CARDS)
    ========================================================================= */
 function startAppTour() {
+    restoreAgentFromMiniBot();
     isTourActive = true;
     currentTourStep = 0;
     openAgentBubble();
@@ -6727,10 +7048,12 @@ function showTourStep(index) {
     currentTourStep = index;
     const step = APP_TOUR_STEPS[index];
 
-    // Remove previous highlights
-    document.querySelectorAll('.tour-spotlight-active').forEach(el => el.classList.remove('tour-spotlight-active'));
-
     // Highlight target element
+    document.querySelectorAll('.tour-spotlight-active, .beacon-radar-target').forEach(el => {
+        el.classList.remove('tour-spotlight-active');
+        el.classList.remove('beacon-radar-target');
+    });
+
     if (step.targetSelector) {
         const target = document.querySelector(step.targetSelector);
         if (target) {
@@ -6739,7 +7062,6 @@ function showTourStep(index) {
         }
     }
 
-    // Update bubble body
     const body = document.getElementById('bubble-content-area');
     const controls = document.getElementById('bubble-tour-controls');
     const counter = document.getElementById('tour-step-counter');
@@ -6753,6 +7075,8 @@ function showTourStep(index) {
 
     const desc = (currentAgentLang === 'ur') ? step.urduDesc : step.englishDesc;
     const audioText = (currentAgentLang === 'ur') ? step.urduAudio : step.englishAudio;
+    const phonetic = (currentAgentLang === 'ur') ? step.urduPhoneticAudio : null;
+    const sketchHtml = renderStepSketchFlow(step.diagramSteps || []);
 
     if (body) {
         body.innerHTML = `
@@ -6762,12 +7086,12 @@ function showTourStep(index) {
                 <span style="font-size:18px;">${step.diagramIcon}</span>
             </div>
             <div style="font-size:12px; color:var(--text-primary); line-height:1.5;">${desc}</div>
+            ${sketchHtml}
         </div>
         `;
     }
 
-    // Speak explanation aloud
-    speakAloud(audioText);
+    speakAloud(audioText, null, null, phonetic);
 }
 
 function nextTourStep() {
@@ -6786,13 +7110,18 @@ function prevTourStep() {
 
 function endAppTour() {
     isTourActive = false;
-    document.querySelectorAll('.tour-spotlight-active').forEach(el => el.classList.remove('tour-spotlight-active'));
+    document.querySelectorAll('.tour-spotlight-active, .beacon-radar-target').forEach(el => {
+        el.classList.remove('tour-spotlight-active');
+        el.classList.remove('beacon-radar-target');
+    });
     const controls = document.getElementById('bubble-tour-controls');
     if (controls) controls.style.display = 'none';
 
     const finishMsg = (currentAgentLang === 'ur') ?
         'بہت خوب! آپ کا گریس آؤٹ ریچ ٹور مکمل ہو چکا ہے۔ کوئی بھی سوال ہو تو نیچے ٹائپ کریں یا مائیک دبائیں۔' :
         'Tour completed! You are ready to manage campaigns, colleagues, and outreach workflows.';
+    const finishPhonetic = (currentAgentLang === 'ur') ?
+        'Bohat khoob! Aap ka Grace Outreach tour mukammal ho chuka hai. Koi bhi sawal ho to poochhein ya mic dabayein.' : null;
 
     const body = document.getElementById('bubble-content-area');
     if (body) {
@@ -6803,121 +7132,114 @@ function endAppTour() {
         </div>
         `;
     }
-    speakAloud(finishMsg);
+    speakAloud(finishMsg, null, null, finishPhonetic);
+    resetAgentInactivityTimer();
 }
 
 /* =========================================================================
-   MULTI-DIALECT NLP Q&A ENGINE (ROMAN URDU, URDU, ENGLISH)
+   MULTI-DIALECT NLP Q&A ENGINE WITH VISUAL STEP SKETCHES
    ========================================================================= */
 function askAgentQuestion(topic) {
+    restoreAgentFromMiniBot();
     openAgentBubble();
-    const query = topic.toLowerCase();
+    const query = (topic || '').toLowerCase();
     let replyText = '';
     let speechAudio = '';
+    let phoneticAudio = '';
     let actionBtn = '';
+    let steps = [];
 
     if (query.includes('tour') || query.includes('guide')) {
         startAppTour();
         return;
     } else if (query.includes('colleague') || query.includes('naam') || query.includes('name') || query.includes('profile')) {
+        steps = [
+            { num: 1, label: "Colleague Hub", icon: "👥", action: "Colleague Management tab par jayein", selector: "#nav-colleagues" },
+            { num: 2, label: "Edit Settings", icon: "✏️", action: "Staff card par pencil icon click karein", selector: ".colleague-card" },
+            { num: 3, label: "Save Profile", icon: "💾", action: "Naya naam save karein (Permanent Dual-Vault)", selector: "#save-colleague-btn" }
+        ];
         if (currentAgentLang === 'ur') {
-            replyText = `
-            <b>👥 کولیگ پروفائل اور نام کا طریقہ:</b><br>
-            1. <b>Colleague Management</b> ٹیب پر جائیں۔<br>
-            2. جس کولیگ کا نام بدلنا ہو، <b>✏️ Edit Settings</b> پر کلک کریں۔<br>
-            3. نیا نام ٹائپ کریں اور <b>✓ Save Profile Changes</b> دبائیں۔<br>
-            4. ڈوئل والٹ خود بخود سرور اور لوکل اسٹوریج میں مستقل سیو کر دے گا!
-            `;
-            speechAudio = 'کولیگ کا نام تبدیل کرنے کے لیے کولیگ مینجمنٹ میں ایڈٹ سیٹنگز پر کلک کریں اور نام لکھ کر سیو کریں۔ یہ ہمیشہ کے لیے مستقل سیو ہو جائے گا۔';
+            replyText = `<b>👥 کولیگ پروفائل اور نام کا طریقہ:</b><br>نیچے اسٹیپس دیکھیں اور ٹارگٹ بٹن پر کلک کریں:`;
+            speechAudio = 'کولیگ کا نام تبدیل کرنے کے لیے کولیگ مینجمنٹ میں ایڈٹ سیٹنگز پر کلک کریں اور نام لکھ کر سیو کریں۔ یہ ڈوئل والٹ میں مستقل سیو ہو جائے گا۔';
+            phoneticAudio = 'Colleague ka naam tabdeel karne k liye Colleague Management mein Edit Settings par click karein aur naam likh kar Save karein. Yeh Dual-Vault mein mustaqil save ho jayega.';
         } else {
-            replyText = `
-            <b>👥 Updating Colleague Profiles:</b><br>
-            1. Navigate to <b>Colleague Management</b>.<br>
-            2. Click <b>✏️ Edit Settings</b> on the target staff member.<br>
-            3. Type the new name and click <b>✓ Save Profile Changes</b>.<br>
-            4. Our dual-vault auto-heals and locks the edit permanently!
-            `;
+            replyText = `<b>👥 Updating Colleague Profiles:</b><br>Follow the sequence below or click target buttons:`;
             speechAudio = 'To update a colleague, go to Colleague Management, click Edit Settings, enter the new name, and click Save.';
+            phoneticAudio = speechAudio;
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="location.href='/api/?tab=colleagues'" style="margin-top:6px;">Go to Colleagues 👥</button>`;
     } else if (query.includes('music') || query.includes('sound') || query.includes('audio') || query.includes('mp4') || query.includes('gana')) {
+        steps = [
+            { num: 1, label: "Music Dot", icon: "🎵", action: "Floating music orb ko click ya drag karein", selector: "#floating-audio-main" },
+            { num: 2, label: "Media Box", icon: "📁", action: "Local MP3 ya MP4 upload ya presets chunein", selector: "#soundscape-modal" },
+            { num: 3, label: "Shuffle", icon: "🔀", action: "Shuffle button se queue chalayein", selector: "#soundscape-shuffle-btn" }
+        ];
         if (currentAgentLang === 'ur') {
-            replyText = `
-            <b>🎵 ساؤنڈ اسکیپ اور بیک گراؤنڈ میوزک:</b><br>
-            1. اسکرین پر موجود <b>🎵 فلوٹنگ ڈاٹ</b> کو کہیں بھی ڈریگ کریں۔<br>
-            2. ساؤنڈ اسٹوڈیو میں <b>3 الگ باکسز</b> ہیں: Built-in فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو اپلوڈر۔<br>
-            3. لوکل MP3 یا MP4 فائل چنیں اور <b>🔀 Shuffle</b> سے مکس کریں۔
-            `;
-            speechAudio = 'میوزک کے لیے فلوٹنگ ڈاٹ پر کلک کریں یا کسٹم میڈیا اسٹوڈیو میں کوئی بھی آڈیو یا ویڈیو فائل اپلوڈ کریں۔';
+            replyText = `<b>🎵 ساؤنڈ اسکیپ اور میوزک کنٹرول:</b><br>اسکرین پر 3 علیحدہ باکسز موجود ہیں:`;
+            speechAudio = 'میوزک کے لیے فلوٹنگ ڈاٹ پر کلک کریں، لوکل MP3 یا MP4 فائل چنیں اور شفّل بٹن دبائیں۔';
+            phoneticAudio = 'Music k liye floating dot par click karein, local MP3 ya MP4 file chunein aur shuffle button dabayein.';
         } else {
-            replyText = `
-            <b>🎵 Soundscape & Background Audio:</b><br>
-            1. Drag the <b>🎵 floating audio dot</b> anywhere on screen.<br>
-            2. Features <b>3 standalone boxes</b>: Built-in focus synths, active queue with shuffle, and local audio/video player.<br>
-            3. Supports native MP3 and MP4 decoding!
-            `;
+            replyText = `<b>🎵 Soundscape & Background Audio:</b><br>Features 3 standalone cards and draggable floating orb:`;
             speechAudio = 'Click the floating music dot or open Soundscape to select presets or upload local MP3 and MP4 files.';
+            phoneticAudio = speechAudio;
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openSoundscape()" style="margin-top:6px;">Open Soundscape 🎵</button>`;
     } else if (query.includes('campaign') || query.includes('broadcast') || query.includes('spintax') || query.includes('message')) {
+        steps = [
+            { num: 1, label: "Campaign Studio", icon: "✉️", action: "Campaign studio modal open karein", selector: "#btn-campaign-studio" },
+            { num: 2, label: "Spintax Spin", icon: "📝", action: "Dynamic message variants banayein", selector: "#campaign-studio-modal" },
+            { num: 3, label: "Jitter Dispatch", icon: "🚀", action: "Anti-ban intervals k sath send karein", selector: "#campaign-studio-modal" }
+        ];
         if (currentAgentLang === 'ur') {
-            replyText = `
-            <b>✉️ انٹرپرائز کمپین اسٹوڈیو:</b><br>
-            1. کمپین اسٹوڈیو اسپن ٹیکس ٹیکسٹ کی مدد سے میسجز کو خود بخود تبدیل کرتا ہے۔<br>
-            2. ہیومن جِٹر ڈسپیچر ریسیپینٹس کے درمیان وقفہ رکھ کر واٹس ایپ بین ہونے سے بچاتا ہے۔
-            `;
-            speechAudio = 'کمپین اسٹوڈیو میں اسپن ٹیکس اور ہیومن جِٹر ڈسپیچر ہے جو محفوظ بلک میسجنگ یقینی بناتا ہے۔';
+            replyText = `<b>✉️ انٹرپرائز کمپین اسٹوڈیو:</b><br>اسپن ٹیکس اور ہیومن جٹر ڈسپیچ:`;
+            speechAudio = 'کمپین اسٹوڈیو میں اسپن ٹیکس اور ہیومن جِٹر ڈسپیچر ہے جو نمبرز بین ہونے سے بچاتا ہے۔';
+            phoneticAudio = 'Campaign Studio mein Spintax aur human jitter dispatcher hai jo numbers ban hone se bachata hai.';
         } else {
-            replyText = `
-            <b>✉️ Enterprise Campaign Studio:</b><br>
-            1. Generate Spintax variants to prevent spam filters.<br>
-            2. Human jitter dispatching injects natural delays between recipients.
-            `;
+            replyText = `<b>✉️ Enterprise Campaign Studio:</b><br>Anti-ban Spintax variations and human jitter:`;
             speechAudio = 'The Campaign Studio uses Spintax variations and human jitter to deliver outreach messages safely.';
+            phoneticAudio = speechAudio;
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openCampaignStudio()" style="margin-top:6px;">Open Campaign Studio 🚀</button>`;
     } else if (query.includes('vault') || query.includes('account') || query.includes('google')) {
+        steps = [
+            { num: 1, label: "Account Vault", icon: "🛡️", action: "Master vault repository open karein", selector: "#admin-master-vault-modal" },
+            { num: 2, label: "Add Account", icon: "➕", action: "Naya WhatsApp ya Email credential add karein", selector: "#admin-master-vault-modal" },
+            { num: 3, label: "Cloud Sync", icon: "☁️", action: "Google checkpoint verification & CSV export", selector: "#admin-master-vault-modal" }
+        ];
         if (currentAgentLang === 'ur') {
-            replyText = `
-            <b>🛡️ ملٹی ٹیننٹ اکاؤنٹ والٹ:</b><br>
-            1. 4 لائف سائیکل کلاسیز: Active, Restricted, Suspended, Maintenance.<br>
-            2. گوگل اکاؤنٹ ویریفکیشن اور سنگل کلک مائیگریشن ایکسپورٹ۔
-            `;
+            replyText = `<b>🛡️ ملٹی ٹیننٹ اکاؤنٹ والٹ:</b><br>4 لائف سائیکل کلاسیز اور کلاؤڈ مائیگریشن:`;
             speechAudio = 'اکاؤنٹ والٹ آؤٹ ریچ اکاونٹس کو چار کلاسز میں محفوظ رکھتا ہے اور گوگل ڈیٹا ایکسپورٹ فراہم کرتا ہے۔';
+            phoneticAudio = 'Account Vault outreach accounts ko chaar classes mein mehfooz rakhta hai aur Google data export deta hai.';
         } else {
-            replyText = `
-            <b>🛡️ Multi-Tenant Account Vault:</b><br>
-            1. 4-Class lifecycle management (Active, Restricted, Suspended, Maintenance).<br>
-            2. Interactive Google checkpoint verification and instant CSV/TXT export.
-            `;
+            replyText = `<b>🛡️ Multi-Tenant Account Vault:</b><br>4-Class lifecycle security and Google Checkpoint export:`;
             speechAudio = 'The Account Vault manages accounts across 4 lifecycle stages with cloud migration tools.';
+            phoneticAudio = speechAudio;
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openAdminMasterVaultModal()" style="margin-top:6px;">Open Account Vault 🛡️</button>`;
     } else {
         if (currentAgentLang === 'ur') {
-            replyText = `
-            آپ کے سوال <i>"${topic}"</i> کے لیے ہم مدد کے لیے تیار ہیں۔<br>
-            اوپر سے <b>🧭 Poora App Tour</b> شروع کریں یا نیچے کولیگز، میوزک، اور کمپین کے شارٹ کٹس دیکھیں۔
-            `;
+            replyText = `آپ کے سوال <i>"${topic}"</i> کے لیے مدد حاضر ہے۔ نیچے سے ورک اسپیس چنیں یا ٹور دیکھیں:`;
             speechAudio = 'آپ کا سوال موصول ہوا۔ آپ پوورا ایپ ٹور کر سکتے ہیں یا نیچے دیے گئے بٹنز سے رہنمائی حاصل کریں۔';
+            phoneticAudio = 'Aap ka sawal mil gaya. Aap poora app tour kar sakte hain ya neeche diye gaye buttons se madad lein.';
         } else {
-            replyText = `
-            Regarding <i>"${topic}"</i>, you can trigger the <b>A-to-Z App Tour</b> or explore dedicated workspaces for Colleagues, Soundscapes, and Campaigns.
-            `;
-            speechAudio = 'Here is guidance for your request. You can take the full app tour or select a specific tool.';
+            replyText = `Guidance for <i>"${topic}"</i>: Trigger the full guided tour or select a specialized workspace:`;
+            speechAudio = 'Here is guidance for your request. You can take the full app tour or select a specific workspace.';
+            phoneticAudio = speechAudio;
         }
     }
 
     const body = document.getElementById('bubble-content-area');
     if (body) {
+        const sketchHtml = renderStepSketchFlow(steps);
         body.innerHTML = `
         <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:12px;">
-            ${replyText}
+            <div style="font-size:12px; color:var(--text-primary); line-height:1.45;">${replyText}</div>
+            ${sketchHtml}
             ${actionBtn}
         </div>
         `;
     }
-    speakAloud(speechAudio);
+    speakAloud(speechAudio, null, null, phoneticAudio);
 }
 
 function handleAgentUserSubmit() {
@@ -6940,8 +7262,10 @@ function toggleAgentChat() {
 }
 
 function openAgentBubble() {
+    restoreAgentFromMiniBot();
     const bubble = document.getElementById('ai-agent-bubble');
     if (bubble) bubble.hidden = false;
+    clearTimeout(agentInactivityTimer);
 }
 
 function closeAgentBubble() {
@@ -6949,14 +7273,190 @@ function closeAgentBubble() {
     if (bubble) bubble.hidden = true;
     stopAgentSpeech();
     if (isTourActive) endAppTour();
+    resetAgentInactivityTimer();
 }
 
 function handleAgentAvatarClick(event) {
     if (agentDrag.suppressClick) return;
+    const widget = document.getElementById('ai-agent-widget');
+    if (widget && widget.classList.contains('is-minimized')) {
+        restoreAgentFromMiniBot();
+        openAgentBubble();
+        return;
+    }
     toggleAgentChat();
 }
 
-/* Draggable Physics for AI Agent Mascot */
+/* =========================================================================
+   IN-CHAT VOICE RECORDING & SPEECH RECOGNITION (MIC)
+   ========================================================================= */
+function toggleAgentVoiceRecognition() {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const micBtn = document.getElementById('bubble-mic-btn');
+    const input = document.getElementById('agent-user-input');
+
+    if (!SpeechRec) {
+        showToast('Microphone speech recognition not supported in this browser. Please type your query.', 'warning');
+        if (input) input.focus();
+        return;
+    }
+
+    if (isAgentListening && agentVoiceRecInstance) {
+        try { agentVoiceRecInstance.stop(); } catch(e) {}
+        isAgentListening = false;
+        if (micBtn) micBtn.classList.remove('is-recording');
+        if (input) input.placeholder = 'Poochhein (e.g. colleague kaise save karein?)...';
+        return;
+    }
+
+    try {
+        const rec = new SpeechRec();
+        rec.lang = (currentAgentLang === 'ur') ? 'ur-PK' : 'en-US';
+        rec.continuous = false;
+        rec.interimResults = true;
+
+        rec.onstart = function() {
+            isAgentListening = true;
+            if (micBtn) micBtn.classList.add('is-recording');
+            if (input) {
+                input.placeholder = (currentAgentLang === 'ur') ? '🎙️ Sun raha hoon... Bolna shuru karein' : '🎙️ Listening... Speak now';
+                input.value = '';
+            }
+        };
+
+        rec.onresult = function(event) {
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else if (input) {
+                    input.value = event.results[i][0].transcript;
+                }
+            }
+            if (finalTranscript && input) {
+                input.value = finalTranscript.trim();
+            }
+        };
+
+        rec.onerror = function() {
+            isAgentListening = false;
+            if (micBtn) micBtn.classList.remove('is-recording');
+            if (input) input.placeholder = 'Poochhein (e.g. colleague kaise save karein?)...';
+        };
+
+        rec.onend = function() {
+            isAgentListening = false;
+            if (micBtn) micBtn.classList.remove('is-recording');
+            if (input) {
+                input.placeholder = 'Poochhein (e.g. colleague kaise save karein?)...';
+                if (input.value.trim()) {
+                    handleAgentUserSubmit();
+                }
+            }
+        };
+
+        agentVoiceRecInstance = rec;
+        rec.start();
+    } catch(err) {
+        isAgentListening = false;
+        if (micBtn) micBtn.classList.remove('is-recording');
+        showToast('Microphone access unavailable.', 'warning');
+    }
+}
+
+/* =========================================================================
+   PROACTIVE AUTONOMOUS CONTEXT GUIDANCE
+   ========================================================================= */
+function triggerProactiveAgentGuidance(context, targetSelector, customUrdu, customEnglish, stepsArray) {
+    const now = Date.now();
+    if (now - lastProactiveGuidanceTime < 7000) return; // Debounce
+    if (isTourActive) return;
+
+    lastProactiveGuidanceTime = now;
+    restoreAgentFromMiniBot();
+    openAgentBubble();
+
+    if (targetSelector) {
+        highlightScreenTarget(targetSelector);
+    }
+
+    const isUr = (currentAgentLang === 'ur');
+    const message = isUr ? customUrdu.text : customEnglish.text;
+    const audio = isUr ? customUrdu.audio : customEnglish.audio;
+    const phonetic = isUr ? (customUrdu.phonetic || customUrdu.audio) : customEnglish.audio;
+
+    const body = document.getElementById('bubble-content-area');
+    if (body) {
+        const sketchHtml = renderStepSketchFlow(stepsArray || []);
+        body.innerHTML = `
+        <div style="background:rgba(0,180,216,0.06); border:1.5px solid #00b4d8; border-radius:12px; padding:12px;">
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                <span style="font-size:16px;">🤖</span>
+                <strong style="color:#00e5ff; font-size:12.5px;">${isUr ? 'پرو ایکٹو اسسٹنٹ گائیڈ' : 'Proactive Guide'}: ${context}</strong>
+            </div>
+            <div style="font-size:12px; color:var(--text-primary); line-height:1.45;">${message}</div>
+            ${sketchHtml}
+        </div>
+        `;
+    }
+    speakAloud(audio, null, null, phonetic);
+}
+
+function initProactiveContextTriggers() {
+    // 1. Colleague edit clicks
+    document.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.colleague-edit-btn, [onclick*="openColleagueSettings"], .btn-edit-colleague');
+        if (editBtn) {
+            triggerProactiveAgentGuidance(
+                'Colleague Management',
+                '#colleague-settings-modal',
+                {
+                    text: 'کولیگ کا نام اور کنٹریکٹرز یہاں تبدیل کریں۔ سیو کرنے پر ڈوئل والٹ مستقل محفوظ رکھے گا!',
+                    audio: 'کولیگ کا نام یہاں تبدیل کریں۔ سیو کرنے پر یہ ڈوئل والٹ میں مستقل محفوظ رہے گا۔',
+                    phonetic: 'Colleague ka naam yahan tabdeel karein. Save karne par yeh Dual-Vault mein mustaqil mehfooz rahega.'
+                },
+                {
+                    text: 'Updating colleague details: Save changes to lock them permanently in our Dual-Vault.',
+                    audio: 'Updating colleague details. Save changes to lock them permanently in our Dual-Vault.'
+                },
+                [
+                    { num: 1, label: "Name Input", icon: "✏️", action: "Type updated staff name" },
+                    { num: 2, label: "Contractors", icon: "👥", action: "Assign up to 2 contractors" },
+                    { num: 3, label: "Save Profile", icon: "💾", action: "Lock in Dual-Vault permanently" }
+                ]
+            );
+        }
+    });
+
+    // 2. Soundscape clicks
+    const musicTrigger = document.getElementById('floating-audio-main');
+    if (musicTrigger) {
+        musicTrigger.addEventListener('click', function() {
+            triggerProactiveAgentGuidance(
+                'Music Studio',
+                '#soundscape-modal',
+                {
+                    text: 'ساؤنڈ اسٹوڈیو اوپن ہوا ہے! یہاں 3 الگ باکسز ہیں: فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو اپلوڈ۔',
+                    audio: 'ساؤنڈ اسٹوڈیو اوپن ہوا ہے! لوکل MP3 یا MP4 فائل اپلوڈ کریں یا شفّل موڈ آن کریں۔',
+                    phonetic: 'Sound Studio open hua hai! Local MP3 ya MP4 upload karein ya shuffle mode on karein.'
+                },
+                {
+                    text: 'Soundscape Studio online: Explore focus sounds, local media upload, and playlist shuffle.',
+                    audio: 'Soundscape Studio online. Explore focus presets, local media uploads, and playlist shuffle.'
+                },
+                [
+                    { num: 1, label: "Built-in Presets", icon: "🎧", action: "Select concentration synth" },
+                    { num: 2, label: "Universal Upload", icon: "📁", action: "Upload MP3/MP4 media" },
+                    { num: 3, label: "Shuffle Queue", icon: "🔀", action: "Randomize playlist order" }
+                ]
+            );
+        });
+    }
+}
+
+/* =========================================================================
+   DRAGGABLE PHYSICS FOR AI AGENT MASCOT
+   ========================================================================= */
 function initAIAgentDrag() {
     const widget = document.getElementById('ai-agent-widget');
     const avatar = document.getElementById('ai-agent-avatar-wrap');
@@ -6973,13 +7473,14 @@ function initAIAgentDrag() {
         agentDrag.left = rect.left;
         agentDrag.top = rect.top;
         avatar.setPointerCapture?.(e.pointerId);
+        resetAgentInactivityTimer();
     });
 
     avatar.addEventListener('pointermove', function(e) {
         if (!agentDrag.active) return;
         const dx = e.clientX - agentDrag.startX;
         const dy = e.clientY - agentDrag.startY;
-        if (Math.abs(dx) + Math.abs(dy) > 5) {
+        if (Math.abs(dx) + Math.abs(dy) > 6) {
             agentDrag.moved = true;
         }
         if (!agentDrag.moved) return;
@@ -6999,58 +7500,17 @@ function initAIAgentDrag() {
         if (!agentDrag.active) return;
         if (agentDrag.moved) {
             agentDrag.suppressClick = true;
-            setTimeout(() => { agentDrag.suppressClick = false; }, 160);
+            setTimeout(() => { agentDrag.suppressClick = false; }, 180);
             const rect = widget.getBoundingClientRect();
             const pos = { left: Math.round(rect.left), top: Math.round(rect.top) };
             window.localStorage.setItem('grace-ai-agent-pos', JSON.stringify(pos));
         }
         agentDrag.active = false;
+        resetAgentInactivityTimer();
     };
 
     avatar.addEventListener('pointerup', handlePointerEnd);
     avatar.addEventListener('pointercancel', handlePointerEnd);
-}
-
-/* Voice Recognition (Mic) */
-function toggleAgentVoiceRecognition() {
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRec) {
-        showToast('Speech recognition not supported in this browser. Please type your question.', 'warning');
-        openAgentBubble();
-        return;
-    }
-
-    const rec = new SpeechRec();
-    rec.lang = (currentAgentLang === 'ur') ? 'ur-PK' : 'en-US';
-    rec.continuous = false;
-    rec.interimResults = false;
-
-    const micBtn = document.getElementById('agent-mic-btn');
-    if (micBtn) micBtn.style.background = 'rgba(239, 68, 68, 0.4)';
-    showToast('Listening... Bolna shuru karein', 'info');
-
-    rec.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        if (micBtn) micBtn.style.background = '';
-        if (transcript) {
-            askAgentQuestion(transcript);
-        }
-    };
-
-    rec.onerror = function() {
-        if (micBtn) micBtn.style.background = '';
-        showToast('Voice input ended.', 'info');
-    };
-
-    rec.onend = function() {
-        if (micBtn) micBtn.style.background = '';
-    };
-
-    try {
-        rec.start();
-    } catch(e) {
-        if (micBtn) micBtn.style.background = '';
-    }
 }
 
 /* =========================================================================

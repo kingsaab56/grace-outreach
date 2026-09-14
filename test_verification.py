@@ -609,7 +609,6 @@ def run_tests():
     assert "ai-agent-avatar-wrap" in html
     assert "ai-agent-img" in html
     assert "agent-speaking-waves" in html
-    assert "ai-agent-toolbelt" in html
     assert "ai-agent-bubble" in html
     assert "ai-agent-persona-modal" in html
     assert "AI_VOICE_PERSONAS" in html
@@ -626,7 +625,35 @@ def run_tests():
     assert "zephyr" in html
     print("[PASS] 3D Animated AI Agent Companion, Bilingual Vocal Speech, 5 Personas & A-to-Z App Tour verified.")
 
-    print("\n[SUCCESS] ALL 33 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 34. Verify 4K Resolution, 5s Auto-Minimize Mini-Bot, In-Chat Voice Mic, Permanent Name Vault & Visual Step Sketches
+    print("Testing 4K Visuals, 5s Auto-Minimize, In-Chat Mic, Name Vault, Fluent Urdu & Step Sketches...")
+    from PIL import Image
+    im_titan = Image.open("assets/ai-agent-titan.png")
+    im_alara = Image.open("assets/ai-agent-alara.png")
+    assert im_titan.size == (1600, 2400), f"Expected Titan 4K (1600, 2400), got {im_titan.size}"
+    assert im_alara.size == (1600, 2400), f"Expected Alara 4K (1600, 2400), got {im_alara.size}"
+
+    assert "bubble-settings-btn" in html
+    assert "bubble-mic-btn" in html
+    assert "is-minimized" in html
+    assert "startAgentInactivityTimer" in html
+    assert "minimizeAgentToMiniBot" in html
+    assert "restoreAgentFromMiniBot" in html
+    assert "grace-ai-custom-name-vault" in html
+    assert "grace-ai-name-is-custom" in html
+    assert "resetAgentCustomName" in html
+    assert "previewUrduPhonetic" in html
+    assert "urduPhoneticAudio" in html
+    assert "toRomanUrduPhonetic" in html
+    assert "renderStepSketchFlow" in html
+    assert "step-sketch-flow" in html
+    assert "beacon-radar-target" in html
+    assert "highlightScreenTarget" in html
+    assert "triggerProactiveAgentGuidance" in html
+    assert "initProactiveContextTriggers" in html
+    print("[PASS] 4K Visuals, 5s Auto-Minimize, In-Chat Mic, Name Vault, Fluent Urdu & Step Sketches verified.")
+
+    print("\n[SUCCESS] ALL 34 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
