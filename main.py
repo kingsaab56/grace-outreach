@@ -3909,27 +3909,131 @@ BASE_CSS = """
         0% { box-shadow: 0 0 8px rgba(0, 229, 255, 0.4); }
         100% { box-shadow: 0 0 28px rgba(0, 229, 255, 0.95), 0 0 40px rgba(0, 180, 216, 0.6); }
     }
+    /* Responsive Screen-Adaptive Chat Bubble HUD */
     .ai-agent-bubble {
         position: absolute;
-        bottom: 180px;
+        bottom: 155px;
         right: 0;
-        width: min(390px, 92vw);
-        max-height: 520px;
+        width: min(450px, 92vw);
+        max-width: 450px;
+        max-height: min(560px, 82vh);
         background: rgba(0, 20, 18, 0.96);
         border: 1.5px solid var(--accent-green);
         border-radius: 16px;
-        padding: 14px 16px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        padding: 13px 15px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.85);
         backdrop-filter: blur(14px);
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 9px;
         z-index: 70;
         animation: bubble-pop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    /* Auto Collision-Avoidance Docking Alignments */
+    .ai-agent-widget.dock-left .ai-agent-bubble,
+    .ai-agent-widget[style*="left: 24px"] .ai-agent-bubble {
+        left: 0 !important;
+        right: auto !important;
+    }
+    .ai-agent-widget.dock-right .ai-agent-bubble,
+    .ai-agent-widget[style*="right: 28px"] .ai-agent-bubble,
+    .ai-agent-widget[style*="right: 24px"] .ai-agent-bubble {
+        right: 0 !important;
+        left: auto !important;
     }
     @keyframes bubble-pop {
         from { opacity: 0; transform: scale(0.9) translateY(12px); }
         to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    /* High-Tech Terminal ASCII / Wireframe Blueprint Cards */
+    .blueprint-terminal-card {
+        margin: 8px 0;
+        background: rgba(0, 14, 12, 0.97);
+        border: 1.5px solid rgba(0, 229, 255, 0.45);
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.7), inset 0 0 14px rgba(0, 229, 255, 0.08);
+        overflow: hidden;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    }
+    .blueprint-terminal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
+        background: rgba(0, 28, 25, 0.95);
+        border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+        font-size: 10px;
+        color: #00e5ff;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+    .blueprint-terminal-pre {
+        margin: 0;
+        padding: 8px 10px;
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+        font-size: 10px;
+        line-height: 1.35;
+        color: #6ee7b7;
+        white-space: pre;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #00e5ff transparent;
+    }
+    .blueprint-tags-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 6px 8px;
+        background: rgba(0, 20, 18, 0.7);
+        border-top: 1px dashed rgba(0, 229, 255, 0.25);
+    }
+    .blueprint-btn-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0, 229, 255, 0.12);
+        border: 1px solid rgba(0, 229, 255, 0.35);
+        border-radius: 5px;
+        padding: 2px 7px;
+        color: #00e5ff;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+    }
+    .blueprint-btn-tag:hover {
+        background: rgba(0, 229, 255, 0.3);
+        border-color: #00e5ff;
+        color: #FFFFFF;
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+    /* Laptop & Screen Responsive Media Queries */
+    @media (max-height: 800px) {
+        .ai-agent-bubble {
+            bottom: 140px;
+            max-height: min(460px, 78vh);
+            padding: 10px 12px;
+            gap: 7px;
+        }
+        .bubble-body {
+            max-height: min(250px, 44vh) !important;
+            font-size: 11.5px;
+        }
+        .blueprint-terminal-pre {
+            font-size: 9.5px;
+            padding: 6px 8px;
+        }
+    }
+    @media (max-width: 600px) {
+        .ai-agent-bubble {
+            width: calc(100vw - 32px) !important;
+            max-width: calc(100vw - 32px) !important;
+            right: 0 !important;
+            left: auto !important;
+        }
     }
     .bubble-header {
         display: flex;
@@ -6562,6 +6666,17 @@ const APP_TOUR_STEPS = [
         title: "👑 1. Super Admin & Telemetry HUD",
         targetSelector: ".vertical-telemetry-hud",
         diagramIcon: "📊",
+        blueprintTitle: "📊 HUD TELEMETRY & 22-MODULE ARCHITECTURE",
+        asciiBlueprint:
+`┌────────────────────────────────────────────────────────┐
+│ [ TELEMETRY HUD & OUTREACH CONTROL MATRIX ]            │
+├────────────────────────────────────────────────────────┤
+│  [1. Telemetry HUD] ──► [2. Health Check]              │
+│         │                       │                      │
+│         ▼                       ▼                      │
+│  [3. Active Nodes]  ──► [4. Server Heartbeat]          │
+│  STATUS: 22 Nodes Online ● Latency < 14ms ● Healthy    │
+└────────────────────────────────────────────────────────┘`,
         urduAudio: "گریس آؤٹ ریچ میں خوش آمدید! اوپر ہیڈر میں دس ٹیئر ٹیلی میٹری ہَڈ موجود ہے جو تمام بائیس ماڈیولز، سرور اور میموری کی لائیو ہیلتھ دکھاتا ہے۔",
         urduPhoneticAudio: "Grace Outreach mein khush aamdeed! Ooper header mein das-tier telemetry HUD mojood hai jo tamaam baais modules, server aur memory ki live health dikhata hai.",
         englishAudio: "Welcome to Grace Outreach Assistant! The header features our 10-tier telemetry HUD displaying live health for all 22 modules, server uptime, and memory.",
@@ -6576,6 +6691,20 @@ const APP_TOUR_STEPS = [
         title: "🧭 2. 22-Module Outreach Matrix",
         targetSelector: "a[href*='matrix']",
         diagramIcon: "⚡",
+        blueprintTitle: "🧭 22-MODULE OUTREACH WORKSPACE ARCHITECTURE",
+        asciiBlueprint:
+`┌────────────────────────────────────────────────────────┐
+│ [ 22-MODULE OUTREACH WORKSPACE MATRIX ]                │
+├────────────────────────────────────────────────────────┤
+│  ┌─ [COMMUNICATION] ─┐   ┌─── [OPERATIONS] ────┐       │
+│  │ WhatsApp Studio   │   │ Colleague Mgmt Hub  │       │
+│  │ Email Dispatcher  │   │ Soundscape Studio   │       │
+│  └───────────────────┘   └─────────────────────┘       │
+│               │                      │                 │
+│               ▼                      ▼                 │
+│      [ Enterprise Vault & Live Lead Pipeline ]         │
+│  STATUS: Active Workspaces: 22/22 ● Runbooks Verified  │
+└────────────────────────────────────────────────────────┘`,
         urduAudio: "ماڈیول میٹرکس میں تمام بائیس آؤٹ ریچ ماڈیولز کے ڈیڈیکیٹڈ ورک اسپیس اور تفصیلی رن بکس موجود ہیں۔",
         urduPhoneticAudio: "Module matrix mein tamaam baais outreach modules ke dedicated workspaces aur detailed runbooks mojood hain.",
         englishAudio: "The 22-Module Matrix provides dedicated workspaces, operational runbooks, and lead pipelines for comprehensive outreach.",
@@ -6590,6 +6719,17 @@ const APP_TOUR_STEPS = [
         title: "👥 3. Colleague Management Hub",
         targetSelector: "#nav-colleagues",
         diagramIcon: "👥",
+        blueprintTitle: "👥 COLLEAGUE HUB & DUAL-VAULT AUTO-HEAL",
+        asciiBlueprint:
+`┌────────────────────────────────────────────────────────┐
+│ [ COLLEAGUE HUB & DUAL-VAULT AUTO-HEAL PIPELINE ]      │
+├────────────────────────────────────────────────────────┤
+│  [1. Staff Profile] ──► [2. Edit Settings (Pencil)]    │
+│         │                              │               │
+│         ▼                              ▼               │
+│  [3. 2 Contractors] ──► [4. Lock in Dual-Vault 💾]     │
+│  SECURITY: Auto-Heal Active ● Reverts Blocked (100%)   │
+└────────────────────────────────────────────────────────┘`,
         urduAudio: "یہاں آپ کولیگز کے پروفائل، نام، اور کنٹریکٹرز مینیج کرتے ہیں۔ تمام تبدیلیاں ڈوئل والٹ میں مستقل محفوظ رہتی ہیں اور کبھی خود نہیں بدلتیں۔",
         urduPhoneticAudio: "Yahan aap colleagues ke profile, naam aur contractors manage karte hain. Tamaam tabdeelian dual-vault mein mustaqil save rehti hain aur kabhi khud nahi badalteen.",
         englishAudio: "In Colleague Management, update staff names and assign up to 2 contractors. Edits are permanently stored in our dual-vault and never revert.",
@@ -6605,6 +6745,19 @@ const APP_TOUR_STEPS = [
         title: "🎵 4. Soundscape & Music Studio",
         targetSelector: "#floating-audio-main",
         diagramIcon: "🎵",
+        blueprintTitle: "🎵 SOUNDSCAPE 3-CARD ARCHITECTURE & PLAYER",
+        asciiBlueprint:
+`┌────────────────────────────────────────────────────────┐
+│ [ SOUNDSCAPE 3-BOX ARCHITECTURE & UNIVERSAL AUDIO ]    │
+├────────────────────────────────────────────────────────┤
+│  ┌─ [1. PRESETS] ──┐ ┌─ [2. PLAYLIST] ──┐ ┌─ [3. MEDIA] │
+│  │ Focus Synths    │ │ Active Queue     │ │ Local MP3/4│
+│  └─────────────────┘ └──────────────────┘ └────────────┘
+│            │                 │                 │       │
+│            ▼                 ▼                 ▼       │
+│    [ Universal Audio Engine ] ──► [ 🔀 Shuffle Mode ]  │
+│  PLAYBACK: Draggable Mini-Orb ● Zero Sound Leaks       │
+└────────────────────────────────────────────────────────┘`,
         urduAudio: "میوزک اسٹوڈیو میں تین الگ باکسز ہیں: بلٹ اِن فوکس ساؤنڈز، لائیو پلے لسٹ، اور ویڈیو آڈیو لوکل اپلوڈ۔ فلوٹنگ بٹن کو آپ سکرین پر کہیں بھی ڈریگ کر سکتے ہیں۔",
         urduPhoneticAudio: "Music studio mein teen alag boxes hain: built-in focus sounds, live playlist, aur video audio local upload. Floating button ko aap screen par kahin bhi drag kar sakte hain.",
         englishAudio: "The Soundscape Studio features 3 distinct boxes: Built-in focus presets, active playlist queue with shuffle mode, and universal local audio/video player.",
@@ -6620,6 +6773,17 @@ const APP_TOUR_STEPS = [
         title: "✉️ 5. Enterprise Campaign Studio",
         targetSelector: "#campaign-studio-modal",
         diagramIcon: "🚀",
+        blueprintTitle: "✉️ ENTERPRISE CAMPAIGN & ANTI-BAN DISPATCHER",
+        asciiBlueprint:
+`┌────────────────────────────────────────────────────────┐
+│ [ CAMPAIGN STUDIO SPINTAX & JITTER ENGINE ]            │
+├────────────────────────────────────────────────────────┤
+│  [1. Spintax Spin] ──► [2. Jitter Interval Dispatch]   │
+│         │                              │               │
+│         ▼                              ▼               │
+│  [3. Dynamic Variants] ──► [4. Verified Delivery 🚀]   │
+│  PROTECTION: Human Pacing Active ● Anti-Ban Shield ON  │
+└────────────────────────────────────────────────────────┘`,
         urduAudio: "کمپین اسٹوڈیو میں اسپن ٹیکس ٹیکسٹ جنریٹر اور ہیومن جِٹر ڈسپیچر ہے جو نمبرز بین ہونے سے بچاتا ہے۔",
         urduPhoneticAudio: "Campaign studio mein Spintax text generator aur Human Jitter dispatcher hai jo numbers ban hone se bachata hai.",
         englishAudio: "The Campaign Studio features automated Spintax variations and human jitter dispatching to prevent carrier filtering and WhatsApp bans.",
@@ -6635,6 +6799,17 @@ const APP_TOUR_STEPS = [
         title: "🛡️ 6. Account Vault & Checkpoints",
         targetSelector: "#admin-master-vault-modal",
         diagramIcon: "🛡️",
+        blueprintTitle: "🛡️ MULTI-TENANT ACCOUNT VAULT & CHECKPOINTS",
+        asciiBlueprint:
+`┌────────────────────────────────────────────────────────┐
+│ [ ACCOUNT VAULT 4-TIER LIFECYCLE & GOOGLE CLOUD ]      │
+├────────────────────────────────────────────────────────┤
+│  [Active] ──► [Restricted] ──► [Suspended / Maint]     │
+│     │              │                  │                │
+│     ▼              ▼                  ▼                │
+│  [ Master Vault Repository ] ──► [ Cloud Checkpoint ☁️]│
+│  COMPLIANCE: 4-Tier Auditing ● Instant Data Export     │
+└────────────────────────────────────────────────────────┘`,
         urduAudio: "اکاؤنٹ والٹ میں 4 کلاس لائف سائیکل ہے: ایکٹیو، ریسٹرکٹڈ، سسپینڈڈ، اور مینٹیننس، مع گوگل ڈیٹا مائیگریشن۔ آپ کا ٹور مکمل ہو چکا ہے!",
         urduPhoneticAudio: "Account vault mein chaar lifecycle classes hain: Active, Restricted, Suspended, aur Maintenance, ba-ma Google data migration. Aap ka tour mukammal ho chuka hai!",
         englishAudio: "The Account Vault protects outreach identities across 4 lifecycle states with Google Checkpoint cloud migration. Your tour is complete!",
@@ -6680,9 +6855,110 @@ function highlightScreenTarget(selector) {
         document.querySelectorAll('.beacon-radar-target').forEach(e => e.classList.remove('beacon-radar-target'));
         el.classList.add('beacon-radar-target');
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        adjustAgentPositionForTarget(selector);
         setTimeout(() => {
             el.classList.remove('beacon-radar-target');
         }, 4500);
+    } catch(e) {}
+}
+
+/* Helper: Render High-Tech Terminal ASCII Wireframe Blueprint Card */
+function renderAsciiBlueprintCard(title, asciiArt, diagramSteps) {
+    if (!asciiArt) return '';
+    let tagsHtml = '';
+    if (Array.isArray(diagramSteps) && diagramSteps.length) {
+        tagsHtml = '<div class="blueprint-tags-row">';
+        diagramSteps.forEach((st, idx) => {
+            const targetAttr = st.selector ? `onclick="highlightScreenTarget('${st.selector}')"` : '';
+            tagsHtml += `
+            <span class="blueprint-btn-tag" ${targetAttr} title="${st.selector ? 'Click to highlight element on screen' : ''}">
+                ${st.icon || '🔘'} ${st.label || ('Step ' + (idx + 1))}
+            </span>
+            `;
+        });
+        tagsHtml += '</div>';
+    }
+    return `
+    <div class="blueprint-terminal-card">
+        <div class="blueprint-terminal-header">
+            <span>${title || '📐 SYSTEM BLUEPRINT WIREFRAME'}</span>
+            <span style="color:#00e5ff; font-size:9px; letter-spacing:0.5px;">TERMINAL v2.5 ● LIVE</span>
+        </div>
+        <pre class="blueprint-terminal-pre">${asciiArt}</pre>
+        ${tagsHtml}
+    </div>
+    `;
+}
+
+/* Autonomous Collision-Avoidance Repositioning Engine */
+function adjustAgentPositionForTarget(targetSelector) {
+    const widget = document.getElementById('ai-agent-widget');
+    if (!widget || agentDrag.active) return;
+    if (!targetSelector) return;
+
+    try {
+        const target = document.querySelector(targetSelector);
+        if (!target) return;
+
+        const targetRect = target.getBoundingClientRect();
+        const screenW = window.innerWidth;
+        const targetCenter = (targetRect.left + targetRect.right) / 2;
+
+        widget.style.transition = 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+
+        // If target is in right 55% or close to right edge, slide to left dock
+        if (targetCenter > screenW * 0.45 || targetRect.right > screenW - 380) {
+            widget.classList.add('dock-left');
+            widget.classList.remove('dock-right');
+            widget.style.left = '24px';
+            widget.style.right = 'auto';
+            widget.style.bottom = '24px';
+            widget.style.top = 'auto';
+        } else {
+            // Target is in left half, slide to right dock
+            widget.classList.add('dock-right');
+            widget.classList.remove('dock-left');
+            widget.style.right = '28px';
+            widget.style.left = 'auto';
+            widget.style.bottom = '24px';
+            widget.style.top = 'auto';
+        }
+
+        setTimeout(() => {
+            if (!agentDrag.active && widget) {
+                widget.style.transition = '';
+            }
+        }, 500);
+    } catch(e) {}
+}
+
+function restoreAgentDefaultPosition() {
+    const widget = document.getElementById('ai-agent-widget');
+    if (!widget || agentDrag.active) return;
+
+    try {
+        const savedPos = JSON.parse(window.localStorage.getItem('grace-ai-agent-pos'));
+        widget.style.transition = 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+        widget.classList.remove('dock-left');
+        widget.classList.add('dock-right');
+
+        if (savedPos && Number.isFinite(savedPos.left) && Number.isFinite(savedPos.top)) {
+            widget.style.left = savedPos.left + 'px';
+            widget.style.top = savedPos.top + 'px';
+            widget.style.right = 'auto';
+            widget.style.bottom = 'auto';
+        } else {
+            widget.style.right = '28px';
+            widget.style.left = 'auto';
+            widget.style.bottom = '24px';
+            widget.style.top = 'auto';
+        }
+
+        setTimeout(() => {
+            if (!agentDrag.active && widget) {
+                widget.style.transition = '';
+            }
+        }, 500);
     } catch(e) {}
 }
 
@@ -7060,6 +7336,8 @@ function showTourStep(index) {
             target.classList.add('tour-spotlight-active');
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+        // Autonomous collision avoidance: slide away if chat covers target
+        adjustAgentPositionForTarget(step.targetSelector);
     }
 
     const body = document.getElementById('bubble-content-area');
@@ -7077,16 +7355,18 @@ function showTourStep(index) {
     const audioText = (currentAgentLang === 'ur') ? step.urduAudio : step.englishAudio;
     const phonetic = (currentAgentLang === 'ur') ? step.urduPhoneticAudio : null;
     const sketchHtml = renderStepSketchFlow(step.diagramSteps || []);
+    const blueprintHtml = renderAsciiBlueprintCard(step.blueprintTitle || step.title, step.asciiBlueprint, step.diagramSteps);
 
     if (body) {
         body.innerHTML = `
-        <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:12px; margin-bottom:8px;">
+        <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:11px; margin-bottom:8px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <strong style="color:var(--accent-gold); font-size:13px;">${step.title}</strong>
                 <span style="font-size:18px;">${step.diagramIcon}</span>
             </div>
-            <div style="font-size:12px; color:var(--text-primary); line-height:1.5;">${desc}</div>
+            <div style="font-size:12px; color:var(--text-primary); line-height:1.45;">${desc}</div>
             ${sketchHtml}
+            ${blueprintHtml}
         </div>
         `;
     }
@@ -7117,6 +7397,9 @@ function endAppTour() {
     const controls = document.getElementById('bubble-tour-controls');
     if (controls) controls.style.display = 'none';
 
+    // Restore default agent position
+    restoreAgentDefaultPosition();
+
     const finishMsg = (currentAgentLang === 'ur') ?
         'بہت خوب! آپ کا گریس آؤٹ ریچ ٹور مکمل ہو چکا ہے۔ کوئی بھی سوال ہو تو نیچے ٹائپ کریں یا مائیک دبائیں۔' :
         'Tour completed! You are ready to manage campaigns, colleagues, and outreach workflows.';
@@ -7137,7 +7420,7 @@ function endAppTour() {
 }
 
 /* =========================================================================
-   MULTI-DIALECT NLP Q&A ENGINE WITH VISUAL STEP SKETCHES
+   MULTI-DIALECT NLP Q&A ENGINE WITH VISUAL STEP SKETCHES & BLUEPRINTS
    ========================================================================= */
 function askAgentQuestion(topic) {
     restoreAgentFromMiniBot();
@@ -7148,11 +7431,26 @@ function askAgentQuestion(topic) {
     let phoneticAudio = '';
     let actionBtn = '';
     let steps = [];
+    let asciiArt = '';
+    let blueprintTitle = '';
+    let targetSelector = '';
 
     if (query.includes('tour') || query.includes('guide')) {
         startAppTour();
         return;
     } else if (query.includes('colleague') || query.includes('naam') || query.includes('name') || query.includes('profile')) {
+        targetSelector = "#nav-colleagues";
+        blueprintTitle = "👥 COLLEAGUE HUB & DUAL-VAULT AUTO-HEAL";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ COLLEAGUE HUB & DUAL-VAULT AUTO-HEAL PIPELINE ]      │
+├────────────────────────────────────────────────────────┤
+│  [1. Staff Profile] ──► [2. Edit Settings (Pencil)]    │
+│         │                              │               │
+│         ▼                              ▼               │
+│  [3. 2 Contractors] ──► [4. Lock in Dual-Vault 💾]     │
+│  SECURITY: Auto-Heal Active ● Reverts Blocked (100%)   │
+└────────────────────────────────────────────────────────┘`;
         steps = [
             { num: 1, label: "Colleague Hub", icon: "👥", action: "Colleague Management tab par jayein", selector: "#nav-colleagues" },
             { num: 2, label: "Edit Settings", icon: "✏️", action: "Staff card par pencil icon click karein", selector: ".colleague-card" },
@@ -7169,6 +7467,20 @@ function askAgentQuestion(topic) {
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="location.href='/api/?tab=colleagues'" style="margin-top:6px;">Go to Colleagues 👥</button>`;
     } else if (query.includes('music') || query.includes('sound') || query.includes('audio') || query.includes('mp4') || query.includes('gana')) {
+        targetSelector = "#floating-audio-main";
+        blueprintTitle = "🎵 SOUNDSCAPE 3-CARD ARCHITECTURE & PLAYER";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ SOUNDSCAPE 3-BOX ARCHITECTURE & UNIVERSAL AUDIO ]    │
+├────────────────────────────────────────────────────────┤
+│  ┌─ [1. PRESETS] ──┐ ┌─ [2. PLAYLIST] ──┐ ┌─ [3. MEDIA] │
+│  │ Focus Synths    │ │ Active Queue     │ │ Local MP3/4│
+│  └─────────────────┘ └──────────────────┘ └────────────┘
+│            │                 │                 │       │
+│            ▼                 ▼                 ▼       │
+│    [ Universal Audio Engine ] ──► [ 🔀 Shuffle Mode ]  │
+│  PLAYBACK: Draggable Mini-Orb ● Zero Sound Leaks       │
+└────────────────────────────────────────────────────────┘`;
         steps = [
             { num: 1, label: "Music Dot", icon: "🎵", action: "Floating music orb ko click ya drag karein", selector: "#floating-audio-main" },
             { num: 2, label: "Media Box", icon: "📁", action: "Local MP3 ya MP4 upload ya presets chunein", selector: "#soundscape-modal" },
@@ -7185,6 +7497,18 @@ function askAgentQuestion(topic) {
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openSoundscape()" style="margin-top:6px;">Open Soundscape 🎵</button>`;
     } else if (query.includes('campaign') || query.includes('broadcast') || query.includes('spintax') || query.includes('message')) {
+        targetSelector = "#campaign-studio-modal";
+        blueprintTitle = "✉️ ENTERPRISE CAMPAIGN & ANTI-BAN DISPATCHER";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ CAMPAIGN STUDIO SPINTAX & JITTER ENGINE ]            │
+├────────────────────────────────────────────────────────┤
+│  [1. Spintax Spin] ──► [2. Jitter Interval Dispatch]   │
+│         │                              │               │
+│         ▼                              ▼               │
+│  [3. Dynamic Variants] ──► [4. Verified Delivery 🚀]   │
+│  PROTECTION: Human Pacing Active ● Anti-Ban Shield ON  │
+└────────────────────────────────────────────────────────┘`;
         steps = [
             { num: 1, label: "Campaign Studio", icon: "✉️", action: "Campaign studio modal open karein", selector: "#btn-campaign-studio" },
             { num: 2, label: "Spintax Spin", icon: "📝", action: "Dynamic message variants banayein", selector: "#campaign-studio-modal" },
@@ -7201,6 +7525,18 @@ function askAgentQuestion(topic) {
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openCampaignStudio()" style="margin-top:6px;">Open Campaign Studio 🚀</button>`;
     } else if (query.includes('vault') || query.includes('account') || query.includes('google')) {
+        targetSelector = "#admin-master-vault-modal";
+        blueprintTitle = "🛡️ MULTI-TENANT ACCOUNT VAULT & CHECKPOINTS";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ ACCOUNT VAULT 4-TIER LIFECYCLE & GOOGLE CLOUD ]      │
+├────────────────────────────────────────────────────────┤
+│  [Active] ──► [Restricted] ──► [Suspended / Maint]     │
+│     │              │                  │                │
+│     ▼              ▼                  ▼                │
+│  [ Master Vault Repository ] ──► [ Cloud Checkpoint ☁️]│
+│  COMPLIANCE: 4-Tier Auditing ● Instant Data Export     │
+└────────────────────────────────────────────────────────┘`;
         steps = [
             { num: 1, label: "Account Vault", icon: "🛡️", action: "Master vault repository open karein", selector: "#admin-master-vault-modal" },
             { num: 2, label: "Add Account", icon: "➕", action: "Naya WhatsApp ya Email credential add karein", selector: "#admin-master-vault-modal" },
@@ -7217,6 +7553,17 @@ function askAgentQuestion(topic) {
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openAdminMasterVaultModal()" style="margin-top:6px;">Open Account Vault 🛡️</button>`;
     } else {
+        blueprintTitle = "🧭 EXECUTIVE AGENT & 22-MODULE MATRIX";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ EXECUTIVE AGENT CONTROL & OUTREACH MATRIX ]          │
+├────────────────────────────────────────────────────────┤
+│  [1. Take App Tour] ──► [2. Voice Persona Settings]    │
+│         │                               │              │
+│         ▼                               ▼              │
+│  [3. 22 Modules Matrix] ──► [4. Telemetry Real-time]   │
+│  STATUS: 5 Personas Online ● Bilingual Urdu & English  │
+└────────────────────────────────────────────────────────┘`;
         if (currentAgentLang === 'ur') {
             replyText = `آپ کے سوال <i>"${topic}"</i> کے لیے مدد حاضر ہے۔ نیچے سے ورک اسپیس چنیں یا ٹور دیکھیں:`;
             speechAudio = 'آپ کا سوال موصول ہوا۔ آپ پوورا ایپ ٹور کر سکتے ہیں یا نیچے دیے گئے بٹنز سے رہنمائی حاصل کریں۔';
@@ -7228,13 +7575,19 @@ function askAgentQuestion(topic) {
         }
     }
 
+    if (targetSelector) {
+        adjustAgentPositionForTarget(targetSelector);
+    }
+
     const body = document.getElementById('bubble-content-area');
     if (body) {
         const sketchHtml = renderStepSketchFlow(steps);
+        const blueprintHtml = renderAsciiBlueprintCard(blueprintTitle, asciiArt, steps);
         body.innerHTML = `
-        <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:12px;">
+        <div style="background:rgba(255,255,255,0.03); border:1px solid #123B35; border-radius:12px; padding:11px;">
             <div style="font-size:12px; color:var(--text-primary); line-height:1.45;">${replyText}</div>
             ${sketchHtml}
+            ${blueprintHtml}
             ${actionBtn}
         </div>
         `;
@@ -7273,6 +7626,7 @@ function closeAgentBubble() {
     if (bubble) bubble.hidden = true;
     stopAgentSpeech();
     if (isTourActive) endAppTour();
+    restoreAgentDefaultPosition();
     resetAgentInactivityTimer();
 }
 

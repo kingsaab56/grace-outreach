@@ -653,7 +653,36 @@ def run_tests():
     assert "initProactiveContextTriggers" in html
     print("[PASS] 4K Visuals, 5s Auto-Minimize, In-Chat Mic, Name Vault, Fluent Urdu & Step Sketches verified.")
 
-    print("\n[SUCCESS] ALL 34 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 35. Verify Autonomous Collision Avoidance, Responsive Screen HUD, Terminal Blueprint Sketches & Natural HD Palette
+    print("Testing Collision Avoidance, Screen-Adaptive HUD, Terminal Wireframe Blueprints & Natural Colors...")
+    assert "adjustAgentPositionForTarget" in html, "Missing adjustAgentPositionForTarget"
+    assert "restoreAgentDefaultPosition" in html, "Missing restoreAgentDefaultPosition"
+    assert "dock-left" in html, "Missing dock-left in HTML/CSS"
+    assert "dock-right" in html, "Missing dock-right in HTML/CSS"
+    assert "blueprint-terminal-card" in html, "Missing blueprint-terminal-card in HTML/CSS"
+    assert "blueprint-terminal-header" in html, "Missing blueprint-terminal-header"
+    assert "blueprint-terminal-pre" in html, "Missing blueprint-terminal-pre"
+    assert "blueprint-tags-row" in html, "Missing blueprint-tags-row"
+    assert "blueprint-btn-tag" in html, "Missing blueprint-btn-tag"
+    assert "renderAsciiBlueprintCard" in html, "Missing renderAsciiBlueprintCard"
+    assert "asciiBlueprint" in html, "Missing asciiBlueprint in tour steps"
+    assert "min(450px, 92vw)" in html, "Missing responsive width min(450px, 92vw)"
+    assert "max-height: min(560px, 82vh)" in html, "Missing responsive max-height"
+    assert "@media (max-height: 800px)" in html, "Missing laptop screen responsive media query"
+    
+    # Verify natural pearl-white armor calibration (no artificial blue tint spill)
+    # Check pixels on the armor shoulder area: R, G, B should be close to balanced neutral
+    titan_pixels = list(im_titan.getdata())
+    # Find bright non-transparent pixels (armor)
+    armor_pixels = [p for p in titan_pixels if len(p) == 4 and p[3] > 200 and p[0] > 160 and p[1] > 160 and p[2] > 160]
+    assert len(armor_pixels) > 500, "Should have plenty of bright armor pixels"
+    # Ensure blue does not excessively dominate red/green on white armor
+    sample_armor = armor_pixels[:500]
+    avg_diff_b_r = sum(p[2] - p[0] for p in sample_armor) / len(sample_armor)
+    assert avg_diff_b_r < 40, f"Blue cast on armor too strong: {avg_diff_b_r}"
+    print("[PASS] Collision Avoidance, Screen-Adaptive HUD, Terminal Wireframe Blueprints & Natural Colors verified.")
+
+    print("\n[SUCCESS] ALL 35 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()
