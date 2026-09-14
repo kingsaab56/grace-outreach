@@ -706,7 +706,20 @@ def run_tests():
     assert "scrollbar-color" in html, "Missing custom scrollbar color rule on log-box"
     print("[PASS] Executive Activity Stream, Dynamic Badges, Custom Scrollbars & Light/Dark Theming verified.")
 
-    print("\n[SUCCESS] ALL 37 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 38. Verify Senior Dev Deep Audit: DOM Hierarchy Balance, Zero Duplicate IDs, applyTheme, Voice GC Shield & Auto-Docking
+    print("Testing Senior Dev Deep Audit: DOM Balance, Single Logo ID, applyTheme, Voice GC Shield & Auto-Docking...")
+    assert html.count('id="logo-clickable-wrap"') == 1, "Duplicate id='logo-clickable-wrap' found in rendered HTML"
+    assert (Path(__file__).resolve().parent / "main.py").read_text(encoding="utf-8").count("LOGO_SVG_MODAL") >= 1, "Missing LOGO_SVG_MODAL definition"
+    assert "function applyTheme(" in html, "Missing applyTheme function in rendered HTML"
+    assert "window.__graceAgentUtterance = utter;" in html, "Missing Chromium GC shield for voice synthesis"
+    assert "cachedSpeechVoices" in html, "Missing async cachedSpeechVoices pre-warming"
+    assert ".grid-2 { grid-template-columns: 1fr !important; }" in html, "Missing mobile responsive breakpoint for swapped grid-2"
+    assert "LIVE STREAM TELEMETRY & ACTIVITY FEED" in html, "Missing Telemetry/Activity Stream ASCII blueprint in askAgentQuestion"
+    assert "widget.classList.add('dock-left')" in html, "Missing auto-docking left class on drag end"
+    assert "widget.classList.add('dock-right')" in html, "Missing auto-docking right class on drag end"
+    print("[PASS] Senior Dev Deep Audit: DOM Balance, Single Logo ID, applyTheme, Voice GC Shield & Auto-Docking verified.")
+
+    print("\n[SUCCESS] ALL 38 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

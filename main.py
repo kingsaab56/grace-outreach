@@ -659,6 +659,7 @@ def update_shared_state(payload):
 
 
 LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-thumb.png?v=20260911_hd" srcset="/api/assets/grace-logo-thumb.png?v=20260911_hd 1x, /api/assets/grace-logo-thumb.png?v=20260911_hd 2x, /api/assets/grace-logo.png?v=20260911_hd 3x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" /></div>"""
+LOGO_SVG_MODAL = """<div class="logo-modal-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-thumb.png?v=20260911_hd" srcset="/api/assets/grace-logo-thumb.png?v=20260911_hd 1x, /api/assets/grace-logo-thumb.png?v=20260911_hd 2x, /api/assets/grace-logo.png?v=20260911_hd 3x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
 FAVICON_DATA_URI = "/api/assets/grace-logo-thumb.png?v=20260911_hd"
 WA_CROWN_SRC = "/api/assets/crown.png?v=20260911_hd"
@@ -924,6 +925,7 @@ def render_header():
 
     <!-- Executive Authentication & Lock Screen Portal -->
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title">
+        <div class="modal-card auth-card" style="position:relative;">
             <!-- Gateway Minimalist Floating Audio Widget -->
             <div class="floating-audio-widget gateway-floating-audio" id="floating-audio-gateway" style="position:absolute; top:18px; right:18px; z-index:10; display:flex; align-items:center; gap:8px; flex-direction:row-reverse;">
                 <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls">
@@ -939,7 +941,7 @@ def render_header():
             <button type="button" id="gateway-sound-toggle" class="gateway-sound-toggle" onclick="toggleGatewayAudio()" style="display:none;">🔇 Ambient Sound: OFF</button>
             <div class="auth-header">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                    {LOGO_SVG}
+                    {LOGO_SVG_MODAL}
                     <div>
                         <h3 id="auth-portal-title" style="margin:0; font-size:18px; font-weight:800; color:var(--accent-gold); letter-spacing:0.5px;">GRACE EXECUTIVE GATEWAY</h3>
                         <small style="color:var(--accent-green); font-weight:700; font-size:11px;">AES-256 Hardware Locker • Role-Based Terminal Access</small>
@@ -4451,6 +4453,7 @@ BASE_CSS = """
         .permission-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
         .module-workbench { grid-template-columns: 1fr; }
         .cropper-workspace { grid-template-columns: 1fr; }
+        .grid-2 { grid-template-columns: 1fr !important; }
     }
     @media (max-width: 700px) {
         body { padding: 12px; }
@@ -5664,6 +5667,22 @@ function toggleTheme() {
     toggleExecutiveTheme();
 }
 
+function applyTheme(themeKey) {
+    const paletteMap = {
+        'midnight': { bg: '#0B1120', card: '#051224', primary: '#10B981', label: 'Midnight Obsidian' },
+        'emerald':  { bg: '#031C18', card: '#002822', primary: '#10B981', label: 'Emerald Luxury' },
+        'royal':    { bg: '#0D1B2A', card: '#16204A', primary: '#38BDF8', label: 'Royal Signal' },
+        'sandstone':{ bg: '#1F1610', card: '#3B2A1A', primary: '#F59E0B', label: 'Sandstone Warm' },
+        'slate':    { bg: '#0F172A', card: '#1E293B', primary: '#94A3B8', label: 'Executive Slate' }
+    };
+    const p = paletteMap[themeKey] || paletteMap.emerald;
+    document.documentElement.style.setProperty('--bg-main', p.bg);
+    document.documentElement.style.setProperty('--bg-card', p.card);
+    document.documentElement.style.setProperty('--accent-green', p.primary);
+    setExecutiveTheme('dark');
+    showToast('🎨 Brand Theme applied: ' + p.label, 'success');
+}
+
 
 /* =========================================================================
    AESTHETIC DISPLAY BRIGHTNESS CONTROLLER
@@ -6745,8 +6764,17 @@ let isTourActive = false;
 let agentActiveSpeech = null;
 let agentInactivityTimer = null;
 let isAgentListening = false;
-let agentVoiceRecInstance = null;
 let lastProactiveGuidanceTime = 0;
+let cachedSpeechVoices = [];
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+        cachedSpeechVoices = window.speechSynthesis.getVoices() || [];
+        window.speechSynthesis.onvoiceschanged = () => {
+            cachedSpeechVoices = window.speechSynthesis.getVoices() || [];
+        };
+    } catch(e) {}
+}
+let agentVoiceRecInstance = null;
 let agentDrag = {
     active: false,
     moved: false,
@@ -7457,7 +7485,8 @@ function speakAloud(text, personaKey, onEnd, phoneticOverride) {
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const voices = window.speechSynthesis.getVoices() || [];
+        const liveVoices = window.speechSynthesis.getVoices();
+        const voices = (liveVoices && liveVoices.length) ? liveVoices : (cachedSpeechVoices || []);
         let textToSpeak = text;
         let selectedVoice = null;
 
@@ -7495,6 +7524,7 @@ function speakAloud(text, personaKey, onEnd, phoneticOverride) {
         utter.onend = handleDone;
         utter.onerror = handleDone;
         agentActiveSpeech = utter;
+        window.__graceAgentUtterance = utter;
         window.speechSynthesis.speak(utter);
     } else {
         if (widget) widget.classList.add('is-speaking');
@@ -7770,6 +7800,36 @@ function askAgentQuestion(topic) {
             phoneticAudio = speechAudio;
         }
         actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="openAdminMasterVaultModal()" style="margin-top:6px;">Open Account Vault 🛡️</button>`;
+    } else if (query.includes('telemetry') || query.includes('stream') || query.includes('activity') || query.includes('feed') || query.includes('log') || query.includes('box')) {
+        targetSelector = ".log-box";
+        blueprintTitle = "📡 LIVE STREAM TELEMETRY & ACTIVITY FEED";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ LIVE STREAM TELEMETRY & OUTREACH FEED ]              │
+├────────────────────────────────────────────────────────┤
+│  ┌─ [LEFT: LIVE TELEMETRY] ─┐ ┌─ [RIGHT: QUICK ACTIONS]┐
+│  │ Real-time Event Stream   │ │ 22-Module Launchers    │
+│  │ Audit Telemetry Logs     │ │ Hardware Locker Auth   │
+│  └──────────────────────────┘ └────────────────────────┘
+│               │                            │           │
+│               ▼                            ▼           │
+│     [ Dual-Vault Sync ] ◄──────► [ Enterprise Engine ] │
+│  LAYOUT: Swapped Responsive Grid ● 100% Mobile Ready   │
+└────────────────────────────────────────────────────────┘`;
+        steps = [
+            { num: 1, label: "Live Telemetry", icon: "📡", action: "Left side par live activity logs dekhein", selector: ".log-box" },
+            { num: 2, label: "Quick Actions", icon: "⚡", action: "Right side par shortcuts use karein", selector: ".card" }
+        ];
+        if (currentAgentLang === 'ur') {
+            replyText = `<b>📡 لائیو اسٹریم ٹیلی میٹری اور ایکٹیویٹی فیڈ:</b><br>ڈیش بورڈ پر بائیں طرف لائیو اسٹریم اور دائیں طرف کوئیک ایکشنز باکس موجود ہیں:`;
+            speechAudio = 'لائیو اسٹریم ٹیلی میٹری اب بائیں طرف ہے اور کوئیک ایکشنز دائیں طرف، جہاں سے آپ ریئل ٹائم لاگز اور ایونٹس دیکھ سکتے ہیں۔';
+            phoneticAudio = 'Live stream telemetry ab baayein taraf hai aur Quick Actions daayein taraf, jahan se aap real time logs aur events dekh sakte hain.';
+        } else {
+            replyText = `<b>📡 Live Stream Telemetry & Quick Actions:</b><br>Reordered layout with Live Activity Stream on the left and Quick Actions on the right:`;
+            speechAudio = 'The Live Stream Telemetry is positioned on the left and Quick Actions on the right, providing real-time activity auditing.';
+            phoneticAudio = speechAudio;
+        }
+        actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="location.href='/api/?tab=dashboard'" style="margin-top:6px;">Go to Dashboard 📊</button>`;
     } else {
         blueprintTitle = "🧭 EXECUTIVE AGENT & 22-MODULE MATRIX";
         asciiArt =
@@ -8076,6 +8136,13 @@ function initAIAgentDrag() {
             const rect = widget.getBoundingClientRect();
             const pos = { left: Math.round(rect.left), top: Math.round(rect.top) };
             window.localStorage.setItem('grace-ai-agent-pos', JSON.stringify(pos));
+            if (rect.left < window.innerWidth / 2) {
+                widget.classList.add('dock-left');
+                widget.classList.remove('dock-right');
+            } else {
+                widget.classList.add('dock-right');
+                widget.classList.remove('dock-left');
+            }
         }
         agentDrag.active = false;
         resetAgentInactivityTimer();
