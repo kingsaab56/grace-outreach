@@ -1091,12 +1091,12 @@ def render_header():
     <!-- Executive Authentication & Lock Screen Portal -->
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title">
         <div class="modal-card auth-card" style="position:relative;">
-            <!-- Gateway Minimalist Floating Audio Widget -->
-            <div class="floating-audio-widget gateway-floating-audio" id="floating-audio-gateway" style="position:absolute; top:18px; right:18px; z-index:10; display:flex; align-items:center; gap:8px; flex-direction:row-reverse;">
-                <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls">
+            <!-- Gateway Minimalist Audio Widget (Docked in Header) -->
+            <div class="gateway-floating-audio" id="floating-audio-gateway" style="position:absolute; top:18px; right:18px; z-index:25; display:flex; align-items:center; gap:8px; flex-direction:row-reverse; pointer-events:none; width:auto; height:auto; left:auto; bottom:auto;">
+                <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls" style="pointer-events:auto; cursor:pointer;">
                     <span class="audio-dot-icon">🎵</span>
                 </button>
-                <div class="floating-audio-controls" id="floating-audio-controls-gateway" hidden onmouseenter="resetFloatingAudioTimer('gateway')" onmouseleave="startFloatingAudioAutoCollapse('gateway')">
+                <div class="floating-audio-controls" id="floating-audio-controls-gateway" hidden onmouseenter="resetFloatingAudioTimer('gateway')" onmouseleave="startFloatingAudioAutoCollapse('gateway')" style="pointer-events:auto;">
                     <button type="button" class="mini-ctrl-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
                     <button type="button" class="mini-ctrl-btn mini-play-btn" id="mini-play-btn-gateway" onclick="toggleSoundscape()" title="Play / Pause">▶️</button>
                     <button type="button" class="mini-ctrl-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
@@ -3490,7 +3490,7 @@ BASE_CSS = """
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 22px; }
     .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
     [hidden] { display: none !important; }
-    .modal-backdrop { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; padding: 20px; background: rgba(2, 6, 23, .72); backdrop-filter: blur(8px); }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 99999; display: grid; place-items: center; padding: 20px 14px; background: rgba(2, 6, 23, .72); backdrop-filter: blur(8px); overflow-y: auto; overflow-x: hidden; }
     #logo-preview-modal,
     #profile-photo-preview-modal {
         position: fixed !important;
@@ -3574,15 +3574,48 @@ BASE_CSS = """
     .clip-grid { display:grid; grid-template-columns:1fr 1fr auto; align-items:end; gap:12px; margin-top:14px; }
 
     /* AUTH GATEWAY MODAL */
-    .auth-card { width: min(520px, 100%); padding: 28px; border: 1px solid var(--accent-gold); background: linear-gradient(145deg, #062b24, #001713); box-shadow: 0 28px 80px rgba(0,0,0,0.6); }
-    .auth-tabs { display:flex; gap:8px; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-top:14px; }
-    .auth-tab-btn { background:transparent; border:1px solid transparent; color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; padding:7px 12px; border-radius:7px; transition:0.15s; }
+    .auth-card {
+        width: min(520px, 100%);
+        max-height: calc(100vh - 36px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-gold) rgba(0, 20, 18, 0.8);
+        padding: 28px;
+        border: 1px solid var(--accent-gold);
+        background: linear-gradient(145deg, #062b24, #001713);
+        box-shadow: 0 28px 80px rgba(0,0,0,0.6);
+        position: relative;
+        margin: auto;
+    }
+    .auth-card::-webkit-scrollbar { width: 6px; }
+    .auth-card::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 3px; }
+    .auth-card::-webkit-scrollbar-track { background: rgba(0, 20, 18, 0.8); }
+    .gateway-floating-audio {
+        position: absolute !important;
+        top: 18px !important;
+        right: 18px !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: auto !important;
+        height: auto !important;
+        z-index: 25 !important;
+        pointer-events: none !important;
+    }
+    .gateway-floating-audio > * {
+        pointer-events: auto !important;
+    }
+    .auth-tabs { display:flex; gap:8px; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-top:14px; position:relative; z-index:2; }
+    .auth-tab-btn { background:transparent; border:1px solid transparent; color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; padding:7px 12px; border-radius:7px; transition:0.15s; position:relative; z-index:2; pointer-events:auto; }
     .auth-tab-btn:hover { color:var(--text-main); }
     .auth-tab-btn.active { color:var(--accent-gold); background:rgba(214,161,23,0.12); border-color:rgba(214,161,23,0.35); }
-    .fast-login-tray { background:rgba(0,0,0,0.2); padding:12px; border-radius:10px; border:1px solid rgba(214,161,23,0.25); margin-top:10px; }
-    .fast-pass-btn { padding:7px 11px; border-radius:7px; border:1px solid rgba(16,185,129,0.35); background:rgba(16,185,129,0.08); color:var(--accent-green); font-size:11px; font-weight:700; cursor:pointer; }
+    .fast-login-tray { background:rgba(0,0,0,0.2); padding:12px; border-radius:10px; border:1px solid rgba(214,161,23,0.25); margin-top:10px; position:relative; z-index:2; }
+    .fast-pass-btn { padding:7px 11px; border-radius:7px; border:1px solid rgba(16,185,129,0.35); background:rgba(16,185,129,0.08); color:var(--accent-green); font-size:11px; font-weight:700; cursor:pointer; position:relative; z-index:2; pointer-events:auto; }
     .fast-pass-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(214,161,23,0.12); }
-    .password-toggle-btn { position:absolute; right:8px; background:transparent; border:none; cursor:pointer; font-size:15px; color:var(--text-muted); }
+    .password-toggle-btn { position:absolute; right:8px; background:transparent; border:none; cursor:pointer; font-size:15px; color:var(--text-muted); z-index:3; pointer-events:auto; }
+    .btn-google-oauth { position:relative; z-index:2; pointer-events:auto; cursor:pointer; }
+    .auth-pane { position:relative; z-index:2; }
+    .auth-pane input, .auth-pane select, .auth-pane button, .auth-pane a { pointer-events:auto; }
 
     /* AI MASCOT & DRAWER */
     .ai-mascot { position:fixed; right:26px; bottom:26px; z-index:60; width:76px; height:76px; display:grid; place-items:center; border:1px solid var(--accent-gold); border-radius:24px; background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.18),transparent 35%),linear-gradient(145deg,#06483a,#001713); box-shadow:0 14px 35px rgba(0,0,0,.45); cursor:grab; touch-action:none; user-select:none; transition:transform .2s ease; }
@@ -5496,7 +5529,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Auto-collapse floating mini-player and agent bubble when clicking outside
 document.addEventListener('click', (e) => {
-    if (!e.target.closest('.floating-audio-widget')) {
+    if (!e.target.closest('.floating-audio-widget') && !e.target.closest('.gateway-floating-audio')) {
         ['main', 'gateway'].forEach(t => {
             const ctrls = document.getElementById('floating-audio-controls-' + t);
             if (ctrls) ctrls.hidden = true;
@@ -6796,7 +6829,17 @@ let audioDrag = {
 };
 
 function initFloatingAudioDrag() {
-    ['main', 'gateway'].forEach(target => {
+    const gw = document.getElementById('floating-audio-gateway');
+    if (gw) {
+        gw.style.position = 'absolute';
+        gw.style.top = '18px';
+        gw.style.right = '18px';
+        gw.style.bottom = 'auto';
+        gw.style.left = 'auto';
+        gw.style.width = 'auto';
+        gw.style.height = 'auto';
+    }
+    ['main'].forEach(target => {
         const widget = document.getElementById('floating-audio-' + target);
         const dot = document.getElementById('audio-dot-' + target);
         if (!widget || !dot || widget.dataset.dragInit) return;
