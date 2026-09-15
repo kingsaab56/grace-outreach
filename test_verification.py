@@ -946,7 +946,44 @@ def run_tests():
 
     print("[PASS] OTP Auth, Multi-User Overlap, Colleague Tenant Isolation & Strategic Hardening verified.")
 
-    print("\n[SUCCESS] ALL 42 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 43. LUXURY UX UPGRADE: CRISP MULTI-DPR LOGO, ZERO-SCROLLBAR WALLPAPER, APP SHIELD, CLEAN NAV, SETTINGS & GUEST RUNBOOK
+    print("Testing Multi-DPR Assets, Wallpaper Engine, App Hiding Shield, User Settings Modal & Guest Runbook...")
+
+    # 43.1 Multi-DPR Lanczos logo assets served via static asset router
+    for logo_name in ["grace-logo-68.png", "grace-logo-136.png", "grace-logo-272.png", "grace-logo-thumb.png"]:
+        status, headers, data = wsgi_request(f"/api/assets/{logo_name}", "GET")
+        assert status == "200 OK", f"Failed to fetch /api/assets/{logo_name}, got {status}"
+        assert data.startswith(b"\x89PNG"), f"/api/assets/{logo_name} did not return valid PNG header"
+        assert len(data) > 2000, f"/api/assets/{logo_name} payload is too small ({len(data)} bytes)"
+
+    # 43.2 Verify App Hiding Behind Login Screen & Zero Scrollbar CSS
+    assert "body.auth-screen-active #app-workspace-root," in root_html, "Missing app hiding root rule in CSS"
+    assert "overflow: hidden !important;" in root_html, "Missing zero-scrollbar lock rule in CSS"
+    assert "auth-wp-emerald" in root_html, "Missing auth-wp-emerald background class"
+    assert "auth-wp-gold" in root_html, "Missing auth-wp-gold background class"
+    assert "auth-wp-aurora" in root_html, "Missing auth-wp-aurora background class"
+
+    # 43.3 Verify Clean In-App Navigation Ribbon (No Privacy/Terms, Has User Settings)
+    assert 'onclick="openInAppLegalModal(' not in root_html, "Privacy/Terms should not be rendered in the main nav ribbon"
+    assert 'id="nav-user-settings-btn"' in root_html, "Missing nav-user-settings-btn in header"
+    assert 'openUserSettingsModal()' in root_html, "Missing openUserSettingsModal invocation"
+
+    # 43.4 Verify User Settings Modal & 4 Chambers
+    assert 'id="user-settings-modal"' in root_html, "Missing #user-settings-modal in DOM"
+    assert 'id="st-tab-profile"' in root_html, "Missing profile chamber in settings modal"
+    assert 'id="st-tab-theme"' in root_html, "Missing appearance chamber in settings modal"
+    assert 'id="st-tab-audio"' in root_html, "Missing audio chamber in settings modal"
+    assert 'id="st-tab-security"' in root_html, "Missing security chamber in settings modal"
+
+    # 43.5 Verify Guest Platform Tour Modal & 10s Dispatch Simulator
+    assert 'id="guest-tour-modal"' in root_html, "Missing #guest-tour-modal in DOM"
+    assert 'id="demo-sim-log-box"' in root_html, "Missing demo-sim-log-box container"
+    assert 'id="btn-run-demo-sim"' in root_html, "Missing btn-run-demo-sim button"
+    assert 'runGuestOutreachSimulation()' in root_html, "Missing runGuestOutreachSimulation function call"
+
+    print("[PASS] Multi-DPR Assets, Wallpaper Engine, App Hiding Shield, User Settings Modal & Guest Runbook verified.")
+
+    print("\n[SUCCESS] ALL 43 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 
 if __name__ == "__main__":

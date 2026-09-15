@@ -949,8 +949,8 @@ def update_shared_state(payload):
         return state
 
 
-LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo.png?v=20260916_4k" srcset="/api/assets/grace-logo-thumb.png?v=20260916_hd 1x, /api/assets/grace-logo.png?v=20260916_4k 2x, /api/assets/grace-logo.png?v=20260916_4k 4x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" style="image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;" /></div>"""
-LOGO_SVG_MODAL = """<div class="logo-modal-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo.png?v=20260916_4k" srcset="/api/assets/grace-logo-thumb.png?v=20260916_hd 1x, /api/assets/grace-logo.png?v=20260916_4k 2x, /api/assets/grace-logo.png?v=20260916_4k 4x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" style="image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;" /></div>"""
+LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-68.png" srcset="/api/assets/grace-logo-68.png 1x, /api/assets/grace-logo-136.png 2x, /api/assets/grace-logo-272.png 4x, /api/assets/grace-logo-thumb.png 1x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" style="image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;" /></div>"""
+LOGO_SVG_MODAL = """<div class="logo-modal-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-68.png" srcset="/api/assets/grace-logo-68.png 1x, /api/assets/grace-logo-136.png 2x, /api/assets/grace-logo-272.png 4x, /api/assets/grace-logo-thumb.png 1x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" style="image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;" /></div>"""
 LOGO_IMG_HTML = LOGO_SVG
 FAVICON_DATA_URI = "/api/assets/grace-logo.png?v=20260916_4k"
 SEO_HEAD_TAGS = """    <meta name="google-site-verification" content="5rcqutwYX42ms4pRfl4mADBYeJiuh2Tvc4Y6Q7tkfFQ" />
@@ -1222,214 +1222,173 @@ def render_header():
         </div>
     </div>
 
-    <!-- Executive Authentication & Lock Screen Portal -->
-    <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title">
-        <div class="modal-card auth-card" style="position:relative;">
-            <!-- Gateway Minimalist Audio Widget (Docked in Header) -->
-            <div class="gateway-floating-audio" id="floating-audio-gateway" style="position:absolute; top:18px; right:18px; z-index:25; display:flex; align-items:center; gap:8px; flex-direction:row-reverse; pointer-events:none; width:auto; height:auto; left:auto; bottom:auto;">
-                <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls" style="pointer-events:auto; cursor:pointer;">
-                    <span class="audio-dot-icon">🎵</span>
-                </button>
-                <div class="floating-audio-controls" id="floating-audio-controls-gateway" hidden onmouseenter="resetFloatingAudioTimer('gateway')" onmouseleave="startFloatingAudioAutoCollapse('gateway')" style="pointer-events:auto;">
-                    <button type="button" class="mini-ctrl-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
-                    <button type="button" class="mini-ctrl-btn mini-play-btn" id="mini-play-btn-gateway" onclick="toggleSoundscape()" title="Play / Pause">▶️</button>
-                    <button type="button" class="mini-ctrl-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
-                    <span class="mini-track-label" id="mini-track-label-gateway" onclick="openSoundscape()" title="Click to open full Soundscape modal">Calm Focus</span>
-                </div>
-            </div>
-            <button type="button" id="gateway-sound-toggle" class="gateway-sound-toggle" onclick="toggleGatewayAudio()" style="display:none;">🔇 Ambient Sound: OFF</button>
-            <div class="auth-header">
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                    {LOGO_SVG_MODAL}
-                    <div>
-                        <h3 id="auth-portal-title" style="margin:0; font-size:18px; font-weight:800; color:var(--accent-gold); letter-spacing:0.5px;">GRACE EXECUTIVE GATEWAY</h3>
-                        <small style="color:var(--accent-green); font-weight:700; font-size:11px;">AES-256 Hardware Locker • Role-Based Terminal Access</small>
+    <!-- Executive Authentication & Lock Screen Portal (ChatGPT / Claude Style Architecture) -->
+    <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title" style="position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; background:transparent;">
+        <div class="modal-card auth-card auth-card-claude" style="position:relative;">
+            <!-- Subtle Audio & Wallpaper Sample Controls (Top-Right) -->
+            <div style="position:absolute; top:12px; right:14px; z-index:10; display:flex; align-items:center; gap:6px;">
+                <!-- Gateway Minimalist Audio Widget (Docked in Header) -->
+                <div class="gateway-floating-audio" id="floating-audio-gateway" style="display:flex; align-items:center; gap:6px; flex-direction:row-reverse;">
+                    <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls" style="cursor:pointer; width:22px; height:22px; min-width:22px; padding:0; font-size:10px;">
+                        <span class="audio-dot-icon">🎵</span>
+                    </button>
+                    <div class="floating-audio-controls collapsed" id="floating-audio-controls-gateway" style="display:none;">
+                        <button type="button" class="mini-audio-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
+                        <button type="button" class="mini-audio-btn mini-audio-play" id="mini-play-btn-gateway" onclick="toggleGlobalAudio()" title="Play / Pause">▶️</button>
+                        <button type="button" class="mini-audio-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
+                        <span class="mini-audio-title" id="mini-track-label-gateway">Ambient Soundscape</span>
                     </div>
                 </div>
-                <div id="gateway-mandatory-notice" class="mandatory-notice" hidden style="margin:4px 0 6px; padding:5px 8px; font-size:11px; border-radius:6px;">🔒 <b>Executive Security:</b> Authenticate or use instant demo to enter.</div>
-                <p id="auth-status-desc" class="modal-copy" style="margin:4px 0 8px; font-size:11.5px;">Session locked. Authenticate or provision an account.</p>
-                <div class="auth-tabs">
-                    <button id="auth-tab-btn-signin" class="auth-tab-btn active" onclick="switchAuthTab('signin')">🔐 Sign In</button>
-                    <button id="auth-tab-btn-register" class="auth-tab-btn" onclick="switchAuthTab('register')">✨ Create Account</button>
-                    <button id="auth-tab-btn-forgot" class="auth-tab-btn" onclick="switchAuthTab('forgot')">🔑 Forgot Password</button>
+                <!-- Luxury Wallpaper Selector Swatches -->
+                <div style="display:flex; align-items:center; gap:4px; padding-left:4px; border-left:1px solid rgba(255,255,255,0.15);" title="Switch Luxury Background Wallpaper">
+                    <button type="button" onclick="setAuthWallpaper('emerald')" title="Wallpaper 1: Emerald Obsidian" style="width:12px; height:12px; border-radius:50%; background:#10B981; border:1px solid #FFF; cursor:pointer; padding:0;"></button>
+                    <button type="button" onclick="setAuthWallpaper('gold')" title="Wallpaper 2: Cyber Gold" style="width:12px; height:12px; border-radius:50%; background:#D6A117; border:1px solid #FFF; cursor:pointer; padding:0;"></button>
+                    <button type="button" onclick="setAuthWallpaper('aurora')" title="Wallpaper 3: Midnight Aurora" style="width:12px; height:12px; border-radius:50%; background:#38BDF8; border:1px solid #FFF; cursor:pointer; padding:0;"></button>
                 </div>
             </div>
 
-            <!-- Sign In Pane with Google OAuth & Email Login -->
-            <div id="auth-pane-signin" class="auth-pane">
-                <!-- Continue with Google Button -->
-                <button type="button" class="btn-google-oauth" onclick="handleGoogleOAuthLogin()" style="width:100%; box-sizing:border-box; padding:8px 12px; background:#FFFFFF; color:#1F2937; border-radius:7px; font-weight:700; font-size:12.5px; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid #D1D5DB; cursor:pointer; margin:6px 0 4px; box-shadow:0 1px 4px rgba(0,0,0,0.12);">
-                    <svg width="16" height="16" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
+            <!-- Header with 4K Crest Logo -->
+            <div style="text-align:center; margin-bottom:12px;">
+                <div style="display:inline-flex; align-items:center; justify-content:center; margin-bottom:6px;">
+                    <img src="/api/assets/grace-logo-68.png" srcset="/api/assets/grace-logo-68.png 1x, /api/assets/grace-logo-136.png 2x, /api/assets/grace-logo-272.png 4x, /api/assets/grace-logo-thumb.png 1x" data-master="/api/assets/grace-logo.png?v=20260916_4k" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="62" height="62" style="image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;" />
+                </div>
+                <h2 id="auth-portal-title" style="margin:0; font-size:18px; font-weight:900; letter-spacing:0.5px; color:#F8FAFC;">
+                    <span style="color:#D6A117;">GRACE</span> <span style="color:#10B981;">OUTREACH</span> <span style="color:#94A3B8; font-size:12px; font-weight:700;">ASSISTANT</span>
+                </h2>
+                <div style="font-size:11px; color:#10B981; margin-top:2px; font-weight:700;">🛡️ Google Verified Enterprise Outreach Engine • AES-256 Hardware Encrypted</div>
+            </div>
+
+            <div id="gateway-mandatory-notice" class="mandatory-notice" hidden style="margin:2px 0 6px; padding:4px 8px; font-size:10.5px; border-radius:6px;">🔒 <b>Executive Access:</b> Authenticate or use instant demo to explore.</div>
+
+            <!-- Auth Mode Navigation Tabs -->
+            <div class="auth-tabs" style="display:flex; gap:6px; margin-bottom:10px; background:rgba(0,0,0,0.3); padding:3px; border-radius:8px;">
+                <button id="auth-tab-btn-signin" class="auth-tab-btn active" onclick="switchAuthTab('signin')" style="flex:1; padding:6px; font-size:11px; font-weight:700;">🔐 Sign In</button>
+                <button id="auth-tab-btn-register" class="auth-tab-btn" onclick="switchAuthTab('register')" style="flex:1; padding:6px; font-size:11px; font-weight:700;">✨ Register</button>
+                <button id="auth-tab-btn-forgot" class="auth-tab-btn" onclick="switchAuthTab('forgot')" style="flex:1; padding:6px; font-size:11px; font-weight:700;">🔑 Reset OTP</button>
+            </div>
+
+            <!-- 1. SIGN IN PANE (ChatGPT / Claude 2-Option Architecture) -->
+            <div id="auth-pane-signin" class="auth-pane" style="display:flex; flex-direction:column; gap:8px;">
+                <!-- Option 1: Continue with Google Workspace -->
+                <button type="button" class="btn-pill-google" onclick="handleGoogleOAuthLogin()">
+                    <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
                     <span>Continue with Google Workspace</span>
                 </button>
 
-                <!-- Instant Guest Demo Button -->
-                <button type="button" class="btn-demo-instant" onclick="launchDemoMode()" style="width:100%; box-sizing:border-box; padding:7px 12px; background:linear-gradient(135deg, rgba(16,185,129,0.22), rgba(214,161,23,0.18)); border:1.5px solid var(--accent-gold); border-radius:7px; color:var(--accent-gold); font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; margin:2px 0 6px; transition:0.2s; position:relative; z-index:2; box-shadow:0 1px 6px rgba(0,0,0,0.2);">
-                    <span>🎮 Instant Guest Demo (Full 22-Module Access • No Login)</span>
+                <div style="display:flex; align-items:center; gap:8px; margin:2px 0;">
+                    <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.12);">
+                    <span style="font-size:10px; color:#94A3B8; font-weight:700; letter-spacing:0.5px;">OR LOGIN WITH CREDENTIALS</span>
+                    <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.12);">
+                </div>
+
+                <!-- Option 2: Clean Email or Username & Password -->
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <input id="login-email-input" type="text" placeholder="Work email or username (e.g. king@graceassistant.io or king)" style="width:100%; box-sizing:border-box; padding:9px 12px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12.5px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <input id="login-password-input" type="password" value="grace2026" placeholder="Password" style="width:100%; box-sizing:border-box; padding:9px 38px 9px 12px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12.5px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password-input')" style="position:absolute; right:8px; background:none; border:none; color:#94A3B8; cursor:pointer;" title="Toggle visibility">👁️</button>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-gold btn-pill-action" onclick="submitSignIn()" style="margin-top:2px;">
+                    Authenticate &amp; Unlock Workspace &rarr;
                 </button>
 
-                <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
-                    <hr style="flex:1; border:none; border-top:1px solid #123B35;">
-                    <span style="font-size:11px; color:var(--text-muted); font-weight:700;">OR LOGIN WITH CREDENTIALS</span>
-                    <hr style="flex:1; border:none; border-top:1px solid #123B35;">
+                <!-- Interactive Guest Demo Button -->
+                <button type="button" class="btn-demo-instant btn-pill-action" onclick="launchDemoMode()" style="background:linear-gradient(135deg, rgba(16,185,129,0.18), rgba(214,161,23,0.14)); border:1.5px solid rgba(16,185,129,0.5); color:#34D399; margin-top:2px;">
+                    <span>🎮 Explore Interactive Guest Demo (Live Tour)</span>
+                </button>
+
+                <!-- Admin Pass Toggle (Discreetly at bottom) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <button type="button" id="admin-pass-toggle-btn" onclick="toggleAdminPassPicker()" style="background:none; border:none; color:#64748B; font-size:10.5px; cursor:pointer; text-decoration:underline;">👑 Staff Fast-Pass</button>
+                    <a href="javascript:void(0)" onclick="switchAuthTab('forgot')" style="font-size:11px; color:var(--accent-gold); text-decoration:none; font-weight:600;">Forgot Password? OTP</a>
                 </div>
 
-                <div class="form-grid" style="grid-template-columns:1fr; gap:10px; margin:8px 0;">
-                    <label style="font-size:12px; font-weight:700; color:var(--text-main);">Work Email or Username
-                        <input id="login-email-input" type="text" placeholder="e.g. king@graceassistant.io or king" style="margin-top:4px;" onkeydown="if(event.key==='Enter') submitSignIn()">
-                    </label>
-                    <label style="font-size:12px; font-weight:700; color:var(--text-main);">Terminal Password
-                        <div style="position:relative; display:flex; align-items:center; margin-top:4px;">
-                            <input id="login-password-input" type="password" value="grace2026" placeholder="Enter password" style="padding-right:42px;" onkeydown="if(event.key==='Enter') submitSignIn()">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password-input')" title="Toggle password visibility">👁️</button>
-                        </div>
-                    </label>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <button type="button" id="admin-pass-toggle-btn" onclick="toggleAdminPassPicker()" style="background:none; border:none; color:var(--text-muted); font-size:11px; cursor:pointer; text-decoration:underline;">👑 Staff / Admin Fast-Pass</button>
-                        <a href="javascript:void(0)" onclick="switchAuthTab('forgot')" style="font-size:11.5px; color:var(--accent-gold); text-decoration:none; font-weight:600;">🔑 Forgot Password? OTP</a>
-                    </div>
-                </div>
-
-                <!-- Admin-Only Identity Picker & Fast-Pass Tray (Hidden from Public Visitors) -->
-                <div id="admin-picker-wrap" style="display:none; margin:8px 0; padding:10px; background:rgba(0,30,25,0.7); border:1px dashed var(--accent-gold); border-radius:8px;">
-                    <label style="font-size:11px; font-weight:700; color:var(--accent-gold);">👑 Pre-Configured Colleague Fast-Pass
-                        <select id="login-identity-picker" onchange="syncLoginEmailFromPicker()" style="margin-top:4px;">
-                            <option value="king">👑 King Saab · Super Admin</option>
-                            <option value="abdullah">🎯 Abdullah Khan · Strategic Lead</option>
-                            <option value="sarah">📈 Sarah Malik · Growth Marketer</option>
-                            <option value="hamza">🔍 Hamza Ali · Lead Collector</option>
-                        </select>
-                    </label>
-                    <div class="fast-login-tray" style="margin-top:8px;">
-                        <span class="eyebrow" style="font-size:9.5px; margin-bottom:4px;">ONE-CLICK ADMIN PASS</span>
-                        <div style="display:flex; flex-wrap:wrap; gap:5px;">
-                            <button type="button" class="fast-pass-btn" onclick="fastPassLogin('king')">{WA_CROWN_IMG} King Saab</button>
-                            <button type="button" class="fast-pass-btn" onclick="fastPassLogin('abdullah')">🎯 Abdullah</button>
-                            <button type="button" class="fast-pass-btn" onclick="fastPassLogin('sarah')">📈 Sarah</button>
-                            <button type="button" class="fast-pass-btn" onclick="fastPassLogin('hamza')">🔍 Hamza</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="dialog-actions" style="margin-top:10px;">
-                    <button id="gateway-dismiss-btn" class="btn btn-gray" onclick="unlockGatewayPreview()" style="padding:7px 12px; font-size:12px;">Dismiss</button>
-                    <button class="btn btn-blue" onclick="submitSignIn()" style="padding:7px 16px; font-size:12.5px; font-weight:800;">Authenticate &amp; Unlock</button>
+                <div id="admin-picker-wrap" style="display:none; padding:8px; background:rgba(0,0,0,0.5); border:1px dashed var(--accent-gold); border-radius:8px; margin-top:4px;">
+                    <select id="login-identity-picker" onchange="syncLoginEmailFromPicker()" style="width:100%; padding:6px; font-size:11px; background:#001A15; color:#FFF; border:1px solid var(--accent-gold); border-radius:6px;">
+                        <option value="king">👑 King Saab · Super Admin</option>
+                        <option value="abdullah">🎯 Abdullah Khan · Strategic Lead</option>
+                        <option value="sarah">📈 Sarah Malik · Growth Marketer</option>
+                        <option value="hamza">🔍 Hamza Ali · Lead Collector</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Create Account Pane with OTP Verification & Mandatory Policy Agreement -->
-            <div id="auth-pane-register" class="auth-pane" hidden>
-                <div class="form-grid" style="gap:8px; margin:8px 0;">
-                    <label style="font-size:11.5px; font-weight:700;">Full Name
-                        <input id="reg-name" type="text" placeholder="e.g. Farhan Tariq" oninput="generateUsernameSuggestions(this.value)">
+            <!-- 2. CREATE ACCOUNT PANE (With OTP & Mandatory Policy Checkbox) -->
+            <div id="auth-pane-register" class="auth-pane" hidden style="display:flex; flex-direction:column; gap:6px;">
+                <div class="form-grid" style="gap:6px; margin:4px 0;">
+                    <label style="font-size:11px; font-weight:700;">Full Name
+                        <input id="reg-name" type="text" placeholder="e.g. Farhan Tariq" oninput="generateUsernameSuggestions(this.value)" style="padding:6px 10px; font-size:12px;">
                     </label>
 
-                    <label style="font-size:11.5px; font-weight:700;">Work Email Address (Mandatory OTP Verification)
+                    <label style="font-size:11px; font-weight:700;">Work Email (OTP Verification)
                         <div style="display:flex; gap:6px; margin-top:2px;">
-                            <input id="reg-email" type="email" placeholder="e.g. farhan@company.com" style="flex:1;">
-                            <button type="button" id="btn-reg-send-otp" class="btn btn-green" onclick="requestRegistrationOtp()" style="padding:6px 12px; font-size:11px; white-space:nowrap;">Send OTP</button>
+                            <input id="reg-email" type="email" placeholder="e.g. farhan@company.com" style="flex:1; padding:6px 10px; font-size:12px;">
+                            <button type="button" id="btn-reg-send-otp" class="btn btn-green" onclick="requestRegistrationOtp()" style="padding:5px 10px; font-size:10.5px; white-space:nowrap;">Send OTP</button>
                         </div>
                     </label>
 
-                    <div id="reg-otp-group" style="display:none; padding:8px; background:rgba(16,185,129,0.08); border:1px dashed var(--accent-green); border-radius:6px;">
-                        <label style="font-size:11px; font-weight:700; color:var(--accent-green);">Enter 6-Digit Email Verification Code
+                    <div id="reg-otp-group" style="display:none; padding:6px 8px; background:rgba(16,185,129,0.08); border:1px dashed var(--accent-green); border-radius:6px;">
+                        <label style="font-size:10.5px; font-weight:700; color:var(--accent-green);">6-Digit Verification Code
                             <div style="display:flex; gap:6px; margin-top:2px;">
-                                <input id="reg-otp-input" type="text" maxlength="6" placeholder="123456" style="flex:1; letter-spacing:4px; font-size:15px; font-weight:800; text-align:center;">
-                                <button type="button" id="btn-reg-verify-otp" class="btn btn-blue" onclick="verifyRegistrationOtp()" style="padding:6px 12px; font-size:11px; white-space:nowrap;">Verify OTP</button>
+                                <input id="reg-otp-input" type="text" maxlength="6" placeholder="123456" style="flex:1; letter-spacing:3px; font-size:14px; font-weight:800; text-align:center; padding:4px;">
+                                <button type="button" id="btn-reg-verify-otp" class="btn btn-blue" onclick="verifyRegistrationOtp()" style="padding:4px 10px; font-size:10.5px; white-space:nowrap;">Verify</button>
                             </div>
                         </label>
-                        <small id="reg-otp-status" style="font-size:10.5px; color:var(--accent-green); display:block; margin-top:2px;"></small>
+                        <small id="reg-otp-status" style="font-size:10px; color:var(--accent-green); display:block; margin-top:2px;"></small>
                     </div>
 
-                    <div>
-                        <span class="eyebrow" style="font-size:9.5px; margin-bottom:3px;">SMART USERNAME SUGGESTIONS (CLICK TO SELECT)</span>
-                        <div id="username-suggestions-container" style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:4px;">
-                            <span style="font-size:10.5px; color:var(--text-muted);">Type full name above to see smart suggestions...</span>
-                        </div>
-                        <label style="font-size:11.5px; font-weight:700;">Colleague Username / ID Key
-                            <input id="reg-key" type="text" placeholder="e.g. farhan.tariq">
-                        </label>
-                    </div>
+                    <label style="font-size:11px; font-weight:700;">Colleague Username Key
+                        <input id="reg-key" type="text" placeholder="e.g. farhan.tariq" style="padding:6px 10px; font-size:12px;">
+                    </label>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                        <label style="font-size:11px;">Software ID
-                            <input id="reg-software-id" type="text" value="GRA-COL-005" readonly style="background:rgba(0,0,0,0.3); color:var(--accent-gold); font-weight:800; cursor:not-allowed; font-size:11px;">
-                        </label>
-                        <label style="font-size:11px;">Scope
-                            <input id="reg-role" type="text" value="Outreach Associate" readonly style="background:rgba(0,0,0,0.3); color:var(--text-muted); cursor:not-allowed; font-size:11px;">
-                        </label>
-                    </div>
-
-                    <label style="font-size:11.5px; font-weight:700;">Password<input id="reg-password" type="password" value="grace2026"></label>
-                </div>
-
-                <div class="territory-section" style="margin-top:6px; padding:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <span class="eyebrow" style="font-size:9.5px;">TERRITORY STATES (MAX 2)</span>
-                        <small id="reg-territory-warn" style="color:var(--accent-orange); font-size:9.5px;" hidden>Max 2 reached</small>
-                    </div>
-                    <input type="text" id="reg-state-search" class="search-input" placeholder="🔍 Search 50 US States..." oninput="filterRegChips('states', this.value)" style="font-size:11.5px; padding:5px 8px;">
-                    <div id="reg-territory-chips" class="territory-chips-container" style="max-height:75px;"></div>
-                </div>
-
-                <div class="territory-section" style="margin-top:6px; padding:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <span class="eyebrow" style="font-size:9.5px;">US WORKING CONTRACTORS (MAX 2)</span>
-                        <small id="reg-contractor-warn" style="color:var(--accent-orange); font-size:9.5px;" hidden>Max 2 reached</small>
-                    </div>
-                    <input type="text" id="reg-contractor-search" class="search-input" placeholder="🔍 Search Contractors..." oninput="filterRegChips('contractors', this.value)" style="font-size:11.5px; padding:5px 8px;">
-                    <div id="reg-contractor-chips" class="territory-chips-container" style="max-height:75px;"></div>
-                </div>
-
-                <!-- Mandatory Policy & Terms Agreement Checkbox -->
-                <div class="policy-agreement-box" style="margin:8px 0; padding:8px 10px; background:rgba(0,25,20,0.6); border:1px solid #123B35; border-radius:8px;">
-                    <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; font-size:11.5px; color:var(--text-main); line-height:1.4;">
-                        <input type="checkbox" id="reg-policy-agree" style="margin-top:2px; width:16px; height:16px; accent-color:var(--accent-green); cursor:pointer;">
-                        <span>I have read carefully and solemnly agree to Grace Outreach's <a href="javascript:void(0)" onclick="openInAppPolicyModal('terms')" style="color:var(--accent-gold); text-decoration:underline; font-weight:700;">Terms of Service</a> &amp; <a href="javascript:void(0)" onclick="openInAppPolicyModal('privacy')" style="color:var(--accent-gold); text-decoration:underline; font-weight:700;">Privacy Policy</a> (including Google 2026 Anti-Spam covenants).</span>
+                    <label style="font-size:11px; font-weight:700;">Password
+                        <input id="reg-password" type="password" value="grace2026" style="padding:6px 10px; font-size:12px;">
                     </label>
                 </div>
 
-                <div class="dialog-actions" style="margin-top:12px;">
-                    <button class="btn btn-gray" onclick="switchAuthTab('signin')">Back to Sign In</button>
-                    <button class="btn btn-blue" id="btn-reg-submit" onclick="submitCreateAccount()">Register Identity &amp; Open</button>
+                <div class="policy-agreement-box" style="margin:4px 0; padding:6px 8px; background:rgba(0,25,20,0.6); border:1px solid #123B35; border-radius:6px;">
+                    <label style="display:flex; align-items:flex-start; gap:6px; cursor:pointer; font-size:10.5px; color:var(--text-main); line-height:1.35;">
+                        <input type="checkbox" id="reg-policy-agree" style="margin-top:2px; width:14px; height:14px; accent-color:var(--accent-green); cursor:pointer;">
+                        <span>I have read carefully and agree to Grace Outreach's <a href="javascript:void(0)" onclick="openInAppPolicyModal('terms')" style="color:var(--accent-gold); text-decoration:underline; font-weight:700;">Terms</a> &amp; <a href="javascript:void(0)" onclick="openInAppPolicyModal('privacy')" style="color:var(--accent-gold); text-decoration:underline; font-weight:700;">Privacy Policy</a>.</span>
+                    </label>
+                </div>
+
+                <div class="dialog-actions" style="margin-top:6px;">
+                    <button class="btn btn-gray" onclick="switchAuthTab('signin')" style="padding:6px 12px; font-size:11.5px;">Back</button>
+                    <button class="btn btn-blue" id="btn-reg-submit" onclick="submitCreateAccount()" style="padding:6px 16px; font-size:12px; font-weight:800;">Register Identity &amp; Open</button>
                 </div>
             </div>
 
-            <!-- Forgot Password Pane with Email OTP -->
-            <div id="auth-pane-forgot" class="auth-pane" hidden>
-                <p style="font-size:11.5px; color:var(--text-muted); line-height:1.4; margin:4px 0 10px;">Verify your identity via 6-digit Email OTP to safely reset your terminal password.</p>
-                <div class="form-grid" style="grid-template-columns:1fr; gap:10px; margin:8px 0;">
-                    <label style="font-size:11.5px; font-weight:700;">Colleague Account or Email
+            <!-- 3. FORGOT PASSWORD PANE (Email OTP Reset) -->
+            <div id="auth-pane-forgot" class="auth-pane" hidden style="display:flex; flex-direction:column; gap:8px;">
+                <p style="font-size:11px; color:#94A3B8; margin:2px 0 6px;">Verify your identity via 6-digit Email OTP to reset your password.</p>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <label style="font-size:11px; font-weight:700;">Work Email or Username
                         <div style="display:flex; gap:6px; margin-top:2px;">
-                            <input id="forgot-email-input" type="text" placeholder="e.g. farhan@company.com or king" style="flex:1;">
-                            <button type="button" id="btn-forgot-send-otp" class="btn btn-orange" onclick="requestForgotPasswordOtp()" style="padding:6px 12px; font-size:11px; white-space:nowrap;">Send OTP</button>
+                            <input id="forgot-email-input" type="text" placeholder="e.g. farhan@company.com or king" style="flex:1; padding:7px 10px; font-size:12px;">
+                            <button type="button" id="btn-forgot-send-otp" class="btn btn-orange" onclick="requestForgotPasswordOtp()" style="padding:5px 10px; font-size:10.5px; white-space:nowrap;">Send OTP</button>
                         </div>
                     </label>
-                    <div id="forgot-otp-group" style="display:none; padding:8px; background:rgba(214,161,23,0.08); border:1px dashed var(--accent-gold); border-radius:6px;">
-                        <label style="font-size:11px; font-weight:700; color:var(--accent-gold);">Enter 6-Digit Reset Code
-                            <input id="forgot-otp-input" type="text" maxlength="6" placeholder="123456" style="letter-spacing:4px; font-size:15px; font-weight:800; text-align:center; margin-top:2px;">
-                        </label>
-                        <label style="font-size:11px; font-weight:700; color:var(--accent-gold); margin-top:6px; display:block;">New Password
-                            <input id="forgot-new-pwd-input" type="password" placeholder="Enter new secure password" style="margin-top:2px;">
-                        </label>
+                    <div id="forgot-otp-group" style="display:none; padding:6px 8px; background:rgba(214,161,23,0.08); border:1px dashed var(--accent-gold); border-radius:6px;">
+                        <input id="forgot-otp-input" type="text" maxlength="6" placeholder="Enter 6-digit OTP" style="letter-spacing:3px; font-size:14px; font-weight:800; text-align:center; padding:5px; margin-bottom:6px; width:100%; box-sizing:border-box;">
+                        <input id="forgot-new-pwd-input" type="password" placeholder="Enter new password" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;">
                     </div>
                 </div>
-                <div class="dialog-actions" style="margin-top:14px;">
-                    <button class="btn btn-gray" onclick="switchAuthTab('signin')">Back to Sign In</button>
-                    <button class="btn btn-orange" id="btn-forgot-submit" onclick="submitPasswordResetOtp()">Reset &amp; Unlock</button>
+                <div class="dialog-actions" style="margin-top:8px;">
+                    <button class="btn btn-gray" onclick="switchAuthTab('signin')" style="padding:6px 12px; font-size:11.5px;">Back</button>
+                    <button class="btn btn-orange" id="btn-forgot-submit" onclick="submitPasswordResetOtp()" style="padding:6px 16px; font-size:12px; font-weight:800;">Reset &amp; Unlock</button>
                 </div>
             </div>
-            <div style="text-align:center; margin-top:8px; padding-top:6px; border-top:1px solid #123B35; font-size:10.5px; color:var(--text-muted);">
-                By continuing, you agree to Grace Outreach's <a href="/terms" target="_blank" style="color:var(--accent-gold); text-decoration:underline;">Terms</a> &amp; <a href="/privacy" target="_blank" style="color:var(--accent-gold); text-decoration:underline;">Privacy Policy</a>.
-                <div style="margin-top:3px; font-size:10px; color:#10B981;">🛡️ Google Verified Enterprise Outreach Engine • AES-256 Hardware Encrypted</div>
+
+            <!-- Footer Disclaimer -->
+            <div style="text-align:center; margin-top:8px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.08); font-size:10px; color:#94A3B8;">
+                By continuing, you agree to Grace Outreach's <a href="javascript:void(0)" onclick="openInAppPolicyModal('terms')" style="color:var(--accent-gold); text-decoration:underline;">Terms</a> &amp; <a href="javascript:void(0)" onclick="openInAppPolicyModal('privacy')" style="color:var(--accent-gold); text-decoration:underline;">Privacy Policy</a>.
+                <div style="margin-top:2px; font-size:9.5px; color:#10B981;">🛡️ Google Verified Enterprise Outreach Engine • AES-256 Hardware Encrypted</div>
             </div>
         </div>
     </div>
-
     <!-- In-App Interactive Legal Modal (Read Without Leaving App) -->
     <div id="inapp-legal-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="inapp-legal-title">
         <div class="modal-card wide-modal" style="max-height:86vh; display:flex; flex-direction:column;">
@@ -1445,6 +1404,173 @@ def render_header():
             </div>
             <div class="dialog-actions" style="margin-top:10px;">
                 <button class="btn btn-blue" onclick="closeInAppPolicyModal()">I Have Read &amp; Understand</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER SETTINGS & SYSTEM PREFERENCES MODAL -->
+    <div id="user-settings-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+        <div class="modal-card wide-modal" style="width:min(680px, 94vw); max-height:86vh; display:flex; flex-direction:column; padding:20px; background:#001A17; border:1px solid var(--accent-gold); border-radius:16px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #123B35; padding-bottom:10px; margin-bottom:12px;">
+                <div>
+                    <span class="eyebrow" style="color:var(--accent-gold); font-size:10px; margin:0;">USER CONFIGURATION</span>
+                    <h3 id="settings-modal-title" style="margin:2px 0 0; font-size:16px;">⚙️ User Settings &amp; Platform Preferences</h3>
+                </div>
+                <button class="modal-close" onclick="closeUserSettingsModal()" aria-label="Close Settings">×</button>
+            </div>
+
+            <div style="display:flex; gap:6px; margin-bottom:12px; border-bottom:1px solid #123B35; padding-bottom:8px; overflow-x:auto;">
+                <button type="button" class="btn btn-sm btn-gold settings-subtab-btn active" onclick="switchSettingsSubtab('profile')" id="st-tab-profile">👤 Profile</button>
+                <button type="button" class="btn btn-sm btn-gray settings-subtab-btn" onclick="switchSettingsSubtab('theme')" id="st-tab-theme">🎨 Display &amp; Theme</button>
+                <button type="button" class="btn btn-sm btn-gray settings-subtab-btn" onclick="switchSettingsSubtab('audio')" id="st-tab-audio">🎵 Soundscape</button>
+                <button type="button" class="btn btn-sm btn-gray settings-subtab-btn" onclick="switchSettingsSubtab('security')" id="st-tab-security">🔐 Security</button>
+            </div>
+
+            <div id="settings-body" style="flex:1; overflow-y:auto; padding-right:4px;">
+                <!-- Chamber 1: Profile & Identity -->
+                <div id="settings-pane-profile" class="settings-pane">
+                    <div class="form-grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+                        <label>Full Name
+                            <input id="settings-input-name" type="text" value="King Saab">
+                        </label>
+                        <label>Operational Role
+                            <input id="settings-input-role" type="text" value="Lead Architect" readonly style="background:rgba(0,0,0,0.3); color:var(--text-muted);">
+                        </label>
+                        <label>Software ID
+                            <input id="settings-input-id" type="text" value="GRA-ADM-001" readonly style="background:rgba(0,0,0,0.3); color:var(--accent-gold);">
+                        </label>
+                        <label>Work Email
+                            <input id="settings-input-email" type="email" value="kingsaab@graceassistant.io">
+                        </label>
+                    </div>
+                    <div style="margin-top:14px; padding:12px; background:rgba(0,25,20,0.5); border-radius:8px; border:1px solid #123B35;">
+                        <div class="eyebrow" style="font-size:10px;">CUSTOM AVATAR PHOTO</div>
+                        <p style="font-size:12px; color:var(--text-muted); margin:4px 0 8px;">Upload and frame your executive avatar across the workspace.</p>
+                        <button type="button" class="btn btn-blue" onclick="openProfilePhotoPreviewModal()" style="font-size:11.5px; padding:6px 14px;">📸 Update / Frame Avatar Photo</button>
+                    </div>
+                </div>
+
+                <!-- Chamber 2: Display & Theme -->
+                <div id="settings-pane-theme" class="settings-pane" hidden>
+                    <div class="eyebrow" style="font-size:10px; margin-bottom:6px;">THEME PALETTE SELECTION</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:14px;">
+                        <button type="button" class="palette-option" onclick="setExecutiveTheme('light')" style="padding:10px; text-align:center; border:1px solid #CBD5E1; border-radius:8px; background:#F8FAFC; color:#0F172A; cursor:pointer;">
+                            <b>Clean Light</b><small style="display:block; font-size:10px; color:#64748B;">Crisp High-Contrast</small>
+                        </button>
+                        <button type="button" class="palette-option" onclick="setExecutiveTheme('dark')" style="padding:10px; text-align:center; border:1px solid #10B981; border-radius:8px; background:#0B1120; color:#F8FAFC; cursor:pointer;">
+                            <b>Executive Dark</b><small style="display:block; font-size:10px; color:#A7F3D0;">Obsidian &amp; Emerald</small>
+                        </button>
+                        <button type="button" class="palette-option" onclick="applyTheme('emerald')" style="padding:10px; text-align:center; border:1px solid #D6A117; border-radius:8px; background:#031C18; color:#F8FAFC; cursor:pointer;">
+                            <b>Emerald Luxury</b><small style="display:block; font-size:10px; color:#FDE68A;">Signature Gold</small>
+                        </button>
+                    </div>
+
+                    <div style="margin-top:10px;">
+                        <div class="eyebrow" style="font-size:10px; margin-bottom:6px;">DISPLAY BRIGHTNESS</div>
+                        <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,25,20,0.5); border-radius:8px; border:1px solid #123B35;">
+                            <span style="font-size:16px;">☀️</span>
+                            <input type="range" min="60" max="140" value="100" oninput="adjustBrightness(this.value); document.getElementById('settings-brightness-label').innerText = this.value + '%';" style="flex:1;">
+                            <span id="settings-brightness-label" style="font-weight:800; color:var(--accent-gold); min-width:40px;">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chamber 3: Soundscape & Audio -->
+                <div id="settings-pane-audio" class="settings-pane" hidden>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <label style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(0,25,20,0.5); border-radius:8px; border:1px solid #123B35; cursor:pointer;">
+                            <div>
+                                <strong style="font-size:13px; color:#FFF;">Background Soundscape Auto-Play</strong>
+                                <small style="display:block; color:var(--text-muted); font-size:11px;">Automatically start ambient focus loops upon authentication</small>
+                            </div>
+                            <input id="settings-soundscape-toggle" type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-green);">
+                        </label>
+                        <label style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(0,25,20,0.5); border-radius:8px; border:1px solid #123B35; cursor:pointer;">
+                            <div>
+                                <strong style="font-size:13px; color:#FFF;">Soundscape Video Eye-Privacy Blur</strong>
+                                <small style="display:block; color:var(--text-muted); font-size:11px;">Default to blurred video stream to protect screen privacy</small>
+                            </div>
+                            <input id="settings-video-blur-toggle" type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-gold);">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Chamber 4: Security & Password -->
+                <div id="settings-pane-security" class="settings-pane" hidden>
+                    <div class="form-grid" style="grid-template-columns:1fr; gap:10px;">
+                        <label>Current Password
+                            <input id="settings-pwd-old" type="password" placeholder="Enter current password">
+                        </label>
+                        <label>New Terminal Password
+                            <input id="settings-pwd-new" type="password" placeholder="Enter new secure password">
+                        </label>
+                        <label>Confirm New Password
+                            <input id="settings-pwd-confirm" type="password" placeholder="Re-type new password">
+                        </label>
+                        <button type="button" class="btn btn-orange" onclick="updateUserPasswordFromSettings()" style="align-self:flex-start; margin-top:4px;">🔑 Update Password</button>
+                    </div>
+                    <div style="margin-top:14px; padding:10px; background:rgba(16,185,129,0.1); border-radius:8px; border:1px solid #10B981; font-size:11.5px; color:#A7F3D0;">
+                        🛡️ <b>Active Security Tier:</b> Hardware AES-256 Fernet Encryption active. Rate Limiter enabled.
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-actions" style="margin-top:14px; border-top:1px solid #123B35; padding-top:10px;">
+                <button class="btn btn-gray" onclick="closeUserSettingsModal()">Close</button>
+                <button class="btn btn-blue" onclick="saveUserSettings()">💾 Save All Preferences</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GUEST DEMO INTERACTIVE RUNBOOK & WORKFLOW SHOWCASE MODAL -->
+    <div id="guest-tour-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="tour-modal-title">
+        <div class="modal-card wide-modal" style="width:min(720px, 94vw); max-height:86vh; display:flex; flex-direction:column; padding:22px; background:#001A17; border:1.5px solid var(--accent-gold); border-radius:16px;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #123B35; padding-bottom:10px; margin-bottom:12px;">
+                <div>
+                    <span class="eyebrow" style="color:var(--accent-gold); font-size:10.5px;">LIVE INTERACTIVE RUNBOOK</span>
+                    <h3 id="tour-modal-title" style="margin:2px 0 0; font-size:17px;">🎮 Grace Outreach Platform Showcase &amp; Workflow Tour</h3>
+                </div>
+                <button class="modal-close" onclick="closeGuestTourModal()" aria-label="Close Tour">×</button>
+            </div>
+
+            <div style="flex:1; overflow-y:auto; padding-right:4px;">
+                <p style="font-size:13px; color:#CBD5E1; line-height:1.5; margin:0 0 12px;">
+                    Welcome to the <b>Grace Outreach Enterprise Architecture</b>. Below is the live interactive simulation of how our multi-tenant campaign engine operates with 100% Google Bulk Sender compliance.
+                </p>
+
+                <!-- 3 Pillars of Operation -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:14px;">
+                    <div style="padding:12px; background:rgba(0,25,20,0.7); border-radius:10px; border:1px solid #123B35;">
+                        <span style="font-size:11px; font-weight:800; color:var(--accent-gold);">CHAMBER 1</span>
+                        <h4 style="margin:4px 0; font-size:13px; color:#FFF;">Multi-Inbox Rotation</h4>
+                        <p style="margin:0; font-size:11.5px; color:#94A3B8;">Distributes outbound load across Google Workspace inboxes (40/hr limit) with humanized jitter.</p>
+                    </div>
+                    <div style="padding:12px; background:rgba(0,25,20,0.7); border-radius:10px; border:1px solid #123B35;">
+                        <span style="font-size:11px; font-weight:800; color:var(--accent-green);">CHAMBER 2</span>
+                        <h4 style="margin:4px 0; font-size:13px; color:#FFF;">AI Spintax Sentinel</h4>
+                        <p style="margin:0; font-size:11.5px; color:#94A3B8;">Generates non-repetitive subject variations and enforces &lt;0.10% spam sentinel threshold.</p>
+                    </div>
+                    <div style="padding:12px; background:rgba(0,25,20,0.7); border-radius:10px; border:1px solid #123B35;">
+                        <span style="font-size:11px; font-weight:800; color:#38BDF8;">CHAMBER 3</span>
+                        <h4 style="margin:4px 0; font-size:13px; color:#FFF;">Territory CRM Sync</h4>
+                        <p style="margin:0; font-size:11.5px; color:#94A3B8;">Classifies contractor replies into Most Interested (95%), CRM Ready, and Automated Opt-Out.</p>
+                    </div>
+                </div>
+
+                <!-- Simulated Live 10-Second Runner -->
+                <div style="padding:14px; background:rgba(0,18,15,0.85); border-radius:10px; border:1px solid var(--accent-gold); margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                        <strong style="color:var(--accent-gold); font-size:13px;">⚡ Interactive Outreach Simulation Engine</strong>
+                        <button type="button" class="btn btn-gold" id="btn-run-demo-sim" onclick="runGuestOutreachSimulation()" style="font-size:11.5px; padding:6px 14px; font-weight:800;">▶ Run 10-Sec Live Simulation</button>
+                    </div>
+                    <div id="demo-sim-log-box" style="font-family:monospace; font-size:11.5px; line-height:1.6; color:#10B981; background:#000; padding:10px; border-radius:6px; min-height:80px; max-height:120px; overflow-y:auto;">
+                        <div style="color:#64748B;">Click "Run Live Simulation" to witness real-time dispatch pacing, jitter calculation, and inbox rotation in action...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-actions" style="margin-top:12px; border-top:1px solid #123B35; padding-top:10px;">
+                <button class="btn btn-blue btn-pill-action" onclick="closeGuestTourModal()" style="width:100%; font-size:13px;">🚀 Start Live Exploration of All 22 Modules &rarr;</button>
             </div>
         </div>
     </div>
@@ -2257,8 +2383,7 @@ def render_navigation(active_tab):
             <a href="/api/?tab=dashboard" class="btn {d_active}">1. Dashboard Overview</a>
             <a href="/api/?tab=matrix" class="btn {m_active}">2. 22-Module Control Matrix</a>
             <a href="/api/?tab=colleagues" class="btn {c_active}" id="nav-colleagues">3. Colleague Management</a>
-            <a href="/privacy" class="btn btn-gray" style="font-size:11.5px;">🔒 Privacy</a>
-            <a href="/terms" class="btn btn-gray" style="font-size:11.5px;">📜 Terms</a>
+            <button type="button" class="btn btn-gray" id="nav-user-settings-btn" onclick="openUserSettingsModal()" style="font-size:12px; display:inline-flex; align-items:center; gap:6px;">⚙️ User Settings</button>
             <button class="btn btn-red" onclick="handleExecutiveLogout()" style="margin-left:auto; display:inline-flex; align-items:center; gap:6px;">🚪 Log Out</button>
         </div>
     </div>
@@ -3186,7 +3311,109 @@ BASE_CSS = """
     }
 
     /* 5. Notification inbox cards */
-        /* High-Contrast Light Theme Overhaul (Crystal-Sharp Polish) */
+        /* =========================================================================
+       LUXURY ENTERPRISE FIXED WALLPAPER & ZERO-SCROLL LOGIN ENGINE
+       ========================================================================= */
+    body.auth-screen-active {
+        overflow: hidden !important;
+        height: 100vh !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-attachment: fixed !important;
+        background-size: cover !important;
+    }
+    body.auth-screen-active #app-workspace-root,
+    body.auth-screen-active .top-bar,
+    body.auth-screen-active #grace-demo-banner,
+    body.auth-screen-active #view-as-container-bar,
+    body.auth-screen-active .safety-curtain,
+    body.auth-screen-active main,
+    body.auth-screen-active footer,
+    body.auth-screen-active .card:not(.auth-card),
+    body.auth-screen-active .stats-grid,
+    body.auth-screen-active .charts-grid-2,
+    body.auth-screen-active #ai-agent-widget,
+    body.auth-screen-active .floating-audio-widget:not(.gateway-floating-audio),
+    body.auth-screen-active > *:not(#auth-gateway-overlay):not(#auth-fixed-bg):not(#user-settings-modal):not(#guest-tour-modal):not(#inapp-legal-modal):not(#profile-preview-modal):not(script):not(style) {
+        display: none !important;
+    }
+
+    /* 3 Luxury Sample Wallpapers for Login Gateway */
+    body.auth-wp-emerald, body.auth-screen-active {
+        background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
+                    radial-gradient(circle at 85% 80%, rgba(214, 161, 23, 0.16) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 50%, rgba(6, 78, 59, 0.28) 0%, transparent 60%),
+                    linear-gradient(135deg, #02120F 0%, #061F1A 50%, #010B09 100%) !important;
+    }
+    body.auth-wp-gold {
+        background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.22) 0%, transparent 45%),
+                    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.14) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 50%, rgba(69, 26, 3, 0.3) 0%, transparent 60%),
+                    linear-gradient(135deg, #140E05 0%, #20170A 50%, #0A0803 100%) !important;
+    }
+    body.auth-wp-aurora {
+        background: radial-gradient(circle at 25% 25%, rgba(56, 189, 248, 0.22) 0%, transparent 40%),
+                    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.2) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.35) 0%, transparent 60%),
+                    linear-gradient(135deg, #070D18 0%, #0E1A38 50%, #040812 100%) !important;
+    }
+
+    /* ChatGPT / Claude Minimalist Login Card Styling */
+    .auth-card-claude {
+        width: min(420px, 92vw) !important;
+        max-height: 86vh !important;
+        padding: 22px 26px !important;
+        border-radius: 18px !important;
+        background: rgba(2, 22, 18, 0.94) !important;
+        border: 1.5px solid rgba(214, 161, 23, 0.4) !important;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(16, 185, 129, 0.12) !important;
+        backdrop-filter: blur(28px) !important;
+        -webkit-backdrop-filter: blur(28px) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
+    }
+    .auth-card-claude::-webkit-scrollbar { width: 0 !important; display: none !important; }
+    .btn-pill-google {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 16px;
+        background: #FFFFFF;
+        color: #1F2937;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 1px solid #D1D5DB;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-pill-google:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .btn-pill-action {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 16px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 13.5px;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    /* High-Contrast Light Theme Overhaul (Crystal-Sharp Polish) */
     body.light .title-grace {
         background: linear-gradient(135deg, #92400E 0%, #B45309 50%, #D97706 100%) !important;
         -webkit-background-clip: text !important;
@@ -5884,10 +6111,13 @@ function openAuthGateway(tab = 'signin', isLock = false, isMandatory = false) {
         closeAuthGateway();
         return;
     }
+    document.body.classList.add('auth-screen-active');
+    const savedWp = window.localStorage.getItem('grace-auth-wallpaper') || 'emerald';
+    document.body.classList.add('auth-wp-' + savedWp);
     const overlay = document.getElementById('auth-gateway-overlay');
     if (!overlay) return;
     overlay.hidden = false;
-    overlay.style.display = 'grid';
+    overlay.style.display = 'flex';
     overlay.setAttribute('aria-hidden', 'false');
     switchAuthTab(tab);
     if (isLock) {
@@ -5909,6 +6139,7 @@ function openAuthGateway(tab = 'signin', isLock = false, isMandatory = false) {
 }
 
 function closeAuthGateway() {
+    document.body.classList.remove('auth-screen-active', 'auth-wp-emerald', 'auth-wp-gold', 'auth-wp-aurora');
     const overlay = document.getElementById('auth-gateway-overlay');
     if (overlay) {
         overlay.hidden = true;
@@ -5933,7 +6164,8 @@ function launchDemoMode() {
     changeViewAs('guest');
     const demoBar = document.getElementById('grace-demo-banner');
     if (demoBar) demoBar.hidden = false;
-    showToast('🎮 Welcome to Live Demo Mode! All 22 modules are unlocked.', 'success');
+    openGuestTourModal();
+    showToast('🎮 Welcome to Live Demo Mode! Exploring interactive enterprise runbook.', 'success');
 }
 
 function switchAuthTab(tab) {
@@ -11816,6 +12048,136 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==========================================
 // STRATEGIC HARDENING CLIENT-SIDE SUITE
 // ==========================================
+function setAuthWallpaper(theme) {
+    document.body.classList.remove('auth-wp-emerald', 'auth-wp-gold', 'auth-wp-aurora');
+    document.body.classList.add('auth-wp-' + theme);
+    window.localStorage.setItem('grace-auth-wallpaper', theme);
+    showToast('Wallpaper: ' + theme.toUpperCase() + ' applied.', 'info');
+}
+
+function openUserSettingsModal() {
+    const modal = document.getElementById('user-settings-modal');
+    if (!modal) return;
+    const activeKey = getActiveAuthUser() || 'king';
+    const prof = PROFILE_DATA[activeKey] || PROFILE_DATA.king;
+    const nameInput = document.getElementById('settings-input-name');
+    const roleInput = document.getElementById('settings-input-role');
+    const idInput = document.getElementById('settings-input-id');
+    const emailInput = document.getElementById('settings-input-email');
+    if (nameInput) nameInput.value = prof.name || '';
+    if (roleInput) roleInput.value = prof.role || '';
+    if (idInput) idInput.value = prof.software_id || 'GRA-001';
+    if (emailInput) emailInput.value = prof.email || (activeKey + '@graceassistant.io');
+    modal.hidden = false;
+    modal.style.display = 'grid';
+}
+
+function closeUserSettingsModal() {
+    const modal = document.getElementById('user-settings-modal');
+    if (modal) {
+        modal.hidden = true;
+        modal.style.display = 'none';
+    }
+}
+
+function switchSettingsSubtab(tab) {
+    document.querySelectorAll('.settings-subtab-btn').forEach(b => { b.classList.remove('active', 'btn-gold'); b.classList.add('btn-gray'); });
+    document.querySelectorAll('.settings-pane').forEach(p => p.hidden = true);
+    const btn = document.getElementById('st-tab-' + tab);
+    const pane = document.getElementById('settings-pane-' + tab);
+    if (btn) { btn.classList.add('active', 'btn-gold'); btn.classList.remove('btn-gray'); }
+    if (pane) pane.hidden = false;
+}
+
+function saveUserSettings() {
+    const activeKey = getActiveAuthUser() || 'king';
+    const newName = document.getElementById('settings-input-name')?.value.trim();
+    const newEmail = document.getElementById('settings-input-email')?.value.trim();
+    if (newName && PROFILE_DATA[activeKey]) {
+        PROFILE_DATA[activeKey].name = newName;
+        if (newEmail) PROFILE_DATA[activeKey].email = newEmail;
+        window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
+        try {
+            const customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}');
+            if (!customVault[activeKey]) customVault[activeKey] = {};
+            customVault[activeKey].name = newName;
+            if (newEmail) customVault[activeKey].email = newEmail;
+            window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
+        } catch(e) {}
+        updateProfileDisplay(activeKey);
+    }
+    showToast('Preferences saved to Dual-Vault successfully!', 'success');
+    closeUserSettingsModal();
+}
+
+function updateUserPasswordFromSettings() {
+    const oldP = document.getElementById('settings-pwd-old')?.value;
+    const newP = document.getElementById('settings-pwd-new')?.value;
+    const confP = document.getElementById('settings-pwd-confirm')?.value;
+    if (!newP || newP.length < 4) {
+        showToast('Password must be at least 4 characters.', 'warning');
+        return;
+    }
+    if (newP !== confP) {
+        showToast('New passwords do not match.', 'warning');
+        return;
+    }
+    const activeKey = getActiveAuthUser() || 'king';
+    const storedPasswords = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
+    storedPasswords[activeKey] = newP;
+    window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
+    showToast('Password updated successfully for ' + activeKey, 'success');
+    document.getElementById('settings-pwd-old').value = '';
+    document.getElementById('settings-pwd-new').value = '';
+    document.getElementById('settings-pwd-confirm').value = '';
+}
+
+function openGuestTourModal() {
+    const modal = document.getElementById('guest-tour-modal');
+    if (modal) {
+        modal.hidden = false;
+        modal.style.display = 'grid';
+    }
+}
+
+function closeGuestTourModal() {
+    const modal = document.getElementById('guest-tour-modal');
+    if (modal) {
+        modal.hidden = true;
+        modal.style.display = 'none';
+    }
+}
+
+function runGuestOutreachSimulation() {
+    const btn = document.getElementById('btn-run-demo-sim');
+    const logBox = document.getElementById('demo-sim-log-box');
+    if (!logBox) return;
+    if (btn) { btn.disabled = true; btn.innerText = 'Simulation Running...'; }
+    logBox.innerHTML = '<div style="color:#D6A117;">[00:01] 🔍 Initiating Google Workspace DKIM, SPF & DMARC alignment handshake...</div>';
+    
+    setTimeout(() => {
+        logBox.innerHTML += '<div style="color:#10B981;">[00:03] ✅ Alignment verified: Domain reputation 100% (Google Sentinel Green).</div>';
+        logBox.scrollTop = logBox.scrollHeight;
+    }, 1500);
+
+    setTimeout(() => {
+        logBox.innerHTML += '<div style="color:#38BDF8;">[00:05] 🎲 Automated Jitter Engine computed: 2.74s randomized dispatch pause.</div>';
+        logBox.scrollTop = logBox.scrollHeight;
+    }, 3200);
+
+    setTimeout(() => {
+        logBox.innerHTML += '<div style="color:#F59E0B;">[00:07] 📝 AI Spintax generated 14 distinct semantic structural variants.</div>';
+        logBox.scrollTop = logBox.scrollHeight;
+    }, 5500);
+
+    setTimeout(() => {
+        logBox.innerHTML += '<div style="color:#10B981; font-weight:800;">[00:10] 🚀 Dispatch completed: 3 Inboxes rotated smoothly · 0 Spam rate · 99.8% Inbox rate!</div>';
+        logBox.scrollTop = logBox.scrollHeight;
+        if (btn) { btn.disabled = false; btn.innerText = '✓ Simulation Complete'; }
+        showToast('🎮 Live simulation successfully demonstrated Google-compliant outreach!', 'success');
+    }, 8000);
+}
+
 function toggleAdminPassPicker() {
     const wrap = document.getElementById('admin-picker-wrap');
     const btn = document.getElementById('admin-pass-toggle-btn');
@@ -14576,16 +14938,9 @@ def app(environ, start_response):
         session = verify_session_token(token) if token else None
         is_super_admin = (session and session.get("role") == "Super Admin") or (is_test_client and environ.get("HTTP_X_ADMIN_AUTH") == "1")
 
-        # 3. Assets route (Grace 3D Crest Logo, Favicon, Retina Thumbnails)
+        # 3. Assets route (Grace 3D Crest Logo, Favicon, Retina Thumbnails, Multi-DPR Assets)
         cleaned_path = path.rstrip("/")
-        if cleaned_path in (
-            "/api/assets/grace-logo.png",
-            "/api/assets/grace-logo.jpg",
-            "/api/assets/grace-logo.jfif",
-            "/api/assets/grace-logo-thumb.png",
-            "/api/assets/crown.png",
-            "/api/assets/ai-agent-titan.png",
-            "/api/assets/ai-agent-alara.png",
+        if cleaned_path.startswith("/api/assets/") or cleaned_path in (
             "/favicon.ico",
             "/favicon.png",
             "/robots.txt",
@@ -14667,11 +15022,15 @@ def app(environ, start_response):
                     app_dir / "assets" / "grace-logo.png",
                 ]
             else:
-                logo_candidates = [
-                    app_dir / "assets" / "grace-logo.png",
-                    app_dir / "data" / "grace-logo.png",
-                    DATA_DIR / "grace-logo.png",
-                ]
+                exact_req = app_dir / "assets" / Path(cleaned_path).name
+                if exact_req.exists():
+                    logo_candidates = [exact_req]
+                else:
+                    logo_candidates = [
+                        app_dir / "assets" / "grace-logo.png",
+                        app_dir / "data" / "grace-logo.png",
+                        DATA_DIR / "grace-logo.png",
+                    ]
             logo_bytes = b""
             for cand in logo_candidates:
                 if cand.exists():

@@ -367,66 +367,66 @@
   },
   "auditLog": [
     {
-      "id": "AUD-0778",
+      "id": "AUD-1224",
       "user": "Hamza Ali",
       "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 02:09:50 PKT",
+      "timestamp": "2026-09-16 02:56:51 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-0715",
+      "id": "AUD-1178",
       "user": "System Auto-Dispatcher",
       "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 02:09:50 PKT",
+      "timestamp": "2026-09-16 02:56:51 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0651",
+      "id": "AUD-1122",
       "user": "King Saab",
       "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 02:09:50 PKT",
+      "timestamp": "2026-09-16 02:56:51 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-5289",
+      "id": "AUD-3423",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 02:09:45 PKT",
+      "timestamp": "2026-09-16 02:56:43 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5224",
+      "id": "AUD-3358",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 02:09:45 PKT",
+      "timestamp": "2026-09-16 02:56:43 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5178",
+      "id": "AUD-3297",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 02:09:45 PKT",
+      "timestamp": "2026-09-16 02:56:43 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5106",
+      "id": "AUD-3236",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 02:09:45 PKT",
+      "timestamp": "2026-09-16 02:56:43 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5041",
+      "id": "AUD-3166",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 02:09:45 PKT",
+      "timestamp": "2026-09-16 02:56:43 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -437,66 +437,66 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-5297",
+      "id": "AUD-3500",
       "user": "Hamza Ali",
       "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 01:59:35 PKT",
+      "timestamp": "2026-09-16 02:50:53 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5253",
+      "id": "AUD-3439",
       "user": "System Auto-Dispatcher",
       "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 01:59:35 PKT",
+      "timestamp": "2026-09-16 02:50:53 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-5209",
+      "id": "AUD-3399",
       "user": "King Saab",
       "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 01:59:35 PKT",
+      "timestamp": "2026-09-16 02:50:53 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0992",
+      "id": "AUD-9245",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:59:30 PKT",
+      "timestamp": "2026-09-16 02:50:49 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-0940",
+      "id": "AUD-9191",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:59:30 PKT",
+      "timestamp": "2026-09-16 02:50:49 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-0887",
+      "id": "AUD-9068",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:59:30 PKT",
+      "timestamp": "2026-09-16 02:50:49 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-0839",
+      "id": "AUD-9012",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:59:30 PKT",
+      "timestamp": "2026-09-16 02:50:49 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-0793",
+      "id": "AUD-8959",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:59:30 PKT",
+      "timestamp": "2026-09-16 02:50:48 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -507,66 +507,66 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-8089",
+      "id": "AUD-9630",
       "user": "Hamza Ali",
       "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 01:58:48 PKT",
+      "timestamp": "2026-09-16 02:50:19 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-8041",
+      "id": "AUD-9589",
       "user": "System Auto-Dispatcher",
       "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 01:58:48 PKT",
+      "timestamp": "2026-09-16 02:50:19 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-8003",
+      "id": "AUD-9555",
       "user": "King Saab",
       "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 01:58:48 PKT",
+      "timestamp": "2026-09-16 02:50:19 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3864",
+      "id": "AUD-5578",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:58:43 PKT",
+      "timestamp": "2026-09-16 02:50:15 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-3825",
+      "id": "AUD-5543",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:58:43 PKT",
+      "timestamp": "2026-09-16 02:50:15 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-3785",
+      "id": "AUD-5506",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:58:43 PKT",
+      "timestamp": "2026-09-16 02:50:15 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-3747",
+      "id": "AUD-5472",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:58:43 PKT",
+      "timestamp": "2026-09-16 02:50:15 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-3712",
+      "id": "AUD-5434",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:58:43 PKT",
+      "timestamp": "2026-09-16 02:50:15 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -577,48 +577,66 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-5741",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:44:35 PKT",
+      "id": "AUD-6664",
+      "user": "Hamza Ali",
+      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
+      "timestamp": "2026-09-16 02:49:56 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5708",
+      "id": "AUD-6610",
+      "user": "System Auto-Dispatcher",
+      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
+      "timestamp": "2026-09-16 02:49:56 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-6570",
+      "user": "King Saab",
+      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
+      "timestamp": "2026-09-16 02:49:56 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-2575",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-16 02:49:52 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2536",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:44:35 PKT",
+      "timestamp": "2026-09-16 02:49:52 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5673",
+      "id": "AUD-2501",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:44:35 PKT",
+      "timestamp": "2026-09-16 02:49:52 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5630",
+      "id": "AUD-2464",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:44:35 PKT",
+      "timestamp": "2026-09-16 02:49:52 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-5582",
+      "id": "AUD-2426",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 01:44:35 PKT",
+      "timestamp": "2026-09-16 02:49:52 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -629,42 +647,66 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-2101",
+      "id": "AUD-7360",
+      "user": "Hamza Ali",
+      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
+      "timestamp": "2026-09-16 02:49:17 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-7282",
+      "user": "System Auto-Dispatcher",
+      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
+      "timestamp": "2026-09-16 02:49:17 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-7215",
+      "user": "King Saab",
+      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
+      "timestamp": "2026-09-16 02:49:17 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-2975",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:25:52 PKT",
+      "timestamp": "2026-09-16 02:49:12 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-2041",
+      "id": "AUD-2930",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:25:52 PKT",
+      "timestamp": "2026-09-16 02:49:12 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-1996",
+      "id": "AUD-2883",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:25:51 PKT",
+      "timestamp": "2026-09-16 02:49:12 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-1951",
+      "id": "AUD-2840",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:25:51 PKT",
+      "timestamp": "2026-09-16 02:49:12 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-1905",
+      "id": "AUD-2793",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:25:51 PKT",
+      "timestamp": "2026-09-16 02:49:12 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -675,42 +717,66 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-9694",
+      "id": "AUD-8796",
+      "user": "Hamza Ali",
+      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
+      "timestamp": "2026-09-16 02:48:38 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8743",
+      "user": "System Auto-Dispatcher",
+      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
+      "timestamp": "2026-09-16 02:48:38 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8697",
+      "user": "King Saab",
+      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
+      "timestamp": "2026-09-16 02:48:38 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-4520",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:23:19 PKT",
+      "timestamp": "2026-09-16 02:48:34 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-9653",
+      "id": "AUD-4478",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:23:19 PKT",
+      "timestamp": "2026-09-16 02:48:34 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-9608",
+      "id": "AUD-4432",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:23:19 PKT",
+      "timestamp": "2026-09-16 02:48:34 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-9564",
+      "id": "AUD-4398",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:23:19 PKT",
+      "timestamp": "2026-09-16 02:48:34 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-9525",
+      "id": "AUD-4353",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:23:19 PKT",
+      "timestamp": "2026-09-16 02:48:34 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -721,110 +787,50 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-3406",
+      "id": "AUD-3935",
+      "user": "Hamza Ali",
+      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
+      "timestamp": "2026-09-16 02:47:13 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-3877",
+      "user": "System Auto-Dispatcher",
+      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
+      "timestamp": "2026-09-16 02:47:13 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-3798",
+      "user": "King Saab",
+      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
+      "timestamp": "2026-09-16 02:47:13 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9033",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:21:33 PKT",
+      "timestamp": "2026-09-16 02:47:09 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-3362",
+      "id": "AUD-8989",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:21:33 PKT",
+      "timestamp": "2026-09-16 02:47:08 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-3317",
+      "id": "AUD-8944",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:21:33 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-3270",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:21:33 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-3228",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:21:33 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-2310",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:17:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-2278",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:17:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-2246",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:17:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-2205",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:17:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-2165",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:17:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-7240",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:15:57 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-7198",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-15 22:15:57 PKT",
+      "timestamp": "2026-09-16 02:47:08 PKT",
       "role": "Account Vault",
       "status": "Verified"
     }
