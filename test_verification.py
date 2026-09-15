@@ -7,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 try:
-    from main import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload
+    from main import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload, update_shared_state, render_colleagues, send_welcome_email
 except ImportError:
     from app import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload
 
@@ -840,7 +840,114 @@ def run_tests():
 
     print("[PASS] Google Compliance, Privacy Policy, Terms of Service & At-Rest Encryption verified.")
 
-    print("\n[SUCCESS] ALL 41 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    
+    # 42. STRATEGIC HARDENING: OTP AUTH, MULTI-USER OVERLAP, TENANT ISOLATION & COMPACT MODAL
+    print("Testing OTP Verification, Multi-User Overlap Matching, Colleague Isolation & Strategic Hardening...")
+
+    # 42.1 Email OTP Send API (/api/auth/otp/send)
+    otp_send_st, _, otp_send_body = wsgi_request("/api/auth/otp/send", "POST", body_dict={
+        "email": "lead.architect@graceassistant.io",
+        "name": "King Saab",
+        "purpose": "register"
+    }, headers_dict={"X-Test-Client": "1"})
+    assert otp_send_st.startswith("200"), f"Expected 200 from /api/auth/otp/send, got {otp_send_st}"
+    otp_send_res = json.loads(otp_send_body.decode("utf-8"))
+    assert otp_send_res.get("status") == "ok"
+    assert "demo_otp" in otp_send_res
+    generated_otp = otp_send_res["demo_otp"]
+    assert len(generated_otp) == 6
+
+    # 42.2 Email OTP Verify API (/api/auth/otp/verify)
+    # Test invalid OTP
+    bad_otp_st, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={
+        "email": "lead.architect@graceassistant.io",
+        "otp": "000000",
+        "purpose": "register"
+    }, headers_dict={"X-Test-Client": "1"})
+    assert bad_otp_st.startswith("401"), f"Invalid OTP should return 401, got {bad_otp_st}"
+
+    # Test valid OTP
+    good_otp_st, _, good_otp_body = wsgi_request("/api/auth/otp/verify", "POST", body_dict={
+        "email": "lead.architect@graceassistant.io",
+        "otp": generated_otp,
+        "purpose": "register"
+    }, headers_dict={"X-Test-Client": "1"})
+    assert good_otp_st.startswith("200"), f"Valid OTP should return 200, got {good_otp_st}"
+    good_otp_res = json.loads(good_otp_body.decode("utf-8"))
+    assert good_otp_res.get("verified") is True
+
+    # 42.3 Welcome Email Dispatch & Audit Logging
+    welcome_res = send_welcome_email("sarah.onboarding@graceassistant.io", "Sarah Malik", "Growth Marketer", "GRA-MKT-003")
+    assert welcome_res.get("status") == "ok"
+    st_post_welcome = read_shared_state()
+    assert any("Welcome Email Dispatched" in a.get("action", "") for a in st_post_welcome.get("auditLog", []))
+
+    # 42.4 Duplicate Company Account Prevention (Same Colleague)
+    duplicate_payload = {
+        "resource": "companyAccounts",
+        "key": "acc_king_dup_test",
+        "value": {
+            "email": "kingsaab.outreach@graceassistant.io",
+            "colleague_key": "king",
+            "colleague_name": "King Saab",
+            "password": "Password123!"
+        }
+    }
+    duplicate_blocked = False
+    try:
+        update_shared_state(duplicate_payload)
+    except ValueError as e:
+        if "already exists in your database" in str(e).lower():
+            duplicate_blocked = True
+    assert duplicate_blocked, "Adding duplicate account for same colleague should raise ValueError"
+
+    # 42.5 100% Multi-User Overlap Identity Matching Engine (Different Colleagues)
+    overlap_payload = {
+        "resource": "companyAccounts",
+        "key": "acc_hamza_overlap_test",
+        "value": {
+            "email": "sarah.malik@graceoutreach.org",
+            "colleague_key": "hamza",
+            "colleague_name": "Hamza Ali",
+            "password": "OverlapPassword2026!"
+        }
+    }
+    st_overlap = update_shared_state(overlap_payload)
+    acc_overlap = st_overlap["companyAccounts"]["acc_hamza_overlap_test"]
+    assert acc_overlap.get("overlap_detected") is True, "Overlap must be detected when another colleague connects same email"
+    assert "Sarah Malik" in acc_overlap.get("overlap_users", [])
+    assert "Hamza Ali" in acc_overlap.get("overlap_users", [])
+
+    # Clean up test overlap account
+    update_shared_state({"resource": "companyAccounts", "key": "acc_hamza_overlap_test", "value": {"_action": "delete"}})
+
+    # 42.6 Colleague Tenant Isolation (Backend Rendering)
+    html_all = render_colleagues()
+    assert "colleague-card-king" in html_all
+    assert "colleague-card-sarah" in html_all
+
+    html_sarah_isolated = render_colleagues(current_user="sarah")
+    assert "colleague-card-sarah" in html_sarah_isolated
+    assert "colleague-card-king" not in html_sarah_isolated
+    assert "colleague-card-hamza" not in html_sarah_isolated
+
+    # 42.7 Public Login Modal Markup, Hidden Admin Pass, In-App Policy Modal & 4K Logo
+    root_st, _, root_body = wsgi_request("/", "GET")
+    assert root_st.startswith("200")
+    root_html = root_body.decode("utf-8")
+    assert 'id="login-email-input"' in root_html, "Missing public clean email/username input"
+    assert 'id="admin-picker-wrap"' in root_html, "Missing admin-picker-wrap container"
+    assert 'style="display:none;' in root_html or 'hidden' in root_html, "Admin picker must be hidden by default"
+    assert 'id="reg-policy-agree"' in root_html, "Missing mandatory policy agreement checkbox"
+    assert 'id="inapp-legal-modal"' in root_html, "Missing in-app legal reader modal"
+    assert "🛡️ Google Verified Enterprise Outreach Engine • AES-256 Hardware Encrypted" in root_html, "Missing executive engine badge"
+    assert 'id="video-eye-toggle"' in root_html, "Missing soundscape eye blur toggle button"
+    assert "grace-logo.png?v=20260916_4k" in root_html, "Missing 4K master crest logo asset link"
+
+    print("[PASS] OTP Auth, Multi-User Overlap, Colleague Tenant Isolation & Strategic Hardening verified.")
+
+    print("\n[SUCCESS] ALL 42 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+
 
 if __name__ == "__main__":
     run_tests()
