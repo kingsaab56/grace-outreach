@@ -391,6 +391,19 @@ DEFAULT_PROFILES = {
         "allowed": [1, 2, 6, 7, 13, 16],
         "metrics": {"pipeline": "740", "inboxes": "1 Inbox", "volume": "410", "deal": "$12,600"},
     },
+    "guest": {
+        "key": "guest",
+        "name": "Guest Explorer",
+        "role": "Product Evaluator",
+        "software_id": "GRA-DEMO-000",
+        "status": "Online",
+        "initials": "GE",
+        "tags": ["Demo", "Guest Mode"],
+        "assigned_states": ["California", "Texas"],
+        "assigned_contractors": ["Turner Construction Co.", "Skanska USA Building"],
+        "allowed": list(range(1, 23)),
+        "metrics": {"pipeline": "1,500", "inboxes": "2 Inboxes", "volume": "850", "deal": "$32,000"},
+    },
 }
 
 MODULE_BLUEPRINTS = {
@@ -1134,6 +1147,11 @@ def render_header():
                     <span>Continue with Google Workspace</span>
                 </button>
 
+                <!-- Instant Guest Demo Button -->
+                <button type="button" class="btn-demo-instant" onclick="launchDemoMode()" style="width:100%; box-sizing:border-box; padding:11px 16px; background:linear-gradient(135deg, rgba(16,185,129,0.22), rgba(214,161,23,0.18)); border:1.5px solid var(--accent-gold); border-radius:8px; color:var(--accent-gold); font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; margin:4px 0 10px; transition:0.2s; position:relative; z-index:2; box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+                    <span>🎮 Instant Guest Demo (Full 22-Module Access • No Login)</span>
+                </button>
+
                 <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
                     <hr style="flex:1; border:none; border-top:1px solid #123B35;">
                     <span style="font-size:11px; color:var(--text-muted); font-weight:700;">OR LOGIN WITH CREDENTIALS</span>
@@ -1160,12 +1178,13 @@ def render_header():
                     </div>
                 </div>
                 <div class="fast-login-tray">
-                    <span class="eyebrow" style="font-size:10px; margin-bottom:6px;">QUICK 1-CLICK FAST-PASS LOGINS</span>
+                    <span class="eyebrow" style="font-size:10px; margin-bottom:6px;">QUICK 1-CLICK FAST-PASS &amp; GUEST DEMO</span>
                     <div style="display:flex; flex-wrap:wrap; gap:6px;">
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('king')">{WA_CROWN_IMG} King Saab</button>
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('abdullah')">🎯 Abdullah</button>
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('sarah')">📈 Sarah</button>
                         <button type="button" class="fast-pass-btn" onclick="fastPassLogin('hamza')">🔍 Hamza</button>
+                        <button type="button" class="fast-pass-btn" onclick="launchDemoMode()" style="border-color:var(--accent-gold); background:rgba(214,161,23,0.15); color:var(--accent-gold);">🎮 Guest Demo</button>
                     </div>
                 </div>
                 <div class="dialog-actions" style="margin-top:18px;">
@@ -2029,6 +2048,21 @@ def render_navigation(active_tab):
     m_active = "btn-blue" if active_tab == "matrix" else "btn-gray"
     c_active = "btn-blue" if active_tab == "colleagues" else "btn-gray"
     return f"""
+    <!-- Live Demo & Guest Mode Indicator Bar -->
+    <div id="grace-demo-banner" class="demo-mode-banner" hidden style="background:linear-gradient(90deg, #064e3b, #022c22); border:1px solid var(--accent-gold); border-radius:12px; padding:10px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 4px 16px rgba(0,0,0,0.35);">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:22px;">🎮</span>
+            <div>
+                <strong style="color:var(--accent-gold); font-size:13px; letter-spacing:0.3px;">LIVE DEMO &amp; GUEST EVALUATOR MODE</strong>
+                <div style="font-size:11px; color:#A7F3D0;">Full interactive evaluation access active. All 22 modules, AI companion, soundscape, and analytics are unlocked.</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm" onclick="changeViewAs('king')" style="font-size:11px; padding:5px 10px; background:rgba(214,161,23,0.2); border:1px solid var(--accent-gold); color:var(--accent-gold); cursor:pointer;">👑 King Saab (Admin View)</button>
+            <button type="button" class="btn btn-sm" onclick="openAuthGateway('register', false, false)" style="font-size:11px; padding:5px 10px; background:rgba(16,185,129,0.2); border:1px solid var(--accent-green); color:var(--accent-green); cursor:pointer;">✨ Create Colleague ID</button>
+            <button type="button" class="btn btn-sm btn-gray" onclick="powerOff()" style="font-size:11px; padding:5px 10px; cursor:pointer;">🔒 Lock Screen</button>
+        </div>
+    </div>
     <div class="card" style="padding:12px 18px;">
         <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
             <a href="/api/?tab=dashboard" class="btn {d_active}">1. Dashboard Overview</a>
@@ -4827,21 +4861,24 @@ let ACCESS_MAP = {
     king: Array.from({length:22}, (_, i) => i + 1),
     abdullah: [1,2,3,4,5,6,7,12],
     sarah: [1,2,4,5,11,17,18],
-    hamza: [1,2,6,7,13,16]
+    hamza: [1,2,6,7,13,16],
+    guest: Array.from({length:22}, (_, i) => i + 1)
 };
 
 let PROFILE_DATA = {
     king: {key:'king', name:'King Saab', role:'Super Admin', status:'Online', software_id:'GRA-ADM-001', initials:'KS', tags:['Manager', 'Admin'], assigned_states:['California', 'New York'], metrics:{pipeline:'2,480', inboxes:'3 Inboxes', volume:'1,240', deal:'$64,800'}},
     abdullah: {key:'abdullah', name:'Abdullah Khan', role:'Strategic Lead', status:'Online', software_id:'GRA-LEAD-002', initials:'AK', tags:['Manager', 'Strategy'], assigned_states:['Texas', 'Florida'], metrics:{pipeline:'1,860', inboxes:'3 Inboxes', volume:'920', deal:'$48,200'}},
     sarah: {key:'sarah', name:'Sarah Malik', role:'Growth Marketer', status:'Online', software_id:'GRA-MKT-003', initials:'SM', tags:['Marketer', 'Growth'], assigned_states:['Illinois', 'Washington'], metrics:{pipeline:'1,120', inboxes:'2 Inboxes', volume:'640', deal:'$18,400'}},
-    hamza: {key:'hamza', name:'Hamza Ali', role:'Lead Collector', status:'Offline', software_id:'GRA-COL-004', initials:'HA', tags:['Collector', 'Research'], assigned_states:['Georgia', 'Ohio'], metrics:{pipeline:'740', inboxes:'1 Inbox', volume:'410', deal:'$12,600'}}
+    hamza: {key:'hamza', name:'Hamza Ali', role:'Lead Collector', status:'Offline', software_id:'GRA-COL-004', initials:'HA', tags:['Collector', 'Research'], assigned_states:['Georgia', 'Ohio'], metrics:{pipeline:'740', inboxes:'1 Inbox', volume:'410', deal:'$12,600'}},
+    guest: {key:'guest', name:'Guest Explorer', role:'Product Evaluator', status:'Online', software_id:'GRA-DEMO-000', initials:'GE', tags:['Demo', 'Guest Mode'], assigned_states:['California', 'Texas'], metrics:{pipeline:'1,500', inboxes:'2 Inboxes', volume:'850', deal:'$32,000'}}
 };
 
 const ATTENDANCE_SEED = {
     king:{mon:'present',tue:'present',wed:'present',thu:'present',fri:'present',sat:'present'},
     abdullah:{mon:'present',tue:'present',wed:'approved',thu:'absent',fri:'present',sat:'present'},
     sarah:{mon:'present',tue:'received',wed:'present',thu:'present',fri:'absent',sat:'present'},
-    hamza:{mon:'absent',tue:'present',wed:'present',thu:'absent',fri:'present',sat:'present'}
+    hamza:{mon:'absent',tue:'present',wed:'present',thu:'absent',fri:'present',sat:'present'},
+    guest:{mon:'present',tue:'present',wed:'present',thu:'present',fri:'present',sat:'present'}
 };
 const LEAVE_SEED = {
     abdullah:{start:'2026-09-07',end:'2026-09-08',state:'approved'},
@@ -5271,7 +5308,10 @@ function handleExecutiveLogout() {
     window.localStorage.removeItem('grace_auth_user');
     window.sessionStorage.removeItem('grace_auth_user');
     window.sessionStorage.removeItem('grace_auth_role');
+    window.localStorage.removeItem('grace-demo-mode');
     window.localStorage.setItem('grace-session-locked', 'true');
+    const demoBar = document.getElementById('grace-demo-banner');
+    if (demoBar) demoBar.hidden = true;
     showToast('Session terminated. Returning to Executive Start Gateway...', 'info');
     openAuthGateway('signin', true, true);
 }
@@ -5591,6 +5631,17 @@ function unlockGatewayPreview() {
     window.localStorage.setItem('grace-session-locked', 'false');
     closeAuthGateway();
     showToast('Lock screen dismissed. Workspace preview active.', 'info');
+}
+
+function launchDemoMode() {
+    window.localStorage.setItem('grace-session-locked', 'false');
+    window.localStorage.setItem('grace-demo-mode', 'true');
+    persistUserAuthentication('guest', 'Product Evaluator');
+    closeAuthGateway();
+    changeViewAs('guest');
+    const demoBar = document.getElementById('grace-demo-banner');
+    if (demoBar) demoBar.hidden = false;
+    showToast('🎮 Welcome to Live Demo Mode! All 22 modules are unlocked.', 'success');
 }
 
 function switchAuthTab(tab) {
@@ -9802,6 +9853,30 @@ function cancelStudioDispatch() {
 const origApplyStoredTheme = applyStoredTheme;
 applyStoredTheme = function() {
     origApplyStoredTheme();
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+    const isDemoDirect = path === '/demo' || path === '/guest' || 
+                         urlParams.get('mode') === 'demo' || urlParams.get('mode') === 'guest' || 
+                         urlParams.get('demo') === '1' || urlParams.get('guest') === '1' ||
+                         urlParams.get('demo') === 'true' || urlParams.get('guest') === 'true';
+
+    if (isDemoDirect) {
+        window.localStorage.setItem('grace-session-locked', 'false');
+        window.localStorage.setItem('grace-demo-mode', 'true');
+        persistUserAuthentication('guest', 'Product Evaluator');
+        closeAuthGateway();
+        changeViewAs('guest');
+        const demoBar = document.getElementById('grace-demo-banner');
+        if (demoBar) demoBar.hidden = false;
+        showToast('🎮 Welcome to Live Demo Mode! All 22 modules are unlocked.', 'success');
+        return;
+    }
+
+    if (window.localStorage.getItem('grace-demo-mode') === 'true' && getActiveAuthUser() === 'guest') {
+        const demoBar = document.getElementById('grace-demo-banner');
+        if (demoBar) demoBar.hidden = false;
+    }
+
     if (!isUserAuthenticated()) {
         openAuthGateway('signin', true, true);
     } else {
@@ -13855,8 +13930,8 @@ def app(environ, start_response):
                 secure_start_response("405 Method Not Allowed", [("Content-Length", "0")])
                 return [b""]
 
-        # 7. HTML Pages Navigation
-        if cleaned_path in ("", "/api"):
+        # 7. HTML Pages Navigation (Supports standard, /demo, and /guest routes)
+        if cleaned_path in ("", "/api", "/demo", "/guest"):
             query_string = environ.get("QUERY_STRING", "")
             params = parse_qs(query_string)
             tab = params.get("tab", ["dashboard"])[0]
