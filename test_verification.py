@@ -7,9 +7,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 try:
-    from main import app, read_shared_state, US_STATES_CATALOG
+    from main import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload
 except ImportError:
-    from app import app, read_shared_state, US_STATES_CATALOG
+    from app import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload
 
 def wsgi_request(path, method="GET", query_string="", body_dict=None, headers_dict=None):
     body_bytes = b""
@@ -790,7 +790,57 @@ def run_tests():
     assert "retry-after" in rate_hdrs_dict, "429 response must include Retry-After header"
     print("[PASS] Defensive Security Hardening, 12 Security Areas & HTTP 429 Rate Limiting verified.")
 
-    print("\n[SUCCESS] ALL 40 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 41. GOOGLE BULK SENDER 2026 & PRIVACY/TERMS/ENCRYPTION COMPLIANCE TEST
+    print("Testing Google Compliance, Privacy Policy, Terms of Service & At-Rest Encryption...")
+    
+    # 41.1 Privacy Policy (/privacy)
+    priv_st, priv_hdrs, priv_body = wsgi_request("/privacy", "GET")
+    assert priv_st.startswith("200"), f"/privacy should return 200 OK, got {priv_st}"
+    priv_html = priv_body.decode("utf-8")
+    assert "Privacy Policy &amp; Google API User Data Disclosure" in priv_html, "Missing Privacy Policy title"
+    assert "Limited Use requirements" in priv_html, "Missing Google Limited Use disclosure"
+    assert "Spam Rate Sentinel" in priv_html, "Missing Google Spam Rate Sentinel disclosure"
+    assert "RFC 8058 One-Click Unsubscribe" in priv_html, "Missing RFC 8058 disclosure"
+    assert "ENC256:" in priv_html or "AES-256 Fernet" in priv_html, "Missing AES-256 Vault encryption disclosure"
+
+    # 41.2 Terms of Service (/terms)
+    terms_st, terms_hdrs, terms_body = wsgi_request("/terms", "GET")
+    assert terms_st.startswith("200"), f"/terms should return 200 OK, got {terms_st}"
+    terms_html = terms_body.decode("utf-8")
+    assert "Terms of Service &amp; Acceptable Use Policy" in terms_html, "Missing Terms of Service title"
+    assert "Google Bulk Sender 2026 Compliance Covenant" in terms_html, "Missing Bulk Sender Covenant"
+    assert "Zero Tolerance for Unsolicited Spam" in terms_html, "Missing Anti-Spam covenant"
+
+    # 41.3 RFC 8058 One-Click Unsubscribe Handler (/api/compliance/unsubscribe)
+    unsub_st, _, unsub_body = wsgi_request("/api/compliance/unsubscribe?email=test.recipient@example.com", "GET")
+    assert unsub_st.startswith("200"), f"GET /api/compliance/unsubscribe should return 200, got {unsub_st}"
+    assert "Unsubscribe Confirmed" in unsub_body.decode("utf-8")
+
+    unsub_post_st, _, unsub_post_body = wsgi_request("/api/compliance/unsubscribe?email=post.recipient@example.com", "POST")
+    assert unsub_post_st.startswith("200"), f"POST /api/compliance/unsubscribe should return 200, got {unsub_post_st}"
+    unsub_post_json = json.loads(unsub_post_body.decode("utf-8"))
+    assert unsub_post_json.get("status") == "ok"
+    assert unsub_post_json.get("email") == "post.recipient@example.com"
+
+    # 41.4 Sitemap Verification (/sitemap.xml)
+    sm_st, _, sm_body = wsgi_request("/sitemap.xml", "GET")
+    assert sm_st.startswith("200")
+    sm_xml = sm_body.decode("utf-8")
+    assert "<loc>/privacy</loc>" in sm_xml, "Sitemap must include /privacy"
+    assert "<loc>/terms</loc>" in sm_xml, "Sitemap must include /terms"
+
+    # 41.5 At-Rest Encrypted Passwords & Super Admin Decryption
+    st_raw = read_shared_state()
+    for acc_id, acc in st_raw.get("companyAccounts", {}).items():
+        pwd = acc.get("password", "")
+        if pwd:
+            assert pwd.startswith("ENC256:"), f"Password on disk for {acc_id} must be encrypted with ENC256:, got {pwd[:10]}"
+            decrypted = decrypt_vault_payload(pwd)
+            assert decrypted and not decrypted.startswith("ENC256:"), f"Password failed to decrypt properly: {decrypted}"
+
+    print("[PASS] Google Compliance, Privacy Policy, Terms of Service & At-Rest Encryption verified.")
+
+    print("\n[SUCCESS] ALL 41 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 if __name__ == "__main__":
     run_tests()

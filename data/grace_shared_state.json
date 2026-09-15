@@ -158,6 +158,56 @@
         "deal": "$12,600"
       }
     },
+    "guest": {
+      "key": "guest",
+      "name": "Guest Explorer",
+      "role": "Product Evaluator",
+      "software_id": "GRA-DEMO-000",
+      "status": "Online",
+      "initials": "GE",
+      "tags": [
+        "Demo",
+        "Guest Mode"
+      ],
+      "assigned_states": [
+        "California",
+        "Texas"
+      ],
+      "assigned_contractors": [
+        "Turner Construction Co.",
+        "Skanska USA Building"
+      ],
+      "allowed": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "metrics": {
+        "pipeline": "1,500",
+        "inboxes": "2 Inboxes",
+        "volume": "850",
+        "deal": "$32,000"
+      }
+    },
     "zayn_malik": {
       "key": "zayn_malik",
       "name": "Zayn Malik",
@@ -289,9 +339,309 @@
       7,
       13,
       16
+    ],
+    "guest": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
     ]
   },
   "auditLog": [
+    {
+      "id": "AUD-2101",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:25:52 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2041",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:25:52 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-1996",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:25:51 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-1951",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:25:51 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-1905",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:25:51 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "id": "AUD-9694",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:23:19 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-9653",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:23:19 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-9608",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:23:19 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-9564",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:23:19 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-9525",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:23:19 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "id": "AUD-3406",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:21:33 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-3362",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:21:33 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-3317",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:21:33 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-3270",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:21:33 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-3228",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:21:33 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "id": "AUD-2310",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:17:12 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2278",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:17:12 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2246",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:17:12 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2205",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:17:12 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-2165",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:17:12 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "id": "AUD-7240",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:15:57 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-7198",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:15:57 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-7150",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:15:57 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-7112",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:15:57 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-7069",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 22:15:57 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
+    {
+      "id": "AUD-9048",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 21:56:49 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-9013",
+      "user": "Abdullah Khan",
+      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 21:56:49 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8976",
+      "user": "Abdullah Khan",
+      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 21:56:48 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8939",
+      "user": "Abdullah Khan",
+      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 21:56:48 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "id": "AUD-8899",
+      "user": "Abdullah Khan",
+      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
+      "timestamp": "2026-09-15 21:56:48 PKT",
+      "role": "Account Vault",
+      "status": "Verified"
+    },
+    {
+      "timestamp": "2026-09-10 01:00:00",
+      "user": "King Saab",
+      "action": "Campaign Dispatch",
+      "details": "Safely dispatched 25 contractor records with human jitter"
+    },
     {
       "id": "AUD-2740",
       "user": "Abdullah Khan",
@@ -475,282 +825,6 @@
       "user": "King Saab",
       "action": "Campaign Dispatch",
       "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-5679",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-12 00:05:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5636",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-12 00:05:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5603",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-12 00:05:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5559",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-12 00:05:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5522",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-12 00:05:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-5896",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:59:25 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5856",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:59:25 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5817",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:59:25 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5779",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:59:25 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5746",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:59:25 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-4384",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:58:44 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4348",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:58:44 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4308",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:58:44 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4270",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:58:44 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4234",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:58:44 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-5946",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5906",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5868",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5830",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-5789",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:45 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-8114",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:18 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8081",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:18 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8046",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:18 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8008",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:18 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-7970",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:46:17 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-8537",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:48 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8509",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:48 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8467",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:48 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8430",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:48 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8393",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-11 21:25:48 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
     }
   ],
   "companyAccounts": {
@@ -760,7 +834,7 @@
       "colleague_name": "King Saab",
       "email": "kingsaab.outreach@graceassistant.io",
       "username": "kingsaab_master",
-      "password": "GraceMaster2026!#Auth",
+      "password": "ENC256:gAAAAABqqXjQ0WRbyuRaa7Sec9cvYoEzjeEGRi7B4kzF10b352noQp0FapPC64pcBHmZkBZJyiV4Q7ASTf1JYsvexzjH8QZKYzQtpkuXgOLNko-otCyNCq4=",
       "provider": "Google Workspace",
       "status_class": "active",
       "created_at": "2026-09-10 10:00:00 PKT",
@@ -775,7 +849,7 @@
       "colleague_name": "Abdullah Khan",
       "email": "abdullah.khan@graceconstruction.com",
       "username": "abdullah_lead",
-      "password": "TexasStrategy2026#Secure",
+      "password": "ENC256:gAAAAABqqXjQEj-JgSXFRDAJtIhxr8JXvHHnOlPlL2-YsH5YSVevbhqIMkylhvaFRjdoGarvZm_xfhFCuwFiqalOLbjVT0G0wAp7svzmWfrCxm8xEHjaSMA=",
       "provider": "Google Workspace",
       "status_class": "active",
       "created_at": "2026-09-10 11:30:00 PKT",
@@ -790,7 +864,7 @@
       "colleague_name": "Sarah Malik",
       "email": "sarah.malik@graceoutreach.org",
       "username": "sarah_growth",
-      "password": "SarahGrowth99@TokenKey",
+      "password": "ENC256:gAAAAABqqXjQqI0VtwDDWuA9b26HI61-9RR01ueK2KgnF76og9oeNTIKETaNZvZOyzh0dMwPg2s-FE-iUnztKgqmrTSoJ9G2xiNLNObme0Dxc79j6NBto6s=",
       "provider": "Gmail",
       "status_class": "active",
       "created_at": "2026-09-10 12:15:00 PKT",
@@ -805,7 +879,7 @@
       "colleague_name": "Sarah Malik",
       "email": "sarah.backup@gracemedia.co",
       "username": "sarah_backup",
-      "password": "AppPassword_Rotate2026$",
+      "password": "ENC256:gAAAAABqqXjQV3ADW0gwsB8Gr4GPUmlUKUD4_fy3_vtkG70zaT41pOGNPDZyd5Ly3FmlJzPF1i1DOUn9oQ_xahXAc3ZsneR7F07EoU9z7PDTOnG8WzLeDjs=",
       "provider": "Google Workspace",
       "status_class": "maintenance",
       "created_at": "2026-09-10 14:00:00 PKT",
@@ -820,7 +894,7 @@
       "colleague_name": "Hamza Ali",
       "email": "hamza.outreach@gracenetwork.us",
       "username": "hamza_collector",
-      "password": "HamzaCollectorSafe#12",
+      "password": "ENC256:gAAAAABqqXjQCDYaNfDrk1_q6rDBK7-uG29_mbPyJ9KuBlZosSy05-q386CzLJumLMYT4WStXdHyiOTzaaY5wCHFUxWRyv0iJWYVGVEJ5Wm5elJXhoYWK24=",
       "provider": "Google Workspace",
       "status_class": "restricted",
       "created_at": "2026-09-09 16:20:00 PKT",
@@ -835,7 +909,7 @@
       "colleague_name": "Hamza Ali",
       "email": "hamza.relay.legacy@gmail.com",
       "username": "hamza_legacy",
-      "password": "OldPassword_Suspended2025!",
+      "password": "ENC256:gAAAAABqqXjQq55vLX9R6XzSXc_kCPRKX0fS5lFRe7KqPxOIzozbfZoCrBo77MD3LlfI1Gavh3Z1p6J2CZRtW3XhyWROxLn5FpZ4bIbYgWH-zT84tvhWwMU=",
       "provider": "Gmail",
       "status_class": "suspended",
       "created_at": "2026-09-08 09:10:00 PKT",
@@ -844,5 +918,8 @@
       "appeal_notes": "Account suspended by Google for high rate-limit bounce.",
       "notes": "Decommissioned legacy relay node. Needs admin reactivation."
     }
-  }
+  },
+  "unsubscribedTargets": [
+    "client@example.com"
+  ]
 }
