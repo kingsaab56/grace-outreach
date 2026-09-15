@@ -983,7 +983,46 @@ def run_tests():
 
     print("[PASS] Multi-DPR Assets, Wallpaper Engine, App Hiding Shield, User Settings Modal & Guest Runbook verified.")
 
-    print("\n[SUCCESS] ALL 43 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 44. SECURITY & AUTH ARCHITECTURE: EMPTY PASSWORD DEFAULT, CONFIRM PASSWORD, WEBAUTHN PASSKEYS & ISOLATED LEGAL PAGES
+    print("Testing Empty Password Default, Confirm Password Fields, WebAuthn Passkeys & Isolated Legal Pages...")
+
+    # 44.1 Clean empty password field on login (no hardcoded prefilled password)
+    assert 'id="login-password-input" type="password" value=""' in root_html, "Login password input must be empty (no default password value)"
+    assert 'value="grace2026"' not in root_html, "Hardcoded 'grace2026' password must not be prefilled in any input"
+
+    # 44.2 Confirm Password fields in Register and Forgot Password panes
+    assert 'id="reg-confirm-password"' in root_html, "Missing reg-confirm-password input in registration form"
+    assert 'validateRegisterPasswordMatch' in root_html, "Missing validateRegisterPasswordMatch handler"
+    assert 'id="forgot-confirm-pwd-input"' in root_html, "Missing forgot-confirm-pwd-input in forgot password form"
+
+    # 44.3 1-Touch Passkey / WebAuthn Biometrics Support
+    assert 'id="btn-login-passkey"' in root_html, "Missing btn-login-passkey on login card"
+    assert 'handlePasskeySignIn()' in root_html, "Missing handlePasskeySignIn invocation"
+    assert 'registerDevicePasskey()' in root_html, "Missing registerDevicePasskey function"
+    assert 'btn-settings-register-passkey' in root_html, "Missing btn-settings-register-passkey in settings modal"
+    assert 'passkey-status-label' in root_html, "Missing passkey-status-label element in settings modal"
+
+    # 44.4 Isolated Standalone Policy and Terms Rendering (Zero app clutter in new tab)
+    priv_st, _, priv_body = wsgi_request("/privacy", "GET")
+    assert priv_st.startswith("200")
+    priv_page = priv_body.decode("utf-8")
+    assert "render_header" not in priv_page
+    assert '<header class="top-bar"' not in priv_page and '<div class="top-bar"' not in priv_page, "Privacy page in new tab must not contain app top-bar"
+    assert "openAdminMasterVaultModal" not in priv_page, "Privacy page must not show in-app account vault controls"
+    assert "openBroadcastAlertModal" not in priv_page, "Privacy page must not show broadcast alert controls"
+    assert "openSoundscapeModal" not in priv_page, "Privacy page must not show soundscape mini-player"
+    assert "Official Compliance &amp; Legal Governance Portal" in priv_page, "Missing clean legal header in /privacy"
+
+    terms_st, _, terms_body = wsgi_request("/terms", "GET")
+    assert terms_st.startswith("200")
+    terms_page = terms_body.decode("utf-8")
+    assert '<header class="top-bar"' not in terms_page and '<div class="top-bar"' not in terms_page, "Terms page in new tab must not contain app top-bar"
+    assert "openAdminMasterVaultModal" not in terms_page, "Terms page must not show in-app account vault controls"
+    assert "Official Terms of Service &amp; Acceptable Use Portal" in terms_page, "Missing clean legal header in /terms"
+
+    print("[PASS] Empty Password Default, Confirm Password Fields, WebAuthn Passkeys & Isolated Legal Pages verified.")
+
+    print("\n[SUCCESS] ALL 44 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 
 if __name__ == "__main__":
