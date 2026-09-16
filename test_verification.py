@@ -940,7 +940,7 @@ def run_tests():
     assert 'style="display:none;' in root_html or 'hidden' in root_html, "Admin picker must be hidden by default"
     assert 'id="reg-policy-agree"' in root_html, "Missing mandatory policy agreement checkbox"
     assert 'id="inapp-legal-modal"' in root_html, "Missing in-app legal reader modal"
-    assert "🛡️ Google Verified Enterprise Outreach Engine • AES-256 Hardware Encrypted" in root_html, "Missing executive engine badge"
+    assert "Google Verified Enterprise Outreach Engine" in root_html and "Zero-Trust Quantum-Resilient Cryptographic Vault" in root_html, "Missing executive engine badge"
     assert 'id="video-eye-toggle"' in root_html, "Missing soundscape eye blur toggle button"
     assert "grace-logo.png?v=20260916_4k" in root_html, "Missing 4K master crest logo asset link"
 
@@ -1022,7 +1022,83 @@ def run_tests():
 
     print("[PASS] Empty Password Default, Confirm Password Fields, WebAuthn Passkeys & Isolated Legal Pages verified.")
 
-    print("\n[SUCCESS] ALL 44 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
+    # 45. ENTERPRISE POLISH: MODAL SCROLL LOCK, SYMMETRICAL PASSWORDS, EYE TOGGLES, LOGIN LOGO ZOOM, ADMIN GOVERNANCE & KING SAAB 56 BRANDING
+    print("Testing Modal Scroll Lock, Symmetrical Passwords, Eye Toggles, Login Logo Zoom, Admin Governance & King Saab 56 Branding...")
+
+    # 45.1 Modal Scroll Lock & Deep Backdrop Blur
+    assert "body.modal-open, html.modal-open" in root_html, "Missing body.modal-open scroll lock style"
+    assert "setModalLock" in root_html, "Missing setModalLock JavaScript function"
+    assert "backdrop-filter: blur(16px)" in root_html, "Missing deep 16px backdrop blur for modal isolation"
+
+    # 45.2 Symmetrical Password & Confirm Password with Eye Toggles
+    assert 'class="password-toggle-btn"' in root_html, "Missing password-toggle-btn elements"
+    assert 'togglePasswordVisibility(\'reg-password\'' in root_html, "Missing eye toggle on registration password"
+    assert 'togglePasswordVisibility(\'reg-confirm-password\'' in root_html, "Missing eye toggle on registration confirm password"
+    assert 'togglePasswordVisibility(\'forgot-new-pwd-input\'' in root_html, "Missing eye toggle on forgot password"
+    assert 'togglePasswordVisibility(\'forgot-confirm-pwd-input\'' in root_html, "Missing eye toggle on forgot confirm password"
+
+    # 45.3 Login Card 3D Crest Logo Modal Click & Exception
+    assert 'onclick="openLogoModal()"' in root_html, "Login card crest logo must trigger openLogoModal on click"
+    assert ':not(#logo-preview-modal)' in root_html, "#logo-preview-modal must be excepted in body.auth-screen-active"
+
+    # 45.4 King Saab 56 Copyright Signature & AES Professional Wording
+    assert "Developed by King Saab 56" in root_html, "Missing 'Developed by King Saab 56' copyright signature"
+    assert "All Rights Reserved" in root_html, "Missing 'All Rights Reserved' copyright notice"
+    assert "Zero-Trust Quantum-Resilient Cryptographic Vault" in root_html, "Missing updated zero-trust cryptographic vault text"
+
+    # 45.5 Super Admin Enterprise Governance Chamber & Ribbon Control
+    assert 'id="admin-governance-modal"' in root_html, "Missing admin-governance-modal element"
+    assert 'id="ribbon-admin-btn"' in root_html, "Missing ribbon-admin-btn in top navigation header"
+    assert 'openAdminGovernanceModal' in root_html, "Missing openAdminGovernanceModal JS function"
+    assert 'applyRibbonVisibilityPermissions' in root_html, "Missing applyRibbonVisibilityPermissions JS function"
+
+    # 45.6 Admin Governance Settings API (GET & POST)
+    st_status, _, st_data = wsgi_request("/api/admin/settings", "GET")
+    assert st_status.startswith("200"), f"GET /api/admin/settings failed with {st_status}"
+    st_json = json.loads(st_data.decode("utf-8"))
+    assert st_json["status"] == "ok" and "ribbon_visibility" in st_json, "Invalid response from GET /api/admin/settings"
+
+    post_status, _, post_data = wsgi_request("/api/admin/settings", "POST", body_dict={
+        "ribbon_visibility": {
+            "vault": "admin_only",
+            "soundscape": "everyone",
+            "broadcast": "admin_only",
+            "notifications": "everyone",
+            "theme": "everyone",
+            "brightness": "everyone",
+            "companion": "everyone"
+        }
+    })
+    assert post_status.startswith("200"), f"POST /api/admin/settings failed with {post_status}"
+
+    # 45.7 Master Vault Recovery OTP Dispatch & Verification
+    otp_status, _, otp_data = wsgi_request("/api/vault/request-otp", "POST", body_dict={})
+    assert otp_status.startswith("200"), f"POST /api/vault/request-otp failed with {otp_status}"
+    otp_json = json.loads(otp_data.decode("utf-8"))
+    assert otp_json["status"] == "ok", "Failed to dispatch recovery OTP"
+
+    # Read the OTP from state to test verification
+    shared_st = read_shared_state()
+    gen_otp = shared_st.get("adminSettings", {}).get("vault_recovery_otp", {}).get("code")
+    assert gen_otp and len(gen_otp) == 6, "OTP was not properly recorded in adminSettings"
+
+    verify_status, _, verify_data = wsgi_request("/api/vault/verify-otp-and-reset", "POST", body_dict={
+        "otp": gen_otp,
+        "new_master_key": "vault_key_2026_test"
+    })
+    assert verify_status.startswith("200"), f"POST /api/vault/verify-otp-and-reset failed with {verify_status}"
+
+    # Verify new master key reveals vault secrets
+    rev_status, _, rev_data = wsgi_request("/api/vault/reveal", "POST", body_dict={
+        "master_key": "vault_key_2026_test"
+    })
+    assert rev_status.startswith("200"), f"New Master Vault key failed to reveal vault: {rev_status}"
+    rev_json = json.loads(rev_data.decode("utf-8"))
+    assert rev_json.get("status") == "ok", "Vault secret reveal failed with newly set key"
+
+    print("[PASS] Modal Scroll Lock, Symmetrical Passwords, Eye Toggles, Login Logo Zoom, Admin Governance & King Saab 56 Branding verified.")
+
+    print("\n[SUCCESS] ALL 45 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
 
 if __name__ == "__main__":
