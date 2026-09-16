@@ -239,6 +239,190 @@
         "deal": "$10,000"
       },
       "password": "securepassword123"
+    },
+    "rogue_user_test": {
+      "key": "rogue_user_test",
+      "name": "Rogue Agent",
+      "role": "Colleague",
+      "software_id": "GRA-COL-007",
+      "status": "Online",
+      "initials": "RA",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "Texas"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      }
+    },
+    "argon_colleague_test": {
+      "key": "argon_colleague_test",
+      "name": "Argon Test User",
+      "role": "Colleague",
+      "software_id": "GRA-COL-008",
+      "status": "Online",
+      "initials": "AT",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "California"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      }
+    },
+    "rogue_1789587469668": {
+      "key": "rogue_1789587469668",
+      "name": "Rogue Agent",
+      "role": "Colleague",
+      "software_id": "GRA-COL-009",
+      "status": "Online",
+      "initials": "RA",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "Texas"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$5ed5dee22acee2fc7c231d6ce8473667$4a6dd1ac660dfb03856e33eb47a2bf321138ade73c22253014da3bdc4fb4e331"
+    },
+    "argon_1789587469668": {
+      "key": "argon_1789587469668",
+      "name": "Argon Test User",
+      "role": "Colleague",
+      "software_id": "GRA-COL-010",
+      "status": "Online",
+      "initials": "AT",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "California"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$24a51697ecf6c920af6b00b15c329c23$2d6ea9dbb86b26ddae3c137b07b7e9ed98f6d63d4827341c430af39f55e5c9bf"
+    },
+    "rogue_1789587619181": {
+      "key": "rogue_1789587619181",
+      "name": "Rogue Agent",
+      "role": "Colleague",
+      "software_id": "GRA-COL-011",
+      "status": "Online",
+      "initials": "RA",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "Texas"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$25159a2c1834793f94fa4a529d422bde$90eba512ad81e5992bbb60599e99b87d93a4a07001af08fdd16c8e80cf466d14"
+    },
+    "argon_1789587619181": {
+      "key": "argon_1789587619181",
+      "name": "Argon Test User",
+      "role": "Colleague",
+      "software_id": "GRA-COL-012",
+      "status": "Online",
+      "initials": "AT",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "California"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$1a1c10b3d11e0d323e99821e13e46427$3a2c35003ecda743d99965d378a6df36ff88625e2f2b203030aa64207ed949ca"
     }
   },
   "attendance": {
@@ -367,66 +551,354 @@
   },
   "auditLog": [
     {
-      "id": "AUD-7427",
+      "id": "AUD-1009",
+      "user": "King Saab",
+      "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
+      "timestamp": "2026-09-17 00:40:21 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0977",
+      "user": "King Saab",
+      "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
+      "timestamp": "2026-09-17 00:40:20 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0942",
+      "user": "king",
+      "action": "LOGOUT: Session terminated for user: king",
+      "timestamp": "2026-09-17 00:40:20 PKT",
+      "role": "Colleague",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0122",
+      "user": "reset_reuse_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_reuse_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:20 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0083",
+      "user": "reset_reuse_1789587619181@example.com",
+      "action": "PASSWORD_RESET: Password reset confirmed via verified OTP for reset_reuse_1789587619181@example.com; active sessions revoked",
+      "timestamp": "2026-09-17 00:40:20 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0011",
+      "user": "reset_reuse_1789587619181@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for reset_reuse_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9976",
+      "user": "reset_exp_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_exp_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9943",
+      "user": "single_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for single_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9905",
+      "user": "single_1789587619181@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for single_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9868",
+      "user": "expired_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for expired_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9828",
+      "user": "twofa_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9793",
+      "user": "twofa_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9754",
+      "user": "twofa_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9716",
+      "user": "twofa_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9682",
+      "user": "twofa_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9644",
+      "user": "twofa_1789587619181@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587619181@example.com",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9605",
+      "user": "Colleague",
+      "action": "OTP_DISPATCHED: 6-digit verification code dispatched to audit_1789587619181@example.com (forgot)",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9576",
+      "user": "rate_1789587619181",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789587619181",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9537",
+      "user": "rate_1789587619181",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789587619181",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9499",
+      "user": "rate_1789587619181",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789587619181",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9459",
+      "user": "rate_1789587619181",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789587619181",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9422",
+      "user": "rate_1789587619181",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789587619181",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9216",
+      "user": "sarah",
+      "action": "ADMIN_AUTH_FAILED: Unauthorized colleague sarah attempted to mutate admin settings",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Colleague",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9177",
+      "user": "Super Admin",
+      "action": "VAULT_REVEAL: Master Vault decrypted and revealed credentials",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9134",
+      "user": "Super Admin",
+      "action": "PASSWORD_CHANGE: Master Vault Key successfully reset and updated via OTP verification",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-9062",
+      "user": "Super Admin",
+      "action": "OTP_DISPATCHED: Master Vault Recovery OTP generated for admin email: admin@graceoutreach.org",
+      "timestamp": "2026-09-17 00:40:19 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8985",
+      "user": "king",
+      "action": "ADMIN_SETTINGS_UPDATED: Super Admin updated ribbon visibility and registration governance",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8839",
       "user": "Hamza Ali",
       "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 22:48:17 PKT",
+      "timestamp": "2026-09-17 00:40:18 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-7381",
+      "id": "AUD-8796",
       "user": "System Auto-Dispatcher",
       "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 22:48:17 PKT",
+      "timestamp": "2026-09-17 00:40:18 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-7341",
+      "id": "AUD-8767",
+      "user": "lead.architect@graceassistant.io",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for lead.architect@graceassistant.io",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8726",
+      "user": "lead.architect@graceassistant.io",
+      "action": "OTP_FAILED: Failed OTP verification for lead.architect@graceassistant.io",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8689",
       "user": "King Saab",
-      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 22:48:17 PKT",
+      "action": "OTP_DISPATCHED: 6-digit verification code dispatched to lead.architect@graceassistant.io (register)",
+      "timestamp": "2026-09-17 00:40:18 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2951",
+      "id": "AUD-8587",
+      "user": "king",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8546",
+      "user": "king",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8505",
+      "user": "king",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8464",
+      "user": "Super Admin",
+      "action": "VAULT_REVEAL: Master Vault decrypted and revealed credentials",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8421",
+      "user": "Unknown",
+      "action": "VAULT_REVEAL_FAILED: Failed attempt to unlock Master Vault with incorrect key",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8381",
+      "user": "King Saab",
+      "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Super Admin",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-8342",
+      "user": "king",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
+      "timestamp": "2026-09-17 00:40:18 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-4982",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:48:12 PKT",
+      "timestamp": "2026-09-17 00:40:14 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-2902",
+      "id": "AUD-4943",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:48:12 PKT",
+      "timestamp": "2026-09-17 00:40:14 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-2852",
+      "id": "AUD-4900",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:48:12 PKT",
+      "timestamp": "2026-09-17 00:40:14 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-2802",
+      "id": "AUD-4865",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:48:12 PKT",
+      "timestamp": "2026-09-17 00:40:14 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-2752",
+      "id": "AUD-4824",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:48:12 PKT",
+      "timestamp": "2026-09-17 00:40:14 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -437,400 +909,124 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-6164",
-      "user": "Hamza Ali",
-      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 22:20:16 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-6124",
-      "user": "System Auto-Dispatcher",
-      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 22:20:16 PKT",
-      "role": "Security Sentinel",
+      "id": "AUD-1479",
+      "user": "King Saab",
+      "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
+      "timestamp": "2026-09-17 00:37:51 PKT",
+      "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-6088",
+      "id": "AUD-1432",
       "user": "King Saab",
-      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 22:20:16 PKT",
-      "role": "Security Sentinel",
+      "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
+      "timestamp": "2026-09-17 00:37:51 PKT",
+      "role": "Super Admin",
       "status": "Delivered"
-    },
-    {
-      "id": "AUD-2056",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:20:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-2011",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:20:12 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1965",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:20:11 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1921",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:20:11 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1876",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:20:11 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-9603",
-      "user": "Hamza Ali",
-      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 22:17:09 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-9555",
-      "user": "System Auto-Dispatcher",
-      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 22:17:09 PKT",
-      "role": "Security Sentinel",
-      "status": "Delivered"
-    },
-    {
-      "id": "AUD-9509",
-      "user": "King Saab",
-      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 22:17:09 PKT",
-      "role": "Security Sentinel",
-      "status": "Delivered"
-    },
-    {
-      "id": "AUD-4761",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:17:04 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4712",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:17:04 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4659",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:17:04 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4610",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:17:04 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4558",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:17:04 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-0823",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:12:40 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0779",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:12:40 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0735",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:12:40 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0690",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:12:40 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0647",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:12:40 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-4937",
-      "user": "Hamza Ali",
-      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 22:09:14 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-4898",
-      "user": "System Auto-Dispatcher",
-      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 22:09:14 PKT",
-      "role": "Security Sentinel",
-      "status": "Delivered"
-    },
-    {
-      "id": "AUD-4863",
-      "user": "King Saab",
-      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 22:09:14 PKT",
-      "role": "Security Sentinel",
-      "status": "Delivered"
-    },
-    {
-      "id": "AUD-0923",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:09:10 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0882",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:09:10 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0842",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:09:10 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0801",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:09:10 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-0761",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:09:10 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-6458",
-      "user": "Hamza Ali",
-      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 22:05:26 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-6414",
-      "user": "System Auto-Dispatcher",
-      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 22:05:26 PKT",
-      "role": "Security Sentinel",
-      "status": "Delivered"
-    },
-    {
-      "id": "AUD-6371",
-      "user": "King Saab",
-      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 22:05:26 PKT",
-      "role": "Security Sentinel",
-      "status": "Delivered"
-    },
-    {
-      "id": "AUD-1581",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:05:21 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1539",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:05:21 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1490",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:05:21 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-1434",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:05:21 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
     },
     {
       "id": "AUD-1384",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:05:21 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
+      "user": "king",
+      "action": "LOGOUT: Session terminated for user: king",
+      "timestamp": "2026-09-17 00:37:51 PKT",
+      "role": "Colleague",
+      "status": "Delivered"
     },
     {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
-    },
-    {
-      "id": "AUD-8874",
-      "user": "Hamza Ali",
-      "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-16 22:02:58 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
-    },
-    {
-      "id": "AUD-8812",
-      "user": "System Auto-Dispatcher",
-      "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-16 22:02:58 PKT",
+      "id": "AUD-0775",
+      "user": "reset_reuse_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_reuse_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-8725",
-      "user": "King Saab",
-      "action": "OTP Dispatched: 6-digit security verification code sent to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-16 22:02:58 PKT",
+      "id": "AUD-0736",
+      "user": "reset_reuse_1789587469668@example.com",
+      "action": "PASSWORD_RESET: Password reset confirmed via verified OTP for reset_reuse_1789587469668@example.com; active sessions revoked",
+      "timestamp": "2026-09-17 00:37:50 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-4519",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:02:54 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
+      "id": "AUD-0664",
+      "user": "reset_reuse_1789587469668@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for reset_reuse_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
     },
     {
-      "id": "AUD-4477",
-      "user": "Abdullah Khan",
-      "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:02:54 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
+      "id": "AUD-0623",
+      "user": "reset_exp_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_exp_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
     },
     {
-      "id": "AUD-4436",
-      "user": "Abdullah Khan",
-      "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:02:54 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
+      "id": "AUD-0576",
+      "user": "single_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for single_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
     },
     {
-      "id": "AUD-4390",
-      "user": "Abdullah Khan",
-      "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:02:54 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
+      "id": "AUD-0538",
+      "user": "single_1789587469668@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for single_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
     },
     {
-      "id": "AUD-4340",
-      "user": "Abdullah Khan",
-      "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-16 22:02:54 PKT",
-      "role": "Account Vault",
-      "status": "Verified"
+      "id": "AUD-0498",
+      "user": "expired_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for expired_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
     },
     {
-      "timestamp": "2026-09-10 01:00:00",
-      "user": "King Saab",
-      "action": "Campaign Dispatch",
-      "details": "Safely dispatched 25 contractor records with human jitter"
+      "id": "AUD-0457",
+      "user": "twofa_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0423",
+      "user": "twofa_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0394",
+      "user": "twofa_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0357",
+      "user": "twofa_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
+    },
+    {
+      "id": "AUD-0317",
+      "user": "twofa_1789587469668@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789587469668@example.com",
+      "timestamp": "2026-09-17 00:37:50 PKT",
+      "role": "Security Sentinel",
+      "status": "Delivered"
     }
   ],
   "companyAccounts": {

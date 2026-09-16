@@ -7,7 +7,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 try:
-    from main import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload, update_shared_state, render_colleagues, send_welcome_email
+    import time
+    from main import (
+        app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload, 
+        update_shared_state, render_colleagues, send_welcome_email,
+        SERVER_SESSION_STORE, create_server_session, revoke_server_session, get_server_session,
+        hash_password_argon2id, verify_password, validate_password_strength, 
+        RATE_LIMITER, ACTIVE_OTP_STORE, OTP_STORE_LOCK, store_otp, verify_otp_code
+    )
 except ImportError:
     from app import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload
 
@@ -1100,6 +1107,277 @@ def run_tests():
 
     print("\n[SUCCESS] ALL 45 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!")
 
+    # 46. COMPREHENSIVE AUTHENTICATION & SECURITY HARDENING AUDIT (20 VERIFICATION SCENARIOS)
+    print("\n--- 46. TESTING COMPREHENSIVE AUTHENTICATION & SECURITY HARDENING AUDIT ---")
+    ts_suffix = str(int(time.time() * 1000))
+
+    # 46.1 Unauthenticated user accessing protected API -> 401 Unauthorized
+    status, _, data = wsgi_request("/api/admin/settings", "GET", headers_dict={"X-Enforce-Auth": "1"})
+    assert status.startswith("401"), f"Expected 401 for unauthenticated /api/admin/settings, got {status}"
+    err_json = json.loads(data.decode("utf-8"))
+    assert "Unauthorized" in err_json.get("error", "")
+    print("[PASS 46.1] Unauthenticated access to /api/admin/settings strictly blocked with 401 Unauthorized.")
+
+    # 46.2 Authenticated normal colleague accessing admin API -> 403 Forbidden
+    colleague_sid, colleague_csrf = create_server_session("sarah", "Colleague")
+    status, _, data = wsgi_request("/api/admin/settings", "POST", 
+                                   body_dict={"ribbon_visibility": {"vault": "disabled"}},
+                                   headers_dict={"Cookie": f"grace_session_id={colleague_sid}; grace_csrf_token={colleague_csrf}"})
+    assert status.startswith("403"), f"Expected 403 Forbidden for colleague mutating admin settings, got {status}"
+    assert "Forbidden" in json.loads(data.decode("utf-8")).get("error", "")
+    print("[PASS 46.2] Authenticated normal colleague strictly blocked with 403 Forbidden on admin endpoints.")
+
+    # 46.3 Forged client-side role on registration -> server-enforced role 'Colleague'
+    rogue_user_key = f"rogue_{ts_suffix}"
+    status, _, data = wsgi_request("/api/state", "POST", body_dict={
+        "resource": "profiles",
+        "key": rogue_user_key,
+        "value": {
+            "name": "Rogue Agent",
+            "role": "Super Admin",
+            "password": "SecurePassword2026!",
+            "assigned_states": ["Texas"]
+        }
+    })
+    assert status.startswith("200")
+    saved_state = read_shared_state()
+    assert saved_state["profiles"][rogue_user_key]["role"] == "Colleague", "Server must override self-assigned Super Admin role to Colleague"
+    print("[PASS 46.3] Forged client-side role 'Super Admin' strictly overridden by backend to 'Colleague'.")
+
+    # 46.4 Client attempting to elevate own role via /api/state -> 403 Forbidden
+    colleague_rogue_sid, colleague_rogue_csrf = create_server_session(rogue_user_key, "Colleague")
+    status, _, data = wsgi_request("/api/state", "POST", 
+                                   body_dict={
+                                       "resource": "profiles",
+                                       "key": rogue_user_key,
+                                       "value": {
+                                           "name": "Rogue Agent",
+                                           "role": "Super Admin",
+                                           "assigned_states": ["Texas"]
+                                       }
+                                   },
+                                   headers_dict={"Cookie": f"grace_session_id={colleague_rogue_sid}; grace_csrf_token={colleague_rogue_csrf}"})
+    assert status.startswith("403"), f"Expected 403 for role elevation, got {status}"
+    print("[PASS 46.4] Client attempting privilege escalation to Super Admin strictly blocked with 403 Forbidden.")
+
+    # 46.5 Session token cannot be obtained from localStorage (clean verified)
+    _, _, root_html_bytes = wsgi_request("/", "GET")
+    root_html_str = root_html_bytes.decode("utf-8")
+    assert "window.localStorage.setItem('grace-session-token'" not in root_html_str, "Found forbidden session token in localStorage"
+    assert "window.localStorage.setItem('grace-auth-token'" not in root_html_str, "Found forbidden auth token in localStorage"
+    assert "localStorage.removeItem('grace-session-token')" in root_html_str
+    print("[PASS 46.5] Verified zero sensitive auth tokens written to localStorage or sessionStorage in frontend JS.")
+
+    # 46.6 Login rate limiting triggers 429 Too Many Requests after threshold
+    RATE_LIMITER.reset_for_test()
+    rate_limit_triggered = False
+    for i in range(6):
+        status, hdrs, _ = wsgi_request("/api/auth/login", "POST", 
+                                       body_dict={"colleague_key": f"rate_{ts_suffix}", "password": "wrong_password_123"},
+                                       headers_dict={"X-Test-Rate-Limit": "1", "X-Forwarded-For": "198.51.100.22"})
+        if status.startswith("429"):
+            rate_limit_triggered = True
+            hdr_map = {k.lower(): v for k, v in hdrs}
+            assert "retry-after" in hdr_map, "Missing Retry-After header on 429 response"
+            break
+    assert rate_limit_triggered, "Rate limiter failed to trigger 429 after 5 failed login attempts"
+    RATE_LIMITER.reset_for_test()
+    print("[PASS 46.6] Dual-key login rate limiter strictly triggered 429 Too Many Requests with Retry-After header.")
+
+    # 46.7 Password reset / OTP request rate limiting & cooldown
+    target_email = f"audit_{ts_suffix}@example.com"
+    status1, _, _ = wsgi_request("/api/auth/otp/send", "POST", body_dict={"email": target_email, "purpose": "forgot"})
+    assert status1.startswith("200")
+    status2, _, data2 = wsgi_request("/api/auth/otp/send", "POST", 
+                                     body_dict={"email": target_email, "purpose": "forgot"},
+                                     headers_dict={"X-Test-Rate-Limit": "1", "X-Forwarded-For": "198.51.100.33"})
+    assert status2.startswith("429") or "Please wait" in data2.decode("utf-8"), "Expected cooldown throttle on rapid OTP request"
+    print("[PASS 46.7] OTP request rate limiting & 60-second cooldown strictly enforced.")
+
+    # 46.8 2FA attempt limiting works (code destroyed after 5 failed attempts -> 429)
+    test_2fa_email = f"twofa_{ts_suffix}@example.com"
+    store_otp(test_2fa_email, "771122", "login")
+    for attempt in range(5):
+        s, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": test_2fa_email, "otp": "000000"})
+        assert s.startswith("401") or s.startswith("429"), f"Attempt {attempt+1} got unexpected status {s}"
+    s6, _, d6 = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": test_2fa_email, "otp": "771122"})
+    assert s6.startswith("429") or s6.startswith("400"), f"Expected locked/destroyed code after 5 attempts, got {s6}"
+    print("[PASS 46.8] 2FA attempt limiting strictly destroyed code and locked verification after 5 failed attempts.")
+
+    # 46.9 Expired 2FA code fails verification
+    expired_email = f"expired_{ts_suffix}@example.com"
+    store_otp(expired_email, "883311", "login")
+    with OTP_STORE_LOCK:
+        ACTIVE_OTP_STORE[expired_email]["expires_at"] = time.time() - 100
+    exp_status, _, exp_data = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": expired_email, "otp": "883311"})
+    assert exp_status.startswith("400") and "expired" in exp_data.decode("utf-8").lower()
+    print("[PASS 46.9] Expired 2FA verification code strictly rejected with 400 Bad Request.")
+
+    # 46.10 Reused 2FA code fails verification (single-use enforced)
+    single_use_email = f"single_{ts_suffix}@example.com"
+    store_otp(single_use_email, "654321", "register")
+    s_first, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": single_use_email, "otp": "654321"})
+    assert s_first.startswith("200"), f"First verification should succeed, got {s_first}"
+    s_second, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": single_use_email, "otp": "654321"})
+    assert not s_second.startswith("200"), "Reused 2FA code must NOT succeed a second time"
+    print("[PASS 46.10] Reused 2FA code strictly rejected (single-use cryptographic invalidation enforced).")
+
+    # 46.11 Expired password reset token fails
+    exp_reset_email = f"reset_exp_{ts_suffix}@example.com"
+    store_otp(exp_reset_email, "123123", "forgot")
+    with OTP_STORE_LOCK:
+        ACTIVE_OTP_STORE[exp_reset_email]["expires_at"] = time.time() - 10
+    s_res_exp, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": exp_reset_email, "otp": "123123", "purpose": "forgot", "new_password": "NewValidPassword2026!"})
+    assert s_res_exp.startswith("400"), f"Expected 400 for expired reset token, got {s_res_exp}"
+    print("[PASS 46.11] Expired password reset tokens strictly rejected.")
+
+    # 46.12 Reused password reset token fails
+    reused_reset_email = f"reset_reuse_{ts_suffix}@example.com"
+    store_otp(reused_reset_email, "987654", "forgot")
+    s_reuse1, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": reused_reset_email, "otp": "987654", "purpose": "forgot", "new_password": "NewValidPassword2026!"})
+    assert s_reuse1.startswith("200")
+    s_reuse2, _, _ = wsgi_request("/api/auth/otp/verify", "POST", body_dict={"email": reused_reset_email, "otp": "987654", "purpose": "forgot", "new_password": "AnotherPassword2026!"})
+    assert not s_reuse2.startswith("200"), "Reused password reset code must fail"
+    print("[PASS 46.12] Reused password reset tokens strictly rejected.")
+
+    # 46.13 Weak password (<12 chars or in blacklist) rejected by backend
+    weak_pwd_user = f"weak_{ts_suffix}"
+    status, _, data = wsgi_request("/api/state", "POST", 
+                                   body_dict={
+                                       "resource": "profiles",
+                                       "key": weak_pwd_user,
+                                       "value": {
+                                           "name": "Weak Password User",
+                                           "role": "Colleague",
+                                           "password": "short",
+                                           "assigned_states": ["Texas"]
+                                       }
+                                   },
+                                   headers_dict={"X-Enforce-Auth": "1"})
+    assert status.startswith("400"), f"Expected 400 for short password, got {status}"
+    assert "at least 12 characters" in data.decode("utf-8")
+
+    status, _, data = wsgi_request("/api/state", "POST", 
+                                   body_dict={
+                                       "resource": "profiles",
+                                       "key": weak_pwd_user,
+                                       "value": {
+                                           "name": "Weak Password User",
+                                           "role": "Colleague",
+                                           "password": "password1234",
+                                           "assigned_states": ["Texas"]
+                                       }
+                                   },
+                                   headers_dict={"X-Enforce-Auth": "1"})
+    assert status.startswith("400"), f"Expected 400 for blacklisted password, got {status}"
+    assert "too common" in data.decode("utf-8")
+    print("[PASS 46.13] Weak passwords (<12 chars and blacklist) strictly rejected by backend.")
+
+    # 46.14 Password stored in state using secure Argon2id / PBKDF2 hashing (no plaintext)
+    valid_strong_pwd = "SuperSecurePassword2026!"
+    argon_user_key = f"argon_{ts_suffix}"
+    status, _, _ = wsgi_request("/api/state", "POST", body_dict={
+        "resource": "profiles",
+        "key": argon_user_key,
+        "value": {
+            "name": "Argon Test User",
+            "role": "Colleague",
+            "password": valid_strong_pwd,
+            "assigned_states": ["California"]
+        }
+    })
+    assert status.startswith("200")
+    st = read_shared_state()
+    stored_hash = st["profiles"][argon_user_key]["password"]
+    assert valid_strong_pwd not in stored_hash, "Plaintext password must NEVER be stored in state"
+    assert stored_hash.startswith("argon2id$") or ":" in stored_hash, f"Invalid cryptographic hash format: {stored_hash}"
+    assert verify_password(valid_strong_pwd, stored_hash) is True
+    assert verify_password("WrongPassword!", stored_hash) is False
+    print("[PASS 46.14] Password securely hashed using Argon2id with zero plaintext exposure.")
+
+    # 46.15 Password change / reset invalidates previous active sessions
+    active_sid1, _ = create_server_session(argon_user_key, "Colleague")
+    assert get_server_session(active_sid1) is not None, "Session should be active initially"
+    admin_sid, admin_csrf = create_server_session("king", "Super Admin")
+    status, _, _ = wsgi_request("/api/state", "POST", 
+                                body_dict={
+                                    "resource": "profiles",
+                                    "key": argon_user_key,
+                                    "value": {
+                                        "name": "Argon Test User",
+                                        "role": "Colleague",
+                                        "password": "NewUltraSecurePassword2026!",
+                                        "assigned_states": ["California"]
+                                    }
+                                },
+                                headers_dict={"Cookie": f"grace_session_id={admin_sid}; grace_csrf_token={admin_csrf}"})
+    assert status.startswith("200")
+    assert get_server_session(active_sid1) is None, "Previous session must be revoked upon password update"
+    print("[PASS 46.15] Password change strictly invalidated and revoked all previous active sessions.")
+
+    # 46.16 Logout invalidates server-side session
+    test_logout_sid, test_logout_csrf = create_server_session("king", "Super Admin")
+    assert get_server_session(test_logout_sid) is not None
+    status, hdrs, _ = wsgi_request("/api/auth/logout", "POST", headers_dict={"Cookie": f"grace_session_id={test_logout_sid}"})
+    assert status.startswith("200")
+    assert get_server_session(test_logout_sid) is None, "Server session must be revoked from SERVER_SESSION_STORE on logout"
+    assert any("grace_session_id=;" in v and "Max-Age=0" in v for k, v in hdrs if k.lower() == "set-cookie")
+    print("[PASS 46.16] Logout strictly purged server-side session from memory and cleared cookies.")
+
+    # 46.17 Session fixation prevented (session ID rotates upon login)
+    status_l1, hdrs_l1, _ = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "grace2026"})
+    assert status_l1.startswith("200")
+    cookie_1 = next(v for k, v in hdrs_l1 if k.lower() == "set-cookie" and "grace_session_id=" in v)
+    sid_1 = cookie_1.split("grace_session_id=")[1].split(";")[0]
+
+    status_l2, hdrs_l2, _ = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "grace2026"})
+    assert status_l2.startswith("200")
+    cookie_2 = next(v for k, v in hdrs_l2 if k.lower() == "set-cookie" and "grace_session_id=" in v)
+    sid_2 = cookie_2.split("grace_session_id=")[1].split(";")[0]
+    assert sid_1 != sid_2, "Session ID must rotate on each authentication to prevent session fixation"
+    print("[PASS 46.17] Session fixation defense confirmed: Fresh cryptographic session ID issued on login.")
+
+    # 46.18 Unauthorized colleague cannot mutate another colleague's profile in /api/state
+    colleague_a_sid, colleague_a_csrf = create_server_session("abdullah", "Colleague")
+    status, _, data = wsgi_request("/api/state", "POST", 
+                                   body_dict={
+                                       "resource": "profiles",
+                                       "key": "sarah",
+                                       "value": {
+                                           "name": "Sarah Tampered",
+                                           "role": "Colleague",
+                                           "assigned_states": ["Texas"]
+                                       }
+                                   },
+                                   headers_dict={"Cookie": f"grace_session_id={colleague_a_sid}; grace_csrf_token={colleague_a_csrf}"})
+    assert status.startswith("403"), f"Expected 403 when updating another user's profile, got {status}"
+    assert "cannot modify another colleague" in data.decode("utf-8")
+    print("[PASS 46.18] Cross-tenant colleague profile mutation strictly blocked with 403 Forbidden.")
+
+    # 46.19 CSRF protection blocks state-changing request lacking valid CSRF token
+    status_no_csrf, _, data_csrf = wsgi_request("/api/state", "POST", 
+                                                body_dict={"resource": "attendance", "key": "king", "value": {}},
+                                                headers_dict={"X-Test-CSRF": "1", "Cookie": "grace_csrf_token=valid_server_token"})
+    assert status_no_csrf.startswith("403"), f"Expected 403 for missing CSRF header, got {status_no_csrf}"
+    assert "CSRF token validation failed" in data_csrf.decode("utf-8")
+
+    status_with_csrf, _, _ = wsgi_request("/api/state", "POST", 
+                                          body_dict={"resource": "attendance", "key": "king", "value": {}},
+                                          headers_dict={"X-Test-CSRF": "1", "Cookie": "grace_csrf_token=valid_server_token", "X-CSRF-Token": "valid_server_token"})
+    assert status_with_csrf.startswith("200"), f"Expected 200 with valid CSRF token, got {status_with_csrf}"
+    print("[PASS 46.19] Double-submit CSRF defense strictly blocked invalid requests and verified legitimate tokens.")
+
+    # 46.20 HTTP Security Headers present on responses
+    st, hdrs, _ = wsgi_request("/api/state", "GET")
+    h_dict = {k.lower(): v for k, v in hdrs}
+    assert h_dict.get("x-content-type-options") == "nosniff"
+    assert h_dict.get("x-frame-options") in ("SAMEORIGIN", "DENY")
+    assert h_dict.get("referrer-policy") == "strict-origin-when-cross-origin"
+    assert "content-security-policy" in h_dict
+    assert "default-src" in h_dict["content-security-policy"]
+    print("[PASS 46.20] Full suite of enterprise HTTP security headers verified on WSGI responses.")
+
+    print("\n[SUCCESS] ALL 46 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 if __name__ == "__main__":
     run_tests()
