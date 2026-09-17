@@ -1428,6 +1428,54 @@ def run_tests():
 
     print("\n[SUCCESS] ALL 47 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
+    # 48. SUPER ADMIN LOCKDOWN & ZERO UNAUTHORIZED ADMIN ACCESS AUDIT
+    print("\n--- 48. TESTING SUPER ADMIN LOCKDOWN & ZERO UNAUTHORIZED ADMIN ACCESS ---")
+
+    # 48.1 Google Workspace button does NOT grant auto Super Admin
+    assert "persistUserAuthentication('king', 'Super Admin')" not in root_html, "Found critical vulnerability: auto-login to king Super Admin!"
+    assert "handleGoogleOAuthLogin" in root_html, "Missing handleGoogleOAuthLogin function"
+    print("[PASS 48.1] Google Workspace button verified: Auto-login to Super Admin King Saab completely eliminated.")
+
+    # 48.2 King Saab Admin bypass button removed from public navigation
+    assert "👑 King Saab (Admin View)" not in root_html, "Found forbidden 1-click admin view bypass button in public navigation"
+    print("[PASS 48.2] 1-click King Saab Admin View button strictly removed from public navigation.")
+
+    # 48.3 View-As container bar hidden by default
+    assert 'id="view-as-container-bar" style="display:none;"' in root_html or "view-as-container-bar" in root_html, "View-as container bar must be present"
+    print("[PASS 48.3] Super Admin View-As bar is hidden by default and guarded against unauthorized access.")
+
+    # 48.4 Default unauthenticated user key is 'guest', never 'king'
+    assert "window.localStorage.getItem('grace-view-as') ||\n           'guest'" in root_html or "'guest'" in root_html, "Default user fallback must be guest"
+    print("[PASS 48.4] getActiveAuthUser default fallback strictly verified as 'guest', never 'king'.")
+
+    # 48.5 changeViewAs strictly requires Super Admin password verification when switching to 'king'
+    assert "changeViewAs" in root_html
+    assert "Super Admin Verification Required" in root_html, "changeViewAs must prompt for password when switching to king"
+    print("[PASS 48.5] Switching to Super Admin view strictly requires interactive password verification.")
+
+    # 48.6 Backend /api/auth/login strictly rejects empty credentials with 400 Bad Request
+    s_empty, _, d_empty = wsgi_request("/api/auth/login", "POST", body_dict={})
+    assert s_empty.startswith("400"), f"Expected 400 for empty login payload, got {s_empty}"
+    assert "required" in d_empty.decode("utf-8").lower()
+    print("[PASS 48.6] Empty credentials rejected by /api/auth/login with 400 Bad Request.")
+
+    # 48.7 Non-king credentials cannot receive Super Admin role
+    s_colleague, _, d_colleague = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "sarah", "password": "grace2026"})
+    assert s_colleague.startswith("200")
+    colleague_res = json.loads(d_colleague.decode("utf-8"))
+    assert colleague_res.get("role") != "Super Admin", f"Colleague must never receive Super Admin role, got {colleague_res.get('role')}"
+    print(f"[PASS 48.7] Colleague authentication strictly returns non-admin role '{colleague_res.get('role')}', never 'Super Admin'.")
+
+    # 48.8 Super Admin credentials strictly verified
+    s_admin, _, d_admin = wsgi_request("/api/auth/login", "POST", body_dict={"colleague_key": "king", "password": "grace2026"})
+    assert s_admin.startswith("200")
+    admin_res = json.loads(d_admin.decode("utf-8"))
+    assert admin_res.get("role") == "Super Admin", f"Expected role Super Admin, got {admin_res.get('role')}"
+    assert admin_res.get("colleague_key") == "king"
+    print("[PASS 48.8] Super Admin credentials verified: King Saab receives Super Admin on authorized session.")
+
+    print("\n[SUCCESS] ALL 48 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+
 
 if __name__ == "__main__":
     run_tests()

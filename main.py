@@ -3235,8 +3235,8 @@ def render_navigation(active_tab):
             </div>
         </div>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-sm" onclick="changeViewAs('king')" style="font-size:11px; padding:5px 10px; background:rgba(214,161,23,0.2); border:1px solid var(--accent-gold); color:var(--accent-gold); cursor:pointer;">👑 King Saab (Admin View)</button>
             <button type="button" class="btn btn-sm" onclick="openAuthGateway('register', false, false)" style="font-size:11px; padding:5px 10px; background:rgba(16,185,129,0.2); border:1px solid var(--accent-green); color:var(--accent-green); cursor:pointer;">✨ Create Colleague ID</button>
+            <button type="button" class="btn btn-sm" onclick="openAuthGateway('signin', false, false)" style="font-size:11px; padding:5px 10px; background:rgba(214,161,23,0.2); border:1px solid var(--accent-gold); color:var(--accent-gold); cursor:pointer;">🔐 Staff Sign In</button>
             <button type="button" class="btn btn-sm btn-gray" onclick="powerOff()" style="font-size:11px; padding:5px 10px; cursor:pointer;">🔒 Lock Screen</button>
         </div>
     </div>
@@ -3249,7 +3249,7 @@ def render_navigation(active_tab):
             <button class="btn btn-red" onclick="handleExecutiveLogout()" style="margin-left:auto; display:inline-flex; align-items:center; gap:6px;">🚪 Log Out</button>
         </div>
     </div>
-    <div class="view-as-bar" id="view-as-container-bar">
+    <div class="view-as-bar" id="view-as-container-bar" style="display:none;">
         <div><span class="eyebrow">SUPER ADMIN VIEW-AS</span><strong style="font-size:14px;">Preview colleague workspace instantly</strong><small id="active-scope-count">All 22 modules enabled</small></div>
         <div class="view-as-controls"><span id="view-as-label">King Saab · Super Admin</span><select id="view-as-picker" aria-label="Active profile workspace" onchange="changeViewAs(this.value)"><option value="king">King Saab · Super Admin · All 22</option><option value="abdullah">Abdullah Khan · Strategic Lead · 8 modules</option><option value="sarah">Sarah Malik · Marketer · 7 modules</option><option value="hamza">Hamza Ali · Collector · 6 modules</option></select></div>
     </div>
@@ -6309,8 +6309,8 @@ const US_CONTRACTORS = [
 ];
 
 function publishAuditEvent(action, details) {
-    const userKey = window.localStorage.getItem('grace-view-as') || 'king';
-    const userName = PROFILE_DATA[userKey]?.name || 'King Saab';
+    const userKey = (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : window.localStorage.getItem('grace-view-as')) || 'guest';
+    const userName = PROFILE_DATA[userKey]?.name || (userKey === 'king' ? 'King Saab' : (userKey === 'guest' ? 'Guest Evaluator' : userKey));
     const now = new Date();
     const timestamp = now.getFullYear() + '-' +
         String(now.getMonth()+1).padStart(2,'0') + '-' +
@@ -6525,8 +6525,8 @@ function populateColleaguePickers() {
         }
     });
 
-    loginPicker.value = currentLoginVal || 'king';
-    viewAsPicker.value = currentViewVal || 'king';
+    loginPicker.value = currentLoginVal || '';
+    viewAsPicker.value = currentViewVal || (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : 'guest');
 }
 
 /* =========================================================================
@@ -7055,8 +7055,8 @@ function addAndHuntCustomContractor() {
     if (!US_CONTRACTORS.includes(val)) {
         US_CONTRACTORS.unshift(val);
     }
-    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
-    const maxContractors = (currentViewer === 'king') ? 2 : 1;
+    const currentViewer = (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : window.localStorage.getItem('grace-view-as')) || 'guest';
+    const maxContractors = (typeof isSuperAdminSession === 'function' && isSuperAdminSession()) ? 2 : 1;
     if (!tempSelectedContractors.includes(val)) {
         if (tempSelectedContractors.length >= maxContractors) {
             tempSelectedContractors[tempSelectedContractors.length - 1] = val;
@@ -7100,19 +7100,30 @@ function getCsrfToken() {
 function isUserAuthenticated() {
     const sessUser = window.sessionStorage.getItem('grace_auth_user');
     const localUser = window.localStorage.getItem('grace_auth_user');
-    return Boolean(sessUser || localUser);
+    const user = sessUser || localUser;
+    return Boolean(user && user !== 'guest');
 }
 
 function getActiveAuthUser() {
     return window.sessionStorage.getItem('grace_auth_user') ||
            window.localStorage.getItem('grace_auth_user') ||
            window.localStorage.getItem('grace-view-as') ||
-           'king';
+           'guest';
+}
+
+function isSuperAdminSession() {
+    const user = getActiveAuthUser();
+    const role = window.sessionStorage.getItem('grace_auth_role') || window.localStorage.getItem('grace_auth_role');
+    return user === 'king' && (role === 'Super Admin' || !role);
 }
 
 function persistUserAuthentication(userKey, roleName = '') {
-    const key = userKey || 'king';
-    const role = roleName || (PROFILE_DATA[key]?.role || 'Super Admin');
+    const key = userKey || 'guest';
+    let role = roleName || (PROFILE_DATA[key]?.role || (key === 'king' ? 'Super Admin' : 'Colleague'));
+    // STRICT TENANT ISOLATION: Non-king users can NEVER receive Super Admin privileges
+    if (key !== 'king' && role === 'Super Admin') {
+        role = 'Colleague';
+    }
     window.sessionStorage.setItem('grace_auth_user', key);
     window.sessionStorage.setItem('grace_auth_role', role);
     window.localStorage.setItem('grace_auth_user', key);
@@ -7124,6 +7135,9 @@ function persistUserAuthentication(userKey, roleName = '') {
     document.body.classList.remove('safety-locked');
     closeAuthGateway();
     updateNavColleagueVisibility();
+    if (typeof applyTenantIsolation === 'function') {
+        applyTenantIsolation(key);
+    }
 }
 
 async function handleExecutiveLogout() {
@@ -7149,13 +7163,24 @@ async function handleExecutiveLogout() {
 }
 
 function handleGoogleOAuthLogin() {
-    showToast('Connecting to Google Identity Services...', 'info');
-    window.setTimeout(() => {
-        persistUserAuthentication('king', 'Super Admin');
-        showToast('Google OAuth 2.0 handshake verified. Logged in as King Saab.', 'success');
-        dispatchWelcomeAutoReply('King Saab', 'Super Admin');
-        changeViewAs('king');
-    }, 300);
+    const emailInput = document.getElementById('login-email-input');
+    const pwdInput = document.getElementById('login-password-input');
+    const typed = (emailInput?.value || '').trim();
+    if (!typed) {
+        showToast('Google Workspace SSO: Please enter your work email below to proceed.', 'info');
+        if (emailInput) {
+            emailInput.focus();
+            emailInput.placeholder = 'Enter Google Workspace email (e.g. name@graceoutreach.org)';
+        }
+        return;
+    }
+    showToast('Google Workspace Single Sign-On: Authenticating ' + typed + '...', 'info');
+    if (pwdInput && !pwdInput.value) {
+        pwdInput.focus();
+        showToast('Please enter your account password to verify Google Workspace identity.', 'warning');
+        return;
+    }
+    submitSignIn();
 }
 
 function generateUsernameSuggestions(fullName) {
@@ -7247,8 +7272,7 @@ function dispatchWelcomeAutoReply(name, role) {
 }
 
 function toggleColleagueManagementDelegation(key) {
-    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
-    if (currentViewer !== 'king') {
+    if (!isSuperAdminSession()) {
         showToast('Only Super Admin King Saab can delegate Colleague Hub access.', 'warning');
         return;
     }
@@ -7285,11 +7309,12 @@ function toggleColleagueManagementDelegation(key) {
 }
 
 function updateNavColleagueVisibility() {
-    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
+    const currentViewer = window.localStorage.getItem('grace-view-as') || getActiveAuthUser() || 'guest';
+    const isAuthedAdmin = isSuperAdminSession();
     const navCol = document.getElementById('nav-colleagues');
     if (!navCol) return;
     const delegated = JSON.parse(window.localStorage.getItem('grace-delegated-colleagues') || '{}');
-    if (currentViewer === 'king' || delegated[currentViewer] === true) {
+    if (isAuthedAdmin || delegated[currentViewer] === true) {
         navCol.style.display = 'inline-flex';
     } else {
         navCol.style.display = 'none';
@@ -7471,6 +7496,10 @@ function closeAuthGateway() {
 
 function unlockGatewayPreview() {
     window.localStorage.setItem('grace-session-locked', 'false');
+    if (!isUserAuthenticated()) {
+        persistUserAuthentication('guest', 'Product Evaluator');
+        changeViewAs('guest');
+    }
     closeAuthGateway();
     showToast('Lock screen dismissed. Workspace preview active.', 'info');
 }
@@ -7810,7 +7839,7 @@ function toggleRegContractor(name) {
 // WEBAUTHN PASSKEY ENGINE (Device-Bound Hardware & Biometric Verification)
 // =========================================================================
 async function registerDevicePasskey() {
-    const activeKey = getActiveAuthUser() || window.localStorage.getItem('grace-view-as') || 'king';
+    const activeKey = getActiveAuthUser() || window.localStorage.getItem('grace-view-as') || 'guest';
     const profile = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[activeKey]) ? PROFILE_DATA[activeKey] : { name: 'King Saab', role: 'Super Admin' };
     
     // Security check: Prompt account password first
@@ -7963,7 +7992,7 @@ function completePasskeyLogin(key, profile) {
 
 function updatePasskeyUI() {
     const label = document.getElementById('passkey-status-label');
-    const activeKey = window.localStorage.getItem('grace-view-as') || 'king';
+    const activeKey = getActiveAuthUser() || 'guest';
     const passkeys = JSON.parse(window.localStorage.getItem('grace-passkeys') || '{}');
     if (label) {
         if (passkeys[activeKey]) {
@@ -8059,7 +8088,11 @@ function submitCreateAccount() {
 }
 
 function submitPasswordReset() {
-    const key = document.getElementById('forgot-account-select')?.value || 'king';
+    const key = document.getElementById('forgot-account-select')?.value;
+    if (!key || key === 'king') {
+        showToast('Super Admin root password cannot be reset from this form. Use Master Vault Recovery in Settings.', 'warning');
+        return;
+    }
     const storedPasswords = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
     delete storedPasswords[key];
     window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
@@ -11100,8 +11133,8 @@ function renderTerritoryChips() {
 }
 
 function toggleTerritoryState(state) {
-    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
-    const maxStates = (currentViewer === 'king') ? 2 : 1;
+    const currentViewer = (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : window.localStorage.getItem('grace-view-as')) || 'guest';
+    const maxStates = (typeof isSuperAdminSession === 'function' && isSuperAdminSession()) ? 2 : 1;
     const idx = tempSelectedStates.indexOf(state);
     if (idx >= 0) {
         tempSelectedStates.splice(idx, 1);
@@ -11140,8 +11173,8 @@ function renderContractorChips() {
 }
 
 function toggleTerritoryContractor(ct) {
-    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
-    const maxContractors = (currentViewer === 'king') ? 2 : 1;
+    const currentViewer = (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : window.localStorage.getItem('grace-view-as')) || 'guest';
+    const maxContractors = (typeof isSuperAdminSession === 'function' && isSuperAdminSession()) ? 2 : 1;
     const idx = tempSelectedContractors.indexOf(ct);
     if (idx >= 0) {
         tempSelectedContractors.splice(idx, 1);
@@ -11551,7 +11584,7 @@ function getLeaveState() {
     return state || JSON.parse(JSON.stringify(LEAVE_SEED));
 }
 function updateAttendanceAccess() {
-    const isAdmin = (window.localStorage.getItem('grace-view-as') || 'king') === 'king';
+    const isAdmin = isSuperAdminSession();
     document.querySelectorAll('[data-admin-only]').forEach((control) => {
         control.disabled = !isAdmin;
         control.title = isAdmin ? 'Super Admin control' : 'Restricted to Super Admin';
@@ -11574,8 +11607,8 @@ function renderAttendanceLedger() {
         totalFine += fine;
         const balance = document.querySelector('[data-fine-key="' + key + '"]');
         if (balance) balance.innerText = fine + ' PKR';
-        const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
-        const isAdmin = (currentViewer === 'king');
+        const currentViewer = window.localStorage.getItem('grace-view-as') || getActiveAuthUser() || 'guest';
+        const isAdmin = isSuperAdminSession();
         const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
         const todayDayKey = dayKeys[new Date().getDay()];
 
@@ -11622,8 +11655,8 @@ function renderAttendanceLedger() {
     updateAttendanceAccess();
 }
 function updateAttendance(select) {
-    const currentViewer = window.localStorage.getItem('grace-view-as') || 'king';
-    const isAdmin = (currentViewer === 'king');
+    const currentViewer = window.localStorage.getItem('grace-view-as') || getActiveAuthUser() || 'guest';
+    const isAdmin = isSuperAdminSession();
     const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     const todayDayKey = dayKeys[new Date().getDay()];
     
@@ -11652,7 +11685,7 @@ function updateAttendance(select) {
     showToast('Attendance logged for ' + day.toUpperCase() + ' (' + select.value.toUpperCase() + ').', 'success');
 }
 function clearFine(key) {
-    if ((window.localStorage.getItem('grace-view-as') || 'king') !== 'king') { showToast('Only Super Admin can clear fines.', 'warning'); return; }
+    if (!isSuperAdminSession()) { showToast('Only Super Admin can clear fines.', 'warning'); return; }
     const cleared = JSON.parse(window.localStorage.getItem('grace-cleared-fines') || '{}');
     cleared[key] = true;
     window.localStorage.setItem('grace-cleared-fines', JSON.stringify(cleared));
@@ -11661,7 +11694,7 @@ function clearFine(key) {
     showToast('Fine balance cleared to zero for ' + key + '.', 'success');
 }
 function clearAllFines() {
-    if ((window.localStorage.getItem('grace-view-as') || 'king') !== 'king') { showToast('Only Super Admin can clear fines.', 'warning'); return; }
+    if (!isSuperAdminSession()) { showToast('Only Super Admin can clear fines.', 'warning'); return; }
     const cleared = {};
     Object.keys(ATTENDANCE_SEED).forEach((key) => { cleared[key] = true; });
     window.localStorage.setItem('grace-cleared-fines', JSON.stringify(cleared));
@@ -11670,7 +11703,7 @@ function clearAllFines() {
     showToast('All reviewed absence fines cleared to zero.', 'success');
 }
 function updateLeaveState(select) {
-    if ((window.localStorage.getItem('grace-view-as') || 'king') !== 'king') { showToast('Leave approval restricted to Super Admin.', 'warning'); renderAttendanceLedger(); return; }
+    if (!isSuperAdminSession()) { showToast('Leave approval restricted to Super Admin.', 'warning'); renderAttendanceLedger(); return; }
     const leaves = getLeaveState();
     const key = select.dataset.leaveState;
     leaves[key] = leaves[key] || {};
@@ -11710,21 +11743,21 @@ function savePermission(colleague, moduleId, enabled) {
         : ACCESS_MAP[colleague].filter((id) => id !== moduleId);
     window.localStorage.setItem('grace-access-map', JSON.stringify(ACCESS_MAP));
     publishSharedState('accessMap', ACCESS_MAP);
-    if ((window.localStorage.getItem('grace-view-as') || 'king') === colleague) updateViewAs();
+    if ((window.localStorage.getItem('grace-view-as') || 'guest') === colleague) updateViewAs();
     showToast('Module ' + moduleId + ' ' + (enabled ? 'enabled for ' : 'restricted for ') + colleague + '.', enabled ? 'success' : 'warning');
 }
 function updateViewAs() {
     const picker = document.getElementById('view-as-picker');
-    const value = window.localStorage.getItem('grace-view-as') || 'king';
+    const value = window.localStorage.getItem('grace-view-as') || getActiveAuthUser() || 'guest';
     if (picker) picker.value = value;
-    const profile = PROFILE_DATA[value] || PROFILE_DATA.king;
+    const profile = PROFILE_DATA[value] || (value === 'guest' ? { name: 'Guest Evaluator', role: 'Evaluator', allowed: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22] } : (PROFILE_DATA.king || { name: 'Colleague', role: 'Colleague' }));
     const label = document.getElementById('view-as-label');
     if (label) label.innerText = profile.name + ' · ' + profile.role;
     const activeName = document.getElementById('active-profile-name');
     const activeRole = document.getElementById('active-profile-role-tag');
     const activeBadge = document.getElementById('active-profile-badge');
-    const isKing = (value === 'king' || (profile.name && profile.name.toLowerCase().includes('king')));
-    const cleanName = (profile.name || 'King Saab').replace(/^👑\s*/, '').trim();
+    const isKing = (value === 'king' && isSuperAdminSession());
+    const cleanName = (profile.name || 'Workspace User').replace(/^👑\s*/, '').trim();
     if (activeName) {
         if (isKing) {
             activeName.innerHTML = (window.WA_CROWN_HTML || '') + cleanName;
@@ -11794,12 +11827,40 @@ function updateViewAs() {
         modulePage.querySelector('.module-access-denied')?.toggleAttribute('hidden', !restricted);
     }
 }
-function changeViewAs(value) {
+async function changeViewAs(value) {
+    // STRICT ADMIN GUARD: Switching to Super Admin (king) REQUIRES verified admin session or password check
+    if (value === 'king' && !isSuperAdminSession()) {
+        const pwd = prompt('🔐 Super Admin Verification Required\nPlease enter the Master Super Admin password to switch to King Saab view:');
+        if (!pwd) {
+            showToast('Super Admin access cancelled. Workspace view unchanged.', 'warning');
+            updateViewAs();
+            return;
+        }
+        try {
+            const checkResp = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+                credentials: 'same-origin',
+                body: JSON.stringify({ colleague_key: 'king', password: pwd })
+            });
+            if (!checkResp.ok) {
+                showToast('Access Denied: Incorrect Super Admin password.', 'error');
+                updateViewAs();
+                return;
+            }
+            const verifiedData = await checkResp.json();
+            persistUserAuthentication(verifiedData.colleague_key || value, verifiedData.role || 'Super Admin');
+        } catch (e) {
+            showToast('Authentication network error. Access Denied.', 'error');
+            updateViewAs();
+            return;
+        }
+    }
     applyTenantIsolation(value);
     window.localStorage.setItem('grace-view-as', value);
     updateViewAs();
     updateAttendanceAccess();
-    const profile = PROFILE_DATA[value] || PROFILE_DATA.king;
+    const profile = PROFILE_DATA[value] || (value === 'guest' ? { name: 'Guest Evaluator', role: 'Evaluator' } : (PROFILE_DATA.king || { name: value, role: 'Colleague' }));
     showToast('Active workspace switched to ' + profile.name + ' · ' + profile.role + '.', 'info');
 }
 
@@ -13743,7 +13804,7 @@ function openUserSettingsModal() {
     if (!modal) return;
     setModalLock(true);
     updatePasskeyUI();
-    const activeKey = getActiveAuthUser() || 'king';
+    const activeKey = getActiveAuthUser() || 'guest';
     const prof = PROFILE_DATA[activeKey] || PROFILE_DATA.king;
     const nameInput = document.getElementById('settings-input-name');
     const roleInput = document.getElementById('settings-input-role');
@@ -13776,7 +13837,7 @@ function switchSettingsSubtab(tab) {
 }
 
 function saveUserSettings() {
-    const activeKey = getActiveAuthUser() || 'king';
+    const activeKey = getActiveAuthUser() || 'guest';
     const newName = document.getElementById('settings-input-name')?.value.trim();
     const newEmail = document.getElementById('settings-input-email')?.value.trim();
     if (newName && PROFILE_DATA[activeKey]) {
@@ -13808,7 +13869,7 @@ function updateUserPasswordFromSettings() {
         showToast('New passwords do not match.', 'warning');
         return;
     }
-    const activeKey = getActiveAuthUser() || 'king';
+    const activeKey = getActiveAuthUser() || 'guest';
     const storedPasswords = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
     storedPasswords[activeKey] = newP;
     window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
@@ -14217,7 +14278,7 @@ async function submitPasswordResetOtp() {
 
 function applyTenantIsolation(activeKey) {
     if (!activeKey) return;
-    const isSuper = (activeKey === 'king');
+    const isSuper = (activeKey === 'king' && isSuperAdminSession());
     const viewAsBar = document.getElementById('view-as-container-bar');
     if (viewAsBar) {
         viewAsBar.style.display = isSuper ? '' : 'none';
@@ -17118,7 +17179,15 @@ def app(environ, start_response):
                 content_length = int(environ.get("CONTENT_LENGTH", 0))
                 body_bytes = environ["wsgi.input"].read(content_length)
                 req = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
-                raw_input = str(req.get("email") or req.get("colleague_key", "king")).strip().lower()
+                raw_input = str(req.get("email") or req.get("colleague_key") or "").strip().lower()
+                if not raw_input:
+                    err_payload = json.dumps({"error": "Work email or colleague key is required.", "status": 400}).encode("utf-8")
+                    secure_start_response("400 Bad Request", [
+                        ("Content-Type", "application/json; charset=utf-8"),
+                        ("Content-Length", str(len(err_payload))),
+                    ])
+                    return [err_payload]
+
                 key = raw_input
                 current_state = read_shared_state()
                 for pk, pv in current_state.get("profiles", {}).items():
@@ -17145,10 +17214,12 @@ def app(environ, start_response):
                 if key == "king" and (pwd == GRACE_ADMIN_PASSWORD or pwd in ("grace2026", "admin123")):
                     is_valid = True
                     role = "Super Admin"
-                elif pwd in (GRACE_ADMIN_PASSWORD, "grace2026", "admin123"):
+                elif key != "king" and pwd in (GRACE_ADMIN_PASSWORD, "grace2026", "admin123"):
                     is_valid = True
+                    role = colleague_info.get("role", "Colleague")
                 elif colleague_info.get("password") and verify_password(pwd, colleague_info.get("password")):
                     is_valid = True
+                    role = colleague_info.get("role", "Colleague")
 
                 if is_valid:
                     RATE_LIMITER.reset_failures(client_ip, "auth_login_ip")
