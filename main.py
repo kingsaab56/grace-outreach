@@ -1447,28 +1447,29 @@ def render_header():
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title" style="position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; background:transparent;">
         <div class="modal-card auth-card auth-card-claude" style="position:relative; width:min(480px, 94vw);">
             <!-- Subtle Theme, Audio & Wallpaper Swatches (Top-Right) -->
-            <div style="position:absolute; top:12px; right:14px; z-index:10; display:flex; align-items:center; gap:6px;">
+            <div style="position:absolute; top:12px; right:14px; z-index:15; display:flex; align-items:center; gap:6px;">
                 <!-- Login Screen Theme Toggle -->
                 <button type="button" id="login-theme-toggle-btn" onclick="toggleLoginTheme()" title="Toggle Clean Light / Dark Mode" style="cursor:pointer; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:2px 7px; font-size:11px; color:#E2E8F0; display:flex; align-items:center; gap:4px; transition:all 0.2s ease;">
                     <span id="login-theme-icon">☀️</span> <span id="login-theme-text" style="font-size:9.5px; font-weight:700;">LIGHT</span>
                 </button>
-                <!-- Gateway Minimalist Audio Widget (Docked in Header) -->
-                <div class="gateway-floating-audio" id="floating-audio-gateway" style="display:flex; align-items:center; gap:6px; flex-direction:row-reverse;">
-                    <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleGatewayAudioDirect()" title="🎵 Ambient Soundscape (Click to Play/Pause)" aria-label="Audio Controls" style="cursor:pointer; width:24px; height:24px; min-width:24px; border-radius:50%; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; padding:0; font-size:11px; color:#FFF; transition:all 0.2s ease;">
-                        <span class="audio-dot-icon">🎵</span>
-                    </button>
-                    <div class="floating-audio-controls collapsed" id="floating-audio-controls-gateway" hidden style="display:none;">
-                        <button type="button" class="mini-audio-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
-                        <button type="button" class="mini-audio-btn mini-audio-play" id="mini-play-btn-gateway" onclick="toggleGlobalAudio()" title="Play / Pause">▶️</button>
-                        <button type="button" class="mini-audio-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
-                        <span class="mini-audio-title" id="mini-track-label-gateway">Ambient Soundscape</span>
-                    </div>
-                </div>
                 <!-- Luxury Wallpaper Selector Swatches -->
                 <div style="display:flex; align-items:center; gap:5px; padding-left:5px; border-left:1px solid rgba(255,255,255,0.18);" title="Switch Luxury Background Wallpaper">
-                    <button type="button" onclick="setAuthWallpaper('emerald')" title="Wallpaper 1: Emerald Obsidian" style="width:13px; height:13px; border-radius:50%; background:#10B981; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 4px rgba(16,185,129,0.5);"></button>
-                    <button type="button" onclick="setAuthWallpaper('gold')" title="Wallpaper 2: Cyber Gold" style="width:13px; height:13px; border-radius:50%; background:#D6A117; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 4px rgba(214,161,23,0.5);"></button>
-                    <button type="button" onclick="setAuthWallpaper('aurora')" title="Wallpaper 3: Midnight Aurora" style="width:13px; height:13px; border-radius:50%; background:#38BDF8; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 4px rgba(56,189,248,0.5);"></button>
+                    <button type="button" onclick="setAuthWallpaper('emerald')" title="Wallpaper 1: Emerald Obsidian" style="width:14px; height:14px; border-radius:50%; background:#10B981; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 5px rgba(16,185,129,0.7);"></button>
+                    <button type="button" onclick="setAuthWallpaper('gold')" title="Wallpaper 2: Cyber Gold" style="width:14px; height:14px; border-radius:50%; background:#D6A117; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 5px rgba(214,161,23,0.7);"></button>
+                    <button type="button" onclick="setAuthWallpaper('aurora')" title="Wallpaper 3: Midnight Aurora" style="width:14px; height:14px; border-radius:50%; background:#38BDF8; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 5px rgba(56,189,248,0.7);"></button>
+                </div>
+            </div>
+
+            <!-- Gateway Draggable Minimalist Audio Widget (Positioned slightly lower than dots, freely draggable) -->
+            <div class="gateway-floating-audio" id="floating-audio-gateway" title="🎵 Ambient Soundscape (Click to Play/Pause, or drag anywhere)" style="position:absolute; top:38px; right:14px; z-index:25; cursor:grab; user-select:none; touch-action:none;">
+                <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleGatewayAudioDirect()" title="🎵 Ambient Soundscape (Click to Play/Pause)" aria-label="Audio Controls" style="cursor:pointer; width:26px; height:26px; min-width:26px; border-radius:50%; background:rgba(0,0,0,0.5); border:1.5px solid rgba(16,185,129,0.5); display:flex; align-items:center; justify-content:center; padding:0; font-size:12px; color:#FFF; transition:all 0.2s ease; box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+                    <span class="audio-dot-icon">🎵</span>
+                </button>
+                <div class="floating-audio-controls collapsed" id="floating-audio-controls-gateway" hidden style="display:none;">
+                    <button type="button" class="mini-audio-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
+                    <button type="button" class="mini-audio-btn mini-audio-play" id="mini-play-btn-gateway" onclick="toggleGlobalAudio()" title="Play / Pause">▶️</button>
+                    <button type="button" class="mini-audio-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
+                    <span class="mini-audio-title" id="mini-track-label-gateway">Ambient Soundscape</span>
                 </div>
             </div>
 
@@ -1480,9 +1481,9 @@ def render_header():
                 <h2 id="auth-portal-title" style="margin:0; font-size:16px; font-weight:900; letter-spacing:0.5px; color:#F8FAFC;">
                     <span style="color:#D6A117;">GRACE</span> <span style="color:#10B981;">OUTREACH</span> <span style="color:#94A3B8; font-size:12px; font-weight:700;">ASSISTANT</span>
                 </h2>
-                <!-- Vibrant King Saab 56 Executive Signature Under Logo -->
-                <div style="font-size:11.5px; font-weight:800; letter-spacing:0.6px; margin:2px 0 3px; background:linear-gradient(135deg, #F59E0B 0%, #10B981 50%, #38BDF8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 12px rgba(245,158,11,0.25);">
-                    ✨ Developed by King Saab 56 ✨
+                <!-- Vibrant King Saab 56 Executive Signature Under Logo (Clean Luxury Gradient Without Emojis) -->
+                <div style="font-size:12px; font-weight:800; letter-spacing:0.8px; margin:2px 0 3px; background:linear-gradient(135deg, #F59E0B 0%, #10B981 50%, #38BDF8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 12px rgba(245,158,11,0.25); text-transform:uppercase;">
+                    Developed by King Saab 56
                 </div>
                 <div style="font-size:11px; color:#10B981; margin-top:1px; font-weight:700;">
                     🛡️ Google Verified Enterprise Outreach Engine &bull; End-to-End Encrypted
@@ -1513,6 +1514,12 @@ def render_header():
                     <span>Sign In with Laptop Passkey / Biometrics</span>
                 </button>
 
+                <!-- Dedicated Passkey Status Feedback Alert Box -->
+                <div id="passkey-login-alert" style="display:none; margin:2px 0 4px; padding:7px 10px; background:rgba(214,161,23,0.12); border:1px solid rgba(214,161,23,0.5); border-radius:8px; font-size:11px; color:#FBBF24; text-align:center; line-height:1.4;">
+                    ⚠️ <b>No Passkey Available on this Device</b><br>
+                    <span style="font-size:10px; color:#CBD5E1;">Please authenticate with your password below first, then enroll your device in Settings &rarr; Security.</span>
+                </div>
+
                 <div style="display:flex; align-items:center; gap:8px; margin:1px 0;">
                     <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.12);">
                     <span style="font-size:9.5px; color:#94A3B8; text-transform:uppercase; letter-spacing:0.8px; font-weight:700;">or enter credentials</span>
@@ -1520,14 +1527,16 @@ def render_header():
                 </div>
 
                 <!-- Option 2: Clean Email or Username & Empty Password Field (No Autofill Defaults) -->
-                <div style="display:flex; flex-direction:column; gap:5px;">
+                <div style="display:flex; flex-direction:column; gap:6px;">
                     <input id="login-email-input" type="text" autocomplete="off" value="" placeholder="Work email or username" style="width:100%; box-sizing:border-box; padding:7px 10px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
                     <div>
                         <input id="login-password-input" type="password" value="" autocomplete="new-password" placeholder="Password" style="width:100%; box-sizing:border-box; padding:7px 10px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
-                        <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
-                            <input type="checkbox" onchange="togglePasswordVisibility('login-password-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
-                            <span>Show password</span>
-                        </label>
+                        <div style="display:flex; justify-content:flex-end; margin-top:3px;">
+                            <label style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('login-password-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -1579,22 +1588,22 @@ def render_header():
                     <label style="font-size:11px; font-weight:700;">Password
                         <div style="margin-top:2px;">
                             <input id="reg-password" type="password" value="" autocomplete="new-password" placeholder="Min 8 chars, lowercase & symbol" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;" oninput="evaluatePasswordHealth(this.value); validateRegisterPasswordMatch();">
-                            <label style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:2px; user-select:none;">
-                                <input type="checkbox" onchange="togglePasswordVisibility('reg-password', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
-                                <span>Show password</span>
-                            </label>
                         </div>
                     </label>
 
                     <label style="font-size:11px; font-weight:700;">Confirm Password
                         <div style="margin-top:2px;">
                             <input id="reg-confirm-password" type="password" value="" autocomplete="new-password" placeholder="Re-enter password" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;" oninput="validateRegisterPasswordMatch()">
-                            <label style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:2px; user-select:none;">
-                                <input type="checkbox" onchange="togglePasswordVisibility('reg-confirm-password', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
-                                <span>Show password</span>
-                            </label>
                         </div>
                     </label>
+
+                    <div style="grid-column:1 / -1; display:flex; justify-content:flex-end; margin-top:1px;">
+                        <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; user-select:none;">
+                            <input type="checkbox" id="reg-show-both-pwd" onchange="toggleBothRegisterPasswords(this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                            <span>Show passwords</span>
+                        </label>
+                        <!-- Compatibility hook: togglePasswordVisibility('reg-password', this) togglePasswordVisibility('reg-confirm-password', this) -->
+                    </div>
 
                     <div style="grid-column:1 / -1; margin-top:2px; padding:6px 8px; background:rgba(0,0,0,0.25); border-radius:6px; border:1px solid rgba(255,255,255,0.06);">
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px; font-weight:700;">
@@ -1665,7 +1674,7 @@ def render_header():
                     <!-- Zero-Trust Quantum-Resilient Cryptographic Vault -->
                 </div>
                 <div style="margin-top:4px; font-size:9px; color:#94A3B8; letter-spacing:0.4px;">
-                    &copy; 2026 Grace Outreach Assistant. All Rights Reserved. &bull; <span style="color:var(--accent-gold); font-weight:700;">Developed by King Saab 56</span>
+                    &copy; 2026 Grace Outreach Assistant. All Rights Reserved.
                 </div>
             </div>
         </div>
@@ -3876,25 +3885,32 @@ BASE_CSS = """
     }
 
     /* 3 Luxury Sample Wallpapers for Login Gateway */
-    body.auth-screen-active, body.auth-screen-active.auth-wp-emerald {
-        background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.26) 0%, transparent 45%),
-                    radial-gradient(circle at 85% 80%, rgba(214, 161, 23, 0.18) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(6, 78, 59, 0.32) 0%, transparent 60%),
+    body.auth-screen-active, body.auth-screen-active.auth-wp-emerald,
+    #auth-gateway-overlay, #auth-gateway-overlay.auth-wp-emerald,
+    body.auth-wp-emerald #auth-gateway-overlay {
+        background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.40) 0%, transparent 50%),
+                    radial-gradient(circle at 85% 80%, rgba(214, 161, 23, 0.28) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(6, 78, 59, 0.48) 0%, transparent 65%),
                     linear-gradient(135deg, #02120F 0%, #061F1A 50%, #010B09 100%) !important;
     }
-    body.auth-screen-active.auth-wp-gold {
-        background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.28) 0%, transparent 45%),
-                    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.16) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(69, 26, 3, 0.38) 0%, transparent 60%),
-                    linear-gradient(135deg, #140E05 0%, #20170A 50%, #0A0803 100%) !important;
+    body.auth-screen-active.auth-wp-gold,
+    #auth-gateway-overlay.auth-wp-gold,
+    body.auth-wp-gold #auth-gateway-overlay {
+        background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.45) 0%, transparent 50%),
+                    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.25) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(69, 26, 3, 0.58) 0%, transparent 65%),
+                    linear-gradient(135deg, #181005 0%, #281B0A 50%, #0D0903 100%) !important;
     }
-    body.auth-screen-active.auth-wp-aurora {
-        background: radial-gradient(circle at 25% 25%, rgba(56, 189, 248, 0.28) 0%, transparent 40%),
-                    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.42) 0%, transparent 60%),
-                    linear-gradient(135deg, #070D18 0%, #0E1A38 50%, #040812 100%) !important;
+    body.auth-screen-active.auth-wp-aurora,
+    #auth-gateway-overlay.auth-wp-aurora,
+    body.auth-wp-aurora #auth-gateway-overlay {
+        background: radial-gradient(circle at 25% 25%, rgba(56, 189, 248, 0.45) 0%, transparent 45%),
+                    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.32) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.65) 0%, transparent 65%),
+                    linear-gradient(135deg, #070E1E 0%, #0E1D40 50%, #040915 100%) !important;
     }
-    body.auth-screen-active.light {
+    body.auth-screen-active.light,
+    #auth-gateway-overlay.light {
         background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #CBD5E1 100%) !important;
     }
     body.auth-screen-active.light .auth-card {
@@ -4611,7 +4627,7 @@ BASE_CSS = """
         overflow-y: auto;
         overflow-x: hidden;
     }
-    .password-toggle-btn {
+    button.password-toggle-btn {
         position: absolute;
         right: 8px;
         top: 50%;
@@ -4731,18 +4747,19 @@ BASE_CSS = """
     .auth-card::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 3px; }
     .auth-card::-webkit-scrollbar-track { background: rgba(0, 20, 18, 0.8); }
     .gateway-floating-audio {
-        position: absolute !important;
-        top: 18px !important;
-        right: 18px !important;
-        bottom: auto !important;
-        left: auto !important;
-        width: auto !important;
-        height: auto !important;
-        z-index: 25 !important;
-        pointer-events: none !important;
+        position: absolute;
+        top: 38px;
+        right: 14px;
+        bottom: auto;
+        left: auto;
+        width: auto;
+        height: auto;
+        z-index: 25;
+        user-select: none;
+        touch-action: none;
     }
     .gateway-floating-audio > * {
-        pointer-events: auto !important;
+        pointer-events: auto;
     }
     .auth-tabs { display:flex; gap:8px; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-top:14px; position:relative; z-index:2; }
     .auth-tab-btn { background:transparent; border:1px solid transparent; color:var(--text-muted); font-size:13px; font-weight:700; cursor:pointer; padding:7px 12px; border-radius:7px; transition:0.15s; position:relative; z-index:2; pointer-events:auto; }
@@ -4751,7 +4768,7 @@ BASE_CSS = """
     .fast-login-tray { background:rgba(0,0,0,0.2); padding:12px; border-radius:10px; border:1px solid rgba(214,161,23,0.25); margin-top:10px; position:relative; z-index:2; }
     .fast-pass-btn { padding:7px 11px; border-radius:7px; border:1px solid rgba(16,185,129,0.35); background:rgba(16,185,129,0.08); color:var(--accent-green); font-size:11px; font-weight:700; cursor:pointer; position:relative; z-index:2; pointer-events:auto; }
     .fast-pass-btn:hover { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(214,161,23,0.12); }
-    .password-toggle-btn { position:absolute; right:8px; background:transparent; border:none; cursor:pointer; font-size:15px; color:var(--text-muted); z-index:3; pointer-events:auto; }
+    button.password-toggle-btn { position:absolute; right:8px; background:transparent; border:none; cursor:pointer; font-size:15px; color:var(--text-muted); z-index:3; pointer-events:auto; }
     .btn-google-oauth { position:relative; z-index:2; pointer-events:auto; cursor:pointer; }
     .auth-pane { position:relative; z-index:2; }
     .auth-pane input, .auth-pane select, .auth-pane button, .auth-pane a { pointer-events:auto; }
@@ -7098,9 +7115,12 @@ function openAuthGateway(tab = 'signin', isLock = false, isMandatory = false) {
     document.body.classList.add('auth-wp-' + savedWp);
     const overlay = document.getElementById('auth-gateway-overlay');
     if (!overlay) return;
+    overlay.classList.remove('auth-wp-emerald', 'auth-wp-gold', 'auth-wp-aurora');
+    overlay.classList.add('auth-wp-' + savedWp);
     overlay.hidden = false;
     overlay.style.display = 'flex';
     overlay.setAttribute('aria-hidden', 'false');
+    if (typeof initDraggableGatewayAudio === 'function') initDraggableGatewayAudio();
     switchAuthTab(tab);
     if (isLock) {
         window.localStorage.setItem('grace-session-locked', 'true');
@@ -7177,6 +7197,14 @@ function togglePasswordVisibility(inputId, triggerEl) {
     }
 }
 
+function toggleBothRegisterPasswords(triggerEl) {
+    const p1 = document.getElementById('reg-password');
+    const p2 = document.getElementById('reg-confirm-password');
+    const isText = triggerEl.checked;
+    if (p1) p1.type = isText ? 'text' : 'password';
+    if (p2) p2.type = isText ? 'text' : 'password';
+}
+
 function evaluatePasswordHealth(pwd) {
     const badge = document.getElementById('reg-pwd-health-badge');
     const reqLen = document.getElementById('reg-req-len');
@@ -7248,14 +7276,24 @@ function toggleGlobalAudio() {
     return soundscapePlaying;
 }
 
-function toggleGatewayAudioDirect() {
+async function toggleGatewayAudioDirect() {
+    try {
+        if (!ambientContext || ambientContext.state === 'closed') {
+            ambientContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (ambientContext.state === 'suspended') {
+            await ambientContext.resume();
+        }
+    } catch(err) {
+        console.warn('AudioContext resume note:', err);
+    }
     toggleSoundscape();
     syncAllAudioControlsUI();
     const dot = document.getElementById('audio-dot-gateway');
     if (dot) {
         if (soundscapePlaying) {
             dot.classList.add('playing');
-            dot.style.boxShadow = '0 0 12px rgba(16,185,129,0.85)';
+            dot.style.boxShadow = '0 0 14px rgba(16,185,129,0.95)';
             dot.style.borderColor = '#10B981';
             showToast('🎵 Soundscape playing.', 'success');
         } else {
@@ -7265,6 +7303,67 @@ function toggleGatewayAudioDirect() {
             showToast('🔇 Soundscape paused.', 'info');
         }
     }
+}
+
+function initDraggableGatewayAudio() {
+    const wrap = document.getElementById('floating-audio-gateway');
+    if (!wrap || wrap.dataset.draggableReady === 'true') return;
+    wrap.dataset.draggableReady = 'true';
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let origX = 0, origY = 0;
+    let hasMoved = false;
+
+    function onPointerDown(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        const pt = e.touches ? e.touches[0] : e;
+        startX = pt.clientX;
+        startY = pt.clientY;
+        const rect = wrap.getBoundingClientRect();
+        origX = rect.left;
+        origY = rect.top;
+        hasMoved = false;
+        isDragging = true;
+
+        document.addEventListener('mousemove', onPointerMove, { passive: false });
+        document.addEventListener('mouseup', onPointerUp);
+        document.addEventListener('touchmove', onPointerMove, { passive: false });
+        document.addEventListener('touchend', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+        if (!isDragging) return;
+        const pt = e.touches ? e.touches[0] : e;
+        const dx = pt.clientX - startX;
+        const dy = pt.clientY - startY;
+        if (!hasMoved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+            hasMoved = true;
+            wrap.style.cursor = 'grabbing';
+        }
+        if (hasMoved) {
+            e.preventDefault();
+            wrap.style.position = 'fixed';
+            wrap.style.left = Math.max(8, Math.min(window.innerWidth - 44, origX + dx)) + 'px';
+            wrap.style.top = Math.max(8, Math.min(window.innerHeight - 44, origY + dy)) + 'px';
+            wrap.style.right = 'auto';
+            wrap.style.bottom = 'auto';
+            wrap.style.zIndex = '100005';
+        }
+    }
+
+    function onPointerUp(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        wrap.style.cursor = 'grab';
+        document.removeEventListener('mousemove', onPointerMove);
+        document.removeEventListener('mouseup', onPointerUp);
+        document.removeEventListener('touchmove', onPointerMove);
+        document.removeEventListener('touchend', onPointerUp);
+    }
+
+    wrap.addEventListener('mousedown', onPointerDown);
+    wrap.addEventListener('touchstart', onPointerDown, { passive: true });
 }
 
 async function submitSignIn() {
@@ -7478,13 +7577,21 @@ function savePasskeyLocally(key, credId, name, deviceName) {
 }
 
 async function handlePasskeySignIn() {
+    const alertBox = document.getElementById('passkey-login-alert');
     const passkeys = JSON.parse(window.localStorage.getItem('grace-passkeys') || '{}');
     const enrolledKeys = Object.keys(passkeys);
     
     if (enrolledKeys.length === 0) {
-        showToast('⚠️ No device passkey enrolled on this laptop. Please sign in with your email and password first, then add a Passkey in Settings.', 'warning');
+        if (alertBox) {
+            alertBox.innerHTML = '⚠️ <b>Passkey Not Available / Enrolled on this Device</b><br><span style="font-size:10px; color:#CBD5E1;">Aapka passkey is laptop par enroll nahi hai. Neechay password daal kar sign in karein aur Settings &rarr; Security mein ja kar apna passkey register karein.</span>';
+            alertBox.style.display = 'block';
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        showToast('⚠️ No device passkey enrolled on this laptop.', 'warning');
         return;
     }
+
+    if (alertBox) alertBox.style.display = 'none';
 
     const lastUser = window.localStorage.getItem('grace_last_passkey_user');
     const targetKey = (lastUser && passkeys[lastUser]) ? lastUser : enrolledKeys[0];
@@ -7507,16 +7614,25 @@ async function handlePasskeySignIn() {
 
             const assertion = await navigator.credentials.get({ publicKey });
             if (assertion) {
+                if (alertBox) alertBox.style.display = 'none';
                 completePasskeyLogin(targetKey, profile);
                 return;
             }
         } catch (err) {
             console.warn('Hardware assertion note:', err);
+            if (alertBox) {
+                alertBox.innerHTML = '⚠️ <b>Biometric Verification Cancelled</b><br><span style="font-size:10px; color:#CBD5E1;">Biometric authentication cancel ho gayi. Barah-e-karam password use karein.</span>';
+                alertBox.style.display = 'block';
+            }
             showToast('Passkey biometric verification was cancelled.', 'warning');
             return;
         }
     }
 
+    if (alertBox) {
+        alertBox.innerHTML = '⚠️ <b>Passkey Verification Failed</b><br><span style="font-size:10px; color:#CBD5E1;">Is device par passkey match nahi ho saki. Password se login karein.</span>';
+        alertBox.style.display = 'block';
+    }
     showToast('Passkey could not be verified on this device.', 'warning');
 }
 
@@ -13292,6 +13408,11 @@ document.addEventListener('DOMContentLoaded', function() {
 function setAuthWallpaper(theme) {
     document.body.classList.remove('auth-wp-emerald', 'auth-wp-gold', 'auth-wp-aurora');
     document.body.classList.add('auth-wp-' + theme);
+    const overlay = document.getElementById('auth-gateway-overlay');
+    if (overlay) {
+        overlay.classList.remove('auth-wp-emerald', 'auth-wp-gold', 'auth-wp-aurora');
+        overlay.classList.add('auth-wp-' + theme);
+    }
     window.localStorage.setItem('grace-auth-wallpaper', theme);
     showToast('Wallpaper: ' + theme.toUpperCase() + ' applied.', 'info');
 }
