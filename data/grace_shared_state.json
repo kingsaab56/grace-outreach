@@ -919,6 +919,130 @@
         "deal": "$10,000"
       },
       "password": "argon2id$v=19$m=32768,t=2,p=2$eadc438f022306d4cce8f9eb57f08a34$0c2d0e076a2cc582fe8cc99a30a917625b4a47314ab0cbe89e2b10da65f9859f"
+    },
+    "rogue_1789665355372": {
+      "key": "rogue_1789665355372",
+      "name": "Rogue Agent",
+      "role": "Colleague",
+      "software_id": "GRA-COL-029",
+      "status": "Online",
+      "initials": "RA",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "Texas"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$fac52e15950395718e6a3d9e650b8f96$b736a789cd519891a63ce32201b9dab4aa4995f93ca2877817f9c48da1f70bee"
+    },
+    "argon_1789665355372": {
+      "key": "argon_1789665355372",
+      "name": "Argon Test User",
+      "role": "Colleague",
+      "software_id": "GRA-COL-030",
+      "status": "Online",
+      "initials": "AT",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "California"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$1108126192efe95418d08cd86618ed80$b6e1f15c22595a63017264a76c0090d397fe9dc4cfc7feb90e58404c800d8112"
+    },
+    "rogue_1789665568575": {
+      "key": "rogue_1789665568575",
+      "name": "Rogue Agent",
+      "role": "Colleague",
+      "software_id": "GRA-COL-031",
+      "status": "Online",
+      "initials": "RA",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "Texas"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$531fcc8be32e0d6297bc4e49b5e67b7f$d80842e13d03c6bc074a15ef6cd99b41e923643aa3a64c2da773bf57fd4fdf13"
+    },
+    "argon_1789665568575": {
+      "key": "argon_1789665568575",
+      "name": "Argon Test User",
+      "role": "Colleague",
+      "software_id": "GRA-COL-032",
+      "status": "Online",
+      "initials": "AT",
+      "tags": [
+        "Team",
+        "Contractor"
+      ],
+      "assigned_states": [
+        "California"
+      ],
+      "assigned_contractors": [],
+      "allowed": [
+        1,
+        2,
+        6,
+        7,
+        13,
+        16
+      ],
+      "metrics": {
+        "pipeline": "500",
+        "inboxes": "1 Inbox",
+        "volume": "250",
+        "deal": "$10,000"
+      },
+      "password": "argon2id$v=19$m=32768,t=2,p=2$80d7483c3d87c5c1fa70c5a4e01b3fc1$ef5f7913a6b9aa61fd7d5425eed28376f914f7a7a7741c9a25fd82d9333282fb"
     }
   },
   "attendance": {
@@ -1047,354 +1171,354 @@
   },
   "auditLog": [
     {
-      "id": "AUD-3805",
+      "id": "AUD-0454",
       "user": "King Saab",
       "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "timestamp": "2026-09-17 22:19:30 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3766",
+      "id": "AUD-0405",
       "user": "King Saab",
       "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "timestamp": "2026-09-17 22:19:30 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3730",
+      "id": "AUD-0362",
       "user": "king",
       "action": "LOGOUT: Session terminated for user: king",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "timestamp": "2026-09-17 22:19:30 PKT",
       "role": "Colleague",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3208",
-      "user": "reset_reuse_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for reset_reuse_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "id": "AUD-9734",
+      "user": "reset_reuse_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_reuse_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3175",
-      "user": "reset_reuse_1789662682119@example.com",
-      "action": "PASSWORD_RESET: Password reset confirmed via verified OTP for reset_reuse_1789662682119@example.com; active sessions revoked",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "id": "AUD-9687",
+      "user": "reset_reuse_1789665568575@example.com",
+      "action": "PASSWORD_RESET: Password reset confirmed via verified OTP for reset_reuse_1789665568575@example.com; active sessions revoked",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3103",
-      "user": "reset_reuse_1789662682119@example.com",
-      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for reset_reuse_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "id": "AUD-9598",
+      "user": "reset_reuse_1789665568575@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for reset_reuse_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3061",
-      "user": "reset_exp_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for reset_exp_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:23 PKT",
+      "id": "AUD-9557",
+      "user": "reset_exp_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_exp_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-3029",
-      "user": "single_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for single_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9510",
+      "user": "single_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for single_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2989",
-      "user": "single_1789662682119@example.com",
-      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for single_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9466",
+      "user": "single_1789665568575@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for single_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2949",
-      "user": "expired_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for expired_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9429",
+      "user": "expired_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for expired_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2898",
-      "user": "twofa_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9388",
+      "user": "twofa_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2855",
-      "user": "twofa_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9340",
+      "user": "twofa_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2799",
-      "user": "twofa_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9292",
+      "user": "twofa_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2746",
-      "user": "twofa_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9242",
+      "user": "twofa_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2703",
-      "user": "twofa_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9200",
+      "user": "twofa_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2662",
-      "user": "twofa_1789662682119@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789662682119@example.com",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9156",
+      "user": "twofa_1789665568575@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665568575@example.com",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2615",
+      "id": "AUD-9114",
       "user": "Colleague",
-      "action": "OTP_DISPATCHED: 6-digit verification code dispatched to audit_1789662682119@example.com (forgot)",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "action": "OTP_DISPATCHED: 6-digit verification code dispatched to audit_1789665568575@example.com (forgot)",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2575",
-      "user": "rate_1789662682119",
-      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789662682119",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9066",
+      "user": "rate_1789665568575",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789665568575",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2529",
-      "user": "rate_1789662682119",
-      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789662682119",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-9016",
+      "user": "rate_1789665568575",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789665568575",
+      "timestamp": "2026-09-17 22:19:29 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2484",
-      "user": "rate_1789662682119",
-      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789662682119",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-8962",
+      "user": "rate_1789665568575",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789665568575",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2421",
-      "user": "rate_1789662682119",
-      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789662682119",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-8914",
+      "user": "rate_1789665568575",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789665568575",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2380",
-      "user": "rate_1789662682119",
-      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789662682119",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "id": "AUD-8856",
+      "user": "rate_1789665568575",
+      "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: rate_1789665568575",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2156",
+      "id": "AUD-8617",
       "user": "sarah",
       "action": "ADMIN_AUTH_FAILED: Unauthorized colleague sarah attempted to mutate admin settings",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Colleague",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2114",
+      "id": "AUD-8570",
       "user": "Super Admin",
       "action": "VAULT_REVEAL: Master Vault decrypted and revealed credentials",
-      "timestamp": "2026-09-17 21:31:22 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-2012",
+      "id": "AUD-8526",
       "user": "Super Admin",
       "action": "PASSWORD_CHANGE: Master Vault Key successfully reset and updated via OTP verification",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-1924",
+      "id": "AUD-8412",
       "user": "Super Admin",
       "action": "OTP_DISPATCHED: Master Vault Recovery OTP generated for admin email: admin@graceoutreach.org",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-1767",
+      "id": "AUD-8315",
       "user": "king",
       "action": "ADMIN_SETTINGS_UPDATED: Super Admin updated ribbon visibility and registration governance",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-1311",
+      "id": "AUD-8104",
       "user": "Hamza Ali",
       "action": "Vault: ACTIVE account (sarah.malik@graceoutreach.org) [⚠️ 100% OVERLAP MATCH]",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-1258",
+      "id": "AUD-8051",
       "user": "System Auto-Dispatcher",
       "action": "Welcome Email Dispatched: Sent onboarding credentials and runbook to sarah.onboarding@graceassistant.io (GRA-MKT-003)",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:28 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-1213",
+      "id": "AUD-8004",
       "user": "lead.architect@graceassistant.io",
       "action": "OTP_VERIFIED: Identity confirmed via OTP verification for lead.architect@graceassistant.io",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-1148",
+      "id": "AUD-7961",
       "user": "lead.architect@graceassistant.io",
       "action": "OTP_FAILED: Failed OTP verification for lead.architect@graceassistant.io",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-1098",
+      "id": "AUD-7912",
       "user": "King Saab",
       "action": "OTP_DISPATCHED: 6-digit verification code dispatched to lead.architect@graceassistant.io (register)",
-      "timestamp": "2026-09-17 21:31:21 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0953",
+      "id": "AUD-7740",
       "user": "king",
       "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0909",
+      "id": "AUD-7693",
       "user": "king",
       "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0866",
+      "id": "AUD-7645",
       "user": "king",
       "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0824",
+      "id": "AUD-7596",
       "user": "Super Admin",
       "action": "VAULT_REVEAL: Master Vault decrypted and revealed credentials",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0776",
+      "id": "AUD-7543",
       "user": "Unknown",
       "action": "VAULT_REVEAL_FAILED: Failed attempt to unlock Master Vault with incorrect key",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0701",
+      "id": "AUD-7491",
       "user": "King Saab",
       "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0652",
+      "id": "AUD-7450",
       "user": "king",
       "action": "LOGIN_FAILURE: Failed authentication attempt for identifier: king",
-      "timestamp": "2026-09-17 21:31:20 PKT",
+      "timestamp": "2026-09-17 22:19:27 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-7165",
+      "id": "AUD-3610",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-17 21:31:17 PKT",
+      "timestamp": "2026-09-17 22:19:23 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-7129",
+      "id": "AUD-3559",
       "user": "Abdullah Khan",
       "action": "Vault: RESTRICTED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-17 21:31:17 PKT",
+      "timestamp": "2026-09-17 22:19:23 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-7089",
+      "id": "AUD-3517",
       "user": "Abdullah Khan",
       "action": "Vault: SUSPENDED account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-17 21:31:17 PKT",
+      "timestamp": "2026-09-17 22:19:23 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-7050",
+      "id": "AUD-3476",
       "user": "Abdullah Khan",
       "action": "Vault: MAINTENANCE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-17 21:31:17 PKT",
+      "timestamp": "2026-09-17 22:19:23 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
     {
-      "id": "AUD-7007",
+      "id": "AUD-3432",
       "user": "Abdullah Khan",
       "action": "Vault: ACTIVE account (test.outreach@gracehub.io)",
-      "timestamp": "2026-09-17 21:31:17 PKT",
+      "timestamp": "2026-09-17 22:19:23 PKT",
       "role": "Account Vault",
       "status": "Verified"
     },
@@ -1405,122 +1529,122 @@
       "details": "Safely dispatched 25 contractor records with human jitter"
     },
     {
-      "id": "AUD-0319",
+      "id": "AUD-6894",
       "user": "King Saab",
       "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
-      "timestamp": "2026-09-17 20:39:00 PKT",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0269",
+      "id": "AUD-6860",
       "user": "King Saab",
       "action": "LOGIN_SUCCESS: Colleague authenticated: king (Super Admin)",
-      "timestamp": "2026-09-17 20:39:00 PKT",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Super Admin",
       "status": "Delivered"
     },
     {
-      "id": "AUD-0203",
+      "id": "AUD-6821",
       "user": "king",
       "action": "LOGOUT: Session terminated for user: king",
-      "timestamp": "2026-09-17 20:39:00 PKT",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Colleague",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9369",
-      "user": "reset_reuse_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for reset_reuse_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6306",
+      "user": "reset_reuse_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_reuse_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9318",
-      "user": "reset_reuse_1789659538267@example.com",
-      "action": "PASSWORD_RESET: Password reset confirmed via verified OTP for reset_reuse_1789659538267@example.com; active sessions revoked",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6272",
+      "user": "reset_reuse_1789665355372@example.com",
+      "action": "PASSWORD_RESET: Password reset confirmed via verified OTP for reset_reuse_1789665355372@example.com; active sessions revoked",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9235",
-      "user": "reset_reuse_1789659538267@example.com",
-      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for reset_reuse_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6195",
+      "user": "reset_reuse_1789665355372@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for reset_reuse_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9192",
-      "user": "reset_exp_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for reset_exp_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6156",
+      "user": "reset_exp_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for reset_exp_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9143",
-      "user": "single_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for single_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6118",
+      "user": "single_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for single_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9105",
-      "user": "single_1789659538267@example.com",
-      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for single_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6081",
+      "user": "single_1789665355372@example.com",
+      "action": "OTP_VERIFIED: Identity confirmed via OTP verification for single_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9068",
-      "user": "expired_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for expired_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:59 PKT",
+      "id": "AUD-6052",
+      "user": "expired_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for expired_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:56 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-9029",
-      "user": "twofa_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:58 PKT",
+      "id": "AUD-6016",
+      "user": "twofa_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:55 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-8990",
-      "user": "twofa_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:58 PKT",
+      "id": "AUD-5979",
+      "user": "twofa_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:55 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-8942",
-      "user": "twofa_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:58 PKT",
+      "id": "AUD-5947",
+      "user": "twofa_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:55 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-8902",
-      "user": "twofa_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:58 PKT",
+      "id": "AUD-5909",
+      "user": "twofa_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:55 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     },
     {
-      "id": "AUD-8849",
-      "user": "twofa_1789659538267@example.com",
-      "action": "OTP_FAILED: Failed OTP verification for twofa_1789659538267@example.com",
-      "timestamp": "2026-09-17 20:38:58 PKT",
+      "id": "AUD-5873",
+      "user": "twofa_1789665355372@example.com",
+      "action": "OTP_FAILED: Failed OTP verification for twofa_1789665355372@example.com",
+      "timestamp": "2026-09-17 22:15:55 PKT",
       "role": "Security Sentinel",
       "status": "Delivered"
     }

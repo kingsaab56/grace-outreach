@@ -10,7 +10,7 @@ import secrets
 import logging
 import base64
 import html
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import parse_qs
 from wsgiref.simple_server import make_server
@@ -1222,6 +1222,7 @@ def render_header():
             <button class="btn btn-gold" onclick="openAdminGovernanceModal()" id="ribbon-admin-btn" title="Super Admin Enterprise Governance, Ribbon Visibility &amp; Security Vault" style="font-weight:700; display:inline-flex; align-items:center; gap:5px;">⚙️ Admin Control</button>
             <button class="btn btn-blue" onclick="openAdminMasterVaultModal()" id="ribbon-vault-btn" title="Super Admin Central Account Vault &amp; Migration Engine">🔐 Account Vault</button>
             <button class="btn btn-orange" onclick="openBroadcast()">📢 Broadcast Alert</button>
+            <button class="btn btn-gold" onclick="openFeedbackSupportModal()" id="ribbon-feedback-btn" title="Submit Platform Feedback, Rating or Technical Support" style="border-color:#10B981; background:rgba(16,185,129,0.15); color:#A7F3D0; font-weight:700; display:inline-flex; align-items:center; gap:4px;">💬 Support &amp; Feedback</button>
             <button class="btn btn-gray" onclick="openBrandPalette()">🎨 Brand Palette</button>
             <button id="audio-btn" class="btn btn-gray" onclick="toggleAudio()">🔊 Audio: ON</button>
             <button class="btn btn-gray" onclick="openSoundscape()">♫ Soundscape</button>
@@ -1673,6 +1674,9 @@ def render_header():
                     🛡️ Google Verified Enterprise Outreach Engine &bull; End-to-End Encrypted
                     <!-- Zero-Trust Quantum-Resilient Cryptographic Vault -->
                 </div>
+                <div style="margin-top:3px; font-size:9.5px; color:#94A3B8;">
+                    Need onboarding assistance? Support: <a href="mailto:support.graceoutreach@gmail.com" style="color:var(--accent-gold); text-decoration:none; font-weight:600;">support.graceoutreach@gmail.com</a>
+                </div>
                 <div style="margin-top:4px; font-size:9px; color:#94A3B8; letter-spacing:0.4px;">
                     &copy; 2026 Grace Outreach Assistant. All Rights Reserved.
                 </div>
@@ -1694,6 +1698,77 @@ def render_header():
             </div>
             <div class="dialog-actions" style="margin-top:10px;">
                 <button class="btn btn-blue" onclick="closeInAppPolicyModal()">I Have Read &amp; Understand</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Colleague Feedback, Rating & Support Modal -->
+    <div id="user-feedback-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="fb-modal-title" onclick="if(event.target===this) closeFeedbackSupportModal()">
+        <div class="modal-card wide-modal" style="width:min(560px, 94vw); max-height:88vh; display:flex; flex-direction:column; padding:22px; background:#001A17; border:1.5px solid var(--accent-gold); border-radius:18px; box-shadow:0 20px 50px rgba(0,0,0,0.85); margin:auto;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #123B35; padding-bottom:12px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:38px; height:38px; border-radius:10px; background:rgba(214,161,23,0.15); border:1px solid var(--accent-gold); display:flex; align-items:center; justify-content:center; font-size:18px;">
+                        💬
+                    </div>
+                    <div>
+                        <span class="eyebrow" style="color:var(--accent-gold); font-size:10px; margin:0; letter-spacing:0.8px;">COLLEAGUE EXPERIENCE &amp; SUPPORT</span>
+                        <h3 id="fb-modal-title" style="margin:2px 0 0; font-size:16px; font-weight:800; color:var(--text-main);">Platform Feedback, Rating &amp; Support</h3>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeFeedbackSupportModal()" aria-label="Close Feedback Modal" style="font-size:16px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#FFF; cursor:pointer;">✕</button>
+            </div>
+
+            <div style="flex:1; overflow-y:auto; padding-right:4px;">
+                <!-- Star Rating Section -->
+                <div style="text-align:center; padding:12px; background:rgba(0,25,20,0.6); border:1px solid #123B35; border-radius:12px; margin-bottom:12px;">
+                    <div style="font-size:11px; font-weight:700; color:var(--accent-gold); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px;">Rate Your Experience with Grace Outreach</div>
+                    <div style="display:flex; justify-content:center; gap:8px; margin-bottom:6px;">
+                        <button type="button" class="fb-star-btn" onclick="setFeedbackRating(1)" style="background:none; border:none; font-size:28px; cursor:pointer; transition:transform 0.15s; padding:2px; color:#F59E0B;">★</button>
+                        <button type="button" class="fb-star-btn" onclick="setFeedbackRating(2)" style="background:none; border:none; font-size:28px; cursor:pointer; transition:transform 0.15s; padding:2px; color:#F59E0B;">★</button>
+                        <button type="button" class="fb-star-btn" onclick="setFeedbackRating(3)" style="background:none; border:none; font-size:28px; cursor:pointer; transition:transform 0.15s; padding:2px; color:#F59E0B;">★</button>
+                        <button type="button" class="fb-star-btn" onclick="setFeedbackRating(4)" style="background:none; border:none; font-size:28px; cursor:pointer; transition:transform 0.15s; padding:2px; color:#F59E0B;">★</button>
+                        <button type="button" class="fb-star-btn" onclick="setFeedbackRating(5)" style="background:none; border:none; font-size:28px; cursor:pointer; transition:transform 0.15s; padding:2px; color:#F59E0B;">★</button>
+                    </div>
+                    <div id="fb-rating-label" style="font-size:11.5px; font-weight:700; color:#A7F3D0;">🌟 5/5 - Outstanding Platform (Zero Glitches)</div>
+                </div>
+
+                <!-- Category and Email -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <label style="font-size:11px; font-weight:700; color:var(--text-main);">Feedback Category
+                        <select id="feedback-category-select" style="width:100%; margin-top:4px; padding:7px 10px; background:#02241F; color:#F8FAFC; border:1px solid #123B35; border-radius:6px; font-size:11.5px;">
+                            <option value="🌟 General Platform Review">🌟 General Platform Review</option>
+                            <option value="💡 Feature Suggestion">💡 Feature Suggestion</option>
+                            <option value="🐛 Bug or Glitch Report">🐛 Bug or Glitch Report</option>
+                            <option value="🆘 Technical Assistance">🆘 Technical Assistance</option>
+                        </select>
+                    </label>
+                    <label style="font-size:11px; font-weight:700; color:var(--text-main);">Your Work Email (Optional)
+                        <input id="feedback-user-email" type="email" placeholder="e.g. colleague@company.com" style="width:100%; box-sizing:border-box; margin-top:4px; padding:7px 10px; background:#02241F; color:#F8FAFC; border:1px solid #123B35; border-radius:6px; font-size:11.5px;">
+                    </label>
+                </div>
+
+                <!-- Textarea -->
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:11px; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">
+                        Message / Observations / Suggestions
+                    </label>
+                    <textarea id="feedback-message-text" rows="3" placeholder="Share your experience, suggest an improvement, or report any issues..." style="width:100%; box-sizing:border-box; padding:9px 10px; background:#02241F; color:#F8FAFC; border:1px solid #123B35; border-radius:8px; font-size:12px; line-height:1.5; resize:vertical;"></textarea>
+                </div>
+
+                <!-- Direct Support Contact Card -->
+                <div style="padding:10px 12px; background:rgba(16,185,129,0.08); border:1px dashed #10B981; border-radius:8px; font-size:11px; color:#CBD5E1; margin-bottom:12px; line-height:1.45;">
+                    <strong style="color:#A7F3D0; display:block; margin-bottom:2px;">✉️ Official Support Desk:</strong>
+                    Direct Email: <a href="mailto:support.graceoutreach@gmail.com" style="color:var(--accent-gold); font-weight:700; text-decoration:underline;">support.graceoutreach@gmail.com</a><br>
+                    <span style="font-size:10px; color:#94A3B8;">All feedback &amp; inquiries are directly received by King Saab &amp; the Engineering Lead.</span>
+                </div>
+            </div>
+
+            <div class="dialog-actions" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #123B35; padding-top:10px;">
+                <a href="mailto:support.graceoutreach@gmail.com?subject=Grace%20Outreach%20Support%20Ticket" class="btn btn-sm btn-gray" style="font-size:11px; text-decoration:none;">✉️ Email Directly</a>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn btn-gray" onclick="closeFeedbackSupportModal()" style="padding:6px 12px; font-size:11.5px;">Cancel</button>
+                    <button type="button" class="btn btn-blue" id="btn-submit-feedback" onclick="submitColleagueFeedback()" style="padding:6px 16px; font-size:12px; font-weight:700;">🚀 Submit Feedback</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3880,7 +3955,7 @@ BASE_CSS = """
     body.auth-screen-active .charts-grid-2,
     body.auth-screen-active #ai-agent-widget,
     body.auth-screen-active .floating-audio-widget:not(.gateway-floating-audio),
-    body.auth-screen-active > *:not(#auth-gateway-overlay):not(#auth-fixed-bg):not(#user-settings-modal):not(#guest-tour-modal):not(#inapp-legal-modal):not(#profile-preview-modal):not(#logo-preview-modal):not(#admin-governance-modal):not(script):not(style) {
+    body.auth-screen-active > *:not(#auth-gateway-overlay):not(#auth-fixed-bg):not(#user-settings-modal):not(#guest-tour-modal):not(#inapp-legal-modal):not(#user-feedback-modal):not(#profile-preview-modal):not(#logo-preview-modal):not(#admin-governance-modal):not(script):not(style) {
         display: none !important;
     }
 
@@ -13642,6 +13717,111 @@ function closeInAppPolicyModal() {
     setModalLock(false);
 }
 
+let currentFeedbackRating = 5;
+
+function openFeedbackSupportModal() {
+    const modal = document.getElementById('user-feedback-modal');
+    if (!modal) return;
+    const user = (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : '') || 'Colleague';
+    const emailInput = document.getElementById('feedback-user-email');
+    if (emailInput && (!emailInput.value || emailInput.value.includes('@graceassistant.io'))) {
+        const prof = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[user]) ? PROFILE_DATA[user] : {};
+        if (prof.email) emailInput.value = prof.email;
+    }
+    setFeedbackRating(currentFeedbackRating);
+    modal.hidden = false;
+    modal.style.display = 'grid';
+    modal.style.zIndex = '100002';
+    if (typeof setModalLock === 'function') setModalLock(true);
+}
+
+function closeFeedbackSupportModal() {
+    const modal = document.getElementById('user-feedback-modal');
+    if (modal) {
+        modal.hidden = true;
+        modal.style.display = 'none';
+    }
+    if (typeof setModalLock === 'function') setModalLock(false);
+}
+
+function setFeedbackRating(stars) {
+    currentFeedbackRating = Math.max(1, Math.min(5, parseInt(stars, 10) || 5));
+    const starEls = document.querySelectorAll('.fb-star-btn');
+    starEls.forEach((btn, idx) => {
+        if (idx < currentFeedbackRating) {
+            btn.style.color = '#F59E0B';
+            btn.style.transform = 'scale(1.15)';
+        } else {
+            btn.style.color = 'rgba(255, 255, 255, 0.25)';
+            btn.style.transform = 'scale(1.0)';
+        }
+    });
+    const label = document.getElementById('fb-rating-label');
+    const descriptions = {
+        1: '🛑 1/5 - Urgent Issue / Critical Bug',
+        2: '⚠️ 2/5 - Needs Improvement / Slow',
+        3: '👌 3/5 - Good / Operates Normally',
+        4: '👍 4/5 - Very Good / Highly Responsive',
+        5: '🌟 5/5 - Outstanding Platform (Zero Glitches)'
+    };
+    if (label) label.innerText = descriptions[currentFeedbackRating] || (currentFeedbackRating + '/5 Stars');
+}
+
+async function submitColleagueFeedback() {
+    const user = (typeof getActiveAuthUser === 'function' ? getActiveAuthUser() : '') || 'Colleague';
+    const prof = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[user]) ? PROFILE_DATA[user] : {};
+    const role = prof.role || 'Colleague';
+    const category = document.getElementById('feedback-category-select')?.value || '🌟 General Platform Review';
+    const message = document.getElementById('feedback-message-text')?.value.trim() || '';
+    const email = document.getElementById('feedback-user-email')?.value.trim() || prof.email || '';
+    const btn = document.getElementById('btn-submit-feedback');
+
+    if (!message) {
+        showToast('Please type your feedback or message before submitting.', 'warning');
+        return;
+    }
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Submitting Feedback...';
+    }
+
+    try {
+        const res = await fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user: user,
+                role: role,
+                rating: currentFeedbackRating,
+                category: category,
+                message: message,
+                email: email
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast('🎉 Thank you! Your ' + currentFeedbackRating + '★ feedback was sent to King Saab & Team.', 'success');
+            const msgBox = document.getElementById('feedback-message-text');
+            if (msgBox) msgBox.value = '';
+            setTimeout(() => {
+                closeFeedbackSupportModal();
+            }, 1200);
+        } else {
+            showToast('Error: ' + (data.error || 'Could not submit feedback.'), 'error');
+        }
+    } catch (err) {
+        console.error('Feedback submit err:', err);
+        showToast('Opening direct email client for support...', 'info');
+        window.location.href = 'mailto:support.graceoutreach@gmail.com?subject=Grace%20Outreach%20Feedback%20(' + currentFeedbackRating + '%20Stars)&body=' + encodeURIComponent(message);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = '🚀 Submit Feedback';
+        }
+    }
+}
+
 let regEmailVerified = false;
 
 async function requestRegistrationOtp() {
@@ -16119,9 +16299,9 @@ def render_privacy_policy():
             <p style="font-size:13px; color:#CBD5E1; line-height:1.6;">You retain full sovereignty over your data. You may at any time:</p>
             <ul style="font-size:13px; color:#CBD5E1; line-height:1.7; padding-left:22px;">
                 <li><b>Request Immediate Data Purge:</b> Super Admin can erase all profile data, audit logs, or connected accounts with one click or via API.</li>
-                <li><b>Instant Unsubscribe:</b> External recipients can opt out instantly via <a href="/api/compliance/unsubscribe" style="color:var(--accent-gold);">One-Click Unsubscribe</a> or by emailing <code>unsubscribe@graceassistant.io</code>.</li>
+                <li><b>Instant Unsubscribe:</b> External recipients can opt out instantly via <a href="/api/compliance/unsubscribe" style="color:var(--accent-gold);">One-Click Unsubscribe</a> or by emailing <code>support.graceoutreach@gmail.com</code>.</li>
                 <li><b>Export State:</b> Export all CRM records, suppression tables, and telemetry as CSV/JSON at any time.</li>
-                <li><b>Contact Lead Architect &amp; DPO:</b> For inquiries, email <code>kingsaab.outreach@graceassistant.io</code> or <code>compliance@graceassistant.io</code>.</li>
+                <li><b>Contact Lead Architect, DPO &amp; Support:</b> For inquiries, feedback, or assistance, email <code>support.graceoutreach@gmail.com</code>.</li>
             </ul>
 
             <div style="margin-top:28px; padding-top:16px; border-top:1px solid #123B35; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
@@ -16241,11 +16421,11 @@ def render_terms_of_service():
             </div>
             <p style="font-size:13px; color:#CBD5E1; line-height:1.6;">Grace Outreach Assistant is provided on an "AS IS" and "AS AVAILABLE" basis. While our platform incorporates automated domain warming, spam sentinel guards, and deliverability optimizers, we do not guarantee specific email open rates, replies, or deal closures. In no event shall the platform architects be liable for indirect, incidental, or consequential damages resulting from third-party mailbox provider policies.</p>
 
-            <!-- SECTION 6: GOVERNING LAW & AMENDMENTS -->
+            <!-- SECTION 6: GOVERNING LAW & OPERATIONAL INQUIRIES -->
             <div class="legal-section-title">
                 <span>6. Governing Law &amp; Operational Inquiries</span>
             </div>
-            <p style="font-size:13px; color:#CBD5E1; line-height:1.6;">These terms are governed by commercial enterprise conventions and applicable international communications laws. For inquiries or legal notices, contact <code>kingsaab.outreach@graceassistant.io</code>.</p>
+            <p style="font-size:13px; color:#CBD5E1; line-height:1.6;">These terms are governed by commercial enterprise conventions and applicable international communications laws. For platform inquiries, feedback, or legal notices, contact <code>support.graceoutreach@gmail.com</code>.</p>
 
             <div style="margin-top:28px; padding-top:16px; border-top:1px solid #123B35; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                 <div style="font-size:12px; color:var(--text-muted);">
@@ -17089,6 +17269,90 @@ def app(environ, start_response):
                     ("Content-Length", str(len(err_payload))),
                 ])
                 return [err_payload]
+
+        # 9.5 Colleague Feedback, Rating & Support Ticket Endpoint (POST & GET /api/feedback)
+        if cleaned_path == "/api/feedback":
+            if method == "POST":
+                allowed, retry_after = RATE_LIMITER.is_allowed(client_ip, bucket="feedback_post", max_requests=30 if not is_test_client else 5000, window_sec=60)
+                if not allowed:
+                    err_payload = json.dumps({"error": "Rate limit exceeded. Please wait a moment.", "retry_after": retry_after}).encode("utf-8")
+                    secure_start_response("429 Too Many Requests", [
+                        ("Content-Type", "application/json; charset=utf-8"),
+                        ("Content-Length", str(len(err_payload))),
+                        ("Retry-After", str(retry_after)),
+                    ])
+                    return [err_payload]
+
+                try:
+                    content_length = int(environ.get("CONTENT_LENGTH", 0))
+                    body_bytes = environ["wsgi.input"].read(content_length) if content_length > 0 else b"{}"
+                    req_json = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+
+                    feedback_entry = {
+                        "id": f"FB-{int(time.time())}-{secrets.token_hex(3)}",
+                        "user": req_json.get("user") or (session.get("user_key") if session else "Colleague"),
+                        "role": req_json.get("role") or (session.get("role") if session else "Colleague"),
+                        "rating": int(req_json.get("rating", 5)),
+                        "category": str(req_json.get("category", "General Platform Review"))[:100],
+                        "message": str(req_json.get("message", "")).strip()[:4000],
+                        "email": str(req_json.get("email", "")).strip()[:150],
+                        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+                        "ip": client_ip,
+                        "support_channel": "support.graceoutreach@gmail.com"
+                    }
+
+                    st = read_shared_state()
+                    if "feedbacks" not in st or not isinstance(st["feedbacks"], list):
+                        st["feedbacks"] = []
+                    st["feedbacks"].insert(0, feedback_entry)
+                    st["feedbacks"] = st["feedbacks"][:200]
+                    if "auditLog" not in st or not isinstance(st["auditLog"], list):
+                        st["auditLog"] = []
+                    st["auditLog"].insert(0, {
+                        "id": f"AUD-FB-{int(time.time())}",
+                        "user": feedback_entry["user"],
+                        "action": f"Colleague Feedback ({feedback_entry['rating']}★): {feedback_entry['category']}",
+                        "timestamp": feedback_entry["timestamp"],
+                        "role": feedback_entry["role"],
+                        "status": "Logged"
+                    })
+                    write_shared_state(st)
+
+                    res_payload = json.dumps({
+                        "status": "success",
+                        "message": "Thank you! Your feedback has been registered and sent to King Saab & Team.",
+                        "feedback_id": feedback_entry["id"],
+                        "support_email": "support.graceoutreach@gmail.com"
+                    }).encode("utf-8")
+                    secure_start_response("200 OK", [
+                        ("Content-Type", "application/json; charset=utf-8"),
+                        ("Content-Length", str(len(res_payload)))
+                    ])
+                    return [res_payload]
+                except Exception as exc:
+                    logger.exception("Error in POST /api/feedback: %s", exc)
+                    err_payload = json.dumps({"error": "Failed to submit feedback. Please email support.graceoutreach@gmail.com directly."}).encode("utf-8")
+                    secure_start_response("500 Internal Server Error", [
+                        ("Content-Type", "application/json; charset=utf-8"),
+                        ("Content-Length", str(len(err_payload)))
+                    ])
+                    return [err_payload]
+
+            elif method == "GET":
+                st = read_shared_state()
+                all_fb = st.get("feedbacks", [])
+                res_payload = json.dumps({
+                    "status": "success",
+                    "feedbacks": all_fb if is_super_admin else [{"rating": f.get("rating"), "category": f.get("category"), "timestamp": f.get("timestamp")} for f in all_fb[:10]],
+                    "total": len(all_fb),
+                    "support_email": "support.graceoutreach@gmail.com"
+                }).encode("utf-8")
+                secure_start_response("200 OK", [
+                    ("Content-Type", "application/json; charset=utf-8"),
+                    ("Content-Length", str(len(res_payload))),
+                    ("Cache-Control", "no-cache, no-store, must-revalidate")
+                ])
+                return [res_payload]
 
         # 10. Server-Side State Persistence API (GET & POST) with Colleague Isolation & RBAC
         if cleaned_path == "/api/state":
