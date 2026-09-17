@@ -534,8 +534,19 @@ def generate_otp_email_html(recipient_email: str, otp_code: str, name: str = "Co
 </html>"""
 
 def dispatch_otp_email_smtp(target_email: str, otp_code: str, name: str = "Colleague", purpose: str = "register"):
-    smtp_user = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com")
-    smtp_pass = os.environ.get("SMTP_PASS", "")
+    v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
+    v2 = os.environ.get("SMTP_PASS", "").strip()
+    
+    # Auto-Heal: detect if SMTP_USER and SMTP_PASS are swapped in environment
+    if "@" in v2 and "@" not in v1:
+        smtp_user = v2
+        smtp_pass = v1
+    else:
+        smtp_user = v1
+        smtp_pass = v2
+        
+    # Strip any spaces from Google 16-character App Password (e.g., 'iarn gvsp misq ebol')
+    smtp_pass = smtp_pass.replace(" ", "")
     
     if not smtp_pass:
         logger.info("[OTP DISPATCH] Dispatched OTP %s to %s for %s (Awaiting SMTP_PASS configuration).", otp_code, target_email, purpose)
