@@ -7583,7 +7583,7 @@ async function handlePasskeySignIn() {
     
     if (enrolledKeys.length === 0) {
         if (alertBox) {
-            alertBox.innerHTML = '⚠️ <b>Passkey Not Available / Enrolled on this Device</b><br><span style="font-size:10px; color:#CBD5E1;">Aapka passkey is laptop par enroll nahi hai. Neechay password daal kar sign in karein aur Settings &rarr; Security mein ja kar apna passkey register karein.</span>';
+            alertBox.innerHTML = '⚠️ <b>Passkey Not Available / Enrolled on this Device</b><br><span style="font-size:10px; color:#CBD5E1;">No passkey has been enrolled on this device yet. Please enter your password below to sign in, then register your passkey in Settings &rarr; Security.</span>';
             alertBox.style.display = 'block';
             alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
@@ -7621,7 +7621,7 @@ async function handlePasskeySignIn() {
         } catch (err) {
             console.warn('Hardware assertion note:', err);
             if (alertBox) {
-                alertBox.innerHTML = '⚠️ <b>Biometric Verification Cancelled</b><br><span style="font-size:10px; color:#CBD5E1;">Biometric authentication cancel ho gayi. Barah-e-karam password use karein.</span>';
+                alertBox.innerHTML = '⚠️ <b>Biometric Verification Cancelled</b><br><span style="font-size:10px; color:#CBD5E1;">Biometric authentication was cancelled. Please authenticate with your password below.</span>';
                 alertBox.style.display = 'block';
             }
             showToast('Passkey biometric verification was cancelled.', 'warning');
@@ -7630,7 +7630,7 @@ async function handlePasskeySignIn() {
     }
 
     if (alertBox) {
-        alertBox.innerHTML = '⚠️ <b>Passkey Verification Failed</b><br><span style="font-size:10px; color:#CBD5E1;">Is device par passkey match nahi ho saki. Password se login karein.</span>';
+        alertBox.innerHTML = '⚠️ <b>Passkey Verification Failed</b><br><span style="font-size:10px; color:#CBD5E1;">Passkey could not be verified on this device. Please sign in with your password below.</span>';
         alertBox.style.display = 'block';
     }
     showToast('Passkey could not be verified on this device.', 'warning');
@@ -11771,7 +11771,8 @@ applyStoredTheme = function() {
     }
 
     if (!isUserAuthenticated()) {
-        openAuthGateway('signin', true, true);
+        const targetTab = (urlParams.get('tab') === 'register' || urlParams.get('action') === 'register' || urlParams.get('register') === '1' || urlParams.get('register') === 'true') ? 'register' : 'signin';
+        openAuthGateway(targetTab, true, true);
     } else {
         const isLocked = window.localStorage.getItem('grace-session-locked') === 'true';
         if (isLocked) {
@@ -11779,6 +11780,9 @@ applyStoredTheme = function() {
         } else {
             closeAuthGateway();
         }
+    }
+    if (urlParams.get('legal') === 'privacy' || urlParams.get('legal') === 'terms') {
+        openInAppPolicyModal(urlParams.get('legal'));
     }
 };
 
@@ -13581,6 +13585,16 @@ function openInAppPolicyModal(type) {
     const eyebrow = document.getElementById('inapp-legal-type');
     const body = document.getElementById('inapp-legal-body');
     if (!modal || !body) return;
+
+    // Automatically enforce dark mode theme for optimal contrast & legibility
+    if (typeof setExecutiveTheme === 'function') {
+        setExecutiveTheme('dark');
+        const icon = document.getElementById('login-theme-icon');
+        const txt = document.getElementById('login-theme-text');
+        if (icon) icon.innerText = '☀️';
+        if (txt) txt.innerText = 'LIGHT';
+    }
+    modal.style.zIndex = '100001';
 
     if (type === 'privacy') {
         if (eyebrow) eyebrow.innerText = 'DATA DISCLOSURE & PRIVACY';
@@ -15996,9 +16010,9 @@ def render_privacy_policy():
                 <p style="margin-bottom:0; font-weight:600; color:#A7F3D0;">✓ We NEVER sell, lease, trade, or monetize your data or recipient information.<br>✓ We NEVER allow human reading of private emails.<br>✓ All connected account credentials and passwords are encrypted with hardware-grade AES-256 Fernet encryption at rest.</p>
             </div>
 
-            <!-- SECTION 1: WHAT WE COLLECT (KIA LETA HAI) -->
+            <!-- SECTION 1: WHAT DATA WE COLLECT & PROCESS -->
             <div class="legal-section-title">
-                <span>1. Data We Collect ("Kia Leta Hai")</span>
+                <span>1. Data We Collect &amp; Process</span>
             </div>
             <p style="font-size:13px; color:#CBD5E1; line-height:1.6;">Grace Outreach Assistant only processes the minimum necessary information required to operate enterprise outreach campaigns and coordinate team workspaces:</p>
             
@@ -16021,9 +16035,9 @@ def render_privacy_policy():
                 </div>
             </div>
 
-            <!-- SECTION 2: WHY WE COLLECT THIS DATA (KIU LETA HAI) -->
+            <!-- SECTION 2: WHY WE COLLECT & PROCESS THIS DATA -->
             <div class="legal-section-title">
-                <span>2. Why We Collect This Data ("Kiu Leta Hai")</span>
+                <span>2. Why We Collect &amp; Process This Data</span>
             </div>
             <p style="font-size:13px; color:#CBD5E1; line-height:1.6;">Every piece of collected data serves an explicit operational and technical necessity:</p>
             <div class="legal-item-grid">
