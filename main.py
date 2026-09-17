@@ -1097,6 +1097,7 @@ def _default_shared_state():
             "allow_public_registration": True,
             "vault_recovery_otp": {}
         },
+        "feedbacks": [],
     }
 
 
@@ -1110,12 +1111,15 @@ def _read_shared_state_unlocked():
     state = _default_shared_state()
     if not isinstance(saved, dict):
         raise ValueError("Shared Grace state has an invalid shape.")
-    for key in state:
-        if key in saved:
-            if isinstance(saved[key], dict):
-                state[key].update(saved[key])
-            elif isinstance(saved[key], list):
-                state[key] = saved[key]
+    for key, val in saved.items():
+        if key not in state:
+            state[key] = val
+        elif isinstance(state[key], dict) and isinstance(val, dict):
+            state[key].update(val)
+        elif isinstance(val, list):
+            state[key] = val
+        else:
+            state[key] = val
     return state
 
 
@@ -6684,7 +6688,7 @@ async function saveAdminRibbonVisibility() {
     try {
         const resp = await fetch('/api/admin/settings', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
             body: JSON.stringify({ ribbon_visibility: config })
         });
         const data = await resp.json();
@@ -6777,7 +6781,7 @@ async function submitAdminPasswordChange() {
     try {
         const resp = await fetch('/api/admin/change-password', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
             body: JSON.stringify({ old_password: cur, new_password: n1 })
         });
         const data = await resp.json();
@@ -6800,7 +6804,7 @@ async function requestMasterVaultRecoveryOtp() {
     try {
         const resp = await fetch('/api/vault/request-otp', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
             body: JSON.stringify({})
         });
         const data = await resp.json();
@@ -6841,7 +6845,7 @@ async function verifyMasterVaultRecoveryOtp() {
     try {
         const resp = await fetch('/api/vault/verify-otp-and-reset', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
             body: JSON.stringify({ otp: otp, new_master_key: k1 })
         });
         const data = await resp.json();
@@ -6865,7 +6869,7 @@ async function saveAdminSafetySettings() {
     try {
         const resp = await fetch('/api/admin/settings', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
             body: JSON.stringify({ allow_public_registration: allowReg })
         });
         const data = await resp.json();
@@ -13678,7 +13682,7 @@ function toggleAdminVaultMasterLock() {
     }
     fetch('/api/vault/reveal', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
         body: JSON.stringify({ master_key: enteredKey })
     })
     .then(r => r.json())
@@ -14312,7 +14316,7 @@ async function submitColleagueFeedback() {
     try {
         const res = await fetch('/api/feedback', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
             body: JSON.stringify({
                 user: user,
                 role: role,
@@ -14402,7 +14406,7 @@ async function verifyRegistrationOtp() {
     try {
         const res = await fetch('/api/auth/otp/verify', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
             body: JSON.stringify({ email, otp, purpose: 'register' })
         });
         const data = await res.json();
@@ -14479,7 +14483,7 @@ async function submitPasswordResetOtp() {
     try {
         const res = await fetch('/api/auth/otp/verify', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
             body: JSON.stringify({ email, otp, purpose: 'forgot', new_password: newPwd })
         });
         const data = await res.json();
@@ -17733,6 +17737,17 @@ def app(environ, start_response):
             return [resp_data]
 
         if cleaned_path == "/api/admin/change-password" and method == "POST":
+            # Dual-key rate limit admin password modifications
+            allowed, retry_after = RATE_LIMITER.is_allowed(client_ip, bucket="admin_pwd_change", max_requests=5 if not is_test_client else 5000, window_sec=600)
+            if not allowed:
+                err_payload = json.dumps({"error": "Too many password change attempts. Please wait.", "retry_after": retry_after, "status": 429}).encode("utf-8")
+                secure_start_response("429 Too Many Requests", [
+                    ("Content-Type", "application/json; charset=utf-8"),
+                    ("Content-Length", str(len(err_payload))),
+                    ("Retry-After", str(retry_after)),
+                ])
+                return [err_payload]
+
             if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
                 err = json.dumps({"error": "Unauthorized: Authentication required.", "status": 401}).encode("utf-8")
                 secure_start_response("401 Unauthorized", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
@@ -17972,12 +17987,12 @@ def app(environ, start_response):
 
                     feedback_entry = {
                         "id": f"FB-{int(time.time())}-{secrets.token_hex(3)}",
-                        "user": req_json.get("user") or (session.get("user_key") if session else "Colleague"),
-                        "role": req_json.get("role") or (session.get("role") if session else "Colleague"),
-                        "rating": int(req_json.get("rating", 5)),
-                        "category": str(req_json.get("category", "General Platform Review"))[:100],
-                        "message": str(req_json.get("message", "")).strip()[:4000],
-                        "email": str(req_json.get("email", "")).strip()[:150],
+                        "user": html.escape(str(req_json.get("user") or (session.get("user_key") if session else "Colleague"))[:100]),
+                        "role": html.escape(str(req_json.get("role") or (session.get("role") if session else "Colleague"))[:100]),
+                        "rating": max(1, min(5, int(req_json.get("rating", 5)))),
+                        "category": html.escape(str(req_json.get("category", "General Platform Review"))[:100]),
+                        "message": html.escape(str(req_json.get("message", "")).strip()[:4000]),
+                        "email": html.escape(str(req_json.get("email", "")).strip()[:150]),
                         "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
                         "ip": client_ip,
                         "support_channel": "support.graceoutreach@gmail.com"
@@ -18039,6 +18054,16 @@ def app(environ, start_response):
         # 10. Server-Side State Persistence API (GET & POST) with Colleague Isolation & RBAC
                 # 9.8 Colleague Lifecycle Governance: Batch Delete & Batch Restrict Endpoints (Super Admin Only)
         if cleaned_path == "/api/colleagues/batch-delete" and method == "POST":
+            allowed, retry_after = RATE_LIMITER.is_allowed(client_ip, bucket="colleagues_batch_mod", max_requests=20 if not is_test_client else 5000, window_sec=60)
+            if not allowed:
+                err_payload = json.dumps({"error": "Too many colleague batch operations. Please wait a moment.", "retry_after": retry_after, "status": 429}).encode("utf-8")
+                secure_start_response("429 Too Many Requests", [
+                    ("Content-Type", "application/json; charset=utf-8"),
+                    ("Content-Length", str(len(err_payload))),
+                    ("Retry-After", str(retry_after)),
+                ])
+                return [err_payload]
+
             if not is_super_admin:
                 if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
                     err = json.dumps({"error": "Unauthorized: Authentication required.", "status": 401}).encode("utf-8")
@@ -18084,6 +18109,16 @@ def app(environ, start_response):
                 return [err_payload]
 
         if cleaned_path == "/api/colleagues/batch-restrict" and method == "POST":
+            allowed, retry_after = RATE_LIMITER.is_allowed(client_ip, bucket="colleagues_batch_mod", max_requests=20 if not is_test_client else 5000, window_sec=60)
+            if not allowed:
+                err_payload = json.dumps({"error": "Too many colleague batch operations. Please wait a moment.", "retry_after": retry_after, "status": 429}).encode("utf-8")
+                secure_start_response("429 Too Many Requests", [
+                    ("Content-Type", "application/json; charset=utf-8"),
+                    ("Content-Length", str(len(err_payload))),
+                    ("Retry-After", str(retry_after)),
+                ])
+                return [err_payload]
+
             if not is_super_admin:
                 if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
                     err = json.dumps({"error": "Unauthorized: Authentication required.", "status": 401}).encode("utf-8")
@@ -18288,6 +18323,10 @@ def app(environ, start_response):
                 body = render_module_detail(mod_id)
             elif tab == "colleagues":
                 body = render_colleagues()
+            elif tab in ("legal-privacy", "privacy"):
+                body = render_privacy_policy()
+            elif tab in ("legal-terms", "terms"):
+                body = render_terms_of_service()
             else:
                 body = render_dashboard()
 

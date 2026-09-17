@@ -1616,7 +1616,108 @@ def run_tests():
         write_shared_state(st_final)
         print(f"[TEARDOWN] Purged {len(keys_to_clean)} transient test profiles: {keys_to_clean}")
 
-    print("\n[SUCCESS] ALL 49 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+
+    # 50. TESTING SYSTEM-WIDE CSRF HARDENING, RATE LIMITING, XSS DEFENSE & ROUTING AUDIT
+    print("\n--- 50. TESTING SYSTEM-WIDE CSRF HARDENING, RATE LIMITING, XSS DEFENSE & ROUTING AUDIT ---")
+
+    # 50.1 Verify Zero Broken Buttons: Check that all state-changing fetch calls in main.py have X-CSRF-Token
+    with open("main.py", "r", encoding="utf-8") as f:
+        main_lines = f.readlines()
+    
+    missing_csrf_found = []
+    for i, line in enumerate(main_lines):
+        if "fetch(" in line:
+            snippet = "".join(main_lines[i:min(i+25, len(main_lines))])
+            if any(m in snippet for m in ["'POST'", '"POST"', "'PUT'", '"PUT"', "'DELETE'", '"DELETE"', "'PATCH'", '"PATCH"']):
+                if "X-CSRF-Token" not in snippet and "csrf" not in snippet.lower():
+                    missing_csrf_found.append((i+1, line.strip()))
+    assert len(missing_csrf_found) == 0, f"Found state-changing fetch calls missing CSRF token: {missing_csrf_found}"
+    print("[PASS 50.1] Zero Broken Buttons: All mutating client fetch calls verified to include X-CSRF-Token.")
+
+    # 50.2 Production CSRF Enforcement across the previously affected endpoints
+    csrf_endpoints = [
+        ("/api/admin/settings", "POST", {"ribbon_visibility": {}}),
+        ("/api/admin/change-password", "POST", {"old_password": "test", "new_password": "test"}),
+        ("/api/vault/request-otp", "POST", {}),
+        ("/api/vault/verify-otp-and-reset", "POST", {"otp": "123456", "new_master_key": "test"}),
+        ("/api/vault/reveal", "POST", {"master_key": "test"}),
+        ("/api/feedback", "POST", {"user": "test", "rating": 5, "message": "hello"})
+    ]
+    for ep, mth, body_d in csrf_endpoints:
+        st_no_csrf, _, d_no_csrf = wsgi_request(ep, mth, body_dict=body_d, headers_dict={"X-Test-Csrf": "1"})
+        assert st_no_csrf.startswith("403"), f"Endpoint {ep} without CSRF token must return 403, got {st_no_csrf}"
+    print("[PASS 50.2] Strict CSRF defense verified: All critical endpoints strictly reject requests lacking CSRF token.")
+
+    # 50.3 CSRF Acceptance: Valid token allows request through (does not return 403 CSRF failure)
+    test_sid, test_csrf = create_server_session("king", "Super Admin")
+    for ep, mth, body_d in csrf_endpoints:
+        st_with_csrf, _, d_with_csrf = wsgi_request(
+            ep, mth, body_dict=body_d,
+            headers_dict={
+                "Cookie": f"grace_session_id={test_sid}; grace_csrf_token={test_csrf}",
+                "X-CSRF-Token": test_csrf,
+                "X-Test-Csrf": "1"
+            }
+        )
+        assert not (st_with_csrf.startswith("403") and b"CSRF token validation failed" in d_with_csrf), f"Valid CSRF should pass validation on {ep}, got {st_with_csrf}: {d_with_csrf}"
+    print("[PASS 50.3] CSRF Acceptance verified: Valid session & CSRF token passes verification across all endpoints.")
+
+    # 50.4 Dual-Key Rate Limiting on Admin Password Change & Feedback Endpoints
+    RATE_LIMITER.reset_for_test()
+    pwd_ip = "198.51.100.42"
+    for _ in range(5):
+        allowed, _ = RATE_LIMITER.is_allowed(pwd_ip, bucket="admin_pwd_change", max_requests=5, window_sec=600)
+        assert allowed is True
+    blocked, retry_wait = RATE_LIMITER.is_allowed(pwd_ip, bucket="admin_pwd_change", max_requests=5, window_sec=600)
+    assert blocked is False, "6th password change attempt must be rate limited"
+    assert retry_wait > 0
+
+    fb_ip = "198.51.100.43"
+    for _ in range(5):
+        allowed, _ = RATE_LIMITER.is_allowed(fb_ip, bucket="feedback_post", max_requests=5, window_sec=300)
+        assert allowed is True
+    blocked, retry_wait = RATE_LIMITER.is_allowed(fb_ip, bucket="feedback_post", max_requests=5, window_sec=300)
+    assert blocked is False, "6th feedback submission must be rate limited"
+    print("[PASS 50.4] Dual-Key Rate Limiting verified: Super Admin password & Feedback endpoints protected against brute-force/spam.")
+
+    # 50.5 Stored XSS Sanitization in Feedback Endpoint
+    xss_payload = "<script>alert('pwned')</script><img src=x onerror=alert(1)>"
+    st_fb, _, d_fb = wsgi_request("/api/feedback", "POST", body_dict={
+        "user": xss_payload,
+        "role": "Tester",
+        "rating": 5,
+        "category": xss_payload,
+        "message": xss_payload,
+        "email": "test@example.com"
+    }, headers_dict={
+        "Cookie": f"grace_session_id={test_sid}; grace_csrf_token={test_csrf}",
+        "X-CSRF-Token": test_csrf
+    })
+    assert st_fb.startswith("200")
+    st_state = read_shared_state()
+    latest_fb = st_state.get("feedbacks", [])[0]
+    assert "<script>" not in latest_fb["message"], "Feedback message must be sanitized against XSS"
+    assert "&lt;script&gt;" in latest_fb["message"], "Script tag must be HTML-escaped"
+    assert "<script>" not in latest_fb["user"], "Feedback user must be sanitized against XSS"
+    print("[PASS 50.5] Stored XSS Sanitization verified: Script tags and HTML payloads safely escaped.")
+
+    # 50.6 Query Navigation Routing for Legal Pages
+    legal_urls = [
+        ("/demo?tab=legal-privacy", "Privacy Policy"),
+        ("/demo?tab=privacy", "Privacy Policy"),
+        ("/demo?tab=legal-terms", "Terms of Service"),
+        ("/demo?tab=terms", "Terms of Service"),
+        ("/?tab=legal-privacy", "Privacy Policy"),
+        ("/?tab=legal-terms", "Terms of Service")
+    ]
+    for l_url, expected_keyword in legal_urls:
+        st_leg, _, d_leg = wsgi_request(l_url, "GET")
+        assert st_leg.startswith("200"), f"Expected 200 for {l_url}, got {st_leg}"
+        html_leg = d_leg.decode("utf-8")
+        assert expected_keyword in html_leg, f"Expected '{expected_keyword}' in body of {l_url}"
+    print("[PASS 50.6] Query Routing verified: ?tab=legal-privacy and ?tab=legal-terms directly render legal documents.")
+
+    print("\n[SUCCESS] ALL 50 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":
