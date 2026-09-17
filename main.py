@@ -39,13 +39,18 @@ COMMON_PASSWORDS_BLACKLIST = {
 }
 
 def validate_password_strength(password: str) -> tuple:
-    """Enforces enterprise password requirements: min 12 chars, blacklist rejection, entropy."""
+    """Enforces enterprise password requirements: min 8 chars, lowercase letter, special symbol, blacklist rejection."""
     if not password:
         return False, "Password cannot be empty."
-    if len(password) < 12:
-        return False, "Password must be at least 12 characters long."
     if password.lower() in COMMON_PASSWORDS_BLACKLIST:
         return False, "Password is too common or easily guessable. Please choose a stronger password."
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long."
+    if not any(c.islower() for c in password):
+        return False, "Password must contain at least one lowercase letter."
+    special_symbols = r"""!@#$%^&*()_+-=[]{}|;':",./<>?`~"""
+    if not any(c in special_symbols for c in password):
+        return False, "Password must contain at least one special symbol (!@#$%^&*)."
     if len(set(password)) < 3:
         return False, "Password must contain a greater variety of characters."
     return True, ""
@@ -1437,15 +1442,19 @@ def render_header():
 
     <!-- Executive Authentication & Lock Screen Portal (ChatGPT / Claude Style Architecture) -->
     <div id="auth-gateway-overlay" class="modal-backdrop auth-gateway-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-portal-title" style="position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; background:transparent;">
-        <div class="modal-card auth-card auth-card-claude" style="position:relative;">
-            <!-- Subtle Audio & Wallpaper Sample Controls (Top-Right) -->
+        <div class="modal-card auth-card auth-card-claude" style="position:relative; width:min(480px, 94vw);">
+            <!-- Subtle Theme, Audio & Wallpaper Swatches (Top-Right) -->
             <div style="position:absolute; top:12px; right:14px; z-index:10; display:flex; align-items:center; gap:6px;">
+                <!-- Login Screen Theme Toggle -->
+                <button type="button" id="login-theme-toggle-btn" onclick="toggleLoginTheme()" title="Toggle Clean Light / Dark Mode" style="cursor:pointer; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:2px 7px; font-size:11px; color:#E2E8F0; display:flex; align-items:center; gap:4px; transition:all 0.2s ease;">
+                    <span id="login-theme-icon">☀️</span> <span id="login-theme-text" style="font-size:9.5px; font-weight:700;">LIGHT</span>
+                </button>
                 <!-- Gateway Minimalist Audio Widget (Docked in Header) -->
                 <div class="gateway-floating-audio" id="floating-audio-gateway" style="display:flex; align-items:center; gap:6px; flex-direction:row-reverse;">
-                    <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleFloatingAudioControls('gateway')" title="🎵 Ambient Player Controls (Click to expand)" aria-label="Audio Controls" style="cursor:pointer; width:22px; height:22px; min-width:22px; padding:0; font-size:10px;">
+                    <button type="button" class="floating-audio-dot" id="audio-dot-gateway" onclick="toggleGatewayAudioDirect()" title="🎵 Ambient Soundscape (Click to Play/Pause)" aria-label="Audio Controls" style="cursor:pointer; width:24px; height:24px; min-width:24px; border-radius:50%; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center; padding:0; font-size:11px; color:#FFF; transition:all 0.2s ease;">
                         <span class="audio-dot-icon">🎵</span>
                     </button>
-                    <div class="floating-audio-controls collapsed" id="floating-audio-controls-gateway" style="display:none;">
+                    <div class="floating-audio-controls collapsed" id="floating-audio-controls-gateway" hidden style="display:none;">
                         <button type="button" class="mini-audio-btn" onclick="playPrevTrack()" title="Previous Track">⏮️</button>
                         <button type="button" class="mini-audio-btn mini-audio-play" id="mini-play-btn-gateway" onclick="toggleGlobalAudio()" title="Play / Pause">▶️</button>
                         <button type="button" class="mini-audio-btn" onclick="playNextTrack()" title="Next Track">⏭️</button>
@@ -1453,14 +1462,14 @@ def render_header():
                     </div>
                 </div>
                 <!-- Luxury Wallpaper Selector Swatches -->
-                <div style="display:flex; align-items:center; gap:4px; padding-left:4px; border-left:1px solid rgba(255,255,255,0.15);" title="Switch Luxury Background Wallpaper">
-                    <button type="button" onclick="setAuthWallpaper('emerald')" title="Wallpaper 1: Emerald Obsidian" style="width:12px; height:12px; border-radius:50%; background:#10B981; border:1px solid #FFF; cursor:pointer; padding:0;"></button>
-                    <button type="button" onclick="setAuthWallpaper('gold')" title="Wallpaper 2: Cyber Gold" style="width:12px; height:12px; border-radius:50%; background:#D6A117; border:1px solid #FFF; cursor:pointer; padding:0;"></button>
-                    <button type="button" onclick="setAuthWallpaper('aurora')" title="Wallpaper 3: Midnight Aurora" style="width:12px; height:12px; border-radius:50%; background:#38BDF8; border:1px solid #FFF; cursor:pointer; padding:0;"></button>
+                <div style="display:flex; align-items:center; gap:5px; padding-left:5px; border-left:1px solid rgba(255,255,255,0.18);" title="Switch Luxury Background Wallpaper">
+                    <button type="button" onclick="setAuthWallpaper('emerald')" title="Wallpaper 1: Emerald Obsidian" style="width:13px; height:13px; border-radius:50%; background:#10B981; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 4px rgba(16,185,129,0.5);"></button>
+                    <button type="button" onclick="setAuthWallpaper('gold')" title="Wallpaper 2: Cyber Gold" style="width:13px; height:13px; border-radius:50%; background:#D6A117; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 4px rgba(214,161,23,0.5);"></button>
+                    <button type="button" onclick="setAuthWallpaper('aurora')" title="Wallpaper 3: Midnight Aurora" style="width:13px; height:13px; border-radius:50%; background:#38BDF8; border:1.5px solid #FFF; cursor:pointer; padding:0; box-shadow:0 0 4px rgba(56,189,248,0.5);"></button>
                 </div>
             </div>
 
-            <!-- Header with 4K Crest Logo -->
+            <!-- Header with 4K Crest Logo, Colorful King Saab 56 Signature & Clean End-to-End Encryption -->
             <div style="text-align:center; margin-bottom:6px;">
                 <div style="display:inline-flex; align-items:center; justify-content:center; margin-bottom:2px;">
                     <img src="/api/assets/grace-logo-68.png" srcset="/api/assets/grace-logo-68.png 1x, /api/assets/grace-logo-136.png 2x, /api/assets/grace-logo-272.png 4x, /api/assets/grace-logo-thumb.png 1x" data-master="/api/assets/grace-logo.png?v=20260916_4k" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="46" height="46" onclick="openLogoModal()" style="cursor:pointer; image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges; transition:transform 0.2s ease, filter 0.2s ease;" onmouseover="this.style.transform='scale(1.08)'; this.style.filter='drop-shadow(0 0 10px rgba(214,161,23,0.6))';" onmouseout="this.style.transform='scale(1)'; this.style.filter='none';" title="Click to view full 3D Crest Logo" />
@@ -1468,7 +1477,14 @@ def render_header():
                 <h2 id="auth-portal-title" style="margin:0; font-size:16px; font-weight:900; letter-spacing:0.5px; color:#F8FAFC;">
                     <span style="color:#D6A117;">GRACE</span> <span style="color:#10B981;">OUTREACH</span> <span style="color:#94A3B8; font-size:12px; font-weight:700;">ASSISTANT</span>
                 </h2>
-                <div style="font-size:11px; color:#10B981; margin-top:2px; font-weight:700;">🛡️ Google Verified Enterprise Outreach Engine • Zero-Trust Quantum-Resilient Cryptographic Vault</div>
+                <!-- Vibrant King Saab 56 Executive Signature Under Logo -->
+                <div style="font-size:11.5px; font-weight:800; letter-spacing:0.6px; margin:2px 0 3px; background:linear-gradient(135deg, #F59E0B 0%, #10B981 50%, #38BDF8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 12px rgba(245,158,11,0.25);">
+                    ✨ Developed by King Saab 56 ✨
+                </div>
+                <div style="font-size:11px; color:#10B981; margin-top:1px; font-weight:700;">
+                    🛡️ Google Verified Enterprise Outreach Engine &bull; End-to-End Encrypted
+                    <!-- Zero-Trust Quantum-Resilient Cryptographic Vault -->
+                </div>
             </div>
 
             <div id="gateway-mandatory-notice" class="mandatory-notice" hidden style="margin:2px 0 6px; padding:4px 8px; font-size:10.5px; border-radius:6px;">🔒 <b>Executive Access:</b> Authenticate or use instant demo to explore.</div>
@@ -1480,7 +1496,7 @@ def render_header():
                 <button id="auth-tab-btn-forgot" class="auth-tab-btn" onclick="switchAuthTab('forgot')" style="flex:1; padding:6px; font-size:11px; font-weight:700;">🔑 Reset OTP</button>
             </div>
 
-            <!-- 1. SIGN IN PANE (ChatGPT / Claude 2-Option Architecture) -->
+            <!-- 1. SIGN IN PANE -->
             <div id="auth-pane-signin" class="auth-pane" style="display:flex; flex-direction:column; gap:6px;">
                 <!-- Option 1A: Continue with Google Workspace -->
                 <button type="button" class="btn-pill-google" onclick="handleGoogleOAuthLogin()" style="padding:8px 14px; font-size:12px;">
@@ -1488,10 +1504,10 @@ def render_header():
                     <span>Continue with Google Workspace</span>
                 </button>
 
-                <!-- Option 1B: 1-Touch Passkey / Biometrics Sign-In -->
+                <!-- Option 1B: Device-Bound Laptop Passkey / Biometrics Sign-In -->
                 <button type="button" class="btn-pill-passkey btn-pill-action" id="btn-login-passkey" onclick="handlePasskeySignIn()" style="padding:8px 14px; font-size:12px;">
-                    <span style="font-size:14px;">👆</span>
-                    <span>Sign In with Passkey / Biometrics</span>
+                    <span style="font-size:14px;">💻</span>
+                    <span>Sign In with Laptop Passkey / Biometrics</span>
                 </button>
 
                 <div style="display:flex; align-items:center; gap:8px; margin:1px 0;">
@@ -1500,12 +1516,15 @@ def render_header():
                     <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.12);">
                 </div>
 
-                <!-- Option 2: Clean Email or Username & Empty Password Field -->
+                <!-- Option 2: Clean Email or Username & Empty Password Field (No Autofill Defaults) -->
                 <div style="display:flex; flex-direction:column; gap:5px;">
-                    <input id="login-email-input" type="text" placeholder="Work email or username (e.g. king@graceassistant.io or king)" style="width:100%; box-sizing:border-box; padding:7px 10px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
-                    <div style="position:relative; display:flex; align-items:center;">
-                        <input id="login-password-input" type="password" value="" placeholder="Password" style="width:100%; box-sizing:border-box; padding:7px 34px 7px 10px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
-                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password-input', this)" title="Show/Hide password">👁️</button>
+                    <input id="login-email-input" type="text" autocomplete="off" value="" placeholder="Work email or username" style="width:100%; box-sizing:border-box; padding:7px 10px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
+                    <div>
+                        <input id="login-password-input" type="password" value="" autocomplete="new-password" placeholder="Password" style="width:100%; box-sizing:border-box; padding:7px 10px; border-radius:8px; background:rgba(0,0,0,0.35); border:1px solid #123B35; color:#FFF; font-size:12px; outline:none;" onkeydown="if(event.key==='Enter') submitSignIn()">
+                        <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
+                            <input type="checkbox" onchange="togglePasswordVisibility('login-password-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                            <span>Show password</span>
+                        </label>
                     </div>
                 </div>
 
@@ -1518,37 +1537,33 @@ def render_header():
                     <span>🎮 Explore Interactive Guest Demo (Live Tour)</span>
                 </button>
 
-                <!-- Admin Pass Toggle (Discreetly at bottom) -->
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-                    <button type="button" id="admin-pass-toggle-btn" onclick="toggleAdminPassPicker()" style="background:none; border:none; color:#64748B; font-size:10.5px; cursor:pointer; text-decoration:underline;">👑 Staff Fast-Pass</button>
+                <!-- Hidden Admin Picker Container for Compatibility -->
+                <div id="admin-picker-wrap" style="display:none;" hidden></div>
+                <!-- Clean Forgot Password OTP Link (Staff Fast-Pass Completely Removed) -->
+                <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:3px;">
                     <a href="javascript:void(0)" onclick="switchAuthTab('forgot')" style="font-size:11px; color:var(--accent-gold); text-decoration:none; font-weight:600;">Forgot Password? OTP</a>
-                </div>
-
-                <div id="admin-picker-wrap" style="display:none; padding:8px; background:rgba(0,0,0,0.5); border:1px dashed var(--accent-gold); border-radius:8px; margin-top:4px;">
-                    <select id="login-identity-picker" onchange="syncLoginEmailFromPicker()" style="width:100%; padding:6px; font-size:11px; background:#001A15; color:#FFF; border:1px solid var(--accent-gold); border-radius:6px;">
-                        <option value="king">👑 King Saab · Super Admin</option>
-                        <option value="abdullah">🎯 Abdullah Khan · Strategic Lead</option>
-                        <option value="sarah">📈 Sarah Malik · Growth Marketer</option>
-                        <option value="hamza">🔍 Hamza Ali · Lead Collector</option>
-                    </select>
                 </div>
             </div>
 
-            <!-- 2. CREATE ACCOUNT PANE (With OTP & Mandatory Policy Checkbox) -->
+            <!-- 2. CREATE ACCOUNT PANE (Polished Send OTP & Real-Time Health Reaction) -->
             <div id="auth-pane-register" class="auth-pane" hidden style="display:flex; flex-direction:column; gap:6px;">
                 <div class="form-grid" style="gap:6px; margin:4px 0;">
                     <label style="font-size:11px; font-weight:700;">Full Name
-                        <input id="reg-name" type="text" placeholder="e.g. Farhan Tariq" oninput="generateUsernameSuggestions(this.value)" style="padding:6px 10px; font-size:12px;">
+                        <input id="reg-name" type="text" autocomplete="off" placeholder="e.g. Farhan Tariq" oninput="generateUsernameSuggestions(this.value)" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;">
                     </label>
 
-                    <label style="font-size:11px; font-weight:700;">Work Email (OTP Verification)
+                    <label style="font-size:11px; font-weight:700;">Colleague Username Key
+                        <input id="reg-key" type="text" autocomplete="off" placeholder="e.g. farhan.tariq" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;">
+                    </label>
+
+                    <label style="grid-column:1 / -1; font-size:11px; font-weight:700;">Work Email (OTP Verification)
                         <div style="display:flex; gap:6px; margin-top:2px;">
-                            <input id="reg-email" type="email" placeholder="e.g. farhan@company.com" style="flex:1; padding:6px 10px; font-size:12px;">
-                            <button type="button" id="btn-reg-send-otp" class="btn btn-green" onclick="requestRegistrationOtp()" style="padding:5px 10px; font-size:10.5px; white-space:nowrap;">Send OTP</button>
+                            <input id="reg-email" type="email" autocomplete="off" placeholder="e.g. farhan@company.com" style="flex:1; min-width:0; padding:6px 10px; font-size:12px;">
+                            <button type="button" id="btn-reg-send-otp" class="btn btn-green" onclick="requestRegistrationOtp()" style="padding:6px 14px; font-size:11px; font-weight:800; white-space:nowrap; background:#10B981; color:#001A14; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.35);">Send OTP ✉️</button>
                         </div>
                     </label>
 
-                    <div id="reg-otp-group" style="display:none; padding:6px 8px; background:rgba(16,185,129,0.08); border:1px dashed var(--accent-green); border-radius:6px;">
+                    <div id="reg-otp-group" style="grid-column:1 / -1; display:none; padding:6px 8px; background:rgba(16,185,129,0.08); border:1px dashed var(--accent-green); border-radius:6px;">
                         <label style="font-size:10.5px; font-weight:700; color:var(--accent-green);">6-Digit Verification Code
                             <div style="display:flex; gap:6px; margin-top:2px;">
                                 <input id="reg-otp-input" type="text" maxlength="6" placeholder="123456" style="flex:1; letter-spacing:3px; font-size:14px; font-weight:800; text-align:center; padding:4px;">
@@ -1558,26 +1573,37 @@ def render_header():
                         <small id="reg-otp-status" style="font-size:10px; color:var(--accent-green); display:block; margin-top:2px;"></small>
                     </div>
 
-                    <label style="grid-column:1 / -1; font-size:11px; font-weight:700;">Colleague Username Key
-                        <input id="reg-key" type="text" placeholder="e.g. farhan.tariq" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;">
-                    </label>
-
                     <label style="font-size:11px; font-weight:700;">Password
-                        <div style="position:relative; display:flex; align-items:center; margin-top:2px;">
-                            <input id="reg-password" type="password" value="" placeholder="Enter password" style="width:100%; box-sizing:border-box; padding:6px 32px 6px 10px; font-size:12px;" oninput="validateRegisterPasswordMatch()">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('reg-password', this)" title="Show/Hide Password">👁️</button>
+                        <div style="margin-top:2px;">
+                            <input id="reg-password" type="password" value="" autocomplete="new-password" placeholder="Min 8 chars, lowercase & symbol" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;" oninput="evaluatePasswordHealth(this.value); validateRegisterPasswordMatch();">
+                            <label style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:2px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('reg-password', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </label>
 
                     <label style="font-size:11px; font-weight:700;">Confirm Password
-                        <div style="position:relative; display:flex; align-items:center; margin-top:2px;">
-                            <input id="reg-confirm-password" type="password" value="" placeholder="Re-enter password" style="width:100%; box-sizing:border-box; padding:6px 32px 6px 10px; font-size:12px;" oninput="validateRegisterPasswordMatch()">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('reg-confirm-password', this)" title="Show/Hide Password">👁️</button>
+                        <div style="margin-top:2px;">
+                            <input id="reg-confirm-password" type="password" value="" autocomplete="new-password" placeholder="Re-enter password" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;" oninput="validateRegisterPasswordMatch()">
+                            <label style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:2px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('reg-confirm-password', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </label>
 
-                    <div style="grid-column:1 / -1; margin-top:-2px;">
-                        <small id="reg-pwd-match-status" style="display:block; font-size:10px; font-weight:700; min-height:14px;"></small>
+                    <div style="grid-column:1 / -1; margin-top:2px; padding:6px 8px; background:rgba(0,0,0,0.25); border-radius:6px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px; font-weight:700;">
+                            <span style="color:#CBD5E1;">Password Health:</span>
+                            <span id="reg-pwd-health-badge" style="color:#94A3B8;">⚪ Empty</span>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:4px; font-size:9.5px; color:#94A3B8; flex-wrap:wrap;">
+                            <span id="reg-req-len">⚪ 8+ Characters</span>
+                            <span id="reg-req-lower">⚪ 1 Lowercase (a-z)</span>
+                            <span id="reg-req-sym">⚪ 1 Special Symbol (!@#$)</span>
+                        </div>
+                        <small id="reg-pwd-match-status" style="display:block; font-size:10px; font-weight:700; min-height:14px; margin-top:4px;"></small>
                     </div>
                 </div>
 
@@ -1594,25 +1620,31 @@ def render_header():
                 </div>
             </div>
 
-            <!-- 3. FORGOT PASSWORD PANE (Email OTP Reset) -->
+            <!-- 3. FORGOT PASSWORD PANE -->
             <div id="auth-pane-forgot" class="auth-pane" hidden style="display:flex; flex-direction:column; gap:8px;">
                 <p style="font-size:11px; color:#94A3B8; margin:2px 0 6px;">Verify your identity via 6-digit Email OTP to reset your password.</p>
                 <div style="display:flex; flex-direction:column; gap:6px;">
                     <label style="font-size:11px; font-weight:700;">Work Email or Username
                         <div style="display:flex; gap:6px; margin-top:2px;">
-                            <input id="forgot-email-input" type="text" placeholder="e.g. farhan@company.com or king" style="flex:1; padding:7px 10px; font-size:12px;">
-                            <button type="button" id="btn-forgot-send-otp" class="btn btn-orange" onclick="requestForgotPasswordOtp()" style="padding:5px 10px; font-size:10.5px; white-space:nowrap;">Send OTP</button>
+                            <input id="forgot-email-input" type="text" autocomplete="off" placeholder="e.g. farhan@company.com or king" style="flex:1; padding:7px 10px; font-size:12px;">
+                            <button type="button" id="btn-forgot-send-otp" class="btn btn-orange" onclick="requestForgotPasswordOtp()" style="padding:5px 12px; font-size:11px; font-weight:700; white-space:nowrap;">Send OTP ✉️</button>
                         </div>
                     </label>
                     <div id="forgot-otp-group" style="display:none; padding:6px 8px; background:rgba(214,161,23,0.08); border:1px dashed var(--accent-gold); border-radius:6px;">
                         <input id="forgot-otp-input" type="text" maxlength="6" placeholder="Enter 6-digit OTP" style="letter-spacing:3px; font-size:14px; font-weight:800; text-align:center; padding:5px; margin-bottom:6px; width:100%; box-sizing:border-box;">
-                        <div style="position:relative; display:flex; align-items:center; margin-bottom:6px;">
-                            <input id="forgot-new-pwd-input" type="password" placeholder="Enter new password" style="width:100%; box-sizing:border-box; padding:6px 32px 6px 10px; font-size:12px;">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('forgot-new-pwd-input', this)" title="Show/Hide Password">👁️</button>
+                        <div style="margin-bottom:6px;">
+                            <input id="forgot-new-pwd-input" type="password" placeholder="Enter new password" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;" oninput="evaluateForgotPwdHealth(this.value)">
+                            <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:2px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('forgot-new-pwd-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
-                        <div style="position:relative; display:flex; align-items:center;">
-                            <input id="forgot-confirm-pwd-input" type="password" placeholder="Confirm new password" style="width:100%; box-sizing:border-box; padding:6px 32px 6px 10px; font-size:12px;">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('forgot-confirm-pwd-input', this)" title="Show/Hide Password">👁️</button>
+                        <div>
+                            <input id="forgot-confirm-pwd-input" type="password" placeholder="Confirm new password" style="width:100%; box-sizing:border-box; padding:6px 10px; font-size:12px;">
+                            <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:2px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('forgot-confirm-pwd-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -1622,11 +1654,12 @@ def render_header():
                 </div>
             </div>
 
-            <!-- Footer Disclaimer & Executive Signature -->
+            <!-- Footer Disclaimer & Clean Signature -->
             <div style="text-align:center; margin-top:8px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.08); font-size:10px; color:#94A3B8;">
                 By continuing, you agree to Grace Outreach's <a href="javascript:void(0)" onclick="openInAppPolicyModal('terms')" style="color:var(--accent-gold); text-decoration:underline; font-weight:600;">Terms</a> &amp; <a href="javascript:void(0)" onclick="openInAppPolicyModal('privacy')" style="color:var(--accent-gold); text-decoration:underline; font-weight:600;">Privacy Policy</a>.
                 <div style="margin-top:3px; font-size:9.5px; color:#10B981; letter-spacing:0.3px;">
-                    🛡️ Google Verified Enterprise Outreach Engine &bull; Zero-Trust Quantum-Resilient Cryptographic Vault
+                    🛡️ Google Verified Enterprise Outreach Engine &bull; End-to-End Encrypted
+                    <!-- Zero-Trust Quantum-Resilient Cryptographic Vault -->
                 </div>
                 <div style="margin-top:4px; font-size:9px; color:#94A3B8; letter-spacing:0.4px;">
                     &copy; 2026 Grace Outreach Assistant. All Rights Reserved. &bull; <span style="color:var(--accent-gold); font-weight:700;">Developed by King Saab 56</span>
@@ -3822,23 +3855,42 @@ BASE_CSS = """
     }
 
     /* 3 Luxury Sample Wallpapers for Login Gateway */
-    body.auth-wp-emerald, body.auth-screen-active {
-        background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
-                    radial-gradient(circle at 85% 80%, rgba(214, 161, 23, 0.16) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(6, 78, 59, 0.28) 0%, transparent 60%),
+    body.auth-screen-active, body.auth-screen-active.auth-wp-emerald {
+        background: radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.26) 0%, transparent 45%),
+                    radial-gradient(circle at 85% 80%, rgba(214, 161, 23, 0.18) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 50%, rgba(6, 78, 59, 0.32) 0%, transparent 60%),
                     linear-gradient(135deg, #02120F 0%, #061F1A 50%, #010B09 100%) !important;
     }
-    body.auth-wp-gold {
-        background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.22) 0%, transparent 45%),
-                    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.14) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(69, 26, 3, 0.3) 0%, transparent 60%),
+    body.auth-screen-active.auth-wp-gold {
+        background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.28) 0%, transparent 45%),
+                    radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.16) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 50%, rgba(69, 26, 3, 0.38) 0%, transparent 60%),
                     linear-gradient(135deg, #140E05 0%, #20170A 50%, #0A0803 100%) !important;
     }
-    body.auth-wp-aurora {
-        background: radial-gradient(circle at 25% 25%, rgba(56, 189, 248, 0.22) 0%, transparent 40%),
-                    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.2) 0%, transparent 45%),
-                    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.35) 0%, transparent 60%),
+    body.auth-screen-active.auth-wp-aurora {
+        background: radial-gradient(circle at 25% 25%, rgba(56, 189, 248, 0.28) 0%, transparent 40%),
+                    radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
+                    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.42) 0%, transparent 60%),
                     linear-gradient(135deg, #070D18 0%, #0E1A38 50%, #040812 100%) !important;
+    }
+    body.auth-screen-active.light {
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #CBD5E1 100%) !important;
+    }
+    body.auth-screen-active.light .auth-card {
+        background: rgba(255, 255, 255, 0.96) !important;
+        border-color: rgba(0, 0, 0, 0.12) !important;
+        color: #0F172A !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+    }
+    body.auth-screen-active.light .auth-card h2,
+    body.auth-screen-active.light .auth-card label,
+    body.auth-screen-active.light .auth-card span {
+        color: #0F172A;
+    }
+    body.auth-screen-active.light .auth-card input {
+        background: #F1F5F9 !important;
+        color: #0F172A !important;
+        border-color: #CBD5E1 !important;
     }
 
     body.auth-screen-active, html.auth-screen-active {
@@ -6135,7 +6187,7 @@ function populateColleaguePickers() {
 // Universal Modal Dismissal & Backdrop Scroll Safeguards
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-backdrop:not([hidden])').forEach(modal => {
+        document.querySelectorAll('.modal-backdrop:not([hidden]):not(#auth-gateway-overlay):not(.auth-gateway-backdrop)').forEach(modal => {
             modal.hidden = true;
             modal.style.display = 'none';
         });
@@ -6145,6 +6197,10 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener('click', (e) => {
     if (e.target.classList && e.target.classList.contains('modal-backdrop')) {
+        // Never dismiss authentication gateway or mandatory lock screens on outside click!
+        if (e.target.id === 'auth-gateway-overlay' || e.target.classList.contains('auth-gateway-backdrop')) {
+            return;
+        }
         e.target.hidden = true;
         e.target.style.display = 'none';
         if (typeof setModalLock === 'function') setModalLock(false);
@@ -7087,37 +7143,126 @@ function switchAuthTab(tab) {
     }
 }
 
-function togglePasswordVisibility(inputId, btnEl) {
+function togglePasswordVisibility(inputId, triggerEl) {
     const el = document.getElementById(inputId);
     if (!el) return;
-    const isPwd = el.type === 'password';
-    el.type = isPwd ? 'text' : 'password';
-    if (!btnEl && window.event && window.event.currentTarget) {
-        btnEl = window.event.currentTarget;
-    }
-    if (btnEl) {
-        btnEl.innerText = isPwd ? '🙈' : '👁️';
-        btnEl.title = isPwd ? 'Hide password' : 'Show password';
+    if (triggerEl && triggerEl.type === 'checkbox') {
+        el.type = triggerEl.checked ? 'text' : 'password';
+    } else {
+        el.type = el.type === 'password' ? 'text' : 'password';
+        if (triggerEl && typeof triggerEl === 'object' && triggerEl.innerText) {
+            triggerEl.innerText = el.type === 'password' ? '👁️' : '🙈';
+        }
     }
 }
 
-function fastPassLogin(key) {
-    const picker = document.getElementById('login-identity-picker');
-    if (picker) picker.value = key;
-    const pwdInput = document.getElementById('login-password-input');
-    if (pwdInput) pwdInput.value = 'grace2026';
-    submitSignIn();
+function evaluatePasswordHealth(pwd) {
+    const badge = document.getElementById('reg-pwd-health-badge');
+    const reqLen = document.getElementById('reg-req-len');
+    const reqLower = document.getElementById('reg-req-lower');
+    const reqSym = document.getElementById('reg-req-sym');
+    if (!pwd) {
+        if (badge) { badge.innerHTML = '⚪ Empty'; badge.style.color = '#94A3B8'; }
+        if (reqLen) { reqLen.innerHTML = '⚪ 8+ Characters'; reqLen.style.color = '#94A3B8'; }
+        if (reqLower) { reqLower.innerHTML = '⚪ 1 Lowercase (a-z)'; reqLower.style.color = '#94A3B8'; }
+        if (reqSym) { reqSym.innerHTML = '⚪ 1 Special Symbol (!@#$)'; reqSym.style.color = '#94A3B8'; }
+        return;
+    }
+
+    const hasLen = pwd.length >= 8;
+    const hasLower = /[a-z]/.test(pwd);
+    const hasSym = /[!@#$%^&*()_+\-=\[\]{}|;':",.\/<>?`~]/.test(pwd);
+    const hasUpper = /[A-Z]/.test(pwd);
+    const hasDigit = /[0-9]/.test(pwd);
+
+    if (reqLen) {
+        reqLen.innerHTML = (hasLen ? '🟢 ✓ ' : '⚪ ') + '8+ Characters';
+        reqLen.style.color = hasLen ? '#10B981' : '#94A3B8';
+    }
+    if (reqLower) {
+        reqLower.innerHTML = (hasLower ? '🟢 ✓ ' : '⚪ ') + '1 Lowercase (a-z)';
+        reqLower.style.color = hasLower ? '#10B981' : '#94A3B8';
+    }
+    if (reqSym) {
+        reqSym.innerHTML = (hasSym ? '🟢 ✓ ' : '⚪ ') + '1 Special Symbol (!@#$)';
+        reqSym.style.color = hasSym ? '#10B981' : '#94A3B8';
+    }
+
+    if (!badge) return;
+
+    if (!hasLen || !hasLower || !hasSym) {
+        badge.innerHTML = '🔴 Weak (Needs 8+ chars, lowercase & symbol)';
+        badge.style.color = '#EF4444';
+    } else if (hasUpper && hasDigit && pwd.length >= 10) {
+        badge.innerHTML = '🟢 Strong / Best 🔥';
+        badge.style.color = '#10B981';
+    } else {
+        badge.innerHTML = '🟡 Good / Medium';
+        badge.style.color = '#F59E0B';
+    }
+}
+
+function evaluateForgotPwdHealth(pwd) {
+    // Helper for forgot password
+}
+
+function toggleLoginTheme() {
+    const isLight = document.body.classList.contains('light');
+    const icon = document.getElementById('login-theme-icon');
+    const txt = document.getElementById('login-theme-text');
+    if (isLight) {
+        setExecutiveTheme('dark');
+        if (icon) icon.innerText = '☀️';
+        if (txt) txt.innerText = 'LIGHT';
+    } else {
+        setExecutiveTheme('light');
+        if (icon) icon.innerText = '🌙';
+        if (txt) txt.innerText = 'DARK';
+    }
+}
+
+function toggleGlobalAudio() {
+    toggleSoundscape();
+    syncAllAudioControlsUI();
+    return soundscapePlaying;
+}
+
+function toggleGatewayAudioDirect() {
+    toggleSoundscape();
+    syncAllAudioControlsUI();
+    const dot = document.getElementById('audio-dot-gateway');
+    if (dot) {
+        if (soundscapePlaying) {
+            dot.classList.add('playing');
+            dot.style.boxShadow = '0 0 12px rgba(16,185,129,0.85)';
+            dot.style.borderColor = '#10B981';
+            showToast('🎵 Soundscape playing.', 'success');
+        } else {
+            dot.classList.remove('playing');
+            dot.style.boxShadow = 'none';
+            dot.style.borderColor = 'rgba(255,255,255,0.25)';
+            showToast('🔇 Soundscape paused.', 'info');
+        }
+    }
 }
 
 async function submitSignIn() {
-    const typedEmail = document.getElementById('login-email-input')?.value.trim().toLowerCase();
-    const pickerKey = document.getElementById('login-identity-picker')?.value || 'king';
-    const key = typedEmail || pickerKey;
-    const pwd = document.getElementById('login-password-input')?.value || '';
-    if (!pwd) {
-        showToast('Please enter password.', 'warning');
+    const emailInput = document.getElementById('login-email-input');
+    const pwdInput = document.getElementById('login-password-input');
+    const typedEmail = (emailInput?.value || '').trim().toLowerCase();
+    const pwd = pwdInput?.value || '';
+
+    if (!typedEmail) {
+        showToast('Please enter your work email or username.', 'warning');
+        if (emailInput) emailInput.focus();
         return;
     }
+    if (!pwd) {
+        showToast('Please enter your password.', 'warning');
+        if (pwdInput) pwdInput.focus();
+        return;
+    }
+
     try {
         const resp = await fetch('/api/auth/login', {
             method: 'POST',
@@ -7126,40 +7271,31 @@ async function submitSignIn() {
                 'X-CSRF-Token': getCsrfToken()
             },
             credentials: 'same-origin',
-            body: JSON.stringify({ colleague_key: key, password: pwd })
+            body: JSON.stringify({ colleague_key: typedEmail, password: pwd })
         });
         if (resp.ok) {
             const data = await resp.json();
             // Tokens strictly managed via HttpOnly cookies - never in localStorage
             window.localStorage.removeItem('grace-session-token');
             window.localStorage.removeItem('grace-auth-token');
-            const role = data.role || PROFILE_DATA[key]?.role || 'Colleague';
-            persistUserAuthentication(key, role);
-            changeViewAs(key);
-            publishAuditEvent('Authentication', 'Colleague signed into workspace: ' + (PROFILE_DATA[key]?.name || key));
-            showToast('Welcome back, ' + (PROFILE_DATA[key]?.name || key) + ' · Workspace unlocked.', 'success');
+            const authedKey = data.colleague_key || typedEmail;
+            const role = data.role || (PROFILE_DATA[authedKey]?.role || 'Colleague');
+            persistUserAuthentication(authedKey, role);
+            changeViewAs(authedKey);
+            publishAuditEvent('Authentication', 'Colleague signed into workspace: ' + (PROFILE_DATA[authedKey]?.name || authedKey));
+            showToast('Welcome back, ' + (PROFILE_DATA[authedKey]?.name || authedKey) + ' · Workspace unlocked.', 'success');
             return;
         } else if (resp.status === 429) {
             showToast('⚠️ Too many authentication attempts. Please wait a minute.', 'warning');
             return;
-        } else if (resp.status === 401) {
-            showToast('Invalid credentials provided.', 'warning');
+        } else {
+            showToast('Invalid credentials provided. Access denied.', 'warning');
             return;
         }
     } catch (e) {
-        console.warn('Server auth fallback:', e);
+        console.error('Authentication request failed:', e);
+        showToast('Authentication network error. Please try again.', 'warning');
     }
-    // Fallback for offline/local simulation
-    const storedPasswords = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
-    const validPwd = storedPasswords[key] || 'grace2026';
-    if (pwd !== validPwd && pwd !== 'admin123' && pwd !== 'grace2026') {
-        showToast('Invalid credentials provided.', 'warning');
-        return;
-    }
-    persistUserAuthentication(key, PROFILE_DATA[key]?.role || 'Colleague');
-    changeViewAs(key);
-    publishAuditEvent('Authentication', 'Colleague signed into workspace: ' + (PROFILE_DATA[key]?.name || key));
-    showToast('Welcome back, ' + (PROFILE_DATA[key]?.name || key) + ' · Workspace unlocked.', 'success');
 }
 
 let regSelectedStates = [];
@@ -7187,7 +7323,7 @@ function renderRegTerritoryChips() {
         : US_STATES.slice(0, 20);
     container.innerHTML = list.map((st) => {
         const sel = regSelectedStates.includes(st);
-        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegState(\'' + st.replace(/'/g, "\\'") + '\')">' + (sel ? '✓ ' : '+ ') + st + '</button>';
+        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegState(\'' + st.replace(/'/g, "\'") + '\')">' + (sel ? '✓ ' : '+ ') + st + '</button>';
     }).join('');
 }
 
@@ -7198,8 +7334,6 @@ function toggleRegState(st) {
     } else {
         if (regSelectedStates.length >= 2) {
             showToast('Strict limit: Max 2 states per colleague.', 'warning');
-            const warn = document.getElementById('reg-territory-warn');
-            if (warn) warn.hidden = false;
             return;
         }
         regSelectedStates.push(st);
@@ -7213,54 +7347,58 @@ function renderRegContractorChips() {
     if (!container) return;
     if (warn) warn.hidden = regSelectedContractors.length < 2;
     const list = regContractorSearchFilter
-        ? US_CONTRACTORS.filter(c => c.toLowerCase().includes(regContractorSearchFilter))
-        : US_CONTRACTORS.slice(0, 15);
-    container.innerHTML = list.map((ct) => {
-        const sel = regSelectedContractors.includes(ct);
-        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegContractor(\'' + ct.replace(/'/g, "\\'") + '\')">' + (sel ? '✓ ' : '+ ') + ct + '</button>';
+        ? CONTRACTORS_CATALOG.filter(c => c.name.toLowerCase().includes(regContractorSearchFilter))
+        : CONTRACTORS_CATALOG.slice(0, 20);
+    container.innerHTML = list.map((c) => {
+        const sel = regSelectedContractors.includes(c.name);
+        return '<button type="button" class="state-chip-btn ' + (sel ? 'selected' : '') + '" onclick="toggleRegContractor(\'' + c.name.replace(/'/g, "\'") + '\')">' + (sel ? '✓ ' : '+ ') + c.name + '</button>';
     }).join('');
 }
 
-function toggleRegContractor(ct) {
-    const idx = regSelectedContractors.indexOf(ct);
+function toggleRegContractor(name) {
+    const idx = regSelectedContractors.indexOf(name);
     if (idx >= 0) {
         regSelectedContractors.splice(idx, 1);
     } else {
         if (regSelectedContractors.length >= 2) {
             showToast('Strict limit: Max 2 contractors per colleague.', 'warning');
-            const warn = document.getElementById('reg-contractor-warn');
-            if (warn) warn.hidden = false;
             return;
         }
-        regSelectedContractors.push(ct);
+        regSelectedContractors.push(name);
     }
     renderRegContractorChips();
 }
 
-function validateRegisterPasswordMatch() {
-    const p1 = document.getElementById('reg-password')?.value || '';
-    const p2 = document.getElementById('reg-confirm-password')?.value || '';
-    const status = document.getElementById('reg-pwd-match-status');
-    if (!status) return;
-    if (!p2) {
-        status.innerText = '';
-        return;
-    }
-    if (p1 === p2) {
-        status.innerHTML = '<span style="color:#10B981;">✓ Passwords match perfectly</span>';
-    } else {
-        status.innerHTML = '<span style="color:#EF4444;">✗ Passwords do not match</span>';
-    }
-}
-
 // =========================================================================
-// WEBAUTHN PASSKEY ENGINE (Touch ID, Face ID, Windows Hello, 1-Touch Sign-In)
+// WEBAUTHN PASSKEY ENGINE (Device-Bound Hardware & Biometric Verification)
 // =========================================================================
 async function registerDevicePasskey() {
-    const activeKey = window.localStorage.getItem('grace-view-as') || 'king';
+    const activeKey = getActiveAuthUser() || window.localStorage.getItem('grace-view-as') || 'king';
     const profile = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[activeKey]) ? PROFILE_DATA[activeKey] : { name: 'King Saab', role: 'Super Admin' };
     
-    showToast('Registering device hardware passkey...', 'info');
+    // Security check: Prompt account password first
+    const inputPwd = prompt('Security Verification: Please enter your account password to authorize enrolling this laptop passkey:');
+    if (!inputPwd) {
+        showToast('Passkey enrollment cancelled.', 'warning');
+        return;
+    }
+
+    try {
+        const verifyResp = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ colleague_key: activeKey, password: inputPwd })
+        });
+        if (!verifyResp.ok) {
+            showToast('Incorrect account password. Passkey enrollment rejected.', 'warning');
+            return;
+        }
+    } catch (e) {
+        console.warn('Auth check error:', e);
+    }
+
+    showToast('Password verified! Registering laptop hardware passkey...', 'info');
 
     if (window.PublicKeyCredential) {
         try {
@@ -7290,27 +7428,28 @@ async function registerDevicePasskey() {
 
             const credential = await navigator.credentials.create({ publicKey });
             const credId = credential ? btoa(String.fromCharCode(...new Uint8Array(credential.rawId))) : ('pk_' + Date.now());
-            savePasskeyLocally(activeKey, credId, profile.name || activeKey);
-            showToast('Hardware Passkey enrolled successfully! 1-Touch Login active.', 'success');
+            const deviceName = navigator.userAgent.includes('Windows') ? 'Windows Hello Laptop' :
+                               navigator.userAgent.includes('Mac') ? 'MacBook Biometrics' : 'Authorized Laptop';
+            savePasskeyLocally(activeKey, credId, profile.name || activeKey, deviceName);
+            showToast('Hardware Passkey enrolled successfully! 1-Touch Login active on this device.', 'success');
             updatePasskeyUI();
             return;
         } catch (err) {
-            console.warn('Hardware WebAuthn prompt completed/bypassed:', err);
+            console.warn('Hardware WebAuthn prompt cancelled/unsupported:', err);
+            showToast('Passkey setup was cancelled or unsupported on this device.', 'warning');
+            return;
         }
     }
 
-    // Fallback registration (Software token bound to browser)
-    const fallbackId = 'pk_device_' + Date.now().toString(36);
-    savePasskeyLocally(activeKey, fallbackId, profile.name || activeKey);
-    showToast('1-Touch Device Passkey registered for ' + (profile.name || activeKey) + '.', 'success');
-    updatePasskeyUI();
+    showToast('Passkeys not supported by this browser.', 'warning');
 }
 
-function savePasskeyLocally(key, credId, name) {
+function savePasskeyLocally(key, credId, name, deviceName) {
     const passkeys = JSON.parse(window.localStorage.getItem('grace-passkeys') || '{}');
     passkeys[key] = {
         credId: credId,
         userName: name,
+        device: deviceName || 'Personal Laptop',
         enrolledAt: new Date().toISOString()
     };
     window.localStorage.setItem('grace-passkeys', JSON.stringify(passkeys));
@@ -7321,12 +7460,19 @@ async function handlePasskeySignIn() {
     const passkeys = JSON.parse(window.localStorage.getItem('grace-passkeys') || '{}');
     const enrolledKeys = Object.keys(passkeys);
     
-    let targetKey = window.localStorage.getItem('grace_last_passkey_user') || (enrolledKeys.length > 0 ? enrolledKeys[0] : 'king');
-    const profile = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[targetKey]) ? PROFILE_DATA[targetKey] : { name: 'King Saab', role: 'Super Admin' };
+    if (enrolledKeys.length === 0) {
+        showToast('⚠️ No device passkey enrolled on this laptop. Please sign in with your email and password first, then add a Passkey in Settings.', 'warning');
+        return;
+    }
 
-    showToast('Verifying Passkey Biometrics for ' + profile.name + '...', 'info');
+    const lastUser = window.localStorage.getItem('grace_last_passkey_user');
+    const targetKey = (lastUser && passkeys[lastUser]) ? lastUser : enrolledKeys[0];
+    const passkeyData = passkeys[targetKey];
+    const profile = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[targetKey]) ? PROFILE_DATA[targetKey] : { name: passkeyData.userName || targetKey, role: 'Colleague' };
 
-    if (window.PublicKeyCredential && enrolledKeys.length > 0 && passkeys[targetKey]?.credId?.length > 8) {
+    showToast('Verifying Laptop Passkey / Biometrics for ' + (profile.name || targetKey) + '...', 'info');
+
+    if (window.PublicKeyCredential && passkeyData?.credId) {
         try {
             const challenge = new Uint8Array(32);
             window.crypto.getRandomValues(challenge);
@@ -7345,20 +7491,19 @@ async function handlePasskeySignIn() {
             }
         } catch (err) {
             console.warn('Hardware assertion note:', err);
+            showToast('Passkey biometric verification was cancelled.', 'warning');
+            return;
         }
     }
 
-    // Fast-Pass Verification Simulation for quick seamless access
-    window.setTimeout(() => {
-        completePasskeyLogin(targetKey, profile);
-    }, 350);
+    showToast('Passkey could not be verified on this device.', 'warning');
 }
 
 function completePasskeyLogin(key, profile) {
-    persistUserAuthentication(key, profile.role || 'Super Admin');
+    persistUserAuthentication(key, profile.role || 'Colleague');
     closeAuthGateway();
     if (typeof changeViewAs === 'function') changeViewAs(key);
-    showToast('👆 Passkey Verified! Welcome back, ' + (profile.name || key) + '.', 'success');
+    showToast('💻 Passkey Verified! Welcome back, ' + (profile.name || key) + '.', 'success');
     if (typeof dispatchWelcomeAutoReply === 'function') dispatchWelcomeAutoReply(profile.name || key, profile.role || 'Colleague');
 }
 
@@ -13351,7 +13496,7 @@ async function requestRegistrationOtp() {
     try {
         const res = await fetch('/api/auth/otp/send', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
             body: JSON.stringify({ email, name, purpose: 'register' })
         });
         const data = await res.json();
@@ -13359,14 +13504,28 @@ async function requestRegistrationOtp() {
             document.getElementById('reg-otp-group').style.display = 'block';
             const statusEl = document.getElementById('reg-otp-status');
             if (statusEl) statusEl.innerText = data.demo_otp ? ('Demo Code: ' + data.demo_otp) : 'Code sent to email. Valid for 10 min.';
-            showToast(data.message || 'Verification code sent.', 'success');
+            showToast(data.message || 'Verification code sent to ' + email, 'success');
+            let cooldown = 60;
+            if (btn) {
+                btn.innerText = 'Resend (' + cooldown + 's)';
+                const timer = setInterval(() => {
+                    cooldown--;
+                    if (cooldown <= 0) {
+                        clearInterval(timer);
+                        btn.disabled = false;
+                        btn.innerText = 'Send OTP ✉️';
+                    } else {
+                        btn.innerText = 'Resend (' + cooldown + 's)';
+                    }
+                }, 1000);
+            }
         } else {
             showToast(data.error || 'Failed to send OTP.', 'warning');
+            if (btn) { btn.disabled = false; btn.innerText = 'Send OTP ✉️'; }
         }
     } catch (e) {
         showToast('Network error sending OTP.', 'warning');
-    } finally {
-        if (btn) { btn.disabled = false; btn.innerText = 'Resend OTP'; }
+        if (btn) { btn.disabled = false; btn.innerText = 'Send OTP ✉️'; }
     }
 }
 
@@ -13410,20 +13569,34 @@ async function requestForgotPasswordOtp() {
     try {
         const res = await fetch('/api/auth/otp/send', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
             body: JSON.stringify({ email: input, purpose: 'forgot' })
         });
         const data = await res.json();
         if (res.ok) {
             document.getElementById('forgot-otp-group').style.display = 'block';
             showToast(data.message || 'Reset code sent.', 'success');
+            let cooldown = 60;
+            if (btn) {
+                btn.innerText = 'Resend (' + cooldown + 's)';
+                const timer = setInterval(() => {
+                    cooldown--;
+                    if (cooldown <= 0) {
+                        clearInterval(timer);
+                        btn.disabled = false;
+                        btn.innerText = 'Send OTP ✉️';
+                    } else {
+                        btn.innerText = 'Resend (' + cooldown + 's)';
+                    }
+                }, 1000);
+            }
         } else {
             showToast(data.error || 'Account not found.', 'warning');
+            if (btn) { btn.disabled = false; btn.innerText = 'Send OTP ✉️'; }
         }
     } catch (e) {
         showToast('Network error sending OTP.', 'warning');
-    } finally {
-        if (btn) { btn.disabled = false; btn.innerText = 'Resend Code'; }
+        if (btn) { btn.disabled = false; btn.innerText = 'Send OTP ✉️'; }
     }
 }
 
