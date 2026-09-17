@@ -1728,7 +1728,75 @@ def run_tests():
     assert "z-index:1000000 !important" in root_str, "toast-region must have z-index:1000000 !important so popups float over modals"
     print("[PASS 50.7] User Settings Modal verified: v2.5.0 version badge, top-layer toast z-index, and updateProfileDisplay confirmed.")
 
-    print("\n[SUCCESS] ALL 50 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+    # =========================================================================
+    # 51. TESTING CLI SIMPLE MODE, 22 RECOGNIZABLE TOOLS & DUAL VIEW TOGGLE
+    # =========================================================================
+    print("\n--- 51. TESTING CLI SIMPLE MODE, 22 RECOGNIZABLE TOOLS & DUAL VIEW TOGGLE ---")
+
+    # 51.1 Matrix in CLI Simple Mode
+    st_cli, _, d_cli = wsgi_request("/api/?tab=matrix&view=cli", "GET")
+    assert st_cli.startswith("200"), f"Expected 200 for CLI matrix, got {st_cli}"
+    html_cli = d_cli.decode("utf-8")
+    assert "Email Collector (DB)" in html_cli, "Missing 'Email Collector (DB)' in CLI view"
+    assert "Email Cleaner (DB)" in html_cli, "Missing 'Email Cleaner (DB)' in CLI view"
+    assert "Campaign Manager" in html_cli, "Missing 'Campaign Manager' in CLI view"
+    assert "Spam Checker" in html_cli, "Missing 'Spam Checker' in CLI view"
+    assert "CRM Dashboard" in html_cli, "Missing 'CRM Dashboard' in CLI view"
+    assert "Campaign Engine V2" in html_cli, "Missing 'Campaign Engine V2' in CLI view"
+    assert "view-mode-toggle-btn" in html_cli, "Missing view mode toggle button in header"
+    print("[PASS 51.1] Matrix renders all 22 CLI Simple Mode modules with exact recognizable names.")
+
+    # 51.2 Matrix in Enterprise Mode (Original intact)
+    st_ent, _, d_ent = wsgi_request("/api/?tab=matrix&view=enterprise", "GET")
+    assert st_ent.startswith("200"), f"Expected 200 for Enterprise matrix, got {st_ent}"
+    html_ent = d_ent.decode("utf-8")
+    assert "Dashboard Overview" in html_ent, "Missing 'Dashboard Overview' in Enterprise view"
+    assert "Gmail Multi-Tenant Hub" in html_ent, "Missing 'Gmail Multi-Tenant Hub' in Enterprise view"
+    assert "Enterprise Sync Engine" in html_ent, "Missing 'Enterprise Sync Engine' in Enterprise view"
+    print("[PASS 51.2] Matrix renders full original Enterprise Mode intact without any modification.")
+
+    # 51.3 Module Detail in CLI Mode
+    st_m1, _, d_m1 = wsgi_request("/api/?tab=module&id=1&view=cli", "GET")
+    assert st_m1.startswith("200"), f"Expected 200 for module 1 in CLI view, got {st_m1}"
+    html_m1 = d_m1.decode("utf-8")
+    assert "Email Collector (DB)" in html_m1, "Missing 'Email Collector (DB)' in module 1 hero"
+    assert "Switch to Enterprise Telemetry View" in html_m1, "Missing quick switch button in module detail"
+    print("[PASS 51.3] Module detail renders CLI Simple view with quick toggle.")
+
+    # 51.4 Dashboard with CLI Rapid Access Command Bar
+    st_d, _, d_d = wsgi_request("/api/?tab=dashboard&view=cli", "GET")
+    assert st_d.startswith("200"), f"Expected 200 for dashboard CLI view, got {st_d}"
+    html_d = d_d.decode("utf-8")
+    assert "CLI SIMPLE MODE · DIRECT ACCESS TOOLBAR" in html_d, "Missing CLI toolbar on dashboard"
+    assert "[1] Collector" in html_d, "Missing '[1] Collector' shortcut on dashboard"
+    assert "[2] Cleaner" in html_d, "Missing '[2] Cleaner' shortcut on dashboard"
+    assert "[22] Engine V2" in html_d, "Missing '[22] Engine V2' shortcut on dashboard"
+    print("[PASS 51.4] Dashboard renders CLI Rapid Access Command Bar with top 6 everyday tools.")
+
+    # 51.5 CLI Collector Add API
+    st_cad, _, d_cad = wsgi_request(
+        "/api/cli/collector/add",
+        "POST",
+        body_dict={"email": "audit_cli_lead@example.com"}
+    )
+    assert st_cad.startswith("200"), f"Expected 200 for collector add, got {st_cad}"
+    res_cad = json.loads(d_cad.decode("utf-8"))
+    assert res_cad.get("status") == "ok"
+    print("[PASS 51.5] POST /api/cli/collector/add successfully inserted lead into contacts table.")
+
+    # 51.6 CLI Spam Checker API
+    st_spm, _, d_spm = wsgi_request(
+        "/api/cli/spam/check",
+        "POST",
+        body_dict={"text": "Exclusive cash offer! Free access!"}
+    )
+    assert st_spm.startswith("200"), f"Expected 200 for spam check, got {st_spm}"
+    res_spm = json.loads(d_spm.decode("utf-8"))
+    assert res_spm.get("status") == "ok"
+    assert "free" in res_spm.get("triggers", [])
+    print("[PASS 51.6] POST /api/cli/spam/check accurately detected triggers ('free', 'cash').")
+
+    print("\n[SUCCESS] ALL 51 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":

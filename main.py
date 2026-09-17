@@ -859,6 +859,309 @@ MODULES_DATA = {
     },
 }
 
+
+MODULES_DATA_CLI = {
+    1: {
+        "name": "Email Collector (DB)",
+        "category": "Data Intake",
+        "status": "Ready",
+        "lock": "Active",
+        "desc": "Direct input & database storage for cold outreach leads and contacts.",
+        "icon": "📥",
+        "action_label": "Collect Now",
+        "cli_num": "1",
+    },
+    2: {
+        "name": "Email Cleaner (DB)",
+        "category": "Verification",
+        "status": "Ready",
+        "lock": "Active",
+        "desc": "Validate database emails, remove duplicates, and flag invalid syntax.",
+        "icon": "🧹",
+        "action_label": "Clean Database",
+        "cli_num": "2",
+    },
+    3: {
+        "name": "Campaign Manager",
+        "category": "Campaigns",
+        "status": "Active",
+        "lock": "Armed",
+        "desc": "Create, launch, resume, and track multi-channel email campaigns.",
+        "icon": "🚀",
+        "action_label": "New Campaign",
+        "cli_num": "3",
+    },
+    4: {
+        "name": "Spam Checker",
+        "category": "Deliverability",
+        "status": "Ready",
+        "lock": "Shielded",
+        "desc": "Real-time trigger keyword analysis for email subjects and bodies.",
+        "icon": "🛡️",
+        "action_label": "Check Spam",
+        "cli_num": "4",
+    },
+    5: {
+        "name": "CRM Dashboard",
+        "category": "Pipeline",
+        "status": "Active",
+        "lock": "Secured",
+        "desc": "Manage lead statuses, view contact records, search leads, and export CSV.",
+        "icon": "👥",
+        "action_label": "Open CRM",
+        "cli_num": "5",
+    },
+    6: {
+        "name": "Lead Scoring",
+        "category": "Intelligence",
+        "status": "Calculated",
+        "lock": "Ready",
+        "desc": "Algorithmic conversion scoring and qualification health ranking.",
+        "icon": "🎯",
+        "action_label": "Score Leads",
+        "cli_num": "6",
+    },
+    7: {
+        "name": "AI Template Analyzer",
+        "category": "AI Review",
+        "status": "Online",
+        "lock": "Ready",
+        "desc": "Deep readability scoring, spam risk assessment, and AI suggestions.",
+        "icon": "🧠",
+        "action_label": "Analyze Template",
+        "cli_num": "7",
+    },
+    8: {
+        "name": "Subject Analyzer",
+        "category": "AI Review",
+        "status": "Online",
+        "lock": "Ready",
+        "desc": "Instant rating, word impact check, and length optimization for subjects.",
+        "icon": "✍️",
+        "action_label": "Analyze Subject",
+        "cli_num": "8",
+    },
+    9: {
+        "name": "Template Manager",
+        "category": "Content",
+        "status": "Active",
+        "lock": "Ready",
+        "desc": "View, create, edit, and organize reusable outreach email templates.",
+        "icon": "📄",
+        "action_label": "View Templates",
+        "cli_num": "9",
+    },
+    10: {
+        "name": "Reports",
+        "category": "Analytics",
+        "status": "Updated",
+        "lock": "Audited",
+        "desc": "Comprehensive conversion metrics, valid/invalid breakdown, and sent stats.",
+        "icon": "📊",
+        "action_label": "View Reports",
+        "cli_num": "10",
+    },
+    11: {
+        "name": "Activity Logs",
+        "category": "Audit Trail",
+        "status": "Logging",
+        "lock": "Tamper-Proof",
+        "desc": "Timestamped system ledger of all outreach events and user actions.",
+        "icon": "📜",
+        "action_label": "View Logs",
+        "cli_num": "11",
+    },
+    12: {
+        "name": "Personalized Campaign",
+        "category": "Outreach",
+        "status": "Ready",
+        "lock": "Ready",
+        "desc": "Dynamic variable insertion (Name, Company, City) for targeted pitches.",
+        "icon": "✨",
+        "action_label": "Personalize Pitch",
+        "cli_num": "12",
+    },
+    13: {
+        "name": "Campaign Progress",
+        "category": "Monitoring",
+        "status": "Live",
+        "lock": "Monitored",
+        "desc": "Real-time percentage bars, completed dispatches, pending items, and failures.",
+        "icon": "📈",
+        "action_label": "Track Progress",
+        "cli_num": "13",
+    },
+    14: {
+        "name": "System Settings",
+        "category": "Settings",
+        "status": "Configured",
+        "lock": "Saved",
+        "desc": "Configure emails-per-profile, delays, throttling, and safety windows.",
+        "icon": "⚙️",
+        "action_label": "Edit Settings",
+        "cli_num": "14",
+    },
+    15: {
+        "name": "Gmail Draft Assistant",
+        "category": "Drafts",
+        "status": "Connected",
+        "lock": "Secured",
+        "desc": "Create Gmail drafts directly via API or review pending staged drafts.",
+        "icon": "✉️",
+        "action_label": "Create Draft",
+        "cli_num": "15",
+    },
+    16: {
+        "name": "Gmail Profile Manager",
+        "category": "Inboxes",
+        "status": "Active",
+        "lock": "Secured",
+        "desc": "Connect and organize Chrome profiles and OAuth Gmail accounts.",
+        "icon": "👤",
+        "action_label": "Manage Profiles",
+        "cli_num": "16",
+    },
+    17: {
+        "name": "Follow-up Manager",
+        "category": "Sequences",
+        "status": "Active",
+        "lock": "Armed",
+        "desc": "Automated multi-touch follow-up triggers and timing sequences.",
+        "icon": "🔁",
+        "action_label": "Follow-ups",
+        "cli_num": "17",
+    },
+    18: {
+        "name": "Suppression Manager",
+        "category": "Compliance",
+        "status": "Enforced",
+        "lock": "Shielded",
+        "desc": "Do-Not-Contact suppression registry, bounce filters, and unsubscriptions.",
+        "icon": "🚫",
+        "action_label": "Suppression List",
+        "cli_num": "18",
+    },
+    19: {
+        "name": "Reply Manager",
+        "category": "Inbound",
+        "status": "Listening",
+        "lock": "Active",
+        "desc": "Inbound reply detector and AI intent classifier (Interested vs Opt-Out).",
+        "icon": "💬",
+        "action_label": "Reply Matrix",
+        "cli_num": "19",
+    },
+    20: {
+        "name": "Gmail Account Manager",
+        "category": "Rotation Pool",
+        "status": "Optimal",
+        "lock": "Regulated",
+        "desc": "Health scores, daily quotas, and automated mailbox rotation schedules.",
+        "icon": "🔄",
+        "action_label": "Account Status",
+        "cli_num": "20",
+    },
+    21: {
+        "name": "Draft Queue Manager",
+        "category": "Queue",
+        "status": "Queued",
+        "lock": "Ready",
+        "desc": "Review pending dispatch queue, approve batches, and inspect payloads.",
+        "icon": "⏳",
+        "action_label": "View Queue",
+        "cli_num": "21",
+    },
+    22: {
+        "name": "Campaign Engine V2",
+        "category": "Master Engine",
+        "status": "High Velocity",
+        "lock": "Ready",
+        "desc": "Master dispatch orchestrator, automated warmup, and high-volume pipeline.",
+        "icon": "⚡",
+        "action_label": "Launch Engine",
+        "cli_num": "22",
+    },
+}
+
+CLI_MODULE_SUB_ACTIONS = {
+    1: [
+        ("[1] Add Email to DB", "Quick lead input directly into sqlite crm.db contacts table", "add_lead"),
+        ("[2] View All Contacts", "View all current database contacts and statuses", "view_contacts"),
+        ("[3] Export Contacts CSV", "Export all active leads into CSV spreadsheet", "export_csv"),
+    ],
+    2: [
+        ("[1] Run Email Cleaner", "Validate syntax and flag valid vs invalid addresses", "run_cleaner"),
+        ("[2] View Invalid Flagged", "Review filtered invalid email records", "view_invalid"),
+    ],
+    3: [
+        ("[1] New Campaign", "Configure recipient batch and dispatch sequence", "new_campaign"),
+        ("[2] Resume Campaign", "Resume pending contacts from queued dispatch batches", "resume_campaign"),
+        ("[3] Campaign Progress", "Inspect real-time completion percentages", "campaign_progress"),
+        ("[4] Campaign History", "Review previous campaign logs and telemetry", "campaign_history"),
+    ],
+    4: [
+        ("[1] Instant Text Spam Check", "Scan subject or body against trigger word database", "check_spam"),
+        ("[2] View Trigger Word Bank", "Inspect flagged spam triggers (free, urgent, cash, etc.)", "view_spam_words"),
+    ],
+    5: [
+        ("[1] Pipeline Dashboard", "Review deal values, stage counts, and pipeline health", "crm_stats"),
+        ("[2] View Contacts Ledger", "Inspect full lead table with active pipeline statuses", "crm_contacts"),
+        ("[3] Update Lead Status", "Change contact stage (new, sent, replied, interested)", "update_status"),
+    ],
+    6: [
+        ("[1] Calculate Lead Scores", "Run algorithmic score computation across all leads", "calc_scores"),
+    ],
+    7: [
+        ("[1] Analyze Custom Template", "Deep evaluation of template health, grade, and suggestions", "analyze_template"),
+    ],
+    8: [
+        ("[1] Analyze Subject Line", "Test subject length, emotional impact, and spam risk", "analyze_subject"),
+    ],
+    9: [
+        ("[1] View Templates", "List all outreach email copy stored in system", "view_templates"),
+    ],
+    10: [
+        ("[1] Full Conversion Report", "Summary of emails, drafts, replies, and conversions", "full_report"),
+    ],
+    11: [
+        ("[1] View Activity Logs", "Review timestamped audit trail of all outreach events", "view_logs"),
+    ],
+    12: [
+        ("[1] Personalize Pitch", "Insert dynamic Name, Company, City tags into pitch", "personalize_pitch"),
+    ],
+    13: [
+        ("[1] Live Progress Dashboard", "Track active campaign percentages and queues", "live_progress"),
+    ],
+    14: [
+        ("[1] View System Settings", "Review current emails-per-profile and delays", "view_settings"),
+    ],
+    15: [
+        ("[1] View Pending Drafts", "Review staged Gmail drafts awaiting dispatch", "view_drafts"),
+    ],
+    16: [
+        ("[1] View Chrome Profiles", "List registered Chrome user profiles and Gmail logins", "view_profiles"),
+    ],
+    17: [
+        ("[1] View Follow-up Sequences", "Review multi-stage automated follow-up drafts", "view_followups"),
+    ],
+    18: [
+        ("[1] View Suppression List", "Inspect do-not-contact blacklist and unsubscribes", "view_suppression"),
+        ("[2] Add Email to Suppression", "Permanently suppress an address from all outreach", "add_suppression"),
+    ],
+    19: [
+        ("[1] Inbound Reply Matrix", "Live stream of incoming replies with sentiment tags", "reply_matrix"),
+    ],
+    20: [
+        ("[1] Account Health Status", "Daily limits, sent counts, and mailbox health tiers", "account_health"),
+    ],
+    21: [
+        ("[1] View Draft Queue", "Inspect FIFO queue of pending outreach messages", "view_queue"),
+    ],
+    22: [
+        ("[1] Launch Engine V2", "Engage master automated sending pipeline with AI jitter", "launch_engine"),
+    ],
+}
+
 DEFAULT_PROFILES = {
     "king": {
         "key": "king",
@@ -1442,7 +1745,10 @@ WA_CROWN_SRC = "/api/assets/crown.png?v=20260911_hd"
 WA_CROWN_IMG = f"""<img src="{WA_CROWN_SRC}" class="wa-crown-icon" alt="👑" width="18" height="18" loading="eager" decoding="async" />"""
 
 
-def render_header():
+def render_header(view_mode="cli"):
+    mode_label = "Mode: CLI Simple" if view_mode == "cli" else "Mode: Enterprise"
+    mode_icon = "📟" if view_mode == "cli" else "🌐"
+    mode_style = "background:rgba(0,240,255,0.15); border:1.5px solid #00F0FF; color:#00F0FF;" if view_mode == "cli" else "background:rgba(214,161,23,0.15); border:1.5px solid var(--accent-gold); color:#FDE047;"
     return f"""
     <div class="card top-bar">
         <div style="display:flex; align-items:center;">
@@ -1484,6 +1790,9 @@ def render_header():
             <button class="btn btn-gray" onclick="openBrandPalette()">🎨 Brand Palette</button>
             <button id="audio-btn" class="btn btn-gray" onclick="toggleAudio()">🔊 Audio: ON</button>
             <button class="btn btn-gray" onclick="openSoundscape()">♫ Soundscape</button>
+            <button id="view-mode-toggle-btn" class="btn" onclick="toggleGraceViewMode()" style="{mode_style} font-weight:800; font-size:12px; display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; cursor:pointer;" title="Toggle CLI Simple Mode vs Enterprise Mode">
+                <span id="view-mode-icon">{mode_icon}</span> <span id="view-mode-label">{mode_label}</span>
+            </button>
             <button id="theme-btn" class="btn btn-gray" onclick="toggleExecutiveTheme()">🌓 Theme: <b id="theme-btn-label">DARK</b></button>
             <div class="brightness-control-pill" id="brightness-control-pill" title="Aesthetic Display Brightness Controller" style="display:inline-flex; align-items:center; gap:8px; padding:5px 12px; border-radius:20px; background:rgba(0,26,23,0.85); border:1px solid var(--accent-gold); box-shadow:0 2px 8px rgba(0,0,0,0.3);">
                 <span style="font-size:13px; line-height:1; user-select:none;">☀️</span>
@@ -3254,10 +3563,11 @@ def render_header():
     """
 
 
-def render_navigation(active_tab):
+def render_navigation(active_tab, view_mode="cli"):
     d_active = "btn-blue" if active_tab == "dashboard" else "btn-gray"
     m_active = "btn-blue" if active_tab == "matrix" else "btn-gray"
     c_active = "btn-blue" if active_tab == "colleagues" else "btn-gray"
+    v_param = f"&view={view_mode}" if view_mode else ""
     return f"""
     <!-- Live Demo & Guest Mode Indicator Bar -->
     <div id="grace-demo-banner" class="demo-mode-banner" hidden style="background:linear-gradient(90deg, #064e3b, #022c22); border:1px solid var(--accent-gold); border-radius:12px; padding:10px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 4px 16px rgba(0,0,0,0.35);">
@@ -3276,9 +3586,9 @@ def render_navigation(active_tab):
     </div>
     <div class="card" style="padding:12px 18px;">
         <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-            <a href="/api/?tab=dashboard" class="btn {d_active}">1. Dashboard Overview</a>
-            <a href="/api/?tab=matrix" class="btn {m_active}">2. 22-Module Control Matrix</a>
-            <a href="/api/?tab=colleagues" class="btn {c_active}" id="nav-colleagues">3. Colleague Management</a>
+            <a href="/api/?tab=dashboard{v_param}" class="btn {d_active}">1. Dashboard Overview</a>
+            <a href="/api/?tab=matrix{v_param}" class="btn {m_active}">2. 22-Module Control Matrix</a>
+            <a href="/api/?tab=colleagues{v_param}" class="btn {c_active}" id="nav-colleagues">3. Colleague Management</a>
             <button type="button" class="btn btn-gray" id="nav-user-settings-btn" onclick="openUserSettingsModal()" style="font-size:12px; display:inline-flex; align-items:center; gap:6px;">⚙️ User Settings</button>
             <button class="btn btn-red" onclick="handleExecutiveLogout()" style="margin-left:auto; display:inline-flex; align-items:center; gap:6px;">🚪 Log Out</button>
         </div>
@@ -14600,6 +14910,16 @@ function applyTenantIsolation(activeKey) {
         }
     });
 }
+
+    function toggleGraceViewMode() {
+        var params = new URLSearchParams(window.location.search);
+        var cur = params.get('view') || localStorage.getItem('grace_view_mode') || 'cli';
+        var next = (cur === 'cli') ? 'enterprise' : 'cli';
+        localStorage.setItem('grace_view_mode', next);
+        document.cookie = "grace_view_mode=" + next + "; Path=/; Max-Age=31536000; SameSite=Lax";
+        params.set('view', next);
+        window.location.search = params.toString();
+    }
 </script>
 """
 
@@ -14755,7 +15075,59 @@ def render_telemetry_radar_charts():
     """
 
 
-def render_dashboard():
+def render_dashboard(view_mode="cli"):
+    cli_quick_bar = ""
+    if view_mode == "cli":
+        cli_quick_bar = f'''
+        <!-- CLI SIMPLE MODE: RAPID ACCESS COMMAND BAR -->
+        <div class="card" style="margin-bottom:22px; background:#011A17; border:1.5px solid #00F0FF; box-shadow:0 0 20px rgba(0,240,255,0.12); padding:16px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:24px;">📟</span>
+                    <div>
+                        <span class="eyebrow" style="color:#00F0FF; font-weight:800; letter-spacing:0.5px;">CLI SIMPLE MODE · DIRECT ACCESS TOOLBAR</span>
+                        <h3 style="margin:2px 0 0; font-size:16px; font-weight:800; color:#FFFFFF;">Everyday Outreach Tools (Simple CLI Naming)</h3>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <a href="/api/?tab=matrix&view=cli" class="btn btn-blue" style="font-size:11px; padding:6px 14px; font-weight:800; background:#00F0FF; color:#021411; border:none;">Explore All 22 CLI Modules ➔</a>
+                    <button class="btn btn-gray" onclick="toggleGraceViewMode()" style="font-size:11px; padding:6px 12px;" title="Switch to Enterprise Telemetry View">Switch View</button>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px;">
+                <a href="/api/?tab=module&id=1&view=cli" class="hud-gauge-card" style="padding:12px; text-decoration:none; border-color:rgba(0,240,255,0.3); text-align:center;">
+                    <div style="font-size:20px; margin-bottom:4px;">📥</div>
+                    <div style="font-size:11px; color:#00F0FF; font-weight:800;">[1] Collector</div>
+                    <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Add Leads to DB</div>
+                </a>
+                <a href="/api/?tab=module&id=2&view=cli" class="hud-gauge-card" style="padding:12px; text-decoration:none; border-color:rgba(0,240,255,0.3); text-align:center;">
+                    <div style="font-size:20px; margin-bottom:4px;">🧹</div>
+                    <div style="font-size:11px; color:#00F0FF; font-weight:800;">[2] Cleaner</div>
+                    <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Validate Contacts</div>
+                </a>
+                <a href="/api/?tab=module&id=3&view=cli" class="hud-gauge-card" style="padding:12px; text-decoration:none; border-color:rgba(0,240,255,0.3); text-align:center;">
+                    <div style="font-size:20px; margin-bottom:4px;">🚀</div>
+                    <div style="font-size:11px; color:#00F0FF; font-weight:800;">[3] Campaigns</div>
+                    <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Manage Outreach</div>
+                </a>
+                <a href="/api/?tab=module&id=4&view=cli" class="hud-gauge-card" style="padding:12px; text-decoration:none; border-color:rgba(0,240,255,0.3); text-align:center;">
+                    <div style="font-size:20px; margin-bottom:4px;">🛡️</div>
+                    <div style="font-size:11px; color:#00F0FF; font-weight:800;">[4] Spam Check</div>
+                    <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Scan Triggers</div>
+                </a>
+                <a href="/api/?tab=module&id=5&view=cli" class="hud-gauge-card" style="padding:12px; text-decoration:none; border-color:rgba(0,240,255,0.3); text-align:center;">
+                    <div style="font-size:20px; margin-bottom:4px;">👥</div>
+                    <div style="font-size:11px; color:#00F0FF; font-weight:800;">[5] CRM Leads</div>
+                    <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Statuses & Deals</div>
+                </a>
+                <a href="/api/?tab=module&id=22&view=cli" class="hud-gauge-card" style="padding:12px; text-decoration:none; border-color:rgba(0,240,255,0.3); text-align:center;">
+                    <div style="font-size:20px; margin-bottom:4px;">⚡</div>
+                    <div style="font-size:11px; color:#00F0FF; font-weight:800;">[22] Engine V2</div>
+                    <div style="font-size:10px; color:#94A3B8; margin-top:2px;">Automated Send</div>
+                </a>
+            </div>
+        </div>
+        '''
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14769,8 +15141,10 @@ def render_dashboard():
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
-    {render_header()}
-    {render_navigation("dashboard")}
+    {render_header(view_mode)}
+    {render_navigation("dashboard", view_mode)}
+
+    {cli_quick_bar}
 
     <div class="stats-grid">
         <div class="stat-card">
@@ -14991,24 +15365,42 @@ def render_dashboard():
 </html>"""
 
 
-def render_matrix():
+def render_matrix(view_mode="cli"):
+    modules = MODULES_DATA_CLI if view_mode == "cli" else MODULES_DATA
     cards_html = ""
-    for idx, info in MODULES_DATA.items():
+    for idx, info in modules.items():
         border_style = (
             'style="border: 2px solid var(--accent-gold);"' if idx == 12 else ""
         )
+        if view_mode == "cli":
+            action_btn = f'''<div style="margin-top:12px; display:flex; gap:8px;">
+                <span class="btn btn-blue" style="font-size:11px; padding:5px 14px; font-weight:800; border-radius:6px; background:#00F0FF; color:#021411;">{info.get("action_label", "Open Module")} ➔</span>
+            </div>'''
+            badge_num = f'<span style="background:rgba(0,240,255,0.15); color:#00F0FF; border:1px solid #00F0FF; padding:2px 8px; border-radius:6px; font-weight:800; font-size:11px; margin-right:6px;">[{idx}]</span>'
+            mod_title = f"{badge_num} {info['name']}"
+            subtitle = f"CLI Tool #{idx} · {info['category']}"
+        else:
+            action_btn = ""
+            mod_title = info["name"]
+            subtitle = f"M{idx} · {info['category']}"
+
         cards_html += f"""
-        <a href="/api/?tab=module&id={idx}" class="module-card" data-module-id="{idx}" {border_style}>
+        <a href="/api/?tab=module&id={idx}&view={view_mode}" class="module-card" data-module-id="{idx}" {border_style}>
             <div class="module-icon" aria-hidden="true">{info.get("icon", "•")}</div>
             <div class="module-copy">
-                <div class="mod-title">M{idx} · {info["category"]}</div>
-                <div class="mod-name">{info["name"]}</div>
+                <div class="mod-title">{subtitle}</div>
+                <div class="mod-name">{mod_title}</div>
                 <div class="module-desc">{info["desc"]}</div>
-                <div class="mod-status-tag">● {info["status"]}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                    <div class="mod-status-tag">● {info["status"]}</div>
+                </div>
+                {action_btn}
             </div>
         </a>
         """
 
+    grid_title = "Complete 22-Module Control Matrix (CLI Simple Mode)" if view_mode == "cli" else "Complete 22-Module Control Matrix"
+    grid_eyebrow = "CLI SIMPLE MODE · DIRECT 22 TOOLS" if view_mode == "cli" else "ENTERPRISE FUNCTIONAL GRID"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15022,14 +15414,14 @@ def render_matrix():
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
-    {render_header()}
-    {render_navigation("matrix")}
+    {render_header(view_mode)}
+    {render_navigation("matrix", view_mode)}
 
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-                <span class="eyebrow">ENTERPRISE FUNCTIONAL GRID</span>
-                <h3 style="margin:4px 0 0; font-size:20px;">Complete 22-Module Control Matrix</h3>
+                <span class="eyebrow">{grid_eyebrow}</span>
+                <h3 style="margin:4px 0 0; font-size:20px;">{grid_title}</h3>
             </div>
             <span style="font-size:13px; color:var(--accent-green); font-weight:bold;">● Super Admin View (All Modules Unlocked)</span>
         </div>
@@ -16307,14 +16699,15 @@ def render_module_workbench_hud(m_id, blueprint):
     return "".join(gauges_html)
 
 
-def render_module_detail(mod_id):
+def render_module_detail(mod_id, view_mode="cli"):
     try:
         m_id = int(mod_id)
     except (TypeError, ValueError):
         m_id = 1
     if m_id not in MODULES_DATA:
         m_id = 1
-    mod_info = MODULES_DATA[m_id]
+    modules = MODULES_DATA_CLI if view_mode == "cli" else MODULES_DATA
+    mod_info = modules[m_id]
     blueprint = MODULE_BLUEPRINTS[m_id]
     metrics_html = "".join(
         render_vertical_telemetry_gauge(label, value, delta, m_id, idx)
@@ -16360,14 +16753,21 @@ def render_module_detail(mod_id):
     <style>{BASE_CSS}</style>
 </head>
 <body class="dark">
-    {render_header()}
-    {render_navigation("matrix")}
+    {render_header(view_mode)}
+    {render_navigation("matrix", view_mode)}
     <main id="module-workspace" data-module-page-id="{m_id}">
         <div class="module-authorized-content">
             <div class="card module-hero">
                 <div class="module-hero-copy">
-                    <span class="eyebrow">{blueprint["eyebrow"]} · MODULE {m_id:02d}</span>
-                    <h2>{mod_info["name"]}</h2>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <span class="eyebrow" style="color:var(--accent-green);">{"CLI SIMPLE MODE · TOOL #" + str(m_id) if view_mode == "cli" else blueprint["eyebrow"] + " · MODULE " + f"{m_id:02d}"}</span>
+                            <h2 style="margin:4px 0 0;">{"[" + str(m_id) + "] " + mod_info["name"] if view_mode == "cli" else mod_info["name"]}</h2>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <a href="/api/?tab=module&id={m_id}&view={'enterprise' if view_mode == 'cli' else 'cli'}" class="btn btn-gray" style="font-size:11px; padding:6px 12px;">Switch to {'Enterprise Telemetry' if view_mode == 'cli' else 'CLI Simple'} View ➔</a>
+                        </div>
+                    </div>
                     <span style="font-size:14px;color:var(--text-muted);">{mod_info["desc"]}</span>
                 </div>
                 <div style="display:grid;justify-items:end;gap:12px;"><span class="module-status-pill"><i class="presence-dot online"></i>{mod_info["status"]}</span><a href="/api/?tab=matrix" class="btn btn-blue module-back-button">← Back to Main Matrix</a></div>
@@ -18393,17 +18793,95 @@ def app(environ, start_response):
                 secure_start_response("405 Method Not Allowed", [("Content-Length", "0")])
                 return [b""]
 
+        # 6.5 CLI Tool Interactive Endpoints
+        if cleaned_path == "/api/cli/collector/add" and method == "POST":
+            try:
+                body_len = int(environ.get("CONTENT_LENGTH", 0) or 0)
+                raw_data = environ["wsgi.input"].read(body_len).decode("utf-8") if body_len > 0 else "{}"
+                req_json = json.loads(raw_data) if raw_data.strip() else {}
+                new_email = str(req_json.get("email", "")).strip().lower()
+                if not new_email or "@" not in new_email:
+                    err_b = json.dumps({"error": "Invalid email address", "status": 400}).encode("utf-8")
+                    secure_start_response("400 Bad Request", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                    return [err_b]
+                from config.database import get_connection
+                c_conn = get_connection()
+                c_cur = c_conn.cursor()
+                try:
+                    c_cur.execute("INSERT INTO contacts (email, status) VALUES (?, 'new')", (new_email,))
+                    c_conn.commit()
+                    c_cur.execute("SELECT COUNT(*) FROM contacts")
+                    tot = c_cur.fetchone()[0]
+                finally:
+                    c_conn.close()
+                res_b = json.dumps({"status": "ok", "email": new_email, "total": tot, "msg": f"Added {new_email} successfully!"}).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
+        if cleaned_path == "/api/cli/cleaner/run" and method == "POST":
+            try:
+                from cleaner.service import run_cleaner
+                from config.database import get_connection
+                c_conn = get_connection()
+                c_cur = c_conn.cursor()
+                cleaned_count = 0
+                invalid_count = 0
+                try:
+                    c_cur.execute("SELECT id, email FROM contacts WHERE status IS NULL OR status = '' OR status = 'new'")
+                    rows = c_cur.fetchall()
+                    for row_id, email in rows:
+                        clean_email = str(email).strip().lower()
+                        if "@" in clean_email and "." in clean_email.split("@")[-1]:
+                            c_cur.execute("UPDATE contacts SET email = ?, status = 'valid' WHERE id = ?", (clean_email, row_id))
+                            cleaned_count += 1
+                        else:
+                            c_cur.execute("UPDATE contacts SET status = 'invalid' WHERE id = ?", (row_id,))
+                            invalid_count += 1
+                    c_conn.commit()
+                finally:
+                    c_conn.close()
+                res_b = json.dumps({"status": "ok", "cleaned": cleaned_count, "invalid": invalid_count, "msg": f"Cleaned & validated {cleaned_count} contacts! ({invalid_count} flagged invalid)"}).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
+        if cleaned_path == "/api/cli/spam/check" and method == "POST":
+            try:
+                body_len = int(environ.get("CONTENT_LENGTH", 0) or 0)
+                raw_data = environ["wsgi.input"].read(body_len).decode("utf-8") if body_len > 0 else "{}"
+                req_json = json.loads(raw_data) if raw_data.strip() else {}
+                text = str(req_json.get("text", "")).lower()
+                from spam_checker.spam_checker import SPAM_WORDS
+                found = [w for w in SPAM_WORDS if w in text]
+                res_b = json.dumps({"status": "ok", "triggers": found, "count": len(found), "clean": len(found) == 0}).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
         # 7. HTML Pages Navigation (Supports standard, /demo, and /guest routes)
         if cleaned_path in ("", "/api", "/demo", "/guest"):
             query_string = environ.get("QUERY_STRING", "")
             params = parse_qs(query_string)
             tab = params.get("tab", ["dashboard"])[0]
             mod_id = params.get("id", ["1"])[0]
+            view_mode = params.get("view", [cookies.get("grace_view_mode", "cli")])[0]
+            if view_mode not in ("cli", "enterprise"):
+                view_mode = "cli"
 
             if tab == "matrix":
-                body = render_matrix()
+                body = render_matrix(view_mode=view_mode)
             elif tab == "module":
-                body = render_module_detail(mod_id)
+                body = render_module_detail(mod_id, view_mode=view_mode)
             elif tab == "colleagues":
                 body = render_colleagues()
             elif tab in ("legal-privacy", "privacy"):
@@ -18411,7 +18889,7 @@ def app(environ, start_response):
             elif tab in ("legal-terms", "terms"):
                 body = render_terms_of_service()
             else:
-                body = render_dashboard()
+                body = render_dashboard(view_mode=view_mode)
 
             data = body.encode("utf-8")
             status = "200 OK"
