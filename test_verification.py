@@ -13,7 +13,8 @@ try:
         update_shared_state, render_colleagues, send_welcome_email,
         SERVER_SESSION_STORE, create_server_session, revoke_server_session, get_server_session,
         hash_password_argon2id, verify_password, validate_password_strength, 
-        RATE_LIMITER, ACTIVE_OTP_STORE, OTP_STORE_LOCK, store_otp, verify_otp_code
+        RATE_LIMITER, ACTIVE_OTP_STORE, OTP_STORE_LOCK, store_otp, verify_otp_code,
+        COLLEAGUE_CLASSES, resolve_colleague_class
     )
 except ImportError:
     from app import app, read_shared_state, US_STATES_CATALOG, decrypt_vault_payload
@@ -1474,7 +1475,148 @@ def run_tests():
     assert admin_res.get("colleague_key") == "king"
     print("[PASS 48.8] Super Admin credentials verified: King Saab receives Super Admin on authorized session.")
 
-    print("\n[SUCCESS] ALL 48 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+    # 49. COLLEAGUE MANAGEMENT GOVERNANCE, BULK ACTIONS & CLASSES AUDIT
+    print("\n--- 49. TESTING COLLEAGUE MANAGEMENT GOVERNANCE, BULK ACTIONS & CLASSES AUDIT ---")
+
+    # 49.1 Colleague Classes Architecture & Classifier Resolution
+    assert "Class A" in COLLEAGUE_CLASSES and "Class B" in COLLEAGUE_CLASSES and "Class C" in COLLEAGUE_CLASSES
+    assert "Class D" in COLLEAGUE_CLASSES and "Class S" in COLLEAGUE_CLASSES
+
+    cls_k, meta_k = resolve_colleague_class("king", {"role": "Super Admin", "status": "Online"})
+    assert cls_k == "Class A" and "EXECUTIVE" in meta_k["badge"]
+
+    cls_a, meta_a = resolve_colleague_class("abdullah", {"role": "Strategic Lead", "status": "Online"})
+    assert cls_a == "Class A"
+
+    cls_b, meta_b = resolve_colleague_class("sarah", {"role": "Growth Marketer", "status": "Online"})
+    assert cls_b == "Class B" and "STRATEGIST" in meta_b["badge"]
+
+    cls_c, meta_c = resolve_colleague_class("hamza", {"role": "Lead Collector", "status": "Online"})
+    assert cls_c == "Class C" and "COLLECTOR" in meta_c["badge"]
+
+    cls_d, meta_d = resolve_colleague_class("guest", {"role": "Guest Evaluator", "status": "Online"})
+    assert cls_d == "Class D" and "EVALUATOR" in meta_d["badge"]
+
+    cls_s, meta_s = resolve_colleague_class("someone", {"role": "Colleague", "status": "Restricted"})
+    assert cls_s == "Class S" and "RESTRICTED" in meta_s["badge"]
+    print("[PASS 49.1] Colleague Classes (A, B, C, D, S) taxonomy and dynamic classifier verified.")
+
+    # 49.2 Colleague Management HTML UI: Class Filter Ribbon & Multi-Select Action Bar
+    colleagues_html = render_colleagues()
+    assert "colleague-class-filters" in colleagues_html, "Missing colleague-class-filters container"
+    assert "class-pill-all" in colleagues_html
+    assert "class-pill-class-a" in colleagues_html
+    assert "class-pill-class-b" in colleagues_html
+    assert "class-pill-class-c" in colleagues_html
+    assert "class-pill-class-d" in colleagues_html
+    assert "class-pill-class-s" in colleagues_html
+    assert "colleague-bulk-bar" in colleagues_html, "Missing floating/sticky colleague-bulk-bar"
+    assert "executeBatchDeleteColleagues()" in colleagues_html
+    assert "executeBatchRestrictColleagues(true)" in colleagues_html
+    assert "executeBatchRestrictColleagues(false)" in colleagues_html
+    assert "clearAllColleagueSelections()" in colleagues_html
+    print("[PASS 49.2] Colleague Management UI verified: Class filter ribbon, live counters, and multi-select action bar.")
+
+    # 49.3 Super Admin Immunity: King Saab Crown Lock & Protected from Selection / Deletion / Restriction
+    assert '<div class="king-crown-lock"' in colleagues_html, "King Saab must display protected king crown lock icon"
+    assert 'data-colleague-key="king"' not in colleagues_html, "King Saab must NEVER have a selection checkbox"
+    assert "singleDeleteColleague('king'" not in colleagues_html, "King Saab must NEVER have a delete button"
+    assert "singleToggleRestrict('king'" not in colleagues_html, "King Saab must NEVER have a restrict button"
+    print("[PASS 49.3] Super Admin Immunity verified: King Saab root profile is strictly guarded against selection, deletion, and restriction.")
+
+    # 49.4 Backend Security: Unauthorized Users (401/403) Blocked from Batch-Delete and Batch-Restrict
+    # Unauthenticated batch-delete
+    st_del_unauth, _, d_del_unauth = wsgi_request("/api/colleagues/batch-delete", "POST", body_dict={"keys": ["sarah"]}, headers_dict={"X-Enforce-Auth": "1"})
+    assert st_del_unauth.startswith("401") or st_del_unauth.startswith("403"), f"Expected 401/403, got {st_del_unauth}"
+
+    # Non-admin colleague batch-delete
+    colleague_sid, colleague_csrf = create_server_session("sarah", "Colleague")
+    st_del_colleague, _, d_del_colleague = wsgi_request("/api/colleagues/batch-delete", "POST", 
+                                                        body_dict={"keys": ["hamza"]}, 
+                                                        headers_dict={"Cookie": f"grace_session_id={colleague_sid}; grace_csrf_token={colleague_csrf}"})
+    assert st_del_colleague.startswith("403"), f"Non-admin must be rejected with 403 Forbidden, got {st_del_colleague}"
+
+    # Unauthenticated batch-restrict
+    st_rst_unauth, _, _ = wsgi_request("/api/colleagues/batch-restrict", "POST", body_dict={"keys": ["sarah"], "restricted": True}, headers_dict={"X-Enforce-Auth": "1"})
+    assert st_rst_unauth.startswith("401") or st_rst_unauth.startswith("403")
+
+    # Non-admin colleague batch-restrict
+    st_rst_colleague, _, _ = wsgi_request("/api/colleagues/batch-restrict", "POST", 
+                                          body_dict={"keys": ["hamza"], "restricted": True}, 
+                                          headers_dict={"Cookie": f"grace_session_id={colleague_sid}; grace_csrf_token={colleague_csrf}"})
+    assert st_rst_colleague.startswith("403")
+    print("[PASS 49.4] Backend RBAC security verified: Colleague endpoints strictly enforce Super Admin authorization.")
+
+    # 49.5 Backend Lifecycle: Batch-Restrict Successfully Toggles Restrictions and Restores Module Access
+    admin_sid_gov, admin_csrf_gov = create_server_session("king", "Super Admin")
+    admin_gov_headers = {"Cookie": f"grace_session_id={admin_sid_gov}; grace_csrf_token={admin_csrf_gov}"}
+
+    # Setup temporary test colleague for governance test
+    test_gov_key = f"gov_{int(time.time())}"
+    wsgi_request("/api/state", "POST", body_dict={
+        "resource": "profiles",
+        "key": test_gov_key,
+        "value": {
+            "name": "Governance Test Colleague",
+            "role": "Growth Marketer",
+            "password": "SecurePasswordGov2026!",
+            "assigned_states": ["Texas"]
+        }
+    }, headers_dict=admin_gov_headers)
+
+    # Restrict test colleague
+    st_rst, _, d_rst = wsgi_request("/api/colleagues/batch-restrict", "POST", 
+                                    body_dict={"keys": [test_gov_key, "king"], "restricted": True}, 
+                                    headers_dict=admin_gov_headers)
+    assert st_rst.startswith("200")
+    rst_res = json.loads(d_rst.decode("utf-8"))
+    assert test_gov_key in rst_res.get("updated", [])
+    assert "king" not in rst_res.get("updated", []), "King Saab must NEVER be restricted by batch-restrict!"
+
+    st_after_rst = read_shared_state()
+    gov_prof = st_after_rst["profiles"][test_gov_key]
+    assert gov_prof["status"] == "Restricted"
+    assert gov_prof["class_tier"] == "Class S"
+    assert gov_prof["allowed"] == [], "Restricted colleague must have zero allowed modules"
+
+    # Restore test colleague access
+    st_act, _, d_act = wsgi_request("/api/colleagues/batch-restrict", "POST", 
+                                    body_dict={"keys": [test_gov_key], "restricted": False}, 
+                                    headers_dict=admin_gov_headers)
+    assert st_act.startswith("200")
+    st_after_act = read_shared_state()
+    gov_prof_act = st_after_act["profiles"][test_gov_key]
+    assert gov_prof_act["status"] == "Online"
+    assert len(gov_prof_act["allowed"]) > 0, "Restored colleague must have modules restored"
+    print("[PASS 49.5] Batch-Restrict and Batch-Activate lifecycle verified with automated module lock/unlock.")
+
+    # 49.6 Backend Lifecycle: Batch-Delete Successfully Purges Colleagues and Sessions
+    st_del, _, d_del = wsgi_request("/api/colleagues/batch-delete", "POST", 
+                                    body_dict={"keys": [test_gov_key, "king"]}, 
+                                    headers_dict=admin_gov_headers)
+    assert st_del.startswith("200")
+    del_res = json.loads(d_del.decode("utf-8"))
+    assert test_gov_key in del_res.get("deleted", [])
+    assert "king" not in del_res.get("deleted", []), "King Saab must NEVER be deleted by batch-delete!"
+
+    st_after_del = read_shared_state()
+    assert test_gov_key not in st_after_del["profiles"], "Deleted colleague must be purged from shared state profiles"
+    print("[PASS 49.6] Batch-Delete successfully purged test colleague while preserving Super Admin root profile.")
+
+    # 49.7 Automated Teardown: Clean up any test accounts created during test run
+    st_final = read_shared_state()
+    keys_to_clean = [k for k in st_final.get("profiles", {}) if k.startswith("argon_") or k.startswith("rogue_") or k.startswith("gov_")]
+    if keys_to_clean:
+        for k in keys_to_clean:
+            st_final["profiles"].pop(k, None)
+            if k in st_final.get("accessMap", {}): st_final["accessMap"].pop(k, None)
+            if k in st_final.get("attendance", {}): st_final["attendance"].pop(k, None)
+            if k in st_final.get("leaves", {}): st_final["leaves"].pop(k, None)
+        from main import write_shared_state
+        write_shared_state(st_final)
+        print(f"[TEARDOWN] Purged {len(keys_to_clean)} transient test profiles: {keys_to_clean}")
+
+    print("\n[SUCCESS] ALL 49 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":

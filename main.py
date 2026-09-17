@@ -1242,6 +1242,10 @@ def _validate_shared_update(payload):
 
     if resource == "profiles":
         key = str(payload.get("key", "")).strip().lower()
+        if value and isinstance(value, dict) and value.get("_action") == "delete":
+            if key == "king":
+                raise ValueError("Super Admin root profile cannot be deleted.")
+            return resource, key, value
         if not re.fullmatch(r"[a-z0-9_\-]{2,32}", key):
             raise ValueError("Invalid colleague key format.")
         if not isinstance(value, dict):
@@ -1310,7 +1314,13 @@ def update_shared_state(payload):
         if resource == "photos":
             state["photos"][key] = value
         elif resource == "profiles":
-            if key not in state["profiles"]:
+            if value and isinstance(value, dict) and value.get("_action") == "delete":
+                if key != "king":
+                    state["profiles"].pop(key, None)
+                    if key in state.get("accessMap", {}): state["accessMap"].pop(key, None)
+                    if key in state.get("attendance", {}): state["attendance"].pop(key, None)
+                    if key in state.get("leaves", {}): state["leaves"].pop(key, None)
+            elif key not in state["profiles"]:
                 # Provision defaults for newly created colleague
                 initials = "".join(part[0].upper() for part in value.get("name", "CO").split()[:2]) or "CO"
                 prof_entry = {
@@ -5138,6 +5148,15 @@ BASE_CSS = """
     .broadcast-overlay-card small { display:block; margin-bottom:22px; color:var(--accent-green); font-size:13px; }
 
     /* COLLEAGUES & TERRITORIES */
+    .colleague-class-filters { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+    .class-filter-pill { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px; background:rgba(255,255,255,0.03); border:1px solid rgba(148,163,184,0.2); color:#94A3B8; font-size:11.5px; font-weight:700; cursor:pointer; transition:all 0.18s ease; }
+    .class-filter-pill:hover { border-color:var(--pill-color, var(--accent-gold)); color:#F8FAFC; }
+    .class-filter-pill.active { background:rgba(214,161,23,0.14); border-color:var(--pill-color, var(--accent-gold)); color:var(--pill-color, var(--accent-gold)); box-shadow:0 0 10px rgba(214,161,23,0.15); }
+    .class-filter-pill .pill-count { background:rgba(0,0,0,0.35); padding:1px 6px; border-radius:10px; font-size:10px; font-family:monospace; }
+    .colleague-card.is-selected { border-color:var(--accent-gold) !important; box-shadow:0 0 16px rgba(214,161,23,0.35) !important; background:rgba(214,161,23,0.05) !important; }
+    .colleague-card.is-restricted-colleague { border-color:rgba(239,68,68,0.45) !important; background:rgba(239,68,68,0.03) !important; }
+    .colleague-bulk-action-bar { position:sticky; top:65px; z-index:999; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 18px; background:rgba(2,36,31,0.96); border:1.5px solid var(--accent-gold); border-radius:12px; box-shadow:0 8px 28px rgba(0,0,0,0.55), 0 0 16px rgba(214,161,23,0.25); backdrop-filter:blur(12px); margin-bottom:14px; }
+
     .colleague-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:18px; }
     .colleague-card { padding:0 !important; border:1px solid var(--border-color); border-radius:14px; background:rgba(16,185,129,.04); overflow:hidden; transition:border-color 0.2s ease, box-shadow 0.2s ease; }
     .colleague-card:hover { border-color:rgba(214,161,23,0.45); }
@@ -7395,6 +7414,207 @@ function filterColleagues(query) {
     }
     if (noResults) {
         noResults.style.display = (matchCount === 0 && cards.length > 0) ? 'block' : 'none';
+    }
+}
+
+// =========================================================================
+// COLLEAGUE SELECTION, BULK OPERATIONS & CLASS FILTERING
+// =========================================================================
+const selectedColleaguesSet = new Set();
+let activeColleagueClassFilter = 'all';
+
+function handleColleagueCheckChange(key, isChecked) {
+    if (isChecked) {
+        selectedColleaguesSet.add(key);
+    } else {
+        selectedColleaguesSet.delete(key);
+    }
+    const card = document.getElementById('colleague-card-' + key);
+    if (card) {
+        card.classList.toggle('is-selected', isChecked);
+    }
+    updateBulkActionBarUI();
+}
+
+function updateBulkActionBarUI() {
+    const bar = document.getElementById('colleague-bulk-bar');
+    const counter = document.getElementById('colleague-selected-count');
+    const count = selectedColleaguesSet.size;
+    if (counter) counter.innerText = String(count);
+    if (bar) {
+        bar.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+function clearAllColleagueSelections() {
+    selectedColleaguesSet.clear();
+    document.querySelectorAll('.colleague-select-checkbox').forEach(chk => {
+        chk.checked = false;
+    });
+    document.querySelectorAll('.colleague-card').forEach(card => {
+        card.classList.remove('is-selected');
+    });
+    updateBulkActionBarUI();
+}
+
+async function executeBatchDeleteColleagues() {
+    const keys = Array.from(selectedColleaguesSet).filter(k => k !== 'king');
+    if (keys.length === 0) {
+        showToast('Please select at least one colleague to delete.', 'warning');
+        return;
+    }
+    if (!confirm('Are you sure you want to permanently delete ' + keys.length + ' selected colleague profile(s)?\n\nThis will remove their login credentials, assigned territories, and system access.')) {
+        return;
+    }
+    try {
+        showToast('Deleting ' + keys.length + ' colleague(s)...', 'info');
+        const resp = await fetch('/api/colleagues/batch-delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ keys: keys })
+        });
+        if (resp.ok) {
+            const data = await resp.json();
+            (data.deleted || keys).forEach(k => {
+                const card = document.getElementById('colleague-card-' + k);
+                if (card) {
+                    card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.92)';
+                    setTimeout(() => card.remove(), 280);
+                }
+                if (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[k]) {
+                    delete PROFILE_DATA[k];
+                }
+                try {
+                    const pwds = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
+                    delete pwds[k];
+                    window.localStorage.setItem('grace-passwords', JSON.stringify(pwds));
+                } catch(e){}
+            });
+            clearAllColleagueSelections();
+            setTimeout(recalcColleagueCounts, 300);
+            if (typeof populateColleaguePickers === 'function') populateColleaguePickers();
+            showToast('Successfully deleted ' + (data.count || keys.length) + ' colleague(s).', 'success');
+        } else {
+            const err = await resp.json();
+            showToast(err.error || 'Failed to delete colleagues.', 'warning');
+        }
+    } catch(e) {
+        console.error('Batch delete error:', e);
+        showToast('Network error while deleting colleagues.', 'error');
+    }
+}
+
+async function executeBatchRestrictColleagues(restrictBool) {
+    const keys = Array.from(selectedColleaguesSet).filter(k => k !== 'king');
+    if (keys.length === 0) {
+        showToast('Please select at least one colleague.', 'warning');
+        return;
+    }
+    const actionLabel = restrictBool ? 'restrict access for' : 'restore access for';
+    if (!confirm('Are you sure you want to ' + actionLabel + ' ' + keys.length + ' selected colleague(s)?')) {
+        return;
+    }
+    try {
+        const resp = await fetch('/api/colleagues/batch-restrict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+            credentials: 'same-origin',
+            body: JSON.stringify({ keys: keys, restricted: restrictBool })
+        });
+        if (resp.ok) {
+            const data = await resp.json();
+            (data.updated || keys).forEach(k => {
+                const card = document.getElementById('colleague-card-' + k);
+                if (card) {
+                    card.classList.toggle('is-restricted-colleague', restrictBool);
+                    card.setAttribute('data-colleague-class', restrictBool ? 'Class S' : 'Class B');
+                    const presence = card.querySelector('.presence');
+                    if (presence) {
+                        presence.innerHTML = restrictBool
+                            ? '<i class="presence-dot" style="background:#EF4444; box-shadow:0 0 8px rgba(239,68,68,0.8);"></i>Restricted'
+                            : '<i class="presence-dot online"></i>Online';
+                        presence.style.color = restrictBool ? '#EF4444' : '';
+                    }
+                }
+                if (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[k]) {
+                    PROFILE_DATA[k].status = restrictBool ? 'Restricted' : 'Online';
+                }
+            });
+            clearAllColleagueSelections();
+            recalcColleagueCounts();
+            showToast('Colleagues ' + (restrictBool ? 'restricted' : 'restored') + ' successfully.', 'success');
+        } else {
+            const err = await resp.json();
+            showToast(err.error || 'Failed to update colleague status.', 'warning');
+        }
+    } catch(e) {
+        console.error('Batch restrict error:', e);
+        showToast('Network error updating colleague status.', 'error');
+    }
+}
+
+async function singleDeleteColleague(key, name) {
+    if (key === 'king') {
+        showToast('Super Admin root profile cannot be deleted.', 'warning');
+        return;
+    }
+    if (!confirm('Are you sure you want to permanently delete colleague \'' + name + '\'?\n\nThis will remove their login credentials and access to the system.')) {
+        return;
+    }
+    selectedColleaguesSet.clear();
+    selectedColleaguesSet.add(key);
+    await executeBatchDeleteColleagues();
+}
+
+async function singleToggleRestrict(key, name, currentlyRestricted) {
+    if (key === 'king') {
+        showToast('Super Admin root profile cannot be restricted.', 'warning');
+        return;
+    }
+    selectedColleaguesSet.clear();
+    selectedColleaguesSet.add(key);
+    await executeBatchRestrictColleagues(!currentlyRestricted);
+}
+
+function filterByClass(classId, pillEl) {
+    activeColleagueClassFilter = classId;
+    document.querySelectorAll('.class-filter-pill').forEach(b => b.classList.remove('active'));
+    if (pillEl) pillEl.classList.add('active');
+    
+    const cards = document.querySelectorAll('.colleague-card');
+    let matchCount = 0;
+    cards.forEach(card => {
+        const cardClass = card.getAttribute('data-colleague-class') || '';
+        const isMatch = (classId === 'all' || cardClass === classId);
+        card.style.display = isMatch ? '' : 'none';
+        if (isMatch) matchCount++;
+    });
+    const counter = document.getElementById('colleague-match-counter');
+    if (counter) {
+        counter.innerText = 'Showing ' + matchCount + ' of ' + cards.length + ' colleagues' + (classId !== 'all' ? ' (' + classId + ')' : '');
+    }
+}
+
+function recalcColleagueCounts() {
+    const cards = document.querySelectorAll('.colleague-card');
+    const counts = { 'all': cards.length, 'Class A': 0, 'Class B': 0, 'Class C': 0, 'Class D': 0, 'Class S': 0 };
+    cards.forEach(card => {
+        const cls = card.getAttribute('data-colleague-class');
+        if (counts[cls] !== undefined) counts[cls]++;
+    });
+    const elAll = document.getElementById('count-all'); if (elAll) elAll.innerText = String(counts['all']);
+    const elA = document.getElementById('count-class-a'); if (elA) elA.innerText = String(counts['Class A']);
+    const elB = document.getElementById('count-class-b'); if (elB) elB.innerText = String(counts['Class B']);
+    const elC = document.getElementById('count-class-c'); if (elC) elC.innerText = String(counts['Class C']);
+    const elD = document.getElementById('count-class-d'); if (elD) elD.innerText = String(counts['Class D']);
+    const elS = document.getElementById('count-class-s'); if (elS) elS.innerText = String(counts['Class S']);
+    
+    const counter = document.getElementById('colleague-match-counter');
+    if (counter) {
+        counter.innerText = 'Showing ' + cards.length + ' of ' + cards.length + ' colleagues';
     }
 }
 
@@ -16115,11 +16335,85 @@ def render_module_detail(mod_id):
     {COMMON_JS}
 </body>
 </html>"""
+COLLEAGUE_CLASSES = {
+    "Class A": {
+        "id": "Class A",
+        "label": "Class A · Leadership",
+        "badge": "CLASS A · EXECUTIVE",
+        "icon": "👑",
+        "color": "#F59E0B",
+        "bg": "rgba(245, 158, 11, 0.15)",
+        "desc": "Executive Leadership, Super Admin & Directors"
+    },
+    "Class B": {
+        "id": "Class B",
+        "label": "Class B · Outreach",
+        "badge": "CLASS B · STRATEGIST",
+        "icon": "🚀",
+        "color": "#10B981",
+        "bg": "rgba(16, 185, 129, 0.15)",
+        "desc": "Campaign Marketers, Growth Leads & Outreach Strategists"
+    },
+    "Class C": {
+        "id": "Class C",
+        "label": "Class C · Collection",
+        "badge": "CLASS C · COLLECTOR",
+        "icon": "📊",
+        "color": "#38BDF8",
+        "bg": "rgba(56, 189, 248, 0.15)",
+        "desc": "Lead Collectors, Field Operations & Quota Specialists"
+    },
+    "Class D": {
+        "id": "Class D",
+        "label": "Class D · Guests / Trial",
+        "badge": "CLASS D · EVALUATOR",
+        "icon": "🎮",
+        "color": "#A855F7",
+        "bg": "rgba(168, 85, 247, 0.15)",
+        "desc": "Trial Users, Product Evaluators & Sandbox IDs"
+    },
+    "Class S": {
+        "id": "Class S",
+        "label": "Class S · Restricted",
+        "badge": "CLASS S · RESTRICTED",
+        "icon": "🚫",
+        "color": "#EF4444",
+        "bg": "rgba(239, 68, 68, 0.15)",
+        "desc": "Suspended Access, Zero Modules & Locked Credentials"
+    }
+}
+
+def resolve_colleague_class(key, info):
+    status = str(info.get("status", "Online")).strip()
+    if status in ("Restricted", "Suspended"):
+        return "Class S", COLLEAGUE_CLASSES["Class S"]
+    
+    stored = info.get("class_tier")
+    if stored and stored in COLLEAGUE_CLASSES:
+        return stored, COLLEAGUE_CLASSES[stored]
+    
+    k_lower = key.lower()
+    role_lower = str(info.get("role", "")).lower()
+    
+    if "guest" in role_lower or "evaluator" in role_lower or "demo" in role_lower or "trial" in role_lower or k_lower == "guest":
+        return "Class D", COLLEAGUE_CLASSES["Class D"]
+    elif "collector" in role_lower or "data" in role_lower or "quota" in role_lower:
+        return "Class C", COLLEAGUE_CLASSES["Class C"]
+    elif "marketer" in role_lower or "strategist" in role_lower or "growth" in role_lower or "outreach" in role_lower or "campaign" in role_lower:
+        return "Class B", COLLEAGUE_CLASSES["Class B"]
+    elif k_lower == "king" or "admin" in role_lower or "director" in role_lower or "lead" in role_lower:
+        return "Class A", COLLEAGUE_CLASSES["Class A"]
+    else:
+        return "Class B", COLLEAGUE_CLASSES["Class B"]
+
 def render_colleagues(current_user=None):
     stored_state = read_shared_state()
     profiles_dict = stored_state.get("profiles", DEFAULT_PROFILES)
     if current_user and current_user != "king" and current_user in profiles_dict:
         profiles_dict = {current_user: profiles_dict[current_user]}
+
+    # Class distribution counts
+    class_counts = {"all": len(profiles_dict), "Class A": 0, "Class B": 0, "Class C": 0, "Class D": 0, "Class S": 0}
 
     cards_html = ""
     for key, info in profiles_dict.items():
@@ -16127,10 +16421,11 @@ def render_colleagues(current_user=None):
         role = info.get("role", "")
         software_id = info.get("software_id", "")
         status = info.get("status", "Online")
+        is_restricted = (status in ("Restricted", "Suspended"))
         initials = info.get("initials", "KS")
         tags = info.get("tags", [])
         assigned_states = info.get("assigned_states", [])
-        allowed_modules = info.get("allowed", list(range(1, 23)))
+        allowed_modules = info.get("allowed", list(range(1, 23))) if not is_restricted else []
 
         assigned_contractors = info.get("assigned_contractors", [])
         tags_html = "".join(f'<span class="tag">{tag}</span>' for tag in tags)
@@ -16142,9 +16437,13 @@ def render_colleagues(current_user=None):
         if not contractors_badges:
             contractors_badges = '<span style="color:var(--text-muted);font-size:11px;">No contractors assigned (Max 2)</span>'
 
+        cls_key, cls_meta = resolve_colleague_class(key, info)
+        if cls_key in class_counts:
+            class_counts[cls_key] += 1
+
         permission_html = "".join(
             f'<label class="permission-item" title="{MODULES_DATA.get(module_id, {}).get("name", "")}">'
-            f'<input type="checkbox" {"checked" if module_id in allowed_modules else ""} onchange="savePermission(\'{key}\', {module_id}, this.checked)">'
+            f'<input type="checkbox" {"checked" if module_id in allowed_modules else ""} {"disabled" if is_restricted else ""} onchange="savePermission(\'{key}\', {module_id}, this.checked)">'
             f'<span class="perm-badge">M{module_id}</span>'
             f'<span class="perm-icon">{MODULES_DATA.get(module_id, {}).get("icon", "•")}</span>'
             f'<span class="perm-title">{MODULES_DATA.get(module_id, {}).get("name", "")}</span>'
@@ -16157,14 +16456,35 @@ def render_colleagues(current_user=None):
         contractors_summary = f"{len(assigned_contractors)}/2 Contractors" if assigned_contractors else "0/2 Contractors"
         states_summary = f"{len(assigned_states)}/2 States" if assigned_states else "0/2 States"
 
+        # Checkbox vs King Crown Lock
+        if key == "king":
+            select_ctrl_html = '<div class="king-crown-lock" title="Super Admin Account (Root Guarded &amp; Protected)" style="display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:6px; background:rgba(214,161,23,0.15); border:1px solid var(--accent-gold); color:var(--accent-gold); font-size:12px; flex-shrink:0;">👑</div>'
+            admin_card_actions_html = ""
+        else:
+            select_ctrl_html = f'<label class="colleague-checkbox-label" onclick="event.stopPropagation();" title="Select {name} for batch action" style="display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;"><input type="checkbox" class="colleague-select-checkbox" data-colleague-key="{key}" data-colleague-name="{name}" onchange="handleColleagueCheckChange(\'{key}\', this.checked)" style="width:17px; height:17px; cursor:pointer; accent-color:var(--accent-gold);"></label>'
+            if is_restricted:
+                restrict_btn = f'<button type="button" class="btn btn-green" onclick="singleToggleRestrict(\'{key}\', \'{name}\', true)" style="font-size:11.5px; padding:6px 12px; display:inline-flex; align-items:center; gap:5px;">✅ Activate Access</button>'
+            else:
+                restrict_btn = f'<button type="button" class="btn btn-orange" onclick="singleToggleRestrict(\'{key}\', \'{name}\', false)" style="font-size:11.5px; padding:6px 12px; display:inline-flex; align-items:center; gap:5px;">🚫 Restrict Access</button>'
+            delete_btn = f'<button type="button" class="btn btn-red" onclick="singleDeleteColleague(\'{key}\', \'{name}\')" style="font-size:11.5px; padding:6px 12px; background:#DC2626; border-color:#EF4444; color:#FFF; display:inline-flex; align-items:center; gap:5px;">🗑️ Remove Colleague</button>'
+            admin_card_actions_html = f'{restrict_btn} {delete_btn}'
+
+        restricted_banner_html = '<div style="margin:8px 0 4px; padding:6px 10px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); border-radius:6px; color:#FCA5A5; font-size:11px; font-weight:700;">⚠️ Colleague access is RESTRICTED. Operational outreach modules and workspace login are locked.</div>' if is_restricted else ''
+
+        presence_html = '<span class="presence" style="color:#EF4444;"><i class="presence-dot" style="background:#EF4444; box-shadow:0 0 8px rgba(239,68,68,0.8);"></i>Restricted</span>' if is_restricted else f'<span class="presence"><i class="presence-dot {online_class}"></i>{status}</span>'
+
+        card_restricted_class = "is-restricted-colleague" if is_restricted else ""
+
         cards_html += f"""
-        <article class="colleague-card" data-colleague-card="{key}" id="colleague-card-{key}">
+        <article class="colleague-card {card_restricted_class}" data-colleague-card="{key}" data-colleague-class="{cls_key}" id="colleague-card-{key}">
             <div class="colleague-head" onclick="toggleColleagueExpand('{key}')" title="Click to expand/collapse full profile details">
+                {select_ctrl_html}
                 <div id="avatar-{key}" class="avatar" role="img" aria-label="{name} profile picture" data-profile-avatar="{key}" data-initials="{initials}" onclick="event.stopPropagation(); openProfilePhotoPreviewModal('{key}')" title="Click to view full profile photo" style="cursor:pointer;">{initials}</div>
                 <div class="colleague-head-info" style="flex:1; min-width:0;">
                     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         <div class="colleague-name">{name_display}</div>
                         <span class="colleague-role-tag" style="font-size:11px; padding:2px 8px; border-radius:6px; background:rgba(16,185,129,0.12); color:var(--accent-green); border:1px solid rgba(16,185,129,0.25); font-weight:700;">{role}</span>
+                        <span class="colleague-class-tag" style="font-size:10px; padding:2px 7px; border-radius:6px; background:{cls_meta['bg']}; color:{cls_meta['color']}; border:1px solid {cls_meta['color']}; font-weight:800; letter-spacing:0.4px;">{cls_meta['badge']}</span>
                         <span class="colleague-id-tag" style="font-size:10.5px; font-family:monospace; color:var(--text-muted);">{software_id}</span>
                     </div>
                     <div class="colleague-quick-summary" style="display:flex; gap:8px; align-items:center; margin-top:5px; flex-wrap:wrap;">
@@ -16176,7 +16496,7 @@ def render_colleagues(current_user=None):
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:12px; margin-left:auto; flex-shrink:0;">
-                    <span class="presence"><i class="presence-dot {online_class}"></i>{status}</span>
+                    {presence_html}
                     <button type="button" class="colleague-expand-btn" id="expand-btn-{key}" onclick="event.stopPropagation(); toggleColleagueExpand('{key}')" aria-label="Toggle details for {name}" title="Click to toggle full details">
                         <svg class="colleague-chevron-icon" id="chevron-{key}" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
@@ -16185,8 +16505,10 @@ def render_colleagues(current_user=None):
                 </div>
             </div>
             <div class="colleague-details-drawer" id="colleague-details-{key}" hidden>
+                {restricted_banner_html}
                 <div class="colleague-meta">
                     <span>Software ID: <b>{software_id}</b></span>
+                    <span>Class Tier: <b style="color:{cls_meta['color']};">{cls_meta['label']}</b></span>
                     <span>Access scope: <b>{len(allowed_modules)} of 22 modules</b></span>
                     <div class="tag-list">{tags_html}</div>
                     <div style="margin-top:4px;">
@@ -16203,6 +16525,7 @@ def render_colleagues(current_user=None):
                     <button class="btn btn-gold" onclick="openAddAccountModal('{key}', '{name}')">🔑 Add Account</button>
                     <button class="btn btn-gray" onclick="triggerAvatarUpload('{key}')">📷 Update Photo</button>
                     <button class="btn btn-gray" onclick="changeViewAs('{key}')">👁️ View As</button>
+                    {admin_card_actions_html}
                 </div>
                 <div class="colleague-vault-box" style="margin-top:12px; padding:12px 14px; background:rgba(0,26,23,0.7); border-radius:10px; border:1px solid #123B35;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -16274,19 +16597,64 @@ def render_colleagues(current_user=None):
             </div>
         </div>
 
+        <!-- Colleague Classes Filter Ribbon -->
+        <div class="colleague-class-filters" style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;">
+            <span style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-right:4px;">CLASSES:</span>
+            <button type="button" class="class-filter-pill active" id="class-pill-all" onclick="filterByClass('all', this)" style="--pill-color:var(--accent-gold);">
+                🌐 All <span class="pill-count" id="count-all">{class_counts['all']}</span>
+            </button>
+            <button type="button" class="class-filter-pill" id="class-pill-class-a" onclick="filterByClass('Class A', this)" style="--pill-color:#F59E0B;">
+                👑 Class A · Leadership <span class="pill-count" id="count-class-a">{class_counts['Class A']}</span>
+            </button>
+            <button type="button" class="class-filter-pill" id="class-pill-class-b" onclick="filterByClass('Class B', this)" style="--pill-color:#10B981;">
+                🚀 Class B · Outreach <span class="pill-count" id="count-class-b">{class_counts['Class B']}</span>
+            </button>
+            <button type="button" class="class-filter-pill" id="class-pill-class-c" onclick="filterByClass('Class C', this)" style="--pill-color:#38BDF8;">
+                📊 Class C · Collection <span class="pill-count" id="count-class-c">{class_counts['Class C']}</span>
+            </button>
+            <button type="button" class="class-filter-pill" id="class-pill-class-d" onclick="filterByClass('Class D', this)" style="--pill-color:#A855F7;">
+                🎮 Class D · Evaluators <span class="pill-count" id="count-class-d">{class_counts['Class D']}</span>
+            </button>
+            <button type="button" class="class-filter-pill" id="class-pill-class-s" onclick="filterByClass('Class S', this)" style="--pill-color:#EF4444;">
+                🚫 Class S · Restricted <span class="pill-count" id="count-class-s">{class_counts['Class S']}</span>
+            </button>
+        </div>
+
         <!-- Colleague Real-Time Search & Accordion Controls Toolbar -->
-        <div class="colleague-toolbar-card" style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; padding:12px 16px; background:rgba(0,26,23,0.55); border:1px solid #123B35; border-radius:12px; flex-wrap:wrap;">
+        <div class="colleague-toolbar-card" style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; padding:12px 16px; background:rgba(0,26,23,0.55); border:1px solid #123B35; border-radius:12px; flex-wrap:wrap;">
             <div class="colleague-search-box-wrap" style="position:relative; flex:1; min-width:240px; max-width:480px;">
                 <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none; opacity:0.8;">🔍</span>
                 <input type="text" id="colleague-search-input" placeholder="Search colleague by name, role, software ID, or contractor..." oninput="filterColleagues(this.value)" style="width:100%; padding:9px 34px 9px 36px; background:rgba(0,18,15,0.85); border:1px solid #123B35; border-radius:8px; color:#F8FAFC; font-size:13px; outline:none; transition:border-color 0.2s, box-shadow 0.2s;" onfocus="this.style.borderColor='var(--accent-gold)'; this.style.boxShadow='0 0 10px rgba(214,161,23,0.25)';" onblur="this.style.borderColor='#123B35'; this.style.boxShadow='none';" />
                 <button type="button" id="colleague-search-clear" onclick="clearColleagueSearch()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:13px; display:none;" title="Clear search">✕</button>
             </div>
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <span id="colleague-match-counter" style="font-size:12px; color:var(--accent-green); font-weight:700;">Showing 4 of 4 colleagues</span>
+                <span id="colleague-match-counter" style="font-size:12px; color:var(--accent-green); font-weight:700;">Showing {len(profiles_dict)} of {len(profiles_dict)} colleagues</span>
                 <div style="display:flex; gap:6px;">
                     <button type="button" class="btn btn-sm btn-gray" onclick="expandAllColleagues(true)" title="Expand all colleague profiles" style="font-size:11.5px; padding:5px 11px;">⊞ Expand All</button>
                     <button type="button" class="btn btn-sm btn-gray" onclick="expandAllColleagues(false)" title="Collapse all profiles to basic view" style="font-size:11.5px; padding:5px 11px;">⊟ Collapse All</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Floating / Sticky Multi-Select Executive Action Bar -->
+        <div id="colleague-bulk-bar" class="colleague-bulk-action-bar" style="display:none;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:18px;">☑️</span>
+                <span style="font-size:13px; font-weight:700; color:#F8FAFC;">Selected: <b id="colleague-selected-count" style="color:var(--accent-gold); font-size:15px;">0</b> Colleague(s)</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-sm btn-red" onclick="executeBatchDeleteColleagues()" style="font-size:12px; padding:6px 14px; background:#DC2626; border-color:#EF4444; color:#FFF; font-weight:700; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(220,38,38,0.35); cursor:pointer;">
+                    🗑️ Delete Selected
+                </button>
+                <button type="button" class="btn btn-sm btn-orange" onclick="executeBatchRestrictColleagues(true)" style="font-size:12px; padding:6px 14px; background:#D97706; border-color:#F59E0B; color:#FFF; font-weight:700; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(217,119,6,0.35); cursor:pointer;">
+                    🚫 Restrict Access
+                </button>
+                <button type="button" class="btn btn-sm btn-green" onclick="executeBatchRestrictColleagues(false)" style="font-size:12px; padding:6px 14px; background:#059669; border-color:#10B981; color:#FFF; font-weight:700; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(5,150,105,0.35); cursor:pointer;">
+                    ✅ Activate Access
+                </button>
+                <button type="button" class="btn btn-sm btn-gray" onclick="clearAllColleagueSelections()" style="font-size:11.5px; padding:5px 11px; cursor:pointer;">
+                    ✕ Deselect
+                </button>
             </div>
         </div>
 
@@ -17667,6 +18035,107 @@ def app(environ, start_response):
                     ("Cache-Control", "no-cache, no-store, must-revalidate")
                 ])
                 return [res_payload]
+
+        # 10. Server-Side State Persistence API (GET & POST) with Colleague Isolation & RBAC
+                # 9.8 Colleague Lifecycle Governance: Batch Delete & Batch Restrict Endpoints (Super Admin Only)
+        if cleaned_path == "/api/colleagues/batch-delete" and method == "POST":
+            if not is_super_admin:
+                if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
+                    err = json.dumps({"error": "Unauthorized: Authentication required.", "status": 401}).encode("utf-8")
+                    secure_start_response("401 Unauthorized", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                    return [err]
+                err = json.dumps({"error": "Forbidden: Only Super Admin can delete colleague profiles.", "status": 403}).encode("utf-8")
+                secure_start_response("403 Forbidden", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                return [err]
+
+            try:
+                content_length = int(environ.get("CONTENT_LENGTH", 0))
+                body_bytes = environ["wsgi.input"].read(content_length) if content_length > 0 else b"{}"
+                req = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+                keys_to_delete = req.get("keys", [])
+                if isinstance(keys_to_delete, str):
+                    keys_to_delete = [keys_to_delete]
+
+                deleted = []
+                with SHARED_STATE_LOCK:
+                    st = _read_shared_state_unlocked()
+                    for k in keys_to_delete:
+                        clean_k = str(k).strip().lower()
+                        if clean_k and clean_k != "king" and clean_k in st.get("profiles", {}):
+                            st["profiles"].pop(clean_k, None)
+                            if clean_k in st.get("accessMap", {}):
+                                st["accessMap"].pop(clean_k, None)
+                            if clean_k in st.get("attendance", {}):
+                                st["attendance"].pop(clean_k, None)
+                            if clean_k in st.get("leaves", {}):
+                                st["leaves"].pop(clean_k, None)
+                            revoke_all_user_sessions(clean_k)
+                            deleted.append(clean_k)
+                    _write_shared_state_unlocked(st)
+
+                record_audit_event("COLLEAGUES_DELETED", f"Super Admin permanently deleted {len(deleted)} colleague(s): {', '.join(deleted)}", user="King Saab", role="Super Admin")
+                resp_payload = json.dumps({"status": "ok", "deleted": deleted, "count": len(deleted)}).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(resp_payload)))])
+                return [resp_payload]
+            except Exception as exc:
+                logger.exception("Error in batch-delete colleagues: %s", exc)
+                err_payload = json.dumps({"error": "Failed to delete colleagues.", "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_payload)))])
+                return [err_payload]
+
+        if cleaned_path == "/api/colleagues/batch-restrict" and method == "POST":
+            if not is_super_admin:
+                if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
+                    err = json.dumps({"error": "Unauthorized: Authentication required.", "status": 401}).encode("utf-8")
+                    secure_start_response("401 Unauthorized", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                    return [err]
+                err = json.dumps({"error": "Forbidden: Only Super Admin can restrict colleague profiles.", "status": 403}).encode("utf-8")
+                secure_start_response("403 Forbidden", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                return [err]
+
+            try:
+                content_length = int(environ.get("CONTENT_LENGTH", 0))
+                body_bytes = environ["wsgi.input"].read(content_length) if content_length > 0 else b"{}"
+                req = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+                keys_to_restrict = req.get("keys", [])
+                restrict_action = bool(req.get("restricted", True))
+                if isinstance(keys_to_restrict, str):
+                    keys_to_restrict = [keys_to_restrict]
+
+                updated = []
+                with SHARED_STATE_LOCK:
+                    st = _read_shared_state_unlocked()
+                    for k in keys_to_restrict:
+                        clean_k = str(k).strip().lower()
+                        if clean_k and clean_k != "king" and clean_k in st.get("profiles", {}):
+                            prof = st["profiles"][clean_k]
+                            if restrict_action:
+                                prof["status"] = "Restricted"
+                                prof["class_tier"] = "Class S"
+                                prof["allowed_backup"] = prof.get("allowed", [1,2,6,7,13,16])
+                                prof["allowed"] = []
+                                st.setdefault("accessMap", {})[clean_k] = []
+                                revoke_all_user_sessions(clean_k)
+                            else:
+                                prof["status"] = "Online"
+                                restored_mods = prof.get("allowed_backup", [1,2,6,7,13,16]) or [1,2,6,7,13,16]
+                                prof["allowed"] = restored_mods
+                                st.setdefault("accessMap", {})[clean_k] = restored_mods
+                                if prof.get("class_tier") == "Class S":
+                                    prof["class_tier"] = "Class B"
+                            updated.append(clean_k)
+                    _write_shared_state_unlocked(st)
+
+                action_verb = "restricted" if restrict_action else "activated"
+                record_audit_event("COLLEAGUES_RESTRICTED", f"Super Admin {action_verb} {len(updated)} colleague(s): {', '.join(updated)}", user="King Saab", role="Super Admin")
+                resp_payload = json.dumps({"status": "ok", "updated": updated, "restricted": restrict_action, "count": len(updated)}).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(resp_payload)))])
+                return [resp_payload]
+            except Exception as exc:
+                logger.exception("Error in batch-restrict colleagues: %s", exc)
+                err_payload = json.dumps({"error": "Failed to update colleague restrictions.", "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_payload)))])
+                return [err_payload]
 
         # 10. Server-Side State Persistence API (GET & POST) with Colleague Isolation & RBAC
         if cleaned_path == "/api/state":
