@@ -1717,6 +1717,17 @@ def run_tests():
         assert expected_keyword in html_leg, f"Expected '{expected_keyword}' in body of {l_url}"
     print("[PASS 50.6] Query Routing verified: ?tab=legal-privacy and ?tab=legal-terms directly render legal documents.")
 
+    # 50.7 User Settings Modal, System Update Popups, and Platform Versioning
+    _, _, root_bytes = wsgi_request("/", "GET")
+    root_str = root_bytes.decode("utf-8")
+    assert "v2.5.0" in root_str, "Platform version v2.5.0 must be rendered in header/DOM"
+    assert 'class="version-tag"' in root_str, "Missing version-tag badge in DOM"
+    assert "v2.5.0 PRO MAX" in root_str, "Missing version badge in User Settings modal"
+    assert "updateProfileDisplay" in root_str, "updateProfileDisplay function must be defined in frontend JS"
+    assert "btn-save-user-settings" in root_str, "Missing btn-save-user-settings button in User Settings modal"
+    assert "z-index:1000000 !important" in root_str, "toast-region must have z-index:1000000 !important so popups float over modals"
+    print("[PASS 50.7] User Settings Modal verified: v2.5.0 version badge, top-layer toast z-index, and updateProfileDisplay confirmed.")
+
     print("\n[SUCCESS] ALL 50 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 

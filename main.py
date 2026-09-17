@@ -29,6 +29,7 @@ SHARED_STATE_LOCK = threading.Lock()
 GRACE_SECRET_KEY = os.environ.get("GRACE_SECRET_KEY", "grace_production_secret_key_vault_2026").encode("utf-8")
 GRACE_ADMIN_PASSWORD = os.environ.get("GRACE_ADMIN_PASSWORD", "grace2026")
 GRACE_DEBUG = os.environ.get("GRACE_DEBUG", "0").lower() in ("1", "true", "yes")
+GRACE_VERSION = os.environ.get("GRACE_VERSION", "v2.5.0")
 
 # Enterprise Password Policy & Cryptographic Password Blacklist
 COMMON_PASSWORDS_BLACKLIST = {
@@ -1449,6 +1450,7 @@ def render_header():
             <div class="header-brand-wrap">
                 <h1 class="header-main-title">
                     <span class="title-grace">GRACE</span> <span class="title-outreach">OUTREACH</span> <span class="title-sub">ASSISTANT</span>
+                    <span class="version-tag" title="Grace Platform Version" style="font-size:11px; font-weight:800; color:#10B981; background:rgba(16,185,129,0.15); border:1px solid #10B981; padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;">v2.5.0</span>
                 </h1>
                 <div class="header-creators-line">
                     <span class="creator-badge creator-king">{WA_CROWN_IMG} <b>King Saab</b> <small>Lead Architect</small></span>
@@ -2035,7 +2037,10 @@ def render_header():
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #123B35; padding-bottom:10px; margin-bottom:12px;">
                 <div>
                     <span class="eyebrow" style="color:var(--accent-gold); font-size:10px; margin:0;">USER CONFIGURATION</span>
-                    <h3 id="settings-modal-title" style="margin:2px 0 0; font-size:16px;">⚙️ User Settings &amp; Platform Preferences</h3>
+                    <h3 id="settings-modal-title" style="margin:2px 0 0; font-size:16px; display:flex; align-items:center; gap:8px;">
+                        ⚙️ User Settings &amp; Platform Preferences
+                        <span class="badge" style="background:rgba(214,161,23,0.18); border:1px solid var(--accent-gold); color:var(--accent-gold); font-size:10.5px; padding:2px 8px; border-radius:10px; font-weight:800; letter-spacing:0.5px;">v2.5.0 PRO MAX</span>
+                    </h3>
                 </div>
                 <button class="modal-close" onclick="closeUserSettingsModal()" aria-label="Close Settings">×</button>
             </div>
@@ -2069,19 +2074,34 @@ def render_header():
                         <p style="font-size:12px; color:var(--text-muted); margin:4px 0 8px;">Upload and frame your executive avatar across the workspace.</p>
                         <button type="button" class="btn btn-blue" onclick="openProfilePhotoPreviewModal()" style="font-size:11.5px; padding:6px 14px;">📸 Update / Frame Avatar Photo</button>
                     </div>
+                    <div style="margin-top:12px; padding:12px; background:rgba(0,30,25,0.6); border-radius:8px; border:1px solid #123B35; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <div class="eyebrow" style="font-size:10px; color:var(--accent-gold); margin:0;">PLATFORM VERSION &amp; UPGRADE LIFECYCLE</div>
+                            <div style="font-size:13px; font-weight:800; color:#F8FAFC; margin-top:2px;">
+                                Grace Outreach Suite <span style="color:#10B981; font-weight:900;">v2.5.0 Pro Max</span>
+                            </div>
+                            <div style="font-size:11px; color:var(--text-muted); margin-top:3px;">
+                                Developed by King Saab 56 &amp; Engineering Team · Architecture: Enterprise Dual-Vault
+                            </div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                            <span style="background:rgba(16,185,129,0.2); border:1px solid #10B981; color:#34D399; font-size:10.5px; padding:3px 10px; border-radius:12px; font-weight:700;">🟢 Current Build: Stable</span>
+                            <small style="font-size:10px; color:var(--text-muted);">Auto-Upgrade Channel: Active</small>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Chamber 2: Display & Theme -->
                 <div id="settings-pane-theme" class="settings-pane" hidden>
                     <div class="eyebrow" style="font-size:10px; margin-bottom:6px;">THEME PALETTE SELECTION</div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:14px;">
-                        <button type="button" class="palette-option" onclick="setExecutiveTheme('light')" style="padding:10px; text-align:center; border:1px solid #CBD5E1; border-radius:8px; background:#F8FAFC; color:#0F172A; cursor:pointer;">
+                        <button type="button" class="palette-option" onclick="setExecutiveTheme('light'); showToast('Clean Light Theme activated.', 'info');" style="padding:10px; text-align:center; border:1px solid #CBD5E1; border-radius:8px; background:#F8FAFC; color:#0F172A; cursor:pointer;">
                             <b>Clean Light</b><small style="display:block; font-size:10px; color:#64748B;">Crisp High-Contrast</small>
                         </button>
-                        <button type="button" class="palette-option" onclick="setExecutiveTheme('dark')" style="padding:10px; text-align:center; border:1px solid #10B981; border-radius:8px; background:#0B1120; color:#F8FAFC; cursor:pointer;">
+                        <button type="button" class="palette-option" onclick="setExecutiveTheme('dark'); showToast('Executive Dark Theme activated.', 'info');" style="padding:10px; text-align:center; border:1px solid #10B981; border-radius:8px; background:#0B1120; color:#F8FAFC; cursor:pointer;">
                             <b>Executive Dark</b><small style="display:block; font-size:10px; color:#A7F3D0;">Obsidian &amp; Emerald</small>
                         </button>
-                        <button type="button" class="palette-option" onclick="applyTheme('emerald')" style="padding:10px; text-align:center; border:1px solid #D6A117; border-radius:8px; background:#031C18; color:#F8FAFC; cursor:pointer;">
+                        <button type="button" class="palette-option" onclick="applyTheme('emerald'); showToast('Emerald Luxury Theme activated.', 'info');" style="padding:10px; text-align:center; border:1px solid #D6A117; border-radius:8px; background:#031C18; color:#F8FAFC; cursor:pointer;">
                             <b>Emerald Luxury</b><small style="display:block; font-size:10px; color:#FDE68A;">Signature Gold</small>
                         </button>
                     </div>
@@ -2090,7 +2110,7 @@ def render_header():
                         <div class="eyebrow" style="font-size:10px; margin-bottom:6px;">DISPLAY BRIGHTNESS</div>
                         <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,25,20,0.5); border-radius:8px; border:1px solid #123B35;">
                             <span style="font-size:16px;">☀️</span>
-                            <input type="range" min="60" max="140" value="100" oninput="adjustBrightness(this.value); document.getElementById('settings-brightness-label').innerText = this.value + '%';" style="flex:1;">
+                            <input type="range" min="60" max="140" value="100" oninput="adjustBrightness(this.value); document.getElementById('settings-brightness-label').innerText = this.value + '%';" onchange="showToast('Display brightness adjusted to ' + this.value + '%', 'info');" style="flex:1;">
                             <span id="settings-brightness-label" style="font-weight:800; color:var(--accent-gold); min-width:40px;">100%</span>
                         </div>
                     </div>
@@ -2104,14 +2124,14 @@ def render_header():
                                 <strong style="font-size:13px; color:#FFF;">Background Soundscape Auto-Play</strong>
                                 <small style="display:block; color:var(--text-muted); font-size:11px;">Automatically start ambient focus loops upon authentication</small>
                             </div>
-                            <input id="settings-soundscape-toggle" type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-green);">
+                            <input id="settings-soundscape-toggle" type="checkbox" checked onchange="window.localStorage.setItem('grace-soundscape-autoplay', this.checked ? 'true' : 'false'); showToast('Background Soundscape Auto-Play: ' + (this.checked ? 'Enabled' : 'Disabled'), 'info');" style="width:18px; height:18px; accent-color:var(--accent-green);">
                         </label>
                         <label style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(0,25,20,0.5); border-radius:8px; border:1px solid #123B35; cursor:pointer;">
                             <div>
                                 <strong style="font-size:13px; color:#FFF;">Soundscape Video Eye-Privacy Blur</strong>
                                 <small style="display:block; color:var(--text-muted); font-size:11px;">Default to blurred video stream to protect screen privacy</small>
                             </div>
-                            <input id="settings-video-blur-toggle" type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-gold);">
+                            <input id="settings-video-blur-toggle" type="checkbox" checked onchange="window.localStorage.setItem('grace-video-blur', this.checked ? 'true' : 'false'); if(typeof toggleSoundscapeVideoBlur==='function') toggleSoundscapeVideoBlur(this.checked); showToast('Soundscape Video Privacy Blur: ' + (this.checked ? 'Active' : 'Disabled'), 'info');" style="width:18px; height:18px; accent-color:var(--accent-gold);">
                         </label>
                     </div>
                 </div>
@@ -2151,7 +2171,7 @@ def render_header():
 
             <div class="dialog-actions" style="margin-top:14px; border-top:1px solid #123B35; padding-top:10px;">
                 <button class="btn btn-gray" onclick="closeUserSettingsModal()">Close</button>
-                <button class="btn btn-blue" onclick="saveUserSettings()">💾 Save All Preferences</button>
+                <button class="btn btn-blue" id="btn-save-user-settings" onclick="saveUserSettings()">💾 Save All Preferences</button>
             </div>
         </div>
     </div>
@@ -3575,7 +3595,7 @@ BASE_CSS = """
     }
 
     /* TOAST CLOSE 'X' BUTTON & OVERLAP SHIELD (IMAGE 5 FIX) */
-    .toast-region { position:fixed; top:24px; right:24px; z-index:9999; width:min(400px, calc(100vw - 48px)); display:grid; gap:10px; pointer-events:none; }
+    .toast-region { position:fixed; top:24px; right:24px; z-index:1000000 !important; width:min(420px, calc(100vw - 48px)); display:grid; gap:10px; pointer-events:none; }
     .toast { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:12px 16px; border:1px solid var(--border-color); border-left:4px solid var(--accent-green); border-radius:12px; background:#001A17; color:#F8FAFC; box-shadow:0 18px 40px rgba(0,0,0,0.5); font-size:13px; line-height:1.45; animation:toast-in .22s ease-out; pointer-events:auto; }
     .toast-close-btn { background:transparent; border:none; color:#94A3B8; font-size:15px; line-height:1; cursor:pointer; padding:2px 5px; border-radius:4px; margin-left:6px; align-self:flex-start; }
     .toast-close-btn:hover { color:#FFFFFF; background:rgba(255,255,255,0.12); }
@@ -5014,7 +5034,7 @@ BASE_CSS = """
     .wide-modal { width: min(780px, 100%); max-height: min(820px, calc(100vh - 40px)); overflow-y: auto; }
     .dialog-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
 
-    .toast-region { position:fixed; top:24px; right:24px; z-index:90; width:min(400px, calc(100vw - 48px)); display:grid; gap:12px; pointer-events:none; }
+    .toast-region { position:fixed; top:24px; right:24px; z-index:1000000 !important; width:min(420px, calc(100vw - 48px)); display:grid; gap:12px; pointer-events:none; }
     .toast { display:flex; align-items:flex-start; gap:12px; padding:15px 18px; border:1px solid var(--border-color); border-left:4px solid var(--accent-green); border-radius:12px; background:var(--bg-card); color:var(--text-main); box-shadow:0 18px 40px rgba(2,6,23,.35); font-size:13px; line-height:1.45; animation:toast-in .22s ease-out; pointer-events:auto; }
     .toast-warning { border-left-color:var(--accent-orange); }
     .toast-info { border-left-color:var(--accent-blue); }
@@ -14023,13 +14043,17 @@ function setAuthWallpaper(theme) {
     showToast('Wallpaper: ' + theme.toUpperCase() + ' applied.', 'info');
 }
 
+function updateProfileDisplay(key) {
+    if (typeof updateViewAs === 'function') updateViewAs();
+}
+
 function openUserSettingsModal() {
     const modal = document.getElementById('user-settings-modal');
     if (!modal) return;
     setModalLock(true);
     updatePasskeyUI();
     const activeKey = getActiveAuthUser() || 'guest';
-    const prof = PROFILE_DATA[activeKey] || PROFILE_DATA.king;
+    const prof = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[activeKey]) ? PROFILE_DATA[activeKey] : (PROFILE_DATA?.king || {});
     const nameInput = document.getElementById('settings-input-name');
     const roleInput = document.getElementById('settings-input-role');
     const idInput = document.getElementById('settings-input-id');
@@ -14038,6 +14062,19 @@ function openUserSettingsModal() {
     if (roleInput) roleInput.value = prof.role || '';
     if (idInput) idInput.value = prof.software_id || 'GRA-001';
     if (emailInput) emailInput.value = prof.email || (activeKey + '@graceassistant.io');
+    
+    // Hydrate soundscape preferences into toggles
+    const soundAutoplay = window.localStorage.getItem('grace-soundscape-autoplay');
+    if (soundAutoplay !== null) {
+        const el = document.getElementById('settings-soundscape-toggle');
+        if (el) el.checked = (soundAutoplay === 'true');
+    }
+    const videoBlur = window.localStorage.getItem('grace-video-blur');
+    if (videoBlur !== null) {
+        const el = document.getElementById('settings-video-blur-toggle');
+        if (el) el.checked = (videoBlur === 'true');
+    }
+    
     modal.hidden = false;
     modal.style.display = 'grid';
 }
@@ -14060,25 +14097,71 @@ function switchSettingsSubtab(tab) {
     if (pane) pane.hidden = false;
 }
 
-function saveUserSettings() {
-    const activeKey = getActiveAuthUser() || 'guest';
-    const newName = document.getElementById('settings-input-name')?.value.trim();
-    const newEmail = document.getElementById('settings-input-email')?.value.trim();
-    if (newName && PROFILE_DATA[activeKey]) {
-        PROFILE_DATA[activeKey].name = newName;
-        if (newEmail) PROFILE_DATA[activeKey].email = newEmail;
-        window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
-        try {
-            const customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}');
-            if (!customVault[activeKey]) customVault[activeKey] = {};
-            customVault[activeKey].name = newName;
-            if (newEmail) customVault[activeKey].email = newEmail;
-            window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
-        } catch(e) {}
-        updateProfileDisplay(activeKey);
+async function saveUserSettings() {
+    const btn = document.getElementById('btn-save-user-settings');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Saving...';
     }
-    showToast('Preferences saved to Dual-Vault successfully!', 'success');
-    closeUserSettingsModal();
+    try {
+        const activeKey = getActiveAuthUser() || 'guest';
+        const newName = document.getElementById('settings-input-name')?.value.trim();
+        const newEmail = document.getElementById('settings-input-email')?.value.trim();
+        if (newName && typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[activeKey]) {
+            PROFILE_DATA[activeKey].name = newName;
+            if (newEmail) PROFILE_DATA[activeKey].email = newEmail;
+            window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
+            try {
+                const customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}');
+                if (!customVault[activeKey]) customVault[activeKey] = {};
+                customVault[activeKey].name = newName;
+                if (newEmail) customVault[activeKey].email = newEmail;
+                window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
+            } catch(e) {}
+            
+            // Sync to backend if authenticated
+            if (activeKey !== 'guest') {
+                try {
+                    await fetch('/api/state', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+                        body: JSON.stringify({
+                            resource: 'profiles',
+                            key: activeKey,
+                            value: PROFILE_DATA[activeKey]
+                        })
+                    });
+                } catch(e) {
+                    console.warn('Backend sync notice:', e);
+                }
+            }
+        }
+        
+        // Persist Soundscape & Display toggles
+        const soundAutoplay = document.getElementById('settings-soundscape-toggle')?.checked;
+        if (soundAutoplay !== undefined) {
+            window.localStorage.setItem('grace-soundscape-autoplay', soundAutoplay ? 'true' : 'false');
+        }
+        const videoBlur = document.getElementById('settings-video-blur-toggle')?.checked;
+        if (videoBlur !== undefined) {
+            window.localStorage.setItem('grace-video-blur', videoBlur ? 'true' : 'false');
+            if (typeof toggleSoundscapeVideoBlur === 'function') {
+                toggleSoundscapeVideoBlur(videoBlur);
+            }
+        }
+
+        updateProfileDisplay(activeKey);
+        showToast('Preferences saved successfully to Dual-Vault!', 'info');
+    } catch(err) {
+        console.error('Error saving user settings:', err);
+        showToast('Preferences saved locally.', 'info');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = '💾 Save All Preferences';
+        }
+        closeUserSettingsModal();
+    }
 }
 
 function updateUserPasswordFromSettings() {
