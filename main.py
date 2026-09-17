@@ -385,6 +385,9 @@ RATE_LIMITER = RateLimiter()
 
 # Enterprise HTTP Security Headers (OWASP & SOC2 Compliant)
 DEFAULT_SECURITY_HEADERS = [
+    ("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0"),
+    ("Pragma", "no-cache"),
+    ("Expires", "0"),
     ("X-Content-Type-Options", "nosniff"),
     ("X-Frame-Options", "SAMEORIGIN"),
     ("X-XSS-Protection", "1; mode=block"),
@@ -2305,8 +2308,11 @@ def render_header():
                     <label style="display:flex; flex-direction:column; font-size:12px; font-weight:700;">
                         Password / App Password
                         <div style="position:relative; margin-top:6px;">
-                            <input type="password" id="account-password-input" placeholder="Password or 16-digit Google App Password" style="width:100%; padding:9px 36px 9px 12px; border-radius:8px; background:var(--bg-card); border:1px solid #123B35; color:var(--text-primary); font-size:13px; box-sizing:border-box;" required>
-                            <button type="button" onclick="toggleFormPasswordVisibility('account-password-input', this)" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px;" title="Toggle Password Visibility">👁️</button>
+                            <input type="password" id="account-password-input" placeholder="Password or 16-digit Google App Password" style="width:100%; padding:9px 12px; border-radius:8px; background:var(--bg-card); border:1px solid #123B35; color:var(--text-primary); font-size:13px; box-sizing:border-box;" required>
+                            <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:4px; user-select:none;">
+                                <input type="checkbox" onchange="toggleFormPasswordVisibility('account-password-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </label>
                 </div>
@@ -2623,21 +2629,30 @@ def render_header():
                 </p>
                 <div style="display:flex; flex-direction:column; gap:10px; max-width:440px;">
                     <label style="font-size:11.5px; font-weight:700;">Current Admin Password
-                        <div style="position:relative; display:flex; align-items:center; margin-top:3px;">
-                            <input id="admin-pwd-current" type="password" placeholder="Enter current admin password" style="width:100%; box-sizing:border-box; padding:8px 34px 8px 10px; font-size:12px;">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('admin-pwd-current', this)" title="Show/Hide Password">👁️</button>
+                        <div style="margin-top:3px;">
+                            <input id="admin-pwd-current" type="password" placeholder="Enter current admin password" style="width:100%; box-sizing:border-box; padding:8px 10px; font-size:12px;">
+                            <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('admin-pwd-current', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </label>
                     <label style="font-size:11.5px; font-weight:700;">New Admin Password
-                        <div style="position:relative; display:flex; align-items:center; margin-top:3px;">
-                            <input id="admin-pwd-new" type="password" placeholder="Enter new strong password" style="width:100%; box-sizing:border-box; padding:8px 34px 8px 10px; font-size:12px;">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('admin-pwd-new', this)" title="Show/Hide Password">👁️</button>
+                        <div style="margin-top:3px;">
+                            <input id="admin-pwd-new" type="password" placeholder="Enter new strong password" style="width:100%; box-sizing:border-box; padding:8px 10px; font-size:12px;">
+                            <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('admin-pwd-new', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </label>
                     <label style="font-size:11.5px; font-weight:700;">Confirm New Admin Password
-                        <div style="position:relative; display:flex; align-items:center; margin-top:3px;">
-                            <input id="admin-pwd-confirm" type="password" placeholder="Re-enter new password" style="width:100%; box-sizing:border-box; padding:8px 34px 8px 10px; font-size:12px;">
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('admin-pwd-confirm', this)" title="Show/Hide Password">👁️</button>
+                        <div style="margin-top:3px;">
+                            <input id="admin-pwd-confirm" type="password" placeholder="Re-enter new password" style="width:100%; box-sizing:border-box; padding:8px 10px; font-size:12px;">
+                            <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
+                                <input type="checkbox" onchange="togglePasswordVisibility('admin-pwd-confirm', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                <span>Show password</span>
+                            </label>
                         </div>
                     </label>
                     <div style="margin-top:6px;">
@@ -2671,16 +2686,22 @@ def render_header():
                         </label>
 
                         <label style="font-size:11.5px; font-weight:700;">New Master Vault Key
-                            <div style="position:relative; display:flex; align-items:center; margin-top:3px;">
-                                <input id="vault-new-key-input" type="password" placeholder="Enter new Master Vault Key" style="width:100%; box-sizing:border-box; padding:8px 34px 8px 10px; font-size:12px;">
-                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('vault-new-key-input', this)" title="Show/Hide Password">👁️</button>
+                            <div style="margin-top:3px;">
+                                <input id="vault-new-key-input" type="password" placeholder="Enter new Master Vault Key" style="width:100%; box-sizing:border-box; padding:8px 10px; font-size:12px;">
+                                <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
+                                    <input type="checkbox" onchange="togglePasswordVisibility('vault-new-key-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                    <span>Show password</span>
+                                </label>
                             </div>
                         </label>
 
                         <label style="font-size:11.5px; font-weight:700;">Confirm New Master Vault Key
-                            <div style="position:relative; display:flex; align-items:center; margin-top:3px;">
-                                <input id="vault-confirm-key-input" type="password" placeholder="Re-enter new key" style="width:100%; box-sizing:border-box; padding:8px 34px 8px 10px; font-size:12px;">
-                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('vault-confirm-key-input', this)" title="Show/Hide Password">👁️</button>
+                            <div style="margin-top:3px;">
+                                <input id="vault-confirm-key-input" type="password" placeholder="Re-enter new key" style="width:100%; box-sizing:border-box; padding:8px 10px; font-size:12px;">
+                                <label class="password-toggle-btn" style="font-size:10.5px; color:#94A3B8; cursor:pointer; display:inline-flex; align-items:center; gap:5px; margin-top:3px; user-select:none;">
+                                    <input type="checkbox" onchange="togglePasswordVisibility('vault-confirm-key-input', this)" style="accent-color:#10B981; cursor:pointer; width:12px; height:12px;">
+                                    <span>Show password</span>
+                                </label>
                             </div>
                         </label>
 
@@ -7151,7 +7172,7 @@ function togglePasswordVisibility(inputId, triggerEl) {
     } else {
         el.type = el.type === 'password' ? 'text' : 'password';
         if (triggerEl && typeof triggerEl === 'object' && triggerEl.innerText) {
-            triggerEl.innerText = el.type === 'password' ? '👁️' : '🙈';
+            triggerEl.innerText = el.type === 'password' ? 'Show' : 'Hide';
         }
     }
 }
@@ -12748,12 +12769,16 @@ function loadAccountForEdit(accId) {
 function toggleFormPasswordVisibility(inputId, btn) {
     const input = document.getElementById(inputId);
     if (!input) return;
+    if (btn && btn.type === 'checkbox') {
+        input.type = btn.checked ? 'text' : 'password';
+        return;
+    }
     if (input.type === 'password') {
         input.type = 'text';
-        if (btn) btn.innerText = '🔒';
+        if (btn) btn.innerText = 'Hide';
     } else {
         input.type = 'password';
-        if (btn) btn.innerText = '👁️';
+        if (btn) btn.innerText = 'Show';
     }
 }
 
@@ -17089,6 +17114,9 @@ def app(environ, start_response):
             response_headers = [
                 ("Content-Type", "text/html; charset=utf-8"),
                 ("Content-Length", str(len(data))),
+                ("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0"),
+                ("Pragma", "no-cache"),
+                ("Expires", "0"),
             ]
             if "grace_csrf_token" not in cookies:
                 csrf_bootstrap = secrets.token_urlsafe(32)
