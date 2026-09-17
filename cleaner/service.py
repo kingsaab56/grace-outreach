@@ -1,6 +1,7 @@
-﻿import sys
+import sys
 import os
 from config.database import get_connection
+from collector.contractor_harvester import validate_contractor_email
 
 C_TITLE = "\033[38;5;48m"   # Mint Green
 C_INFO  = "\033[38;5;220m"  # Gold
@@ -11,12 +12,12 @@ C_BOLD  = "\033[1m"
 
 
 def run_cleaner():
-    print(f"\n{C_TITLE}{C_BOLD}========== EMAIL CLEANER & VALIDATOR =========={C_RST}\n")
+    print(f"\n{C_TITLE}{C_BOLD}========== EMAIL CLEANER & VALIDATOR (DNS/MX VERIFIED) =========={C_RST}\n")
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT id, email FROM contacts WHERE status IS NULL OR status = ''")
+        cursor.execute("SELECT id, email FROM contacts WHERE status IS NULL OR status = '' OR status = 'new'")
         rows = cursor.fetchall()
 
         if not rows:
@@ -28,7 +29,8 @@ def run_cleaner():
 
         for row_id, email in rows:
             clean_email = str(email).strip().lower()
-            if "@" in clean_email and "." in clean_email.split("@")[-1]:
+            is_valid, reason = validate_contractor_email(clean_email)
+            if is_valid:
                 cursor.execute("UPDATE contacts SET email = ?, status = 'valid' WHERE id = ?", (clean_email, row_id))
                 cleaned_count += 1
             else:

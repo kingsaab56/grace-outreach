@@ -14932,6 +14932,180 @@ function applyTenantIsolation(activeKey) {
         params.set('view', next);
         window.location.search = params.toString();
     }
+    function toggleCustomTradeField(val) {
+        var wrap = document.getElementById('cli-custom-trade-wrap');
+        if (wrap) wrap.style.display = (val === 'custom') ? 'block' : 'none';
+    }
+
+    function toggleCustomStateField(val) {
+        var wrap = document.getElementById('cli-custom-state-wrap');
+        if (wrap) wrap.style.display = (val === 'custom') ? 'block' : 'none';
+    }
+
+    function loadSampleContractorDork() {
+        var sample = 'Google Search Query: Custom home builders "GA" "@gmail.com"\n\n' +
+            '1. Apex Home Builders Atlanta: mark.apexbuilders@gmail.com - Custom modern residences, Atlanta GA\n' +
+            '2. Southern Living Contractors: info.southerncraft@gmail.com - Residential & remodeling GA\n' +
+            '3. Non-existent domain link: test@nonexistentdomain92837492834.com (will be rejected by DNS pre-check)\n' +
+            '4. Platform footer email: support@google.com (will be rejected as platform junk)\n' +
+            '5. Georgia HVAC Pro: atlanta.mep.hvac@gmail.com - Mechanical & ductwork design GA';
+        var area = document.getElementById('cli-collector-raw-input');
+        if (area) {
+            area.value = sample;
+            showToast('Loaded sample Google search dork results for GA builders & HVAC!', 'info');
+        }
+    }
+
+    async function executeContractorHarvester() {
+        var rawText = document.getElementById('cli-collector-raw-input')?.value.trim();
+        if (!rawText) {
+            showToast('Please paste Google search results, dorks, or email text first.', 'warning');
+            return;
+        }
+        var tradeSelect = document.getElementById('cli-trade-select')?.value || 'Custom Home Builders & Remodelers';
+        var customTrade = document.getElementById('cli-custom-trade-input')?.value.trim() || '';
+        var stateSelect = document.getElementById('cli-state-select')?.value || 'GA';
+        var customState = document.getElementById('cli-custom-state-input')?.value.trim() || '';
+        var finalState = (stateSelect === 'custom' && customState) ? customState : stateSelect;
+
+        var btn = document.getElementById('btn-harvest-contractors');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '⚡ Checking DNS/MX & Verifying...';
+        }
+
+        try {
+            var res = await fetch('/api/cli/contractors/collect', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': (typeof getCsrfToken === 'function' ? getCsrfToken() : '')},
+                body: JSON.stringify({
+                    raw_text: rawText,
+                    state: finalState,
+                    trade: tradeSelect,
+                    custom_trade: customTrade
+                })
+            });
+            var data = await res.json();
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message, 'success');
+                var resBox = document.getElementById('cli-harvest-results-box');
+                if (resBox) resBox.style.display = 'block';
+                document.getElementById('res-stat-extracted').innerText = data.total_extracted;
+                document.getElementById('res-stat-saved').innerText = data.valid_saved;
+                document.getElementById('res-stat-rejected').innerText = data.rejected_count;
+                document.getElementById('res-stat-total-db').innerText = data.total_valid_in_db;
+
+                var html = '<div style="margin-top:14px; overflow-x:auto;"><table><thead><tr><th>Type</th><th>Email</th><th>Details / Reason</th><th>Status</th></tr></thead><tbody>';
+                (data.valid_leads || []).forEach(function(l) {
+                    html += '<tr><td><span style="color:var(--accent-green);font-weight:800;">● VALID</span></td><td><b>' + l.email + '</b></td><td>' + l.name + ' · ' + (l.contractor_category || '') + ' (' + l.state + ')</td><td><span class="status-pill status-active">100% DNS/MX Verified</span></td></tr>';
+                });
+                (data.rejected_leads || []).forEach(function(r) {
+                    html += '<tr><td><span style="color:var(--accent-red);font-weight:800;">✕ REJECTED</span></td><td><s>' + r.email + '</s></td><td style="color:#FCA5A5;">' + r.reason + '</td><td><span style="color:var(--accent-red);font-size:11px;font-weight:800;">Blocked from DB</span></td></tr>';
+                });
+                html += '</tbody></table></div>';
+                var wrap = document.getElementById('cli-harvest-breakdown-wrap');
+                if (wrap) wrap.innerHTML = html;
+            } else {
+                showToast('Error: ' + (data.error || 'Failed to process contractor leads.'), 'error');
+            }
+        } catch (e) {
+            showToast('Network error during contractor lead ingestion.', 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '⚡ Extract, Verify DNS/MX & Save to Database';
+            }
+        }
+    }
+
+    async function executeDeepCleanerSweep() {
+        var btn = document.getElementById('btn-run-deep-cleaner');
+        if (btn) { btn.disabled = true; btn.innerText = 'Running Deep MX Resolution...'; }
+        try {
+            var res = await fetch('/api/cli/cleaner/run-deep', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': (typeof getCsrfToken === 'function' ? getCsrfToken() : '')},
+                body: JSON.stringify({})
+            });
+            var data = await res.json();
+            if (res.ok && data.status === 'ok') {
+                showToast(data.msg, 'success');
+                var box = document.getElementById('cli-cleaner-result-box');
+                if (box) {
+                    box.style.display = 'block';
+                    box.innerHTML = '<b>Sweep Completed:</b> ' + data.total_valid + ' valid emails verified. ' + data.total_invalid + ' dead domains flagged (' + data.newly_flagged_invalid + ' newly eliminated).';
+                }
+            } else {
+                showToast('Cleaner error: ' + (data.error || 'Failed'), 'error');
+            }
+        } catch (e) {
+            showToast('Error executing cleaner sweep.', 'error');
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerText = '🛡️ Run Deep DNS/MX Cleaner Sweep Now'; }
+        }
+    }
+
+    async function executeRealtimeCampaignCreation() {
+        var name = document.getElementById('cli-camp-name')?.value.trim() || 'Contractor Outreach';
+        var state = document.getElementById('cli-camp-state')?.value || 'GA';
+        var trade = document.getElementById('cli-camp-trade')?.value || 'Custom Home Builders';
+        var limit = parseInt(document.getElementById('cli-camp-limit')?.value || 25, 10);
+        var sub = document.getElementById('cli-camp-sub')?.value.trim();
+        var body = document.getElementById('cli-camp-body')?.value.trim();
+
+        try {
+            var res = await fetch('/api/cli/campaigns/create-realtime', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': (typeof getCsrfToken === 'function' ? getCsrfToken() : '')},
+                body: JSON.stringify({ name: name, state_filter: state, trade_filter: trade, limit: limit, subject: sub, body: body })
+            });
+            var data = await res.json();
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message, 'success');
+                var box = document.getElementById('cli-camp-result-box');
+                if (box) {
+                    box.style.display = 'block';
+                    box.innerHTML = '<b>Campaign Created:</b> ID #' + data.campaign_id + ' with ' + data.total_queued + ' contractor leads queued and ready for dispatch.';
+                }
+            } else {
+                showToast('Notice: ' + (data.message || data.error), 'warning');
+            }
+        } catch (e) {
+            showToast('Network error creating campaign.', 'error');
+        }
+    }
+
+    async function executeRealtimeDraftCreation() {
+        var profVal = document.getElementById('cli-draft-profile')?.value || 'Profile 17|calvin.gracearchitectures.llc@gmail.com';
+        var parts = profVal.split('|');
+        var prof = parts[0];
+        var email = parts[1] || '';
+        var state = document.getElementById('cli-draft-state')?.value || 'GA';
+        var limit = parseInt(document.getElementById('cli-draft-limit')?.value || 10, 10);
+        var sub = document.getElementById('cli-draft-sub')?.value.trim();
+        var body = document.getElementById('cli-draft-body')?.value.trim();
+
+        try {
+            var res = await fetch('/api/cli/drafts/create-realtime', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': (typeof getCsrfToken === 'function' ? getCsrfToken() : '')},
+                body: JSON.stringify({ profile_name: prof, account_email: email, state_filter: state, limit: limit, subject: sub, body: body })
+            });
+            var data = await res.json();
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message, 'success');
+                var box = document.getElementById('cli-draft-result-box');
+                if (box) {
+                    box.style.display = 'block';
+                    box.innerHTML = '<b>Drafts Generated:</b> ' + data.created + ' contractor drafts created (' + data.gmail_created + ' live Gmail drafts, ' + data.queued + ' in Draft Queue).';
+                }
+            } else {
+                showToast('Draft notice: ' + (data.message || data.error), 'warning');
+            }
+        } catch (e) {
+            showToast('Network error creating drafts.', 'error');
+        }
+    }
 </script>
 """
 
@@ -15841,8 +16015,99 @@ def get_module_user_friendly_guide_html(m_id):
     </div>
     """
 
-def get_module_workspace_html(m_id):
+def get_module_workspace_html(m_id, view_mode="cli"):
     if m_id == 1:
+        if view_mode == "cli":
+            return """
+        <div class="module-panel" style="margin-bottom:22px; border:2px solid #00F0FF; background:#011A17; box-shadow:0 0 20px rgba(0,240,255,0.15); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:10px; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <span class="eyebrow" style="color:#00F0FF; font-weight:800;">MODULE 01 DIRECT WORKSPACE · CLI TOOL [1] · CONTRACTOR LEAD HARVESTER</span>
+                    <h3 style="margin:4px 0 0; font-size:18px; color:#FFFFFF;">🏗️ Universal Contractor Email Harvester &amp; Zero-Bounce Pre-Validator</h3>
+                </div>
+                <span class="step-badge" style="background:rgba(0,240,255,0.15); color:#00F0FF; border:1px solid #00F0FF;">⚡ Live DNS / MX Shield Active</span>
+            </div>
+
+            <!-- Trade & State Selection Row -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-bottom:14px;">
+                <div>
+                    <label style="font-size:12px; font-weight:700; color:#00F0FF; display:block; margin-bottom:6px;">Target Contractor Trade / Niche:
+                        <select id="cli-trade-select" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #00F0FF; border-radius:6px; color:#FFFFFF;" onchange="toggleCustomTradeField(this.value)">
+                            <option value="Custom Home Builders & Remodelers">🏗️ Custom Home Builders &amp; Remodelers</option>
+                            <option value="Mechanical & HVAC Contractors (Ductwork & Layout)">❄️ Mechanical &amp; HVAC Contractors</option>
+                            <option value="Electrical Contractors (Power, Lighting & Panels)">⚡ Electrical Contractors</option>
+                            <option value="Plumbing Contractors (Water, Waste, Vent & Piping)">🔧 Plumbing Contractors</option>
+                            <option value="Structural & Framing Contractors (Foundations & Beams)">📐 Structural &amp; Framing Contractors</option>
+                            <option value="Architectural Design Studios (2D/3D & Permits)">🏛️ Architectural Design Studios</option>
+                            <option value="custom">✏️ Custom Trade (Type your own below)</option>
+                        </select>
+                    </label>
+                    <div id="cli-custom-trade-wrap" style="display:none; margin-top:8px;">
+                        <input type="text" id="cli-custom-trade-input" placeholder="Type custom trade (e.g. Roofing, Solar, Drywall, Painting...)" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #F59E0B; border-radius:6px; color:#FFFFFF;">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:12px; font-weight:700; color:#00F0FF; display:block; margin-bottom:6px;">Target US State:
+                        <select id="cli-state-select" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #00F0FF; border-radius:6px; color:#FFFFFF;" onchange="toggleCustomStateField(this.value)">
+                            <option value="GA">Georgia (GA) · Atlanta &amp; Savannah Hub</option>
+                            <option value="TX">Texas (TX) · Dallas, Austin, Houston</option>
+                            <option value="FL">Florida (FL) · Miami, Orlando, Tampa</option>
+                            <option value="CA">California (CA) · LA &amp; Bay Area</option>
+                            <option value="NC">North Carolina (NC) · Charlotte &amp; Raleigh</option>
+                            <option value="NY">New York (NY) · Tri-State</option>
+                            <option value="ALL">All 50 US States (National)</option>
+                            <option value="custom">✏️ Custom State Code...</option>
+                        </select>
+                    </label>
+                    <div id="cli-custom-state-wrap" style="display:none; margin-top:8px;">
+                        <input type="text" id="cli-custom-state-input" placeholder="Enter 2-letter state code (e.g. OH, IL, CO, AZ...)" maxlength="2" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #F59E0B; border-radius:6px; color:#FFFFFF; text-transform:uppercase;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw Textarea for Google Search Results / Dorks -->
+            <label style="font-size:12px; font-weight:700; color:#94A3B8; display:block; margin-bottom:6px;">
+                Paste Google Search Results, Dork Outputs (e.g. Custom home builders "GA" "@gmail.com" or HVAC "TX" "@gmail.com"), or Raw Email Lists:
+                <textarea id="cli-collector-raw-input" rows="5" placeholder="Paste search text, dork snippets, or contractor emails here... Our engine automatically removes platform links (Google/Facebook/Wix), eliminates dead domains, and checks DNS/MX deliverability before saving." style="width:100%; padding:10px 14px; background:#021F1B; border:1px solid rgba(0,240,255,0.3); border-radius:8px; color:#FFFFFF; font-family:monospace; font-size:12px; line-height:1.5;"></textarea>
+            </label>
+
+            <!-- Action Buttons -->
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; margin-bottom:14px;">
+                <button type="button" class="btn" id="btn-harvest-contractors" onclick="executeContractorHarvester()" style="background:#00F0FF; color:#021411; font-weight:800; font-size:13px; padding:9px 20px; border-radius:6px; border:none; cursor:pointer;">
+                    ⚡ Extract, Verify DNS/MX &amp; Save to Database
+                </button>
+                <button type="button" class="btn btn-gray" onclick="document.getElementById('cli-collector-raw-input').value = ''; showToast('Paste buffer cleared.', 'info');" style="font-size:12px; padding:8px 14px;">
+                    🧹 Clear Box
+                </button>
+                <button type="button" class="btn btn-gray" onclick="loadSampleContractorDork()" style="font-size:12px; padding:8px 14px; border:1px dashed #00F0FF; color:#00F0FF;">
+                    📋 Load Sample Google Dork Results
+                </button>
+            </div>
+
+            <!-- Live Harvest Result Box -->
+            <div id="cli-harvest-results-box" style="display:none; margin-top:16px; border-top:1px solid rgba(0,240,255,0.2); padding-top:14px;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:14px;">
+                    <div class="hud-gauge-card" style="padding:12px; text-align:center; border-color:rgba(0,240,255,0.4);">
+                        <span style="font-size:10px; color:#94A3B8;">EXTRACTED</span>
+                        <b id="res-stat-extracted" style="font-size:18px; color:#FFFFFF; display:block; margin-top:4px;">0</b>
+                    </div>
+                    <div class="hud-gauge-card" style="padding:12px; text-align:center; border-color:var(--accent-green);">
+                        <span style="font-size:10px; color:var(--accent-green);">VERIFIED &amp; SAVED (LIVE MX)</span>
+                        <b id="res-stat-saved" style="font-size:18px; color:var(--accent-green); display:block; margin-top:4px;">0</b>
+                    </div>
+                    <div class="hud-gauge-card" style="padding:12px; text-align:center; border-color:var(--accent-red);">
+                        <span style="font-size:10px; color:var(--accent-red);">BOUNCES &amp; JUNK REJECTED</span>
+                        <b id="res-stat-rejected" style="font-size:18px; color:var(--accent-red); display:block; margin-top:4px;">0</b>
+                    </div>
+                    <div class="hud-gauge-card" style="padding:12px; text-align:center; border-color:var(--accent-gold);">
+                        <span style="font-size:10px; color:var(--accent-gold);">TOTAL IN DATABASE</span>
+                        <b id="res-stat-total-db" style="font-size:18px; color:var(--accent-gold); display:block; margin-top:4px;">0</b>
+                    </div>
+                </div>
+                <div id="cli-harvest-breakdown-wrap"></div>
+            </div>
+        </div>
+        """
         return """
         <div class="module-panel" style="margin-bottom:22px; border:1px solid var(--accent-gold);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -15878,6 +16143,27 @@ def get_module_workspace_html(m_id):
         </div>
         """
     elif m_id == 2:
+        if view_mode == "cli":
+            return """
+        <div class="module-panel" style="margin-bottom:22px; border:2px solid #10B981; background:#011A17; box-shadow:0 0 20px rgba(16,185,129,0.15); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(16,185,129,0.25); padding-bottom:10px;">
+                <div>
+                    <span class="eyebrow" style="color:var(--accent-green); font-weight:800;">MODULE 02 DIRECT WORKSPACE · CLI TOOL [2] · EMAIL CLEANER &amp; DNS/MX VALIDATOR</span>
+                    <h3 style="margin:4px 0 0; font-size:18px; color:#FFFFFF;">🧹 Deep Database MX Resolution &amp; Zero-Bounce Cleaner Sweep</h3>
+                </div>
+                <span class="step-badge" style="background:rgba(16,185,129,0.15); color:var(--accent-green); border:1px solid var(--accent-green);">● Active DB Shield</span>
+            </div>
+            <p style="font-size:13px; color:#94A3B8; margin-bottom:14px;">
+                Scans all pending and unverified contacts in your database, checks DNS/MX records against active mail exchangers, and eliminates dead domains before outreach is launched.
+            </p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+                <button type="button" class="btn btn-green" id="btn-run-deep-cleaner" onclick="executeDeepCleanerSweep()" style="font-weight:800; padding:9px 20px; font-size:13px;">
+                    🛡️ Run Deep DNS/MX Cleaner Sweep Now
+                </button>
+            </div>
+            <div id="cli-cleaner-result-box" style="display:none; padding:12px 16px; border-radius:8px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); font-size:13px; color:#FFFFFF;"></div>
+        </div>
+        """
         return """
         <div class="module-panel" style="margin-bottom:22px; border:1px solid var(--accent-gold);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -15917,6 +16203,65 @@ def get_module_workspace_html(m_id):
         </div>
         """
     elif m_id == 3:
+        if view_mode == "cli":
+            return """
+        <div class="module-panel" style="margin-bottom:22px; border:2px solid #38BDF8; background:#011A17; box-shadow:0 0 20px rgba(56,189,248,0.15); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(56,189,248,0.25); padding-bottom:10px;">
+                <div>
+                    <span class="eyebrow" style="color:#38BDF8; font-weight:800;">MODULE 03 DIRECT WORKSPACE · CLI TOOL [3] · CAMPAIGN MANAGER</span>
+                    <h3 style="margin:4px 0 0; font-size:18px; color:#FFFFFF;">🚀 Real-Time Contractor Campaign Creator &amp; Queue Dispatcher</h3>
+                </div>
+                <span class="step-badge" style="background:rgba(56,189,248,0.15); color:#38BDF8; border:1px solid #38BDF8;">⚡ Real-Time Engine Armed</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:12px;">
+                <label style="font-size:12px; font-weight:700; color:#38BDF8;">Campaign Name:
+                    <input type="text" id="cli-camp-name" value="Georgia Custom Builders Q3 2026" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #38BDF8; border-radius:6px; color:#FFFFFF;">
+                </label>
+                <label style="font-size:12px; font-weight:700; color:#38BDF8;">Target US State Filter:
+                    <select id="cli-camp-state" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #38BDF8; border-radius:6px; color:#FFFFFF;">
+                        <option value="GA">Georgia (GA)</option>
+                        <option value="TX">Texas (TX)</option>
+                        <option value="FL">Florida (FL)</option>
+                        <option value="CA">California (CA)</option>
+                        <option value="ALL">All States</option>
+                    </select>
+                </label>
+                <label style="font-size:12px; font-weight:700; color:#38BDF8;">Trade Category Filter:
+                    <select id="cli-camp-trade" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #38BDF8; border-radius:6px; color:#FFFFFF;">
+                        <option value="Custom Home Builders">Custom Home Builders</option>
+                        <option value="Mechanical & HVAC">Mechanical &amp; HVAC</option>
+                        <option value="Electrical">Electrical Contractors</option>
+                        <option value="Plumbing">Plumbing Contractors</option>
+                        <option value="Structural">Structural &amp; Framing</option>
+                        <option value="Architectural">Architectural Studios</option>
+                        <option value="ALL">All Trades</option>
+                    </select>
+                </label>
+                <label style="font-size:12px; font-weight:700; color:#38BDF8;">Recipient Batch Limit:
+                    <input type="number" id="cli-camp-limit" value="25" min="1" max="500" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #38BDF8; border-radius:6px; color:#FFFFFF;">
+                </label>
+            </div>
+            <label style="font-size:12px; font-weight:700; color:#94A3B8; display:block; margin-bottom:6px;">Email Subject Line (Personalized with {name}, {company}, {trade}, {state}):
+                <input type="text" id="cli-camp-sub" value="2D/3D Permit &amp; Architectural Modeling Support for {company}" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:#FFFFFF; margin-bottom:10px;">
+            </label>
+            <label style="font-size:12px; font-weight:700; color:#94A3B8; display:block; margin-bottom:6px;">Email Body Template:
+                <textarea id="cli-camp-body" rows="4" style="width:100%; padding:10px 12px; background:#022C28; border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:#FFFFFF; font-family:inherit; font-size:12px; line-height:1.4;">Hi {name},
+
+We noticed your professional work at {company} in {state}. We specialize in 2D architectural permit sets, 3D modeling, and engineering coordination (structural/MEP/HVAC) for quality {trade}.
+
+Would you be open to reviewing our sample permit drawing package?
+
+Best regards,
+King Saab · Grace Outreach Assistant</textarea>
+            </label>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button type="button" class="btn" onclick="executeRealtimeCampaignCreation()" style="background:#38BDF8; color:#021411; font-weight:800; padding:9px 20px; border-radius:6px; border:none; cursor:pointer;">
+                    🚀 Create Real-Time Campaign &amp; Queue Outreaches
+                </button>
+            </div>
+            <div id="cli-camp-result-box" style="display:none; margin-top:14px; padding:12px 16px; border-radius:8px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:#FFFFFF; font-size:13px;"></div>
+        </div>
+        """
         return """
         <div class="module-panel" style="margin-bottom:22px; border:1px solid var(--accent-gold);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -16351,7 +16696,58 @@ def get_module_workspace_html(m_id):
             </div>
         </div>
         """
-    elif m_id == 15:
+    elif m_id in (15, 21):
+        if view_mode == "cli":
+            mod_tag = f"MODULE {m_id:02d} DIRECT WORKSPACE"
+            return """
+        <div class="module-panel" style="margin-bottom:22px; border:2px solid #F59E0B; background:#011A17; box-shadow:0 0 20px rgba(245,158,11,0.15); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid rgba(245,158,11,0.25); padding-bottom:10px;">
+                <div>
+                    <span class="eyebrow" style="color:#F59E0B; font-weight:800;">""" + mod_tag + """ · CLI TOOL [15/21] · GMAIL DRAFT ASSISTANT &amp; QUEUE</span>
+                    <h3 style="margin:4px 0 0; font-size:18px; color:#FFFFFF;">✉️ Real-Time Gmail Draft Generator &amp; Multi-Inbox Sync</h3>
+                </div>
+                <span class="step-badge" style="background:rgba(245,158,11,0.15); color:#F59E0B; border:1px solid #F59E0B;">⚡ Direct Gmail API Hook</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:12px;">
+                <label style="font-size:12px; font-weight:700; color:#F59E0B;">Sending Profile:
+                    <select id="cli-draft-profile" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #F59E0B; border-radius:6px; color:#FFFFFF;">
+                        <option value="Profile 17|calvin.gracearchitectures.llc@gmail.com">Profile 17 (calvin.gracearchitectures.llc@gmail.com)</option>
+                        <option value="Profile 24|brydon.gracearchitectures.llc@gmail.com">Profile 24 (brydon.gracearchitectures.llc@gmail.com)</option>
+                        <option value="Profile 22|nicolas.gracearchitectures.us@gmail.com">Profile 22 (nicolas.gracearchitectures.us@gmail.com)</option>
+                        <option value="Profile 6|malikshani928014@gmail.com">Profile 6 (malikshani928014@gmail.com)</option>
+                    </select>
+                </label>
+                <label style="font-size:12px; font-weight:700; color:#F59E0B;">Target State Filter:
+                    <select id="cli-draft-state" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #F59E0B; border-radius:6px; color:#FFFFFF;">
+                        <option value="GA">Georgia (GA)</option>
+                        <option value="TX">Texas (TX)</option>
+                        <option value="FL">Florida (FL)</option>
+                        <option value="ALL">All States</option>
+                    </select>
+                </label>
+                <label style="font-size:12px; font-weight:700; color:#F59E0B;">Draft Limit:
+                    <input type="number" id="cli-draft-limit" value="10" min="1" max="100" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid #F59E0B; border-radius:6px; color:#FFFFFF;">
+                </label>
+            </div>
+            <label style="font-size:12px; font-weight:700; color:#94A3B8; display:block; margin-bottom:6px;">Draft Subject:
+                <input type="text" id="cli-draft-sub" value="Quick question regarding {trade} project in {state}" style="width:100%; padding:8px 12px; background:#022C28; border:1px solid rgba(245,158,11,0.3); border-radius:6px; color:#FFFFFF; margin-bottom:10px;">
+            </label>
+            <label style="font-size:12px; font-weight:700; color:#94A3B8; display:block; margin-bottom:6px;">Draft Body:
+                <textarea id="cli-draft-body" rows="3" style="width:100%; padding:10px 12px; background:#022C28; border:1px solid rgba(245,158,11,0.3); border-radius:6px; color:#FFFFFF; font-family:inherit; font-size:12px;">Hi {name},
+
+We reviewed your recent {trade} work at {company} and would love to collaborate on 2D permit drawings and 3D modeling.
+
+Best regards,
+King Saab · Grace Assistant</textarea>
+            </label>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button type="button" class="btn" onclick="executeRealtimeDraftCreation()" style="background:#F59E0B; color:#021411; font-weight:800; padding:9px 20px; border-radius:6px; border:none; cursor:pointer;">
+                    ✉️ Generate Real-Time Gmail Drafts Now
+                </button>
+            </div>
+            <div id="cli-draft-result-box" style="display:none; margin-top:14px; padding:12px 16px; border-radius:8px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:#FFFFFF; font-size:13px;"></div>
+        </div>
+        """
         return """
         <div class="module-panel" style="margin-bottom:22px; border:1px solid var(--accent-gold);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -16786,7 +17182,7 @@ def render_module_detail(mod_id, view_mode="cli"):
             </div>
             <div class="telemetry-grid">{metrics_html}</div>
             {get_module_user_friendly_guide_html(m_id)}
-            {get_module_workspace_html(m_id)}
+            {get_module_workspace_html(m_id, view_mode=view_mode)}
             <div class="module-workbench" style="margin-bottom:22px;">
                 <section class="module-panel" style="min-width:0; padding:18px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(16,185,129,0.25); padding-bottom:10px;">
@@ -18873,6 +19269,135 @@ def app(environ, start_response):
                 from spam_checker.spam_checker import SPAM_WORDS
                 found = [w for w in SPAM_WORDS if w in text]
                 res_b = json.dumps({"status": "ok", "triggers": found, "count": len(found), "clean": len(found) == 0}).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
+        # 6.6 Universal Contractor Harvester & DNS Pre-Validator
+        if cleaned_path == "/api/cli/contractors/collect" and method == "POST":
+            try:
+                body_len = int(environ.get("CONTENT_LENGTH", 0) or 0)
+                raw_data = environ["wsgi.input"].read(body_len).decode("utf-8") if body_len > 0 else "{}"
+                req_json = json.loads(raw_data) if raw_data.strip() else {}
+                raw_text = str(req_json.get("raw_text", "")).strip()
+                target_state = str(req_json.get("state", "GA")).strip().upper()
+                trade_category = str(req_json.get("trade", "Custom Home Builders & Remodelers")).strip()
+                custom_trade = str(req_json.get("custom_trade", "")).strip()
+
+                from collector.contractor_harvester import process_raw_contractor_leads
+                result = process_raw_contractor_leads(
+                    raw_text=raw_text,
+                    target_state=target_state,
+                    trade_category=trade_category,
+                    custom_trade=custom_trade
+                )
+                res_b = json.dumps(result).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
+        # 6.7 Real-Time Gmail Draft Generator
+        if cleaned_path == "/api/cli/drafts/create-realtime" and method == "POST":
+            try:
+                body_len = int(environ.get("CONTENT_LENGTH", 0) or 0)
+                raw_data = environ["wsgi.input"].read(body_len).decode("utf-8") if body_len > 0 else "{}"
+                req_json = json.loads(raw_data) if raw_data.strip() else {}
+                profile_name = str(req_json.get("profile_name", "Profile 17")).strip()
+                account_email = str(req_json.get("account_email", "")).strip()
+                sub = str(req_json.get("subject", "2D/3D Permit & Architectural Support for {company}")).strip()
+                body = str(req_json.get("body", "Hi {name},\n\nWe would love to support your {trade} projects in {state}.\n\nBest,\nAlex")).strip()
+                limit = int(req_json.get("limit", 20) or 20)
+                state_filter = str(req_json.get("state_filter", "")).strip()
+                trade_filter = str(req_json.get("trade_filter", "")).strip()
+
+                from campaign_engine.realtime_draft_engine import generate_realtime_drafts
+                result = generate_realtime_drafts(
+                    profile_name=profile_name,
+                    account_email=account_email,
+                    subject_template=sub,
+                    body_template=body,
+                    limit=limit,
+                    state_filter=state_filter,
+                    trade_filter=trade_filter
+                )
+                res_b = json.dumps(result).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
+        # 6.8 Real-Time Campaign Creator
+        if cleaned_path == "/api/cli/campaigns/create-realtime" and method == "POST":
+            try:
+                body_len = int(environ.get("CONTENT_LENGTH", 0) or 0)
+                raw_data = environ["wsgi.input"].read(body_len).decode("utf-8") if body_len > 0 else "{}"
+                req_json = json.loads(raw_data) if raw_data.strip() else {}
+                name = str(req_json.get("name", "New Contractor Campaign")).strip()
+                sub = str(req_json.get("subject", "Design & Permit Services for {company}")).strip()
+                body = str(req_json.get("body", "Hi {name},\n\nHope all is well with {company}.\n\nBest,\nKing")).strip()
+                limit = int(req_json.get("limit", 50) or 50)
+                state_filter = str(req_json.get("state_filter", "")).strip()
+                trade_filter = str(req_json.get("trade_filter", "")).strip()
+
+                from campaign_engine.realtime_draft_engine import create_realtime_campaign
+                result = create_realtime_campaign(
+                    name=name,
+                    subject=sub,
+                    body=body,
+                    limit=limit,
+                    state_filter=state_filter,
+                    trade_filter=trade_filter
+                )
+                res_b = json.dumps(result).encode("utf-8")
+                secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
+                return [res_b]
+            except Exception as e:
+                err_b = json.dumps({"error": str(e), "status": 500}).encode("utf-8")
+                secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_b)))])
+                return [err_b]
+
+        # 6.9 Deep DNS/MX Cleaner Sweep
+        if cleaned_path == "/api/cli/cleaner/run-deep" and method == "POST":
+            try:
+                from cleaner.service import run_cleaner
+                from config.database import get_connection
+                c_conn = get_connection()
+                c_cur = c_conn.cursor()
+                try:
+                    c_cur.execute("SELECT COUNT(*) FROM contacts WHERE status = 'valid'")
+                    valid_before = c_cur.fetchone()[0]
+                    c_cur.execute("SELECT COUNT(*) FROM contacts WHERE status = 'invalid'")
+                    invalid_before = c_cur.fetchone()[0]
+                finally:
+                    c_conn.close()
+
+                run_cleaner()
+
+                c_conn = get_connection()
+                c_cur = c_conn.cursor()
+                try:
+                    c_cur.execute("SELECT COUNT(*) FROM contacts WHERE status = 'valid'")
+                    valid_after = c_cur.fetchone()[0]
+                    c_cur.execute("SELECT COUNT(*) FROM contacts WHERE status = 'invalid'")
+                    invalid_after = c_cur.fetchone()[0]
+                finally:
+                    c_conn.close()
+
+                res_b = json.dumps({
+                    "status": "ok",
+                    "total_valid": valid_after,
+                    "total_invalid": invalid_after,
+                    "newly_flagged_invalid": max(0, invalid_after - invalid_before),
+                    "msg": f"Deep DNS/MX sweep complete! {valid_after} valid contacts verified. {invalid_after} dead/invalid domains flagged."
+                }).encode("utf-8")
                 secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(res_b)))])
                 return [res_b]
             except Exception as e:
