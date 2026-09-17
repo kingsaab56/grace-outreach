@@ -341,6 +341,237 @@ def verify_otp_code(email: str, submitted_code: str, is_test_client: bool = Fals
         record["salt"] = ""
         return True, "Identity verified successfully.", 200
 
+def generate_otp_email_html(recipient_email: str, otp_code: str, name: str = "Colleague", purpose: str = "register") -> str:
+    spaced_otp = " ".join(list(otp_code))
+    safe_name = html.escape(name) if name else "Colleague"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace Outreach Assistant - OTP Verification</title>
+<style>
+  body {{
+    margin: 0;
+    padding: 30px 15px;
+    background: #020813;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #E2E8F0;
+  }}
+  .email-wrapper {{
+    max-width: 560px;
+    margin: 0 auto;
+    background: #001A17;
+    border: 1.5px solid #10B981;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+  }}
+  .email-header {{
+    background: linear-gradient(135deg, #02120F 0%, #062E26 100%);
+    padding: 28px 24px;
+    border-bottom: 1.5px solid #123B35;
+    text-align: center;
+  }}
+  .crest-logo {{
+    width: 64px;
+    height: 64px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+  }}
+  .brand-title {{
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    margin: 0;
+    color: #F8FAFC;
+  }}
+  .brand-title span.gold {{ color: #D6A117; }}
+  .brand-title span.emerald {{ color: #10B981; }}
+  .brand-subtitle {{
+    font-size: 11px;
+    color: #A7F3D0;
+    font-weight: 600;
+    margin-top: 5px;
+    letter-spacing: 0.5px;
+  }}
+  .email-body {{
+    padding: 32px 28px;
+  }}
+  .greeting {{
+    font-size: 16px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 12px;
+  }}
+  .desc {{
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #CBD5E1;
+    margin-bottom: 20px;
+  }}
+  .otp-container {{
+    text-align: center;
+    background: rgba(0, 26, 23, 0.95);
+    border: 2px dashed #D6A117;
+    border-radius: 14px;
+    padding: 24px 18px;
+    margin: 24px 0;
+  }}
+  .otp-label {{
+    font-size: 11px;
+    font-weight: 700;
+    color: #D6A117;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }}
+  .otp-code {{
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 10px 24px;
+    display: inline-block;
+    border-radius: 10px;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    text-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+  }}
+  .otp-timer {{
+    font-size: 11.5px;
+    color: #94A3B8;
+    margin-top: 12px;
+  }}
+  .security-alert {{
+    background: rgba(214, 161, 23, 0.08);
+    border-left: 3.5px solid #D6A117;
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 22px 0;
+    font-size: 12px;
+    color: #FEF3C7;
+    line-height: 1.5;
+  }}
+  .support-box {{
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid #123B35;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #94A3B8;
+    line-height: 1.55;
+  }}
+  .support-box a {{
+    color: #D6A117;
+    text-decoration: underline;
+    font-weight: 700;
+  }}
+  .email-footer {{
+    background: #01110E;
+    padding: 22px 24px;
+    border-top: 1px solid #123B35;
+    text-align: center;
+    font-size: 11px;
+    color: #64748B;
+    line-height: 1.55;
+  }}
+  .signature-tag {{
+    color: #10B981;
+    font-weight: 700;
+    font-size: 11.5px;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }}
+</style>
+</head>
+<body>
+
+<div class="email-wrapper">
+  <div class="email-header">
+    <img src="https://grace-outreach56.up.railway.app/api/assets/grace-logo-68.png" alt="Grace Crest Logo" class="crest-logo">
+    <h1 class="brand-title"><span class="gold">GRACE</span> <span class="emerald">OUTREACH</span> ASSISTANT</h1>
+    <div class="brand-subtitle">🛡️ Official Identity &amp; Workspace Verification Center</div>
+  </div>
+
+  <div class="email-body">
+    <div class="greeting">Dear {safe_name},</div>
+    <div class="desc">
+      You are completing identity verification on the <b>Grace Outreach Assistant</b> enterprise portal. Please use the 6-digit verification code below to complete your registration or login:
+    </div>
+
+    <div class="otp-container">
+      <div class="otp-label">Your One-Time Security Code (OTP)</div>
+      <div class="otp-code">{spaced_otp}</div>
+      <div class="otp-timer">⏱️ This code is valid for <b>10 minutes</b> · Single-use only</div>
+    </div>
+
+    <div class="security-alert">
+      <b>🔒 Security Notice:</b> Grace Outreach engineers or King Saab will never ask you for this code. Do not forward or share this code with anyone.
+    </div>
+
+    <div class="desc" style="font-size:12.5px; margin-bottom:14px;">
+      If you did not initiate this request, no further action is required. Your account credentials and workspace remain fully secure.
+    </div>
+
+    <div class="support-box">
+      <b>Need Help or Technical Support?</b><br>
+      Our dedicated engineering desk is available 24/7 at: 
+      <a href="mailto:support.graceoutreach@gmail.com">support.graceoutreach@gmail.com</a>
+    </div>
+  </div>
+
+  <div class="email-footer">
+    <div class="signature-tag">DEVELOPED BY KING SAAB 56 &amp; ENGINEERING TEAM</div>
+    &copy; 2026 Grace Outreach Assistant Enterprise. All Rights Reserved.<br>
+    Google Verified Enterprise Outreach Engine · AES-256 Fernet Encryption at Rest
+  </div>
+</div>
+
+</body>
+</html>"""
+
+def dispatch_otp_email_smtp(target_email: str, otp_code: str, name: str = "Colleague", purpose: str = "register"):
+    smtp_user = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com")
+    smtp_pass = os.environ.get("SMTP_PASS", "")
+    
+    if not smtp_pass:
+        logger.info("[OTP DISPATCH] Dispatched OTP %s to %s for %s (Awaiting SMTP_PASS configuration).", otp_code, target_email, purpose)
+        return
+        
+    try:
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"Grace Outreach Security: Your Verification Code is {otp_code}"
+        msg["From"] = f"Grace Outreach Assistant <{smtp_user}>"
+        msg["To"] = target_email
+        
+        text_body = f"""Dear Colleague,
+
+Your verification code for Grace Outreach Assistant is: {otp_code}
+
+This code is valid for 10 minutes. Do not share this code with anyone.
+
+Need help? Contact support.graceoutreach@gmail.com
+Developed by King Saab 56 & Engineering Team
+"""
+        html_body = generate_otp_email_html(target_email, otp_code, name, purpose)
+        
+        msg.attach(MIMEText(text_body, "plain", "utf-8"))
+        msg.attach(MIMEText(html_body, "html", "utf-8"))
+        
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=12) as server:
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, [target_email], msg.as_string())
+        logger.info("Successfully dispatched live OTP email via SMTP to %s", target_email)
+    except Exception as exc:
+        logger.warning("SMTP dispatch attempt to %s failed: %s", target_email, exc)
+
 # Thread-safe In-Memory Sliding-Window Dual-Key Rate Limiter
 class RateLimiter:
     def __init__(self):
@@ -16798,6 +17029,7 @@ def app(environ, start_response):
                             ACTIVE_OTP_STORE[target_email]["code"] = otp_code
 
                 record_audit_event("OTP_DISPATCHED", f"6-digit verification code dispatched to {target_email} ({purpose})", user=full_name or target_email, role="Security Sentinel")
+                threading.Thread(target=dispatch_otp_email_smtp, args=(target_email, otp_code, full_name, purpose), daemon=True).start()
 
                 # Anti-enumeration message
                 resp_data = json.dumps({
