@@ -81,11 +81,22 @@ def show_reports():
 
     print("\n========== CAMPAIGN SUMMARY ==========\n")
 
-
-    print(f"Campaign Total    : {progress['total']}")
-    print(f"Processed         : {progress['completed']}")
-    print(f"Remaining         : {progress['remaining']}")
-    print(f"Progress          : {progress['progress']}%")
-
+    if isinstance(progress, list) and progress:
+        tot_c = sum((c.get("total") or 0) for c in progress)
+        comp_c = sum((c.get("completed") or 0) for c in progress)
+        rem_c = sum((c.get("pending") or 0) for c in progress)
+        pct_c = int((comp_c / tot_c) * 100) if tot_c > 0 else 0
+        print(f"Total Campaigns   : {len(progress)}")
+        print(f"Campaign Total    : {tot_c}")
+        print(f"Processed         : {comp_c}")
+        print(f"Remaining         : {rem_c}")
+        print(f"Overall Progress  : {pct_c}%")
+    elif isinstance(progress, dict):
+        print(f"Campaign Total    : {progress.get('total', 0)}")
+        print(f"Processed         : {progress.get('completed', 0)}")
+        print(f"Remaining         : {progress.get('remaining', 0)}")
+        print(f"Progress          : {progress.get('progress', 0)}%")
+    else:
+        print("No campaign data available yet.")
 
     input("\nPress Enter...")

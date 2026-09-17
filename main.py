@@ -3568,6 +3568,15 @@ def render_navigation(active_tab, view_mode="cli"):
     m_active = "btn-blue" if active_tab == "matrix" else "btn-gray"
     c_active = "btn-blue" if active_tab == "colleagues" else "btn-gray"
     v_param = f"&view={view_mode}" if view_mode else ""
+    
+    if view_mode == "cli":
+        nav_mode_icon = "📟"
+        nav_mode_text = "CLI Simple Mode (Active)"
+        nav_btn_style = "background:rgba(0,240,255,0.18); border:2px solid #00F0FF; color:#00F0FF; box-shadow:0 0 14px rgba(0,240,255,0.35);"
+    else:
+        nav_mode_icon = "🌐"
+        nav_mode_text = "Switch to CLI Simple Mode"
+        nav_btn_style = "background:rgba(214,161,23,0.18); border:2px solid var(--accent-gold); color:#FDE047; box-shadow:0 0 14px rgba(214,161,23,0.3);"
     return f"""
     <!-- Live Demo & Guest Mode Indicator Bar -->
     <div id="grace-demo-banner" class="demo-mode-banner" hidden style="background:linear-gradient(90deg, #064e3b, #022c22); border:1px solid var(--accent-gold); border-radius:12px; padding:10px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; box-shadow:0 4px 16px rgba(0,0,0,0.35);">
@@ -3589,6 +3598,9 @@ def render_navigation(active_tab, view_mode="cli"):
             <a href="/api/?tab=dashboard{v_param}" class="btn {d_active}">1. Dashboard Overview</a>
             <a href="/api/?tab=matrix{v_param}" class="btn {m_active}">2. 22-Module Control Matrix</a>
             <a href="/api/?tab=colleagues{v_param}" class="btn {c_active}" id="nav-colleagues">3. Colleague Management</a>
+            <button type="button" class="btn" id="nav-view-mode-btn" onclick="toggleGraceViewMode()" style="font-size:12px; font-weight:800; display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border-radius:8px; cursor:pointer; {nav_btn_style}" title="Click to toggle between CLI Simple Mode and Enterprise Mode">
+                <span>{nav_mode_icon}</span> <span id="nav-view-mode-label">{nav_mode_text}</span>
+            </button>
             <button type="button" class="btn btn-gray" id="nav-user-settings-btn" onclick="openUserSettingsModal()" style="font-size:12px; display:inline-flex; align-items:center; gap:6px;">⚙️ User Settings</button>
             <button class="btn btn-red" onclick="handleExecutiveLogout()" style="margin-left:auto; display:inline-flex; align-items:center; gap:6px;">🚪 Log Out</button>
         </div>
@@ -18808,7 +18820,7 @@ def app(environ, start_response):
                 c_conn = get_connection()
                 c_cur = c_conn.cursor()
                 try:
-                    c_cur.execute("INSERT INTO contacts (email, status) VALUES (?, 'new')", (new_email,))
+                    c_cur.execute("INSERT OR REPLACE INTO contacts (email, status) VALUES (?, 'new')", (new_email,))
                     c_conn.commit()
                     c_cur.execute("SELECT COUNT(*) FROM contacts")
                     tot = c_cur.fetchone()[0]
@@ -18934,5 +18946,5 @@ def app(environ, start_response):
 
 if __name__ == "__main__":
     with make_server(HOST, PORT, app) as httpd:
-        print(f"🚀 Grace Outreach Assistant running on http://{HOST}:{PORT}")
+        print(f"[ONLINE] Grace Outreach Assistant running on http://{HOST}:{PORT}")
         httpd.serve_forever()
