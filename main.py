@@ -631,8 +631,8 @@ LAST_SMTP_INVITE_STATUS = {}
 
 def dispatch_oauth_invite_email_smtp(target_email: str, auth_url: str, profile_name: str = "Profile", requester_name: str = "King Saab") -> dict:
     global LAST_SMTP_INVITE_STATUS
-    v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
-    v2 = os.environ.get("SMTP_PASS", "").strip()
+    v1 = (os.environ.get("SMTP_USER") or os.environ.get("GMAIL_USER") or os.environ.get("ADMIN_EMAIL") or "support.graceoutreach@gmail.com").strip()
+    v2 = (os.environ.get("SMTP_PASS") or os.environ.get("GMAIL_APP_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip()
     if "@" in v2 and "@" not in v1:
         smtp_user, smtp_pass = v2, v1
     else:
@@ -676,9 +676,9 @@ Grace Outreach Assistant Team
 
         sent = False
         last_err = None
-        # Attempt 1: Port 465 (SSL)
+        # Attempt 1: Port 465 (SSL) with resilient 15s timeout
         try:
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=5) as server:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
                 server.login(smtp_user, smtp_pass)
                 server.sendmail(smtp_user, [target_email], msg.as_string())
             sent = True
@@ -686,9 +686,9 @@ Grace Outreach Assistant Team
         except Exception as e465:
             last_err = e465
             logger.warning("SMTP SSL:465 failed (%s), attempting STARTTLS on port 587...", e465)
-            # Attempt 2: Port 587 (STARTTLS)
+            # Attempt 2: Port 587 (STARTTLS) with resilient 15s timeout
             try:
-                with smtplib.SMTP("smtp.gmail.com", 587, timeout=5) as server:
+                with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
                     server.ehlo()
                     server.starttls()
                     server.ehlo()
@@ -700,17 +700,18 @@ Grace Outreach Assistant Team
                 last_err = e587
                 logger.warning("SMTP STARTTLS:587 also failed: %s", e587)
 
+        now_str = datetime.now().strftime("%H:%M:%S")
         if sent:
-            res = {"dispatched": True, "configured": True, "recipient": target_email}
+            res = {"dispatched": True, "configured": True, "recipient": target_email, "timestamp": now_str}
             LAST_SMTP_INVITE_STATUS[target_email] = res
             return res
         else:
-            res = {"dispatched": False, "configured": True, "error": str(last_err)}
+            res = {"dispatched": False, "configured": True, "error": str(last_err), "timestamp": now_str}
             LAST_SMTP_INVITE_STATUS[target_email] = res
             return res
     except Exception as exc:
         logger.warning("SMTP OAuth invite dispatch attempt to %s failed: %s", target_email, exc)
-        res = {"dispatched": False, "configured": True, "error": str(exc)}
+        res = {"dispatched": False, "configured": True, "error": str(exc), "timestamp": datetime.now().strftime("%H:%M:%S")}
         LAST_SMTP_INVITE_STATUS[target_email] = res
         return res
 
@@ -13982,8 +13983,38 @@ async function submitCliOAuthAddAccount() {
             }
             if (noteEl) {
                 if (d.email_dispatch && d.email_dispatch.dispatched) {
-                    noteEl.innerHTML = `📧 <b>Invitation Email Dispatched:</b> Attempting delivery to <b>${email}</b> via SMTP. You can also copy the link below to share directly.`;
+                    noteEl.innerHTML = `📧 <b>Invitation Email Dispatched:</b> Connecting to Gmail SMTP to send invite to <b>${email}</b>...`;
                     noteEl.style.color = '#A7F3D0';
+                    let pollTries = 0;
+                    const pollInterval = setInterval(async () => {
+                        pollTries++;
+                        if (pollTries > 6) {
+                            clearInterval(pollInterval);
+                            return;
+                        }
+                        try {
+                            const pRes = await graceFetch('/api/cli/action', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({module_id: 20, action_id: 8, gmail: email})
+                            });
+                            if (pRes.ok) {
+                                const pData = await pRes.json();
+                                const deliv = pData.delivery_status;
+                                if (deliv && !deliv.pending) {
+                                    clearInterval(pollInterval);
+                                    if (deliv.dispatched) {
+                                        noteEl.innerHTML = `✅ <b>Email Dispatched Successfully:</b> Official Google OAuth link sent to <b>${email}</b> via Grace Outreach Assistant.<br>💡 <b>Note:</b> Agar User B ko inbox mein mail na miley to unhe bolein ke Gmail ka <b>Spam</b> ya <b>Promotions</b> folder zaroor check karein!`;
+                                        noteEl.style.color = '#34D399';
+                                        showToast(`Email delivered to ${email}`, 'success');
+                                    } else if (deliv.error) {
+                                        noteEl.innerHTML = `⚠️ <b>Email Delivery Issue:</b> Server reported: <code>${deliv.error}</code>.<br>👉 <b>Solution:</b> Niche diye gaye <b>'📋 Copy Link (WhatsApp/Slack)'</b> button se link copy kar ke User B ko WhatsApp ya message par send karein!`;
+                                        noteEl.style.color = '#FDE047';
+                                    }
+                                }
+                            }
+                        } catch (ePoll) {}
+                    }, 2000);
                 } else if (d.email_dispatch && d.email_dispatch.configured === false) {
                     noteEl.innerHTML = `⚠️ <b>Server SMTP Email Not Configured:</b> Server variable <code>SMTP_PASS</code> set nahi hai, is liye automated email deliver nahi ho saki.<br>👉 <b>Solution:</b> Niche diye gaye <b>'📋 Copy Link (WhatsApp/Slack)'</b> button par click karein aur ye link User B ko WhatsApp ya message par send karein!`;
                     noteEl.style.color = '#FDE047';
@@ -20856,9 +20887,12 @@ def app(environ, start_response):
                         res_payload["gmail"] = gmail_addr
                         res_payload["profile_name"] = prof_name
 
-                        v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
-                        v2 = os.environ.get("SMTP_PASS", "").strip()
-                        smtp_pass = (v1 if "@" in v2 else v2).replace(" ", "")
+                        v1 = (os.environ.get("SMTP_USER") or os.environ.get("GMAIL_USER") or os.environ.get("ADMIN_EMAIL") or "support.graceoutreach@gmail.com").strip()
+                        v2 = (os.environ.get("SMTP_PASS") or os.environ.get("GMAIL_APP_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip()
+                        if "@" in v2 and "@" not in v1:
+                            smtp_pass = v1.replace(" ", "")
+                        else:
+                            smtp_pass = v2.replace(" ", "")
                         smtp_configured = bool(smtp_pass)
 
                         dispatch_invite = req.get("dispatch_invite", True)
@@ -20942,6 +20976,12 @@ def app(environ, start_response):
                             res_payload["message"] = f"System refreshed! {len(profs)} accounts re-indexed, database connection verified healthy."
                         except Exception as e_ref:
                             res_payload["message"] = f"Refresh complete: {e_ref}"
+
+                    elif a_id == 8:
+                        target_email = str(req.get("gmail", "")).strip().lower()
+                        st = LAST_SMTP_INVITE_STATUS.get(target_email, {"pending": True, "dispatched": False})
+                        res_payload["delivery_status"] = st
+                        res_payload["message"] = f"Delivery status query for {target_email}"
                 res_b = json.dumps(res_payload).encode("utf-8")
                 secure_start_response("200 OK", [
                     ("Content-Type", "application/json; charset=utf-8"),
