@@ -13636,6 +13636,27 @@ function clearAuthSession() {
     }
 }
 
+function logToCliConsole(modId, text, color='#00F0FF') {
+    const mId = modId || 20;
+    const consoleBox = document.getElementById(`cli-cmd-live-console-${mId}`) || document.getElementById('cli-cmd-live-console-20');
+    const consoleOut = document.getElementById(`cli-console-output-${mId}`) || document.getElementById('cli-console-output-20');
+    if (consoleBox) {
+        consoleBox.style.display = 'block';
+    }
+    if (consoleOut) {
+        const line = document.createElement('div');
+        line.style.color = color;
+        line.style.marginTop = '2px';
+        line.innerHTML = `<span style="color:#64748B;">[${new Date().toLocaleTimeString()}]</span> ${text}`;
+        consoleOut.appendChild(line);
+        if (consoleBox) consoleBox.scrollTop = consoleBox.scrollHeight;
+    }
+    try {
+        if (typeof console !== 'undefined' && console.log) console.log(`[CLI-${mId}] ${String(text).replace(/<[^>]*>/g, '')}`);
+    } catch(e) {}
+}
+window.logToCliConsole = logToCliConsole;
+
 async function runCliModuleAction(modId, actionIdx, label, btn) {
     modId = parseInt(modId, 10);
     actionIdx = parseInt(actionIdx, 10);
@@ -13658,15 +13679,7 @@ async function runCliModuleAction(modId, actionIdx, label, btn) {
         if (consoleTime) consoleTime.innerText = new Date().toLocaleTimeString();
     }
     
-    function logToConsole(text, color='#00F0FF') {
-        if (!consoleOut) return;
-        const line = document.createElement('div');
-        line.style.color = color;
-        line.style.marginTop = '2px';
-        line.innerHTML = `<span style="color:#64748B;">[${new Date().toLocaleTimeString()}]</span> ${text}`;
-        consoleOut.appendChild(line);
-        consoleBox.scrollTop = consoleBox.scrollHeight;
-    }
+    const logToConsole = (text, color='#00F0FF') => logToCliConsole(modId, text, color);
     
     logToConsole(`⚡ [CLI TOOL #${modId}] Executing Action [${actionIdx}]: <b>${label}</b>...`);
     
@@ -13832,32 +13845,40 @@ function closeCliOAuthModal() {
 }
 
 async function submitCliOAuthAddAccount() {
-    const emailInput = document.getElementById('cli-oauth-email-input');
-    const profileInput = document.getElementById('cli-oauth-profile-input');
-    const dispatchCheck = document.getElementById('cli-oauth-dispatch-check');
     const submitBtn = document.getElementById('cli-oauth-submit-btn');
-    const resultBox = document.getElementById('cli-oauth-result-box');
-    const linkText = document.getElementById('cli-oauth-link-text');
-    const btnOpen = document.getElementById('cli-oauth-btn-open');
-    const noteEl = document.getElementById('cli-oauth-res-email-note');
-    const titleEl = document.getElementById('cli-oauth-res-title');
-
-    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
-    if (!email || !email.includes('@')) {
-        showToast('Please enter a valid Gmail address (e.g. warren.gracearchitectures.us@gmail.com)', 'warning');
-        if (emailInput) emailInput.focus();
-        return;
-    }
-    const profile = (profileInput && profileInput.value.trim()) ? profileInput.value.trim() : email.split('@')[0];
-    const shouldDispatch = dispatchCheck ? dispatchCheck.checked : true;
-
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳ Registering &amp; Generating OAuth Link...</span>';
-    }
-    logToConsole(`🔄 Registering ${email} under Profile '${profile}'...`, '#38BDF8');
+    const logToConsole = (text, color='#00F0FF') => {
+        if (typeof logToCliConsole === 'function') {
+            logToCliConsole(20, text, color);
+        } else if (typeof console !== 'undefined' && console.log) {
+            console.log(`[CLI-20] ${text}`);
+        }
+    };
 
     try {
+        const emailInput = document.getElementById('cli-oauth-email-input');
+        const profileInput = document.getElementById('cli-oauth-profile-input');
+        const dispatchCheck = document.getElementById('cli-oauth-dispatch-check');
+        const resultBox = document.getElementById('cli-oauth-result-box');
+        const linkText = document.getElementById('cli-oauth-link-text');
+        const btnOpen = document.getElementById('cli-oauth-btn-open');
+        const noteEl = document.getElementById('cli-oauth-res-email-note');
+        const titleEl = document.getElementById('cli-oauth-res-title');
+
+        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        if (!email || !email.includes('@')) {
+            showToast('Please enter a valid Gmail address (e.g. warren.gracearchitectures.us@gmail.com)', 'warning');
+            if (emailInput) emailInput.focus();
+            return;
+        }
+        const profile = (profileInput && profileInput.value.trim()) ? profileInput.value.trim() : email.split('@')[0];
+        const shouldDispatch = dispatchCheck ? dispatchCheck.checked : true;
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳ Registering &amp; Generating OAuth Link...</span>';
+        }
+        logToConsole(`🔄 Registering ${email} under Profile '${profile}'...`, '#38BDF8');
+
         const res = await graceFetch('/api/cli/action', {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
