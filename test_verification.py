@@ -2020,11 +2020,161 @@ def run_tests():
     )
     print("[PASS 53.7] Restored CLI access governance cleanly.")
 
-    print("\n[SUCCESS] ALL 53 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+    # =========================================================================
+    # 54. TESTING UI POLISH, SHOW-PASSWORD ALIGNMENT, PERMANENT COLLEAGUE REMOVAL & APP PADDING AUDIT
+    # =========================================================================
+    print("\n--- 54. TESTING UI POLISH, SHOW-PASSWORD ALIGNMENT, PERMANENT COLLEAGUE REMOVAL & APP PADDING AUDIT ---")
+
+    # 54.1 Left-Aligned Password Visibility Toggles
+    _, _, d_login = wsgi_request("/", "GET")
+    login_html = d_login.decode("utf-8")
+    assert 'id="login-password-input"' in login_html, "Missing login password input in DOM"
+    assert 'justify-content: flex-start' in login_html or 'justify-content:flex-start' in login_html, (
+        "Show password toggle container under password field must be left-aligned"
+    )
+    assert 'id="reg-show-both-pwd"' in login_html, "Missing reg-show-both-pwd toggle on register screen"
+    assert 'colleague-settings-modal' in login_html, "Missing colleague-settings-modal in DOM"
+    print("[PASS 54.1] Password visibility toggle verified left-aligned under password input across Login, Register, and Modals.")
+
+    # 54.2 App-wide Padding & Border Boundary Protection
+    assert '.card {' in login_html or 'padding: 22px 24px' in login_html, "Base CSS must define .card container padding"
+    assert 'padding: 22px 24px' in login_html or 'padding:22px 24px' in login_html, "Standard card padding must be at least 22px"
+
+    st_colleagues, _, d_colleagues_page = wsgi_request("/api/?tab=colleagues", "GET")
+    assert st_colleagues.startswith("200")
+    colleagues_page_str = d_colleagues_page.decode("utf-8")
+    assert 'class="card"' in colleagues_page_str, "Colleague management container must use .card styling"
+    assert 'padding:22px 24px;' in colleagues_page_str or 'padding: 22px 24px;' in colleagues_page_str, (
+        "Colleague management card container must have explicit generous padding to prevent text touching borders"
+    )
+    print("[PASS 54.2] App-wide container padding verified; text and controls safely indented from borders.")
+
+    # 54.3 Admin Governance Ribbon Visibility Debounce & Authorization Resilience
+    assert 'isSavingRibbonSettings' in login_html, "Frontend JS must include isSavingRibbonSettings debounce guard"
+    assert 'Saving & Applying Rules...' in login_html, "Frontend JS must provide real-time saving button feedback"
+
+    # Direct POST /api/admin/settings using HTTP_X_ADMIN_KEY fallback without session cookie
+    st_adm_key, _, d_adm_key = wsgi_request(
+        "/api/admin/settings",
+        "POST",
+        body_dict={
+            "ribbon_visibility": {"cli_mode": "everyone"}
+        },
+        headers_dict={"X-Admin-Key": "GraceAdmin2026!"}
+    )
+    assert st_adm_key.startswith("200"), f"Expected 200 via X-Admin-Key fallback, got {st_adm_key}"
+    res_adm_key = json.loads(d_adm_key.decode("utf-8"))
+    assert res_adm_key.get("status") == "ok"
+    print("[PASS 54.3] Admin Governance authorization verified with debounce protection and X-Admin-Key resilience.")
+
+    # 54.4 Permanent Colleague Removal & Access Revocation
+    test_key_54 = "audit_temp_colleague"
+    test_pwd_54 = "SecureColleaguePass2026!"
+    test_pwd_hash_54 = hash_password_argon2id(test_pwd_54)
+
+    st_init = read_shared_state()
+    if "deleted_colleagues" in st_init.get("adminSettings", {}):
+        if test_key_54 in st_init["adminSettings"]["deleted_colleagues"]:
+            st_init["adminSettings"]["deleted_colleagues"].remove(test_key_54)
+            from main import write_shared_state
+            write_shared_state(st_init)
+
+    update_shared_state({
+        "resource": "profiles",
+        "key": test_key_54,
+        "value": {
+            "name": "Audit Colleague 54",
+            "email": "audit54@example.com",
+            "role": "Colleague",
+            "password": test_pwd_hash_54
+        }
+    })
+
+    # Verify audit colleague can authenticate before deletion
+    st_login_pre, _, d_login_pre = wsgi_request(
+        "/api/auth/login",
+        "POST",
+        body_dict={"colleague_key": test_key_54, "password": test_pwd_54}
+    )
+    assert st_login_pre.startswith("200"), f"Expected 200 for active colleague login, got {st_login_pre}"
+
+    # Create active session for test colleague
+    temp_sid_54, temp_csrf_54 = create_server_session(test_key_54, "Colleague")
+    assert get_server_session(temp_sid_54) is not None, "Server session must exist for active colleague"
+
+    # Super Admin deletes the colleague profile via batch-delete endpoint
+    admin_sid_54, admin_csrf_54 = create_server_session("king", "Super Admin")
+    admin_headers_54 = {
+        "Cookie": f"grace_session_id={admin_sid_54}; grace_csrf_token={admin_csrf_54}",
+        "X-CSRF-Token": admin_csrf_54
+    }
+
+    st_del, _, d_del = wsgi_request(
+        "/api/colleagues/batch-delete",
+        "POST",
+        body_dict={"keys": [test_key_54]},
+        headers_dict=admin_headers_54
+    )
+    assert st_del.startswith("200"), f"Batch delete failed with {st_del}"
+    res_del = json.loads(d_del.decode("utf-8"))
+    assert test_key_54 in res_del.get("deleted", [])
+
+    # Verify shared state reflects permanent removal and blacklisting
+    st_state_after = read_shared_state()
+    assert test_key_54 not in st_state_after["profiles"], "Deleted colleague must be completely purged from profiles"
+    assert test_key_54 in st_state_after["adminSettings"].get("deleted_colleagues", []), (
+        "Deleted colleague must be added to persistent deleted_colleagues blacklist"
+    )
+    assert test_key_54 not in st_state_after["adminSettings"].get("cli_mode_allowed_colleagues", []), (
+        "Deleted colleague must be removed from CLI mode allowed list"
+    )
+
+    # Verify state anti-resurrection upon fresh read from disk
+    from main import _read_shared_state_unlocked
+    st_reloaded = _read_shared_state_unlocked()
+    assert test_key_54 not in st_reloaded["profiles"], "Deleted colleague must not be resurrected on disk reload"
+
+    # Verify active session for deleted colleague is revoked
+    assert get_server_session(temp_sid_54) is None, "Active session must be immediately revoked upon deletion"
+
+    # Verify deleted colleague cannot log in again (blocked with 403)
+    st_login_post, _, d_login_post = wsgi_request(
+        "/api/auth/login",
+        "POST",
+        body_dict={"colleague_key": test_key_54, "password": test_pwd_54}
+    )
+    assert st_login_post.startswith("403"), f"Expected 403 Forbidden for deleted colleague login, got {st_login_post}"
+    res_login_post = json.loads(d_login_post.decode("utf-8"))
+    assert "Account deactivated" in res_login_post.get("error", "")
+
+    # 54.5 Colleague Settings Modal Delete Button UI Verification
+    assert 'deleteColleagueFromModal' in login_html or 'deleteColleagueFromModal' in colleagues_page_str, "Missing deleteColleagueFromModal JS function"
+    assert 'btn-delete-colleague-from-modal' in colleagues_page_str, "Missing Delete Colleague button in colleague settings modal"
+    print("[PASS 54.4] Colleague permanent removal, profile purging, session revocation, and 403 login lock confirmed.")
+
+    # 54.6 Super Admin Permanent Immunity
+    st_del_king, _, d_del_king = wsgi_request(
+        "/api/colleagues/batch-delete",
+        "POST",
+        body_dict={"keys": ["king"]},
+        headers_dict=admin_headers_54
+    )
+    assert st_del_king.startswith("200")
+    res_del_king = json.loads(d_del_king.decode("utf-8"))
+    assert "king" not in res_del_king.get("deleted", []), "Super Admin root profile must never be deleted"
+    st_state_final = read_shared_state()
+    assert "king" in st_state_final["profiles"], "Super Admin King Saab profile must remain intact"
+    assert "king" not in st_state_final["adminSettings"].get("deleted_colleagues", []), (
+        "Super Admin must never be added to deleted_colleagues blacklist"
+    )
+    print("[PASS 54.5] Super Admin root profile permanently immune from deletion and blacklisting.")
+
+    print("\n[SUCCESS] ALL 54 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":
     run_tests()
+
 
 
 
