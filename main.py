@@ -1396,8 +1396,10 @@ def _default_shared_state():
                 "notifications": "everyone",
                 "theme": "everyone",
                 "brightness": "everyone",
-                "companion": "everyone"
+                "companion": "everyone",
+                "cli_mode": "everyone"
             },
+            "cli_mode_allowed_colleagues": ["king", "abdullah", "sarah", "hamza"],
             "allow_public_registration": True,
             "vault_recovery_otp": {}
         },
@@ -1419,7 +1421,11 @@ def _read_shared_state_unlocked():
         if key not in state:
             state[key] = val
         elif isinstance(state[key], dict) and isinstance(val, dict):
-            state[key].update(val)
+            for sub_k, sub_v in val.items():
+                if isinstance(state[key].get(sub_k), dict) and isinstance(sub_v, dict):
+                    state[key][sub_k].update(sub_v)
+                else:
+                    state[key][sub_k] = sub_v
         elif isinstance(val, list):
             state[key] = val
         else:
@@ -1439,9 +1445,26 @@ def _write_shared_state_unlocked(state):
         for acc_id, acc in state["companyAccounts"].items():
             if isinstance(acc, dict) and acc.get("password") and not str(acc["password"]).startswith("ENC256:"):
                 acc["password"] = encrypt_vault_payload(acc["password"])
+    payload = json.dumps(state, ensure_ascii=False, indent=2)
     temporary = SHARED_STATE_FILE.with_suffix(".tmp")
-    temporary.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
-    temporary.replace(SHARED_STATE_FILE)
+    temporary.write_text(payload, encoding="utf-8")
+    for attempt in range(6):
+        try:
+            temporary.replace(SHARED_STATE_FILE)
+            break
+        except (PermissionError, OSError):
+            if attempt == 5:
+                try:
+                    SHARED_STATE_FILE.write_text(payload, encoding="utf-8")
+                    if temporary.exists():
+                        try:
+                            temporary.unlink(missing_ok=True)
+                        except Exception:
+                            pass
+                except Exception:
+                    raise
+            else:
+                time.sleep(0.04 * (2 ** attempt))
 
 
 def write_shared_state(state):
@@ -1727,6 +1750,25 @@ def update_shared_state(payload):
             state["clearedFines"] = value
         _write_shared_state_unlocked(state)
         return state
+
+
+def is_cli_mode_allowed_for_user(user_key, role=None, state=None):
+    if user_key == "king" or role == "Super Admin":
+        return True
+    st = state if state is not None else read_shared_state()
+    adm = st.get("adminSettings", {})
+    ribbon = adm.get("ribbon_visibility", {})
+    cli_rule = ribbon.get("cli_mode", "everyone")
+    if cli_rule == "disabled" or cli_rule == "admin_only":
+        return False
+    profiles = st.get("profiles", {})
+    prof = profiles.get(user_key, {})
+    if prof.get("cli_mode_allowed") is False:
+        return False
+    if cli_rule == "selected":
+        allowed_list = adm.get("cli_mode_allowed_colleagues", ["king", "abdullah", "sarah", "hamza"])
+        return user_key in allowed_list
+    return True
 
 
 LOGO_SVG = """<div id="logo-clickable-wrap" onclick="openLogoModal()" title="Click to view full 3D Crest Emblem" style="cursor:pointer; display:inline-flex; align-items:center;"><img src="/api/assets/grace-logo-68.png" srcset="/api/assets/grace-logo-68.png 1x, /api/assets/grace-logo-136.png 2x, /api/assets/grace-logo-272.png 4x, /api/assets/grace-logo-thumb.png 1x" class="brand-crest-logo" alt="Grace Outreach Official Crest" width="68" height="68" style="image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges;" /></div>"""
@@ -2621,6 +2663,19 @@ def render_header(view_mode="cli"):
                 </div>
                 <div id="custom-hunt-results" style="margin-top:10px;" hidden></div>
             </div>
+
+            <!-- CLI Simple Mode Permission -->
+            <div style="margin-top:14px; padding:12px 14px; background:rgba(0,25,20,0.6); border:1px solid rgba(0,240,255,0.4); border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div>
+                    <strong style="font-size:13px; color:#00F0FF;">📟 CLI Simple Mode Access</strong>
+                    <div style="font-size:11.5px; color:#94A3B8;">Grant this colleague access to the 22 CLI simple modules, contractor harvester, and view switcher.</div>
+                </div>
+                <label style="cursor:pointer; display:inline-flex; align-items:center; gap:8px; user-select:none; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:6px; border:1px solid #123B35;">
+                    <input type="checkbox" id="edit-colleague-cli-access" style="accent-color:#00F0FF; width:16px; height:16px; cursor:pointer;">
+                    <span style="font-size:12px; font-weight:700; color:#FFFFFF;">Allow CLI Access</span>
+                </label>
+            </div>
+
             <div class="dialog-actions">
                 <button class="btn btn-gray" onclick="closeColleagueSettings()">Cancel</button>
                 <button class="btn btn-blue" onclick="saveColleagueSettings()">Save Profile &amp; Territories</button>
@@ -3284,6 +3339,25 @@ def render_header(view_mode="cli"):
                             <option value="admin_only">👑 Super Admin Only</option>
                             <option value="disabled">🚫 Disabled Globally</option>
                         </select>
+                    </div>
+                    <!-- CLI Simple Mode & Switcher -->
+                    <div style="padding:12px 14px; background:rgba(0,25,20,0.6); border:1px solid #00F0FF; border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <div>
+                                <strong style="font-size:13px; color:#00F0FF;">📟 CLI Simple Mode &amp; Switcher Access</strong>
+                                <div style="font-size:11px; color:#94A3B8;">Control which colleagues can access 22 CLI simple modules, contractor harvester, and the view switcher.</div>
+                            </div>
+                            <select id="gov-vis-cli_mode" onchange="onCliModeRuleChange(this.value)" style="padding:6px 10px; border-radius:6px; background:#001A15; border:1px solid #00F0FF; color:#00F0FF; font-size:11.5px; font-weight:700;">
+                                <option value="everyone">🌐 Everyone (All Colleagues)</option>
+                                <option value="admin_only">👑 Super Admin Only</option>
+                                <option value="selected">👥 Selected Colleagues Only</option>
+                                <option value="disabled">🚫 Disabled Globally</option>
+                            </select>
+                        </div>
+                        <div id="gov-cli-colleagues-wrap" style="display:none; margin-top:10px; padding:10px 12px; background:rgba(0,15,13,0.8); border:1px dashed #00F0FF; border-radius:6px;">
+                            <div style="font-size:11px; font-weight:700; color:#00F0FF; margin-bottom:6px;">Check Colleagues Authorized for CLI Mode:</div>
+                            <div id="gov-cli-colleagues-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:6px;"></div>
+                        </div>
                     </div>
                 </div>
                 <div style="margin-top:14px; display:flex; justify-content:flex-end;">
@@ -6955,8 +7029,41 @@ window.GRACE_RIBBON_CONFIG = {
     notifications: 'everyone',
     theme: 'everyone',
     brightness: 'everyone',
-    companion: 'everyone'
+    companion: 'everyone',
+    cli_mode: 'everyone'
 };
+window.GRACE_CLI_ALLOWED_COLLEAGUES = ['king', 'abdullah', 'sarah', 'hamza'];
+
+function onCliModeRuleChange(val) {
+    const wrap = document.getElementById('gov-cli-colleagues-wrap');
+    if (wrap) {
+        wrap.style.display = (val === 'selected') ? 'block' : 'none';
+    }
+}
+
+function renderGovCliColleaguesList() {
+    const listWrap = document.getElementById('gov-cli-colleagues-list');
+    if (!listWrap) return;
+    const allowed = window.GRACE_CLI_ALLOWED_COLLEAGUES || ['king', 'abdullah', 'sarah', 'hamza'];
+    const profiles = (typeof PROFILE_DATA !== 'undefined' ? PROFILE_DATA : {}) || {};
+    let html = '';
+    const keys = Object.keys(profiles);
+    if (keys.length === 0) {
+        keys.push('abdullah', 'sarah', 'hamza');
+    }
+    keys.forEach(k => {
+        if (k === 'king') return;
+        const prof = profiles[k] || { name: k, role: 'Colleague' };
+        const isChecked = allowed.includes(k) && (prof.cli_mode_allowed !== false) ? 'checked' : '';
+        html += `
+            <label style="display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#F8FAFC; background:rgba(0,30,26,0.7); padding:4px 8px; border-radius:4px; border:1px solid #123B35; cursor:pointer;">
+                <input type="checkbox" class="gov-cli-colleague-checkbox" value="${k}" ${isChecked} style="accent-color:#00F0FF; cursor:pointer;">
+                <span><strong>${prof.name || k}</strong> <small style="color:#94A3B8;">(${prof.role || 'Staff'})</small></span>
+            </label>
+        `;
+    });
+    listWrap.innerHTML = html;
+}
 
 function openAdminGovernanceModal(defaultTab) {
     const modal = document.getElementById('admin-governance-modal');
@@ -7003,7 +7110,16 @@ async function loadAdminGovernanceSettings() {
                 if (document.getElementById('gov-vis-notifications')) document.getElementById('gov-vis-notifications').value = m.notifications || 'everyone';
                 if (document.getElementById('gov-vis-theme')) document.getElementById('gov-vis-theme').value = m.theme || 'everyone';
                 if (document.getElementById('gov-vis-companion')) document.getElementById('gov-vis-companion').value = m.companion || 'everyone';
+                if (document.getElementById('gov-vis-cli_mode')) {
+                    const rule = m.cli_mode || 'everyone';
+                    document.getElementById('gov-vis-cli_mode').value = rule;
+                    onCliModeRuleChange(rule);
+                }
             }
+            if (data.cli_mode_allowed_colleagues) {
+                window.GRACE_CLI_ALLOWED_COLLEAGUES = data.cli_mode_allowed_colleagues;
+            }
+            renderGovCliColleaguesList();
             if (data.admin_email && document.getElementById('admin-recovery-email-display')) {
                 document.getElementById('admin-recovery-email-display').innerText = data.admin_email;
             }
@@ -7018,6 +7134,13 @@ async function loadAdminGovernanceSettings() {
 }
 
 async function saveAdminRibbonVisibility() {
+    const cliRule = document.getElementById('gov-vis-cli_mode')?.value || 'everyone';
+    const checkedColleagues = [];
+    document.querySelectorAll('.gov-cli-colleague-checkbox:checked').forEach(cb => {
+        checkedColleagues.push(cb.value);
+    });
+    if (!checkedColleagues.includes('king')) checkedColleagues.push('king');
+
     const config = {
         vault: document.getElementById('gov-vis-vault')?.value || 'admin_only',
         soundscape: document.getElementById('gov-vis-soundscape')?.value || 'everyone',
@@ -7025,19 +7148,24 @@ async function saveAdminRibbonVisibility() {
         notifications: document.getElementById('gov-vis-notifications')?.value || 'everyone',
         theme: document.getElementById('gov-vis-theme')?.value || 'everyone',
         brightness: document.getElementById('gov-vis-theme')?.value || 'everyone',
-        companion: document.getElementById('gov-vis-companion')?.value || 'everyone'
+        companion: document.getElementById('gov-vis-companion')?.value || 'everyone',
+        cli_mode: cliRule
     };
     try {
         const resp = await fetch('/api/admin/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
-            body: JSON.stringify({ ribbon_visibility: config })
+            body: JSON.stringify({ 
+                ribbon_visibility: config,
+                cli_mode_allowed_colleagues: checkedColleagues
+            })
         });
         const data = await resp.json();
         if (data.status === 'ok') {
             window.GRACE_RIBBON_CONFIG = config;
+            window.GRACE_CLI_ALLOWED_COLLEAGUES = checkedColleagues;
             applyRibbonVisibilityPermissions();
-            showToast('✓ Ribbon visibility matrix updated & applied live!', 'success');
+            showToast('✓ Ribbon visibility & CLI access matrix updated & applied live!', 'success');
         } else {
             showToast('❌ ' + (data.error || 'Failed to update visibility'), 'error');
         }
@@ -7061,7 +7189,8 @@ function applyRibbonVisibilityPermissions() {
         notifications: 'everyone',
         theme: 'everyone',
         brightness: 'everyone',
-        companion: 'everyone'
+        companion: 'everyone',
+        cli_mode: 'everyone'
     };
 
     function setVisibility(elId, rule) {
@@ -7104,6 +7233,92 @@ function applyRibbonVisibilityPermissions() {
         } else {
             companion.style.display = '';
         }
+    }
+
+    // CLI Simple Mode Access check
+    const cliRule = matrix.cli_mode || 'everyone';
+    let canAccessCli = false;
+    if (isAdmin) {
+        canAccessCli = true;
+    } else if (cliRule === 'disabled' || cliRule === 'admin_only') {
+        canAccessCli = false;
+    } else if (cliRule === 'selected') {
+        const allowedList = window.GRACE_CLI_ALLOWED_COLLEAGUES || [];
+        canAccessCli = allowedList.includes(user);
+    } else if (cliRule === 'everyone') {
+        const prof = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[user]) ? PROFILE_DATA[user] : null;
+        if (prof && prof.cli_mode_allowed === false) {
+            canAccessCli = false;
+        } else {
+            canAccessCli = true;
+        }
+    }
+
+    const ribbonCliBtn = document.getElementById('view-mode-toggle-btn');
+    if (ribbonCliBtn) {
+        ribbonCliBtn.style.display = canAccessCli ? 'inline-flex' : 'none';
+    }
+    const navCliBtn = document.getElementById('nav-view-mode-btn');
+    if (navCliBtn) {
+        navCliBtn.style.display = canAccessCli ? 'inline-flex' : 'none';
+    }
+    const dashCliBar = document.getElementById('dash-cli-rapid-bar');
+    if (dashCliBar) {
+        dashCliBar.style.display = canAccessCli ? '' : 'none';
+    }
+
+    // Auto-revert unauthorized colleague away from CLI view
+    const urlParams = new URLSearchParams(window.location.search);
+    const curView = urlParams.get('view') || localStorage.getItem('grace_view_mode') || 'cli';
+    if (!canAccessCli && curView === 'cli') {
+        localStorage.setItem('grace_view_mode', 'enterprise');
+        document.cookie = "grace_view_mode=enterprise; Path=/; Max-Age=31536000; SameSite=Lax";
+        if (urlParams.get('view') === 'cli') {
+            urlParams.set('view', 'enterprise');
+            window.location.search = urlParams.toString();
+        }
+    }
+}
+
+async function toggleColleagueCliAccess(key) {
+    if (!isSuperAdminSession()) {
+        showToast('Only Super Admin King Saab can toggle Colleague CLI Mode access.', 'warning');
+        return;
+    }
+    if (key === 'king') {
+        showToast('Super Admin King Saab always maintains permanent CLI access.', 'info');
+        return;
+    }
+    try {
+        const resp = await fetch('/api/admin/colleague-cli-access', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+            body: JSON.stringify({ colleague_key: key })
+        });
+        const data = await resp.json();
+        if (data.status === 'ok') {
+            const isAllowed = data.allowed;
+            const btn = document.getElementById('cli-access-btn-' + key);
+            const statusSpan = document.getElementById('cli-access-status-' + key);
+            if (btn) {
+                btn.innerHTML = '📟 Allow CLI Mode: ' + (isAllowed ? 'ON' : 'OFF');
+                btn.style.borderColor = isAllowed ? '#00F0FF' : 'var(--accent-red)';
+                btn.style.color = isAllowed ? '#00F0FF' : 'var(--accent-red)';
+            }
+            if (statusSpan) {
+                statusSpan.innerHTML = isAllowed 
+                    ? '<span style="color:#00F0FF; font-weight:700;">Active (Granted)</span>'
+                    : '<span style="color:var(--accent-red); font-weight:700;">Restricted (Blocked)</span>';
+            }
+            if (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[key]) {
+                PROFILE_DATA[key].cli_mode_allowed = isAllowed;
+            }
+            showToast('✓ CLI Mode access for ' + key + ' switched to: ' + (isAllowed ? 'ALLOWED' : 'RESTRICTED'), 'success');
+        } else {
+            showToast('❌ ' + (data.error || 'Failed to update CLI access'), 'error');
+        }
+    } catch(err) {
+        showToast('❌ Network error updating colleague CLI access', 'error');
     }
 }
 
@@ -11671,6 +11886,10 @@ function openColleagueSettings(key) {
     const ctSearch = document.getElementById('edit-contractor-search');
     if (stSearch) stSearch.value = '';
     if (ctSearch) ctSearch.value = '';
+    const cliCheck = document.getElementById('edit-colleague-cli-access');
+    if (cliCheck) {
+        cliCheck.checked = (prof.cli_mode_allowed !== false);
+    }
     renderTerritoryChips();
     renderContractorChips();
     modal.hidden = false;
@@ -11779,10 +11998,12 @@ function saveColleagueSettings() {
         return;
     }
     if (!PROFILE_DATA[key]) return;
+    const cliAllowed = document.getElementById('edit-colleague-cli-access')?.checked !== false;
     PROFILE_DATA[key].name = name;
     PROFILE_DATA[key].role = role;
     PROFILE_DATA[key].assigned_states = Array.from(tempSelectedStates);
     PROFILE_DATA[key].assigned_contractors = Array.from(tempSelectedContractors);
+    PROFILE_DATA[key].cli_mode_allowed = cliAllowed;
 
     // DUAL-VAULT PERSISTENCE FOR USER EDITED PROFILES
     try {
@@ -11794,6 +12015,7 @@ function saveColleagueSettings() {
             role: role,
             assigned_states: Array.from(tempSelectedStates),
             assigned_contractors: Array.from(tempSelectedContractors),
+            cli_mode_allowed: cliAllowed,
             updated_at: Date.now()
         };
         window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
@@ -11802,13 +12024,13 @@ function saveColleagueSettings() {
     }
 
     window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
-    publishSharedState('profiles', {name, role, assigned_states: tempSelectedStates, assigned_contractors: tempSelectedContractors}, key);
-    publishAuditEvent('Territory Update', 'Updated profile, states & contractors for ' + name);
+    publishSharedState('profiles', {name, role, assigned_states: tempSelectedStates, assigned_contractors: tempSelectedContractors, cli_mode_allowed: cliAllowed}, key);
+    publishAuditEvent('Territory Update', 'Updated profile, states, contractors & CLI access for ' + name);
     hydrateColleagueCards();
     populateColleaguePickers();
     updateViewAs();
     closeColleagueSettings();
-    showToast('Profile, territory states & contractors saved permanently.', 'success');
+    showToast('Profile, territory states & CLI settings saved permanently.', 'success');
 }
 
 /* =========================================================================
@@ -17370,6 +17592,16 @@ def render_colleagues(current_user=None):
 
         card_restricted_class = "is-restricted-colleague" if is_restricted else ""
 
+        cli_allowed = info.get("cli_mode_allowed", True) if key != "king" else True
+        if cli_allowed:
+            cli_status_html = '<span style="color:#00F0FF; font-weight:700;">Active (Granted)</span>'
+            cli_btn_text = 'ON'
+            cli_btn_color = '#00F0FF'
+        else:
+            cli_status_html = '<span style="color:var(--accent-red); font-weight:700;">Restricted (Blocked)</span>'
+            cli_btn_text = 'OFF'
+            cli_btn_color = 'var(--accent-red)'
+
         cards_html += f"""
         <article class="colleague-card {card_restricted_class}" data-colleague-card="{key}" data-colleague-class="{cls_key}" id="colleague-card-{key}">
             <div class="colleague-head" onclick="toggleColleagueExpand('{key}')" title="Click to expand/collapse full profile details">
@@ -17439,6 +17671,16 @@ def render_colleagues(current_user=None):
                     </div>
                     <button type="button" class="btn btn-sm" id="delegation-btn-{key}" onclick="toggleColleagueManagementDelegation('{key}')" style="font-size:11px; padding:3px 9px; background:#0B1E19; border:1px solid #123B35; color:#F8FAFC;">
                         🔐 Allow Colleague Hub: OFF
+                    </button>
+                </div>
+                <!-- CLI Simple Mode Colleague Access Switch -->
+                <div style="margin-top:6px; padding:8px 12px; background:rgba(0,20,18,0.6); border-radius:8px; border:1px solid #00F0FF; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div style="font-size:11px; color:#94A3B8;">
+                        <span style="font-weight:700; color:#00F0FF;">CLI MODE ACCESS:</span>
+                        <span id="cli-access-status-{key}">{cli_status_html}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm" id="cli-access-btn-{key}" onclick="toggleColleagueCliAccess('{key}')" style="font-size:11px; padding:3px 9px; background:#0B1E19; border:1px solid {cli_btn_color}; color:{cli_btn_color}; font-weight:700;">
+                        📟 Allow CLI Mode: {cli_btn_text}
                     </button>
                 </div>
                 <div class="registration-forensics-box" style="margin-top:6px; padding:6px 10px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:10.5px; color:#94A3B8; border:1px dashed #123B35;">
@@ -18576,17 +18818,23 @@ def app(environ, start_response):
 
             st = read_shared_state()
             adm = st.get("adminSettings", {})
+            default_ribbon = {
+                "vault": "admin_only",
+                "soundscape": "everyone",
+                "broadcast": "admin_only",
+                "notifications": "everyone",
+                "theme": "everyone",
+                "brightness": "everyone",
+                "companion": "everyone",
+                "cli_mode": "everyone",
+            }
+            curr_ribbon = dict(default_ribbon)
+            if isinstance(adm.get("ribbon_visibility"), dict):
+                curr_ribbon.update(adm["ribbon_visibility"])
             resp_data = json.dumps({
                 "status": "ok",
-                "ribbon_visibility": adm.get("ribbon_visibility", {
-                    "vault": "admin_only",
-                    "soundscape": "everyone",
-                    "broadcast": "admin_only",
-                    "notifications": "everyone",
-                    "theme": "everyone",
-                    "brightness": "everyone",
-                    "companion": "everyone"
-                }),
+                "ribbon_visibility": curr_ribbon,
+                "cli_mode_allowed_colleagues": adm.get("cli_mode_allowed_colleagues", ["king", "abdullah", "sarah", "hamza"]),
                 "allow_public_registration": adm.get("allow_public_registration", True),
                 "admin_email": adm.get("admin_email", "admin@graceoutreach.org")
             }).encode("utf-8")
@@ -18613,8 +18861,18 @@ def app(environ, start_response):
             req = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
             st = read_shared_state()
             adm = st.get("adminSettings", {})
-            if "ribbon_visibility" in req:
-                adm["ribbon_visibility"] = req["ribbon_visibility"]
+            if "ribbon_visibility" in req and isinstance(req["ribbon_visibility"], dict):
+                if not isinstance(adm.get("ribbon_visibility"), dict):
+                    adm["ribbon_visibility"] = {}
+                adm["ribbon_visibility"].update(req["ribbon_visibility"])
+            if "cli_mode_allowed_colleagues" in req and isinstance(req["cli_mode_allowed_colleagues"], list):
+                adm["cli_mode_allowed_colleagues"] = list(req["cli_mode_allowed_colleagues"])
+                if "profiles" in st and isinstance(st["profiles"], dict):
+                    for k, prof in st["profiles"].items():
+                        if k == "king":
+                            prof["cli_mode_allowed"] = True
+                        else:
+                            prof["cli_mode_allowed"] = (k in req["cli_mode_allowed_colleagues"])
             if "allow_public_registration" in req:
                 adm["allow_public_registration"] = bool(req["allow_public_registration"])
             st["adminSettings"] = adm
@@ -18624,6 +18882,77 @@ def app(environ, start_response):
             secure_start_response("200 OK", [
                 ("Content-Type", "application/json; charset=utf-8"),
                 ("Content-Length", str(len(resp_data))),
+            ])
+            return [resp_data]
+
+        # 7.01 Colleague CLI Access 1-Click Toggle API
+        if cleaned_path == "/api/admin/colleague-cli-access" and method == "POST":
+            if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
+                err = json.dumps({"error": "Unauthorized: Authentication required.", "status": 401}).encode("utf-8")
+                secure_start_response("401 Unauthorized", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                return [err]
+
+            if session and session.get("role") != "Super Admin" and not is_super_admin:
+                record_audit_event("ADMIN_AUTH_FAILED", f"Unauthorized colleague {session.get('user_key')} attempted to mutate colleague CLI permissions", user=session.get('user_key'), role=session.get('role'))
+                err = json.dumps({"error": "Forbidden: Super Admin privilege required.", "status": 403}).encode("utf-8")
+                secure_start_response("403 Forbidden", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                return [err]
+
+            content_length = int(environ.get("CONTENT_LENGTH", 0))
+            body_bytes = environ["wsgi.input"].read(content_length)
+            req = json.loads(body_bytes.decode("utf-8")) if body_bytes else {}
+            colleague_key = str(req.get("colleague_key", "")).strip().lower()
+
+            if not colleague_key:
+                err = json.dumps({"error": "Missing colleague_key parameter", "status": 400}).encode("utf-8")
+                secure_start_response("400 Bad Request", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                return [err]
+
+            st = read_shared_state()
+            profiles = st.get("profiles", {})
+            if colleague_key not in profiles and colleague_key != "king":
+                err = json.dumps({"error": f"Colleague '{colleague_key}' not found", "status": 404}).encode("utf-8")
+                secure_start_response("404 Not Found", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
+                return [err]
+
+            adm = st.get("adminSettings", {})
+            allowed_list = list(adm.get("cli_mode_allowed_colleagues", ["king", "abdullah", "sarah", "hamza"]))
+
+            if "allowed" in req:
+                new_state = bool(req["allowed"])
+            else:
+                cur_state = profiles.get(colleague_key, {}).get("cli_mode_allowed", True)
+                new_state = not cur_state
+
+            if colleague_key == "king":
+                new_state = True
+
+            if colleague_key in profiles:
+                profiles[colleague_key]["cli_mode_allowed"] = new_state
+
+            if new_state:
+                if colleague_key not in allowed_list:
+                    allowed_list.append(colleague_key)
+            else:
+                if colleague_key in allowed_list:
+                    allowed_list.remove(colleague_key)
+
+            adm["cli_mode_allowed_colleagues"] = allowed_list
+            st["adminSettings"] = adm
+            st["profiles"] = profiles
+            write_shared_state(st)
+
+            record_audit_event("COLLEAGUE_CLI_ACCESS_CHANGED", f"Super Admin updated CLI Mode access for {colleague_key}: {'ALLOWED' if new_state else 'RESTRICTED'}", user=session.get("user_key", "king") if session else "king", role="Super Admin")
+
+            resp_data = json.dumps({
+                "status": "ok",
+                "colleague_key": colleague_key,
+                "allowed": new_state,
+                "message": f"CLI access for {colleague_key} set to {'ALLOWED' if new_state else 'RESTRICTED'}"
+            }).encode("utf-8")
+            secure_start_response("200 OK", [
+                ("Content-Type", "application/json; charset=utf-8"),
+                ("Content-Length", str(len(resp_data)))
             ])
             return [resp_data]
 
@@ -19414,6 +19743,19 @@ def app(environ, start_response):
             view_mode = params.get("view", [cookies.get("grace_view_mode", "cli")])[0]
             if view_mode not in ("cli", "enterprise"):
                 view_mode = "cli"
+
+            # Server-side enforcement of CLI Mode permissions
+            user_key = session.get("user_key") if session else None
+            user_role = session.get("role") if session else None
+            if user_key and user_key != "king" and user_role != "Super Admin":
+                if not is_cli_mode_allowed_for_user(user_key, user_role):
+                    view_mode = "enterprise"
+            elif not session and not is_super_admin:
+                st = read_shared_state()
+                adm = st.get("adminSettings", {})
+                cli_rule = adm.get("ribbon_visibility", {}).get("cli_mode", "everyone")
+                if cli_rule in ("admin_only", "disabled"):
+                    view_mode = "enterprise"
 
             if tab == "matrix":
                 body = render_matrix(view_mode=view_mode)

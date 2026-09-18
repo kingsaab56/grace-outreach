@@ -1903,7 +1903,124 @@ def run_tests():
     assert "Real-Time Gmail Draft Generator" in d_m15.decode("utf-8")
     print("[PASS 52.6] All CLI interactive workbenches (Module 1, 2, 3, 15, 21) verified.")
 
-    print("\n[SUCCESS] ALL 52 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+    # 53. Testing Admin Governance for CLI Simple Mode & Colleague Access Control
+    print("\n--- 53. TESTING ADMIN GOVERNANCE FOR CLI SIMPLE MODE & COLLEAGUE ACCESS CONTROL ---")
+    
+    # 53.1 GET /api/admin/settings includes cli_mode and cli_mode_allowed_colleagues
+    st_adm, _, d_adm = wsgi_request("/api/admin/settings", "GET")
+    assert st_adm.startswith("200"), f"GET /api/admin/settings failed with {st_adm}"
+    adm_json = json.loads(d_adm.decode("utf-8"))
+    assert "ribbon_visibility" in adm_json
+    assert "cli_mode" in adm_json["ribbon_visibility"], "cli_mode missing from ribbon_visibility in admin settings"
+    assert "cli_mode_allowed_colleagues" in adm_json, "cli_mode_allowed_colleagues missing from admin settings"
+    print("[PASS 53.1] Admin settings GET correctly returns ribbon_visibility.cli_mode and cli_mode_allowed_colleagues.")
+
+    # 53.2 Super Admin updating ribbon_visibility.cli_mode and cli_mode_allowed_colleagues
+    admin_sid_53, admin_csrf_53 = create_server_session("king", "Super Admin")
+    admin_headers_53 = {
+        "Cookie": f"grace_session_id={admin_sid_53}; grace_csrf_token={admin_csrf_53}",
+        "X-CSRF-Token": admin_csrf_53
+    }
+    st_post_adm, _, d_post_adm = wsgi_request(
+        "/api/admin/settings",
+        "POST",
+        body_dict={
+            "ribbon_visibility": {"cli_mode": "selected"},
+            "cli_mode_allowed_colleagues": ["king", "abdullah", "hamza"]
+        },
+        headers_dict=admin_headers_53
+    )
+    assert st_post_adm.startswith("200")
+    st_after = read_shared_state()
+    assert st_after["adminSettings"]["ribbon_visibility"]["cli_mode"] == "selected"
+    assert "sarah" not in st_after["adminSettings"]["cli_mode_allowed_colleagues"]
+    print("[PASS 53.2] Super Admin successfully updated CLI mode rule to 'selected' and updated colleague access list.")
+
+    # 53.3 Admin Governance UI verification (Ribbon Visibility Tab elements)
+    _, _, d_root = wsgi_request("/api/?tab=dashboard", "GET")
+    root_html_str = d_root.decode("utf-8")
+    assert 'id="gov-vis-cli_mode"' in root_html_str, "Missing gov-vis-cli_mode select element in admin governance modal"
+    assert 'id="gov-cli-colleagues-wrap"' in root_html_str, "Missing gov-cli-colleagues-wrap element in admin governance modal"
+    assert 'onCliModeRuleChange' in root_html_str, "Missing onCliModeRuleChange JS function"
+    assert 'renderGovCliColleaguesList' in root_html_str, "Missing renderGovCliColleaguesList JS function"
+    print("[PASS 53.3] Admin Governance modal renders CLI Mode visibility selector and colleague checklist.")
+
+    # 53.4 Colleague Management UI verification (CLI switch on cards)
+    _, _, d_colleagues = wsgi_request("/api/?tab=colleagues", "GET")
+    colleagues_html_str = d_colleagues.decode("utf-8")
+    assert 'cli-access-btn-' in colleagues_html_str, "Missing CLI access button in colleague cards"
+    assert 'toggleColleagueCliAccess' in colleagues_html_str, "Missing toggleColleagueCliAccess JS function"
+    assert 'edit-colleague-cli-access' in colleagues_html_str, "Missing edit-colleague-cli-access checkbox in colleague settings modal"
+    print("[PASS 53.4] Colleague Management renders CLI Mode Access button, status badges, and settings modal controls.")
+
+    # 53.5 1-Click Toggle Endpoint: Super Admin toggling CLI access for Sarah
+    st_toggle, _, d_toggle = wsgi_request(
+        "/api/admin/colleague-cli-access",
+        "POST",
+        body_dict={"colleague_key": "sarah", "allowed": False},
+        headers_dict=admin_headers_53
+    )
+    assert st_toggle.startswith("200")
+    res_toggle = json.loads(d_toggle.decode("utf-8"))
+    assert res_toggle["allowed"] is False
+    assert res_toggle["colleague_key"] == "sarah"
+
+    # 53.6 Non-admin colleague attempting to mutate CLI permissions is blocked with 403
+    colleague_sid_53, colleague_csrf_53 = create_server_session("sarah", "Colleague")
+    colleague_headers_53 = {
+        "Cookie": f"grace_session_id={colleague_sid_53}; grace_csrf_token={colleague_csrf_53}",
+        "X-CSRF-Token": colleague_csrf_53
+    }
+    st_unauth, _, _ = wsgi_request(
+        "/api/admin/colleague-cli-access",
+        "POST",
+        body_dict={"colleague_key": "sarah", "allowed": True},
+        headers_dict=colleague_headers_53
+    )
+    assert st_unauth.startswith("403"), f"Expected 403 Forbidden for unauthorized colleague, got {st_unauth}"
+    print("[PASS 53.5] 1-Click Colleague CLI Access endpoint strictly enforced Super Admin RBAC security.")
+
+    # 53.7 Server-Side Enforcement: Restricted Colleague is blocked from CLI mode
+    st_sarah_cli, _, d_sarah_cli = wsgi_request(
+        "/api/?tab=matrix&view=cli",
+        "GET",
+        headers_dict={"Cookie": f"grace_session_id={colleague_sid_53}"}
+    )
+    assert st_sarah_cli.startswith("200")
+    sarah_html = d_sarah_cli.decode("utf-8")
+    assert "CLI SIMPLE MODE" not in sarah_html, "Restricted colleague should be forced to Enterprise mode, but got CLI Simple Mode!"
+    assert "ENTERPRISE FUNCTIONAL GRID" in sarah_html or "Complete 22-Module Control Matrix" in sarah_html
+
+    # Super Admin King Saab accessing CLI mode succeeds
+    st_king_cli, _, d_king_cli = wsgi_request(
+        "/api/?tab=matrix&view=cli",
+        "GET",
+        headers_dict={"Cookie": f"grace_session_id={admin_sid_53}"}
+    )
+    assert st_king_cli.startswith("200")
+    king_html = d_king_cli.decode("utf-8")
+    assert "CLI SIMPLE MODE" in king_html, "Super Admin King Saab must always have full access to CLI mode"
+    print("[PASS 53.6] Server-side RBAC strictly blocked restricted colleague from CLI mode while Super Admin maintains full access.")
+
+    # Restore Sarah's access and set cli_mode to 'everyone'
+    wsgi_request(
+        "/api/admin/settings",
+        "POST",
+        body_dict={
+            "ribbon_visibility": {"cli_mode": "everyone"},
+            "cli_mode_allowed_colleagues": ["king", "abdullah", "sarah", "hamza"]
+        },
+        headers_dict=admin_headers_53
+    )
+    wsgi_request(
+        "/api/admin/colleague-cli-access",
+        "POST",
+        body_dict={"colleague_key": "sarah", "allowed": True},
+        headers_dict=admin_headers_53
+    )
+    print("[PASS 53.7] Restored CLI access governance cleanly.")
+
+    print("\n[SUCCESS] ALL 53 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":
