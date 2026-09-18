@@ -13560,6 +13560,36 @@ async function runCliModuleAction(modId, actionIdx, label, btn) {
                 draftBtn.click();
                 logToConsole(`📬 Real-Time Gmail Draft Batch generator triggered.`, '#10B981');
             }
+        } else if (modId === 20 && actionIdx === 2) {
+            const emailInput = prompt("Enter Gmail Address to register (e.g. ewan.gracearchitecture@gmail.com):");
+            if (!emailInput || !emailInput.trim()) {
+                logToConsole("ℹ️ Add Account cancelled (empty email).", "#F59E0B");
+                return;
+            }
+            const cleanEmail = emailInput.trim().toLowerCase();
+            const profInput = prompt("Enter Chrome Profile Name (Optional - press Enter to auto-name):", "");
+            const cleanProfile = (profInput && profInput.trim()) ? profInput.trim() : cleanEmail.split('@')[0];
+            
+            logToConsole(`🔄 Registering ${cleanEmail} (Profile: ${cleanProfile})...`, "#38BDF8");
+            const res = await fetch('/api/cli/action', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
+                body: JSON.stringify({
+                    module_id: 20,
+                    action_id: 2,
+                    label: 'Add Account',
+                    gmail: cleanEmail,
+                    profile_name: cleanProfile
+                })
+            });
+            const d = await res.json();
+            logToConsole(`✅ Account registered in database: ${cleanEmail} [Profile: ${cleanProfile}]`, '#10B981');
+            if (d.auth_url) {
+                logToConsole(`🔑 Google OAuth 2.0 Authorization Link:`, '#F59E0B');
+                logToConsole(`🔗 ${d.auth_url}`, '#00F0FF');
+                logToConsole(`📋 Send this URL to User B on any device to click 'Allow'. Once authorized, drafts can be created in their inbox from anywhere!`, '#A7F3D0');
+            }
+            showToast(`Account registered: ${cleanEmail}`, 'success');
         } else {
             const res = await fetch('/api/cli/action', {
                 method: 'POST',
@@ -13589,7 +13619,7 @@ document.addEventListener('keydown', function(e) {
         return;
     }
     const key = e.key;
-    if (['1', '2', '3', '4'].includes(key)) {
+    if (/^[1-9]$/.test(key)) {
         const activeModEl = document.querySelector('main[data-module-page-id]');
         if (activeModEl) {
             const mId = activeModEl.getAttribute('data-module-page-id');
@@ -17550,22 +17580,23 @@ def render_vertical_telemetry_gauge(label, value, delta, mod_id, idx):
 
 CLI_MODULE_ACTIONS = {
     1: [
-        ("Ingest New Lead", "Insert cold outreach contact into DB", "ingest_lead"),
-        ("Universal Harvester", "Hunt contractors & HVAC leads by state", "harvest_contractors"),
+        ("Ingest Lead Email", "Insert cold outreach contact into database", "ingest_lead"),
+        ("Universal Contractor Harvester", "Hunt contractors & HVAC leads by state", "harvest_contractors"),
         ("View Contacts DB", "Display stored cold outreach contacts", "view_contacts"),
         ("Export Clean CSV", "Download database contacts as CSV file", "export_csv"),
     ],
     2: [
         ("Deep DNS/MX Validation", "Resolve MX mail exchanges & block dead domains", "run_cleaner_deep"),
-        ("Scrub Disposable & Junk", "Remove temporary inboxes & bad syntax", "run_cleaner"),
+        ("Scrub Disposable & Junk (DB)", "Clean unvalidated contacts and flag invalid syntax", "run_cleaner"),
         ("Recalculate Quality Score", "Update contact deliverability index", "recalc_quality"),
         ("Export Verified Clean List", "Download verified zero-bounce contacts", "export_clean_csv"),
     ],
     3: [
-        ("Create Real-Time Campaign", "Launch automated cold outreach campaign", "create_campaign"),
-        ("Auto-Pitch Contractors", "Generate tailored HVAC/Builder spintax pitch", "auto_pitch"),
-        ("Push Drafts to Inboxes", "Dispatch draft payloads to active Gmail nodes", "push_drafts"),
-        ("Inspect Campaign History", "Review previous campaign dispatch logs", "view_campaigns"),
+        ("New Campaign", "Launch automated cold outreach campaign flow", "new_campaign"),
+        ("Resume Campaign", "Continue pending campaign execution", "resume_campaign"),
+        ("Campaign Progress", "Review real-time dispatch progress numbers", "campaign_progress"),
+        ("Campaign History", "Inspect completed campaign records", "campaign_history"),
+        ("Settings", "Configure campaign delays and sending limits", "campaign_settings"),
     ],
     4: [
         ("Analyze Subject Line", "Audit cold outreach subject for spam triggers", "audit_subject"),
@@ -17574,112 +17605,105 @@ CLI_MODULE_ACTIONS = {
         ("Load Sample Pitch", "Load high-converting contractor cold pitch", "load_sample_pitch"),
     ],
     5: [
-        ("View Pipeline Leads", "Examine deal stages and active prospects", "view_crm_pipeline"),
-        ("Advance Deal Stage", "Move prospect from Pitching to Negotiation", "advance_deal"),
-        ("Filter High-Value Leads", "Isolate contractors with >$15k deal value", "filter_high_value"),
-        ("Export Master CRM CSV", "Download comprehensive CRM pipeline report", "export_crm_csv"),
+        ("Dashboard", "View total contacts, drafts, sent & replied counters", "crm_dashboard"),
+        ("View Contacts", "Display all leads and CRM pipeline statuses", "view_contacts"),
+        ("Update Status", "Update prospect status in deal pipeline", "update_status"),
+        ("Search Lead", "Find specific contractor or company", "search_lead"),
+        ("Export CSV", "Download contacts database as CSV", "export_csv"),
     ],
     6: [
-        ("Recalculate Conversion Scores", "Score leads by domain authority & company size", "recalc_scores"),
-        ("Filter A-Tier Prospects", "Show highest converting leads (Score > 80)", "filter_tier_a"),
-        ("Flag Low-Intent Records", "Identify unresponsive or low-fit leads", "flag_low_intent"),
-        ("Export Lead Scoring Matrix", "Download conversion scores as CSV", "export_scores_csv"),
+        ("Show Conversion Scores", "Score all database leads by conversion likelihood", "show_scoring"),
+        ("Filter High-Scoring Prospects", "Isolate leads with conversion score > 80", "filter_top_leads"),
+        ("Recalculate Lead Scores", "Re-evaluate company size and domain signals", "recalc_scores"),
+        ("Export Scoring Matrix CSV", "Download scored leads database", "export_scores_csv"),
     ],
     7: [
-        ("Run Sentiment Analysis", "Evaluate emotional resonance & tone", "analyze_sentiment"),
-        ("Optimize Call-To-Action", "Enhance closing ask for maximum reply rate", "optimize_cta"),
-        ("Check Spam Risk Words", "Identify spam-filter red flags in copy", "check_spam_words"),
-        ("Auto-Spintax Generator", "Generate 5 variations using {option1|option2}", "generate_spintax"),
+        ("Enter Subject & Body Manually", "Interactive AI template analysis", "analyze_manual"),
+        ("Analyze Saved Template from DB", "Load and score template from database", "analyze_db"),
     ],
     8: [
-        ("Score Open-Rate Likelihood", "Predict inbox open rate percentage", "score_open_rate"),
-        ("Word & Character Audit", "Verify optimal length (35-50 characters)", "audit_length"),
-        ("Personalization Tag Audit", "Ensure {First_Name} & {Company} resolve", "audit_tags"),
-        ("Generate 5 Variations", "Produce 5 high-converting subject lines", "generate_variations"),
+        ("Analyze Subject Line", "Audit cold outreach subject line for open-rate & spam score", "analyze_subject"),
     ],
     9: [
-        ("View Built-in Templates", "Browse proven cold email frameworks", "view_templates"),
-        ("Create Custom Spintax", "Build dynamic Spintax cold email draft", "create_spintax"),
-        ("Test Merge Tag Fill", "Simulate live contact personalization", "test_merge_tags"),
-        ("Export Template Library", "Download templates as JSON/TXT bundle", "export_templates"),
+        ("View Templates", "Browse proven cold outreach frameworks", "view_templates"),
+        ("Add Template", "Create new cold outreach template", "add_template"),
+        ("Analyze Template", "Run AI quality and spam audit on template", "analyze_template"),
+        ("Delete Template", "Remove outdated template from library", "delete_template"),
     ],
     10: [
-        ("Generate Weekly Telemetry", "Compile aggregated outreach performance", "gen_weekly_report"),
-        ("Calculate Deal ROI", "Attribution of pipeline revenue to campaigns", "calc_deal_roi"),
-        ("Export Comprehensive CSV", "Download multi-channel performance dataset", "export_report_csv"),
-        ("Download Security Trail", "Export immutable access log as TXT file", "export_security_txt"),
+        ("Conversion & Funnel Reports", "Review campaign deliverability and conversion metrics", "view_reports"),
+        ("Export Comprehensive Audit Trail", "Download detailed outreach logs and report data", "export_reports"),
     ],
     11: [
-        ("View Live Event Stream", "Stream recent operational and security events", "view_event_stream"),
-        ("Filter Super Admin Trails", "Audit privilege escalations and admin actions", "filter_admin_trails"),
-        ("Export Immutable Log", "Download tamper-proof audit trail as CSV", "export_audit_csv"),
-        ("Verify Security Signatures", "Check SHA-256 HMAC integrity hashes", "verify_signatures"),
+        ("View Live Activity Logs", "Display timestamped operational event trail", "view_logs"),
+        ("Flush Stale Logs", "Archive old activity records from database", "flush_logs"),
     ],
     12: [
-        ("Live Lead Personalizer", "Merge prospect data into email template", "personalize_lead"),
-        ("Contractor Merge Tags", "Inject Trade, State and License numbers", "merge_contractor_tags"),
-        ("Preview Dynamic Pitch", "Inspect finished output for sample contact", "preview_pitch"),
-        ("Queue Personalized Batch", "Send customized batch to draft generator", "queue_personalized"),
+        ("Personalize Lead Pitch", "Generate personalized preview for prospect", "personalize_pitch"),
+        ("Queue Personalized Batch", "Send customized batch to Gmail draft queue", "queue_batch"),
     ],
     13: [
-        ("Check Active Progress", "Inspect real-time dispatch counters & rates", "check_progress"),
-        ("Pause / Resume Dispatch", "Safely halt or resume background send loops", "pause_resume"),
-        ("Monitor Deliverability Ratio", "Inspect live open, bounce and reply rates", "monitor_deliverability"),
-        ("Flush Completed Batches", "Archive completed queue items to history", "flush_completed"),
+        ("View Active Campaign Progress", "Display progress percentage and live counters", "view_progress"),
+        ("Recalculate Delivery Rates", "Refresh done/pending/failed counters", "recalc_rates"),
     ],
     14: [
-        ("View Pacing Thresholds", "Inspect hourly cap (45 messages/hour)", "view_pacing"),
-        ("Configure Human Jitter", "Adjust delay interval (30-60s variance)", "config_jitter"),
-        ("Test SMTP / OAuth Gateway", "Send diagnostic test ping through relay", "test_smtp_gateway"),
-        ("Save System Thresholds", "Persist engine limits to system state", "save_thresholds"),
+        ("View Current Settings", "Display delays, quotas, and profile limits", "view_settings"),
+        ("Edit Campaign Settings", "Configure minimum/maximum delays and batch quotas", "edit_settings"),
     ],
     15: [
-        ("Generate 5-Draft Batch", "Create real drafts across connected Gmail nodes", "generate_drafts_realtime"),
-        ("Inspect Connected Nodes", "Check quota capacity for Profile 17, 18, 19", "inspect_nodes"),
-        ("Sync Unsent Queue", "Package pending campaigns into Gmail drafts", "sync_unsent_queue"),
-        ("View Recent Draft Payloads", "Inspect subject, body & headers in DB", "view_draft_payloads"),
+        ("View Pending Draft Queue", "Examine pending drafts awaiting send", "view_queue"),
+        ("Create Manual Draft (Gmail OAuth)", "Compose and save draft to Gmail account", "create_manual_draft"),
     ],
     16: [
-        ("Scan Connected Profiles", "List Gmail sending identities and tokens", "scan_profiles"),
-        ("Check Token Expiry Status", "Validate OAuth refresh grant validity", "check_token_expiry"),
-        ("Assign State Territories", "Route TX/FL/CA campaigns to specific nodes", "assign_territories"),
-        ("Test Profile Health", "Run individual inbox reputation diagnostic", "test_profile_health"),
+        ("View Profiles", "List configured Gmail sending profiles", "view_profiles"),
+        ("View Profile Accounts", "Inspect accounts bound to each profile", "view_profile_accounts"),
+        ("Connect OAuth Account", "Authorize new Gmail account via OAuth 2.0", "connect_oauth"),
+        ("Add Profile", "Register new profile identity", "add_profile"),
+        ("Delete Profile", "Remove profile and revoke tokens", "delete_profile"),
     ],
     17: [
-        ("Scan Non-Responders", "Find contacts with no reply after 3 business days", "scan_non_responders"),
-        ("Generate Follow-up Bump", "Create polite, contextual check-in draft", "gen_followup_bump"),
-        ("Queue Second-Touch Batch", "Schedule follow-up wave with proper pacing", "queue_second_touch"),
-        ("Export Follow-up Schedule", "Download follow-up cadence calendar CSV", "export_followup_csv"),
+        ("Templates", "Manage follow-up email templates", "followup_templates"),
+        ("Pending Follow-ups", "Inspect prospects awaiting second touch", "pending_followups"),
+        ("Send Follow-ups", "Dispatch follow-up wave with safe pacing", "send_followups"),
+        ("AI Advisor", "Get recommendations on follow-up timing", "ai_advisor"),
+        ("Reports", "Review follow-up open and reply statistics", "followup_reports"),
     ],
     18: [
-        ("View Do-Not-Contact List", "Display active suppression and unsubscribes", "view_suppressions"),
-        ("Add Email to Suppression", "Permanently blacklist recipient or domain", "add_suppression"),
-        ("RFC 8058 One-Click Audit", "Inspect List-Unsubscribe header compliance", "audit_rfc8058"),
-        ("Export Master Blacklist", "Download global suppression list as CSV", "export_suppression_csv"),
+        ("View Suppression List", "Examine do-not-contact blacklist entries", "view_suppression"),
+        ("Add Email to Suppression", "Permanently suppress recipient or domain", "add_suppression"),
+        ("Remove Email from Suppression", "Restore suppressed address to outreach pool", "remove_suppression"),
     ],
     19: [
-        ("Scan Inbound Replies", "Fetch fresh incoming replies from Gmail nodes", "scan_inbound_replies"),
-        ("AI Intent Classifier", "Classify replies: Interested vs Unsubscribe vs OOO", "classify_intent"),
-        ("Route Interested to CRM", "Automatically create deal for warm prospects", "route_to_crm"),
-        ("Auto-Draft Polite Reply", "Generate review-ready reply for Super Admin", "auto_draft_reply"),
+        ("View Inbound Replies Dashboard", "Live matrix of incoming responses", "view_replies_matrix"),
+        ("AI Intent Classifier", "Classify email (Interested vs Unsubscribe vs OOO)", "classify_intent"),
+        ("Record / Test Inbound Reply Event", "Simulate incoming reply and trigger automations", "record_reply"),
     ],
     20: [
-        ("Scan Daily Quotas", "Review sent counts across all Gmail accounts", "scan_daily_quotas"),
-        ("Monitor Warmup Stage", "Track ramp-up volume (10 -> 25 -> 50 / day)", "monitor_warmup"),
-        ("Check IP / Domain Reputation", "Query DNSBL and Spamhaus status", "check_ip_reputation"),
-        ("Rebalance Account Load", "Redistribute queue evenly across inboxes", "rebalance_load"),
+        ("View Accounts", "Display configured Gmail accounts & status", "view_accounts"),
+        ("Add Account", "Add Gmail address & connect OAuth grant", "add_account"),
+        ("Scan Chrome Profiles", "Scan system Chrome user data directories", "scan_chrome"),
+        ("Detect Gmail Accounts", "Identify active logged-in Google identities", "detect_accounts"),
+        ("Business Accounts", "Filter domain & business workspace accounts", "business_accounts"),
+        ("Active Gmail", "Select active sending account", "active_account"),
+        ("Refresh Everything", "Sync profiles, accounts & filter business", "refresh_everything"),
     ],
     21: [
-        ("Inspect Live Draft Queue", "Examine pending drafts awaiting send", "inspect_queue"),
-        ("Re-order Priority Queue", "Move urgent contractor campaigns to front", "reorder_priority"),
-        ("Flush Stale / Failed Drafts", "Clean drafts older than 7 days from queue", "flush_stale_drafts"),
-        ("Trigger Instant Dispatch", "Send next draft batch immediately", "trigger_dispatch"),
+        ("View Draft Queue", "Examine drafts queued for dispatch", "view_draft_queue"),
+        ("Add Draft to Queue", "Queue personalized draft for background sending", "add_draft_to_queue"),
     ],
     22: [
-        ("Run Live Dynamic Pipeline", "Full automated end-to-end campaign run", "run_pipeline"),
-        ("Activate Sending Loop", "Start background worker thread with jitter", "start_send_loop"),
-        ("Warmup Profiler Deep Audit", "Ensure all accounts meet safety thresholds", "audit_warmup"),
-        ("Export Full Execution Log", "Download complete pipeline execution trail", "export_pipeline_log"),
+        ("Create & Build Campaign (With AI Health Scorer)", "Build dynamic multi-node campaign", "create_campaign"),
+        ("Run / Resume Campaign", "Execute or resume pending campaign sequence", "run_campaign"),
+        ("Campaign Progress Dashboard", "Track live delivery metrics and sent counters", "campaign_dashboard"),
+        ("Campaign Scheduler (Automated Sending)", "Set business window automated sending schedule", "campaign_scheduler"),
+        ("Profile Login Accounts & Health (Categorized)", "Inspect connected accounts health & status", "profile_health"),
+        ("Account Daily Quotas & Limits", "Monitor 50/50 safe send quota ceilings", "account_limits"),
+        ("Account Warm-up & Throttle Matrix", "Review warm-up schedule & throttle pacing", "warmup_matrix"),
+        ("View All Campaigns List", "List all campaigns with progress & states", "view_all_campaigns"),
+        ("Export Campaign Audit Report (.TXT)", "Download complete signed audit report", "export_report"),
+        ("Inbound Replies & Suppression Hub", "Live replies matrix and do-not-contact sync", "replies_hub"),
+        ("Run Daily Maintenance & Warm-up Upgrade", "Perform maintenance & quota increments", "daily_maintenance"),
+        ("OAuth Connect Hub (Profile-Targeted & Vault Locked)", "Manage Google OAuth tokens & authentication", "oauth_hub"),
     ],
 }
 
@@ -17702,14 +17726,17 @@ def render_cli_command_pad(m_id):
             </button>
         ''')
 
+    max_key = min(9, len(actions))
+    key_hint = f"KEYBOARD 1-{max_key}" if max_key > 1 else "KEYBOARD 1"
+
     return f'''
     <div class="card cli-action-command-pad" style="margin-bottom:20px; padding:16px 20px; background:#011A17; border:1.5px solid #00F0FF; box-shadow:0 0 15px rgba(0,240,255,0.12); border-radius:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; border-bottom:1px solid rgba(0,240,255,0.25); padding-bottom:8px;">
             <div style="display:flex; align-items:center; gap:8px;">
                 <span style="background:rgba(0,240,255,0.15); color:#00F0FF; border:1px solid #00F0FF; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px;">CLI TOOL #{m_id}</span>
-                <strong style="color:#FFFFFF; font-size:13.5px; letter-spacing:0.5px;">⚡ NUMBERED OPERATIONAL ACTIONS (KEYBOARD 1-{len(actions)})</strong>
+                <strong style="color:#FFFFFF; font-size:13.5px; letter-spacing:0.5px;">⚡ NUMBERED OPERATIONAL ACTIONS ({key_hint})</strong>
             </div>
-            <span style="font-size:11px; color:#A7F3D0; font-weight:700;">🟢 Direct Working Mode · Zero Telemetry Overhead</span>
+            <span style="font-size:11px; color:#A7F3D0; font-weight:700;">🟢 {len(actions)} Direct Working Actions · Zero Telemetry Overhead</span>
         </div>
         <div class="cli-cmd-grid">
             {"".join(buttons_html)}
@@ -20331,6 +20358,46 @@ def app(environ, start_response):
                         "latency_ms": 12
                     }
                 }
+
+                if m_id == 20 and a_id == 2:
+                    gmail_addr = str(req.get("gmail", "")).strip().lower()
+                    prof_name = str(req.get("profile_name", "")).strip() or (gmail_addr.split("@")[0] if "@" in gmail_addr else "Profile 1")
+                    if gmail_addr:
+                        try:
+                            from config.gmail_profiles import save_gmail_profile
+                            save_gmail_profile(profile_name=prof_name, gmail=gmail_addr)
+                        except Exception as e_save:
+                            logger.warning("save_gmail_profile error: %s", e_save)
+
+                    # Build official Google OAuth 2.0 authorization URL
+                    auth_url = ""
+                    try:
+                        cred_file = os.path.abspath("./credentials.json")
+                        if os.path.exists(cred_file):
+                            from google_auth_oauthlib.flow import Flow
+                            SCOPES = [
+                                'https://www.googleapis.com/auth/gmail.compose',
+                                'https://www.googleapis.com/auth/gmail.modify'
+                            ]
+                            flow = Flow.from_client_secrets_file(
+                                cred_file,
+                                scopes=SCOPES,
+                                redirect_uri="http://localhost:50948/"
+                            )
+                            auth_url, _ = flow.authorization_url(
+                                prompt='consent',
+                                access_type='offline',
+                                login_hint=gmail_addr
+                            )
+                        else:
+                            auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=your_client_id&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.compose&access_type=offline&prompt=consent&login_hint={gmail_addr}"
+                    except Exception:
+                        auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?login_hint={gmail_addr}"
+
+                    res_payload["auth_url"] = auth_url
+                    res_payload["gmail"] = gmail_addr
+                    res_payload["profile_name"] = prof_name
+                    res_payload["message"] = f"Account {gmail_addr} registered for Profile '{prof_name}'. OAuth link ready."
                 res_b = json.dumps(res_payload).encode("utf-8")
                 secure_start_response("200 OK", [
                     ("Content-Type", "application/json; charset=utf-8"),

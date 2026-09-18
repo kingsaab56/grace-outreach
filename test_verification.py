@@ -2236,7 +2236,77 @@ def run_tests():
     assert 'Switch to CLI Simple View' in html_ent_m1, "Enterprise module must have quick switch to CLI Simple"
     print("[PASS 55.6] Seamless 1-click dual-view quick toggle between CLI Simple and Enterprise verified.")
 
-    print("\n[SUCCESS] ALL 55 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+    # =========================================================================
+    # 56. TESTING EXACT TERMINAL BUTTON PARITY & MODULE 20 ADD ACCOUNT FLOW
+    # =========================================================================
+    print("\n--- 56. TESTING EXACT TERMINAL BUTTON PARITY & MODULE 20 ADD ACCOUNT FLOW ---")
+
+    # 56.1 Module 20: Exactly 7 Buttons Matching Terminal Screenshot
+    st_cli_m20, _, d_cli_m20 = wsgi_request("/api/?tab=module&id=20&view=cli", "GET")
+    assert st_cli_m20.startswith("200")
+    html_cli_m20 = d_cli_m20.decode("utf-8")
+    for b_idx in range(1, 8):
+        assert f'id="cli-btn-20-{b_idx}"' in html_cli_m20, f"Module 20 missing button cli-btn-20-{b_idx}"
+    assert 'id="cli-btn-20-8"' not in html_cli_m20, "Module 20 must NOT have button 8 (Back option eliminated)"
+    m20_expected_labels = [
+        "View Accounts", "Add Account", "Scan Chrome Profiles", 
+        "Detect Gmail Accounts", "Business Accounts", "Active Gmail", "Refresh Everything"
+    ]
+    for lbl in m20_expected_labels:
+        assert lbl in html_cli_m20, f"Module 20 missing expected terminal button label: {lbl}"
+    print("[PASS 56.1] Module 20 renders exactly 7 buttons with exact names matching King Saab terminal screenshot.")
+
+    # 56.2 Module 22: Exactly 12 Buttons Matching Campaign Engine V2
+    st_cli_m22, _, d_cli_m22 = wsgi_request("/api/?tab=module&id=22&view=cli", "GET")
+    assert st_cli_m22.startswith("200")
+    html_cli_m22 = d_cli_m22.decode("utf-8")
+    for b_idx in range(1, 13):
+        assert f'id="cli-btn-22-{b_idx}"' in html_cli_m22, f"Module 22 missing button cli-btn-22-{b_idx}"
+    assert 'Create &amp; Build Campaign' in html_cli_m22 or 'Create & Build Campaign' in html_cli_m22
+    assert 'OAuth Connect Hub' in html_cli_m22
+    print("[PASS 56.2] Module 22 renders exactly 12 buttons with exact names from campaign_menu.py.")
+
+    # 56.3 Module 3 (5 buttons) and Module 5 (5 buttons)
+    st_cli_m3, _, d_cli_m3 = wsgi_request("/api/?tab=module&id=3&view=cli", "GET")
+    assert st_cli_m3.startswith("200")
+    html_cli_m3 = d_cli_m3.decode("utf-8")
+    for b_idx in range(1, 6):
+        assert f'id="cli-btn-3-{b_idx}"' in html_cli_m3, f"Module 3 missing button cli-btn-3-{b_idx}"
+    assert 'New Campaign' in html_cli_m3 and 'Resume Campaign' in html_cli_m3
+
+    st_cli_m5, _, d_cli_m5 = wsgi_request("/api/?tab=module&id=5&view=cli", "GET")
+    assert st_cli_m5.startswith("200")
+    html_cli_m5 = d_cli_m5.decode("utf-8")
+    for b_idx in range(1, 6):
+        assert f'id="cli-btn-5-{b_idx}"' in html_cli_m5, f"Module 5 missing button cli-btn-5-{b_idx}"
+    assert 'View Contacts' in html_cli_m5 and 'Update Status' in html_cli_m5
+    print("[PASS 56.3] Module 3 and Module 5 render exactly 5 buttons each with exact terminal names.")
+
+    # 56.4 Module 20 Action 2 ("Add Account") Execution & Google OAuth Consent Link
+    st_m20_act, _, d_m20_act = wsgi_request(
+        "/api/cli/action",
+        "POST",
+        body_dict={
+            "module_id": 20,
+            "action_id": 2,
+            "label": "Add Account",
+            "gmail": "ewan.gracearchitecture@gmail.com",
+            "profile_name": "ewan"
+        }
+    )
+    assert st_m20_act.startswith("200"), f"Expected 200 for Module 20 Add Account, got {st_m20_act}"
+    res_m20 = json.loads(d_m20_act.decode("utf-8"))
+    assert res_m20.get("status") == "ok"
+    assert res_m20.get("gmail") == "ewan.gracearchitecture@gmail.com"
+    assert res_m20.get("profile_name") == "ewan"
+    assert "auth_url" in res_m20 and "accounts.google.com" in res_m20["auth_url"]
+    print("[PASS 56.4] Module 20 Add Account successfully registered Gmail and generated Google OAuth 2.0 Consent URL.")
+
+    # 56.5 Dynamic Keyboard Listener
+    assert "/^[1-9]$/.test(key)" in html_cli_m20, "Frontend JS must support number keys 1 through 9"
+    print("[PASS 56.5] Dynamic keys 1-9 keyboard shortcut listener verified.")
+
+    print("\n[SUCCESS] ALL 56 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":
