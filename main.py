@@ -627,7 +627,10 @@ def generate_oauth_invite_email_html(target_email: str, auth_url: str, profile_n
 </html>"""
 
 
+LAST_SMTP_INVITE_STATUS = {}
+
 def dispatch_oauth_invite_email_smtp(target_email: str, auth_url: str, profile_name: str = "Profile", requester_name: str = "King Saab") -> dict:
+    global LAST_SMTP_INVITE_STATUS
     v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
     v2 = os.environ.get("SMTP_PASS", "").strip()
     if "@" in v2 and "@" not in v1:
@@ -638,7 +641,9 @@ def dispatch_oauth_invite_email_smtp(target_email: str, auth_url: str, profile_n
 
     if not smtp_pass:
         logger.info("[OAUTH INVITE DISPATCH] Would dispatch OAuth link to %s for profile %s (Awaiting SMTP_PASS configuration).", target_email, profile_name)
-        return {"dispatched": False, "reason": "Awaiting SMTP_PASS configuration on server"}
+        res = {"dispatched": False, "configured": False, "reason": "Awaiting SMTP_PASS configuration on server"}
+        LAST_SMTP_INVITE_STATUS[target_email] = res
+        return res
 
     try:
         import smtplib
@@ -664,14 +669,45 @@ Grace Outreach Assistant Team
         msg.attach(MIMEText(text_body, "plain", "utf-8"))
         msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=4) as server:
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(smtp_user, [target_email], msg.as_string())
-        logger.info("Successfully dispatched OAuth 2.0 invitation email via SMTP to %s", target_email)
-        return {"dispatched": True, "recipient": target_email}
+        sent = False
+        last_err = None
+        # Attempt 1: Port 465 (SSL)
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=5) as server:
+                server.login(smtp_user, smtp_pass)
+                server.sendmail(smtp_user, [target_email], msg.as_string())
+            sent = True
+            logger.info("Successfully dispatched OAuth 2.0 invitation email via SMTP_SSL:465 to %s", target_email)
+        except Exception as e465:
+            last_err = e465
+            logger.warning("SMTP SSL:465 failed (%s), attempting STARTTLS on port 587...", e465)
+            # Attempt 2: Port 587 (STARTTLS)
+            try:
+                with smtplib.SMTP("smtp.gmail.com", 587, timeout=5) as server:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo()
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(smtp_user, [target_email], msg.as_string())
+                sent = True
+                logger.info("Successfully dispatched OAuth 2.0 invitation email via STARTTLS:587 to %s", target_email)
+            except Exception as e587:
+                last_err = e587
+                logger.warning("SMTP STARTTLS:587 also failed: %s", e587)
+
+        if sent:
+            res = {"dispatched": True, "configured": True, "recipient": target_email}
+            LAST_SMTP_INVITE_STATUS[target_email] = res
+            return res
+        else:
+            res = {"dispatched": False, "configured": True, "error": str(last_err)}
+            LAST_SMTP_INVITE_STATUS[target_email] = res
+            return res
     except Exception as exc:
         logger.warning("SMTP OAuth invite dispatch attempt to %s failed: %s", target_email, exc)
-        return {"dispatched": False, "error": str(exc)}
+        res = {"dispatched": False, "configured": True, "error": str(exc)}
+        LAST_SMTP_INVITE_STATUS[target_email] = res
+        return res
 
 
 # Thread-safe In-Memory Sliding-Window Dual-Key Rate Limiter
@@ -13912,10 +13948,13 @@ async function submitCliOAuthAddAccount() {
             }
             if (noteEl) {
                 if (d.email_dispatch && d.email_dispatch.dispatched) {
-                    noteEl.innerHTML = `📧 <b>Invitation Email Dispatched!</b> Sent official Google authorization link to <b>${email}</b> via SMTP.`;
+                    noteEl.innerHTML = `📧 <b>Invitation Email Dispatched:</b> Attempting delivery to <b>${email}</b> via SMTP. You can also copy the link below to share directly.`;
                     noteEl.style.color = '#A7F3D0';
+                } else if (d.email_dispatch && d.email_dispatch.configured === false) {
+                    noteEl.innerHTML = `⚠️ <b>Server SMTP Email Not Configured:</b> Server variable <code>SMTP_PASS</code> set nahi hai, is liye automated email deliver nahi ho saki.<br>👉 <b>Solution:</b> Niche diye gaye <b>'📋 Copy Link (WhatsApp/Slack)'</b> button par click karein aur ye link User B ko WhatsApp ya message par send karein!`;
+                    noteEl.style.color = '#FDE047';
                 } else {
-                    noteEl.innerHTML = `ℹ️ <b>OAuth Link Ready:</b> Click 'Copy Link' below to send to User B on WhatsApp/Slack, or open the login window directly.`;
+                    noteEl.innerHTML = `ℹ️ <b>OAuth Link Ready:</b> Niche diye gaye <b>'📋 Copy Link'</b> button par click karein aur User B ko send karein taakay wo 1-click mein authorize kar sakein.`;
                     noteEl.style.color = '#FDE047';
                 }
             }
@@ -20783,19 +20822,31 @@ def app(environ, start_response):
                         res_payload["gmail"] = gmail_addr
                         res_payload["profile_name"] = prof_name
 
+                        v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
+                        v2 = os.environ.get("SMTP_PASS", "").strip()
+                        smtp_pass = (v1 if "@" in v2 else v2).replace(" ", "")
+                        smtp_configured = bool(smtp_pass)
+
                         dispatch_invite = req.get("dispatch_invite", True)
-                        email_result = {"dispatched": False, "note": "Dispatch skipped"}
+                        email_result = {"dispatched": False, "configured": smtp_configured, "note": "Dispatch skipped"}
                         if dispatch_invite and gmail_addr and "@" in gmail_addr:
-                            try:
-                                threading.Thread(
-                                    target=dispatch_oauth_invite_email_smtp,
-                                    args=(gmail_addr, auth_url, prof_name, active_user),
-                                    daemon=True
-                                ).start()
-                                email_result = {"dispatched": True, "status": "queued_in_background", "recipient": gmail_addr}
-                            except Exception as e_invite:
-                                logger.warning("Failed to queue OAuth invite email thread: %s", e_invite)
-                                email_result = {"dispatched": False, "error": str(e_invite)}
+                            if smtp_configured:
+                                try:
+                                    threading.Thread(
+                                        target=dispatch_oauth_invite_email_smtp,
+                                        args=(gmail_addr, auth_url, prof_name, active_user),
+                                        daemon=True
+                                    ).start()
+                                    email_result = {"dispatched": True, "configured": True, "status": "queued_in_background", "recipient": gmail_addr}
+                                except Exception as e_invite:
+                                    logger.warning("Failed to queue OAuth invite email thread: %s", e_invite)
+                                    email_result = {"dispatched": False, "configured": True, "error": str(e_invite)}
+                            else:
+                                email_result = {
+                                    "dispatched": False,
+                                    "configured": False,
+                                    "reason": "Server variable SMTP_PASS is not set in Railway. Use 1-Click Copy Link to share directly."
+                                }
 
                         res_payload["email_dispatch"] = email_result
                         if email_result.get("dispatched"):
