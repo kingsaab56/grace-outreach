@@ -664,7 +664,7 @@ Grace Outreach Assistant Team
         msg.attach(MIMEText(text_body, "plain", "utf-8"))
         msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=12) as server:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=4) as server:
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_user, [target_email], msg.as_string())
         logger.info("Successfully dispatched OAuth 2.0 invitation email via SMTP to %s", target_email)
@@ -3728,7 +3728,7 @@ def render_header(view_mode="cli"):
          EXECUTIVE GMAIL ACCOUNT & GOOGLE OAUTH 2.0 ONBOARDING MODAL
          ========================================================================= -->
     <div id="cli-oauth-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="cli-oauth-title">
-        <div class="modal-card wide-modal" style="width:min(640px, 95vw); max-height:90vh; display:flex; flex-direction:column; padding:24px; background:#001A17; border:1.5px solid var(--accent-gold); border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,0.6);">
+        <div class="modal-card wide-modal" style="width:min(640px, 95vw); max-height:90vh; display:flex; flex-direction:column; padding:24px; background:#001A17; border:1.5px solid var(--accent-gold); border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,0.6); overflow-x:hidden;">
             <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #123B35; padding-bottom:12px; margin-bottom:16px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div style="width:40px; height:40px; border-radius:10px; background:rgba(0,240,255,0.15); border:1px solid #00F0FF; display:flex; align-items:center; justify-content:center; font-size:20px;">
@@ -3742,7 +3742,7 @@ def render_header(view_mode="cli"):
                 <button class="modal-close" onclick="closeCliOAuthModal()" aria-label="Close modal">×</button>
             </div>
 
-            <div id="cli-oauth-body" style="overflow-y:auto; padding-right:4px;">
+            <div id="cli-oauth-body" style="overflow-y:auto; overflow-x:hidden; padding-right:4px;">
                 <p style="font-size:13px; color:#94A3B8; margin:0 0 16px; line-height:1.5;">
                     Register a Gmail address (User B or team inbox) to prepare outreach drafts. You can immediately send an authorization invite email to User B, copy the official Google OAuth 2.0 link to send on WhatsApp/Slack, or open the Google consent window right now.
                 </p>
@@ -13898,6 +13898,9 @@ async function submitCliOAuthAddAccount() {
                     noteEl.style.color = '#FDE047';
                 }
             }
+            try {
+                resultBox.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+            } catch (eScroll) {}
         }
         showToast(`Account registered: ${email}`, 'success');
     } catch (err) {
@@ -20740,14 +20743,14 @@ def app(environ, start_response):
                         email_result = {"dispatched": False, "note": "Dispatch skipped"}
                         if dispatch_invite and gmail_addr and "@" in gmail_addr:
                             try:
-                                email_result = dispatch_oauth_invite_email_smtp(
-                                    target_email=gmail_addr,
-                                    auth_url=auth_url,
-                                    profile_name=prof_name,
-                                    requester_name=active_user
-                                )
+                                threading.Thread(
+                                    target=dispatch_oauth_invite_email_smtp,
+                                    args=(gmail_addr, auth_url, prof_name, active_user),
+                                    daemon=True
+                                ).start()
+                                email_result = {"dispatched": True, "status": "queued_in_background", "recipient": gmail_addr}
                             except Exception as e_invite:
-                                logger.warning("Failed to dispatch OAuth invite email: %s", e_invite)
+                                logger.warning("Failed to queue OAuth invite email thread: %s", e_invite)
                                 email_result = {"dispatched": False, "error": str(e_invite)}
 
                         res_payload["email_dispatch"] = email_result
