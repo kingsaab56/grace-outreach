@@ -2169,7 +2169,74 @@ def run_tests():
     )
     print("[PASS 54.5] Super Admin root profile permanently immune from deletion and blacklisting.")
 
-    print("\n[SUCCESS] ALL 54 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
+    # =========================================================================
+    # 55. TESTING OPTION 2: PURE CLI OPERATIONAL WORKBENCH (ZERO TELEMETRY) & NUMBERED ACTION BUTTONS
+    # =========================================================================
+    print("\n--- 55. TESTING OPTION 2: PURE CLI OPERATIONAL WORKBENCH & NUMBERED ACTION BUTTONS ---")
+
+    # 55.1 Zero Bulky Telemetry in CLI Simple Mode
+    st_cli_m1, _, d_cli_m1 = wsgi_request("/api/?tab=module&id=1&view=cli", "GET")
+    assert st_cli_m1.startswith("200"), f"Expected 200 for CLI module 1, got {st_cli_m1}"
+    html_cli_m1 = d_cli_m1.decode("utf-8")
+    assert '<div class="vertical-telemetry-hud"' not in html_cli_m1, "CLI Simple Mode must NOT render bulky vertical-telemetry-hud"
+    assert '<div class="telemetry-grid"' not in html_cli_m1, "CLI Simple Mode must NOT render bulky telemetry-grid"
+    assert "MULTI-TENANT TELEMETRY HUD" not in html_cli_m1, "CLI Simple Mode must NOT render multi-tenant telemetry HUD"
+    print("[PASS 55.1] Zero Bulky Telemetry verified in CLI Simple Mode; decorative ladder bars 100% eliminated.")
+
+    # 55.2 CLI Numbered Action Command Pad & Buttons
+    assert 'class="card cli-action-command-pad"' in html_cli_m1, "Missing cli-action-command-pad in CLI module view"
+    assert 'id="cli-btn-1-1"' in html_cli_m1, "Missing cli-btn-1-1 in CLI module 1"
+    assert 'id="cli-btn-1-2"' in html_cli_m1, "Missing cli-btn-1-2 in CLI module 1"
+    assert 'id="cli-btn-1-3"' in html_cli_m1, "Missing cli-btn-1-3 in CLI module 1"
+    assert 'id="cli-btn-1-4"' in html_cli_m1, "Missing cli-btn-1-4 in CLI module 1"
+    assert '[1]' in html_cli_m1 and '[2]' in html_cli_m1, "Missing numbered indicators [1], [2] on CLI buttons"
+    assert 'cli-cmd-live-console-1' in html_cli_m1, "Missing live terminal console drawer in CLI module 1"
+    print("[PASS 55.2] CLI Numbered Action Command Pad verified with [1], [2], [3], [4] buttons and live console drawer.")
+
+    # 55.3 Enterprise Mode Telemetry Intact
+    st_ent_m1, _, d_ent_m1 = wsgi_request("/api/?tab=module&id=1&view=enterprise", "GET")
+    assert st_ent_m1.startswith("200")
+    html_ent_m1 = d_ent_m1.decode("utf-8")
+    assert '<div class="vertical-telemetry-hud"' in html_ent_m1, "Enterprise Mode must retain full vertical-telemetry-hud"
+    assert '<div class="telemetry-grid"' in html_ent_m1, "Enterprise Mode must retain telemetry-grid"
+    assert "MULTI-TENANT TELEMETRY HUD" in html_ent_m1, "Enterprise Mode must retain MULTI-TENANT TELEMETRY HUD"
+    print("[PASS 55.3] Enterprise Mode deep telemetry verified 100% intact and unaffected.")
+
+    # 55.4 Client-Side Execution Handler & Keyboard Shortcut Listener
+    assert 'runCliModuleAction' in html_cli_m1, "Frontend JS must define runCliModuleAction function"
+    assert "document.addEventListener('keydown'" in html_cli_m1, "Frontend JS must include keyboard shortcut listener for keys 1-4"
+    print("[PASS 55.4] Client-side execution handler and keys 1-4 keyboard shortcut listener confirmed.")
+
+    # 55.5 Universal Real-Time CLI Action Endpoint Execution
+    st_act, _, d_act = wsgi_request(
+        "/api/cli/action",
+        "POST",
+        body_dict={
+            "module_id": 1,
+            "action_id": 1,
+            "label": "Ingest New Lead"
+        }
+    )
+    assert st_act.startswith("200"), f"Expected 200 for CLI action endpoint, got {st_act}"
+    res_act = json.loads(d_act.decode("utf-8"))
+    assert res_act.get("status") == "ok"
+    assert res_act.get("module_id") == 1
+    assert res_act.get("action_id") == 1
+    assert "executed successfully" in res_act.get("message", "")
+
+    # Test Action on Module 3 and Module 22
+    st_act3, _, d_act3 = wsgi_request("/api/cli/action", "POST", body_dict={"module_id": 3, "action_id": 2, "label": "Auto-Pitch Contractors"})
+    assert st_act3.startswith("200")
+    st_act22, _, d_act22 = wsgi_request("/api/cli/action", "POST", body_dict={"module_id": 22, "action_id": 1, "label": "Run Live Dynamic Pipeline"})
+    assert st_act22.startswith("200")
+    print("[PASS 55.5] Universal Real-Time CLI Action Endpoint successfully executed actions across tools.")
+
+    # 55.6 Seamless Dual-View Quick Toggle
+    assert 'Switch to Enterprise Telemetry View' in html_cli_m1, "CLI module must have quick switch to Enterprise"
+    assert 'Switch to CLI Simple View' in html_ent_m1, "Enterprise module must have quick switch to CLI Simple"
+    print("[PASS 55.6] Seamless 1-click dual-view quick toggle between CLI Simple and Enterprise verified.")
+
+    print("\n[SUCCESS] ALL 55 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
 if __name__ == "__main__":
