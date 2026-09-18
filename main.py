@@ -584,6 +584,96 @@ Developed by King Saab 56 & Engineering Team
     except Exception as exc:
         logger.warning("SMTP dispatch attempt to %s failed: %s", target_email, exc)
 
+
+def generate_oauth_invite_email_html(target_email: str, auth_url: str, profile_name: str = "Profile", requester_name: str = "King Saab") -> str:
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #061210; color: #E2E8F0; margin: 0; padding: 24px; }}
+  .card {{ max-width: 600px; margin: 0 auto; background: #0B1E1A; border: 1.5px solid #123B35; border-radius: 12px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+  .logo {{ font-size: 20px; font-weight: 800; color: #00F0FF; letter-spacing: 1px; margin-bottom: 20px; }}
+  .title {{ font-size: 22px; font-weight: 700; color: #F8FAFC; margin-bottom: 12px; }}
+  .lead {{ font-size: 14.5px; line-height: 1.6; color: #94A3B8; margin-bottom: 20px; }}
+  .btn-auth {{ display: inline-block; background: #0284C7; color: #FFFFFF !important; font-weight: 700; font-size: 15px; padding: 14px 28px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 14px rgba(2,132,199,0.4); margin: 16px 0; }}
+  .btn-auth:hover {{ background: #0369A1; }}
+  .url-box {{ background: #001210; border: 1px solid #123B35; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12px; color: #00F0FF; word-break: break-all; margin-top: 14px; }}
+  .footer {{ font-size: 11.5px; color: #64748B; border-top: 1px solid #123B35; padding-top: 20px; margin-top: 28px; text-align: center; }}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">⚡ GRACE OUTREACH ASSISTANT</div>
+  <div class="title">Action Required: Authorize Gmail Account Access</div>
+  <p class="lead">
+    Hello <b>{target_email}</b>,<br><br>
+    <b>{requester_name}</b> has registered your Gmail address under Profile <b>"{profile_name}"</b> on the Grace Outreach Assistant platform.<br><br>
+    To permit our system to securely prepare outreach drafts in your Gmail inbox via official Google OAuth 2.0 (without sharing your Google password), please authorize access below:
+  </p>
+  <div style="text-align: center;">
+    <a href="{auth_url}" class="btn-auth" target="_blank">🔐 Authorize Gmail Access on Google</a>
+  </div>
+  <p class="lead" style="font-size:13px; margin-top:16px;">
+    Or copy and paste this authorization URL directly into your browser:
+  </p>
+  <div class="url-box">{auth_url}</div>
+  <div class="footer">
+    Sent via Grace Outreach Assistant Enterprise Security Desk · Developed by King Saab 56<br>
+    Your credentials remain encrypted and stored locally. Never share your password with anyone.
+  </div>
+</div>
+</body>
+</html>"""
+
+
+def dispatch_oauth_invite_email_smtp(target_email: str, auth_url: str, profile_name: str = "Profile", requester_name: str = "King Saab") -> dict:
+    v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
+    v2 = os.environ.get("SMTP_PASS", "").strip()
+    if "@" in v2 and "@" not in v1:
+        smtp_user, smtp_pass = v2, v1
+    else:
+        smtp_user, smtp_pass = v1, v2
+    smtp_pass = smtp_pass.replace(" ", "")
+
+    if not smtp_pass:
+        logger.info("[OAUTH INVITE DISPATCH] Would dispatch OAuth link to %s for profile %s (Awaiting SMTP_PASS configuration).", target_email, profile_name)
+        return {"dispatched": False, "reason": "Awaiting SMTP_PASS configuration on server"}
+
+    try:
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"Action Required: Authorize Gmail Account for Grace Outreach ({profile_name})"
+        msg["From"] = f"Grace Outreach Assistant <{smtp_user}>"
+        msg["To"] = target_email
+
+        text_body = f"""Hello,
+
+{requester_name} has requested OAuth 2.0 authorization for {target_email} under Profile '{profile_name}' on Grace Outreach Assistant.
+To authorize, please open this link in your browser:
+
+{auth_url}
+
+Thank you,
+Grace Outreach Assistant Team
+"""
+        html_body = generate_oauth_invite_email_html(target_email, auth_url, profile_name, requester_name)
+        msg.attach(MIMEText(text_body, "plain", "utf-8"))
+        msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=12) as server:
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, [target_email], msg.as_string())
+        logger.info("Successfully dispatched OAuth 2.0 invitation email via SMTP to %s", target_email)
+        return {"dispatched": True, "recipient": target_email}
+    except Exception as exc:
+        logger.warning("SMTP OAuth invite dispatch attempt to %s failed: %s", target_email, exc)
+        return {"dispatched": False, "error": str(exc)}
+
+
 # Thread-safe In-Memory Sliding-Window Dual-Key Rate Limiter
 class RateLimiter:
     def __init__(self):
@@ -3630,6 +3720,88 @@ def render_header(view_mode="cli"):
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid #123B35;">
                 <span id="persona-active-summary" style="font-size:12px; color:var(--accent-green); font-weight:700;">Active: Calvin · Prime Resonance</span>
                 <button type="button" class="btn btn-blue" onclick="saveAndApplyAgentPersona()">✓ Confirm &amp; Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         EXECUTIVE GMAIL ACCOUNT & GOOGLE OAUTH 2.0 ONBOARDING MODAL
+         ========================================================================= -->
+    <div id="cli-oauth-modal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="cli-oauth-title">
+        <div class="modal-card wide-modal" style="width:min(640px, 95vw); max-height:90vh; display:flex; flex-direction:column; padding:24px; background:#001A17; border:1.5px solid var(--accent-gold); border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,0.6);">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #123B35; padding-bottom:12px; margin-bottom:16px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:40px; height:40px; border-radius:10px; background:rgba(0,240,255,0.15); border:1px solid #00F0FF; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                        📧
+                    </div>
+                    <div>
+                        <span class="eyebrow" style="color:var(--accent-gold); font-size:10.5px; font-weight:800;">MODULE 20 · GMAIL ACCOUNT MANAGER</span>
+                        <h3 id="cli-oauth-title" style="margin:2px 0 0; font-size:18px; color:#F8FAFC;">Add &amp; Authorize Gmail Account</h3>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeCliOAuthModal()" aria-label="Close modal">×</button>
+            </div>
+
+            <div id="cli-oauth-body" style="overflow-y:auto; padding-right:4px;">
+                <p style="font-size:13px; color:#94A3B8; margin:0 0 16px; line-height:1.5;">
+                    Register a Gmail address (User B or team inbox) to prepare outreach drafts. You can immediately send an authorization invite email to User B, copy the official Google OAuth 2.0 link to send on WhatsApp/Slack, or open the Google consent window right now.
+                </p>
+
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                    <div>
+                        <label style="font-size:11.5px; font-weight:800; color:#A7F3D0; display:block; margin-bottom:6px;">
+                            GMAIL ADDRESS * (User B or Team Inbox)
+                        </label>
+                        <input type="email" id="cli-oauth-email-input" placeholder="e.g. warren.gracearchitectures.us@gmail.com" style="width:100%; padding:10px 12px; font-size:13.5px; border-radius:8px; background:rgba(0,25,20,0.8); border:1.5px solid #123B35; color:#FFF; outline:none;" oninput="this.style.borderColor='#00F0FF'">
+                    </div>
+
+                    <div>
+                        <label style="font-size:11.5px; font-weight:800; color:#A7F3D0; display:block; margin-bottom:6px;">
+                            CHROME PROFILE LABEL (Optional)
+                        </label>
+                        <input type="text" id="cli-oauth-profile-input" placeholder="e.g. warren (Leave blank to auto-name)" style="width:100%; padding:10px 12px; font-size:13.5px; border-radius:8px; background:rgba(0,25,20,0.8); border:1.5px solid #123B35; color:#FFF; outline:none;">
+                    </div>
+
+                    <div style="background:rgba(0,35,30,0.5); border:1px solid #123B35; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="cli-oauth-dispatch-check" checked style="width:16px; height:16px; accent-color:#00F0FF; cursor:pointer;">
+                        <label for="cli-oauth-dispatch-check" style="font-size:12px; color:#E2E8F0; cursor:pointer; font-weight:600;">
+                            📧 Automatically dispatch invitation email with Google OAuth link to User B via SMTP
+                        </label>
+                    </div>
+
+                    <button type="button" id="cli-oauth-submit-btn" class="btn btn-blue" onclick="submitCliOAuthAddAccount()" style="padding:11px 16px; font-size:13.5px; font-weight:800; background:linear-gradient(135deg, #0284C7, #0369A1); border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+                        <span>🔗 Register Account &amp; Generate OAuth Link</span>
+                    </button>
+                </div>
+
+                <!-- Result Drawer (Rendered after successful API call) -->
+                <div id="cli-oauth-result-box" style="display:none; margin-top:18px; padding:16px; background:rgba(6,78,59,0.25); border:1.5px solid #10B981; border-radius:10px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                        <span style="font-size:18px;">✅</span>
+                        <strong id="cli-oauth-res-title" style="color:#A7F3D0; font-size:13.5px;">Account Registered Successfully!</strong>
+                    </div>
+                    <div id="cli-oauth-res-email-note" style="font-size:12px; color:#94A3B8; margin-bottom:12px; padding:6px 10px; background:rgba(0,0,0,0.3); border-radius:6px;"></div>
+
+                    <label style="font-size:11px; font-weight:800; color:#FDE047; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">
+                        Official Google OAuth 2.0 Authorization Link:
+                    </label>
+                    <div style="position:relative; margin-bottom:12px;">
+                        <textarea id="cli-oauth-link-text" readonly rows="2" style="width:100%; padding:8px 10px; font-family:monospace; font-size:11.5px; background:#001210; border:1px solid #123B35; color:#00F0FF; border-radius:6px; resize:none;"></textarea>
+                    </div>
+
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-sm btn-blue" id="cli-oauth-btn-copy" onclick="copyCliOAuthLink()" style="font-size:12px; font-weight:700; padding:6px 12px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                            <span>📋 Copy Link (WhatsApp/Slack)</span>
+                        </button>
+                        <a id="cli-oauth-btn-open" href="#" target="_blank" class="btn btn-sm" style="font-size:12px; font-weight:700; padding:6px 12px; background:rgba(214,161,23,0.2); border:1px solid var(--accent-gold); color:var(--accent-gold); text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            <span>🌐 Open Google Login Popup</span>
+                        </a>
+                    </div>
+
+                    <div style="margin-top:12px; font-size:11.5px; color:#94A3B8; border-top:1px dashed #123B35; padding-top:10px; line-height:1.4;">
+                        💡 <b>What to tell User B:</b> <i>"Please click this Google link on your phone or PC, select your account, and tap 'Allow'. Once done, Grace Outreach Assistant will securely sync your draft composer."</i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -7806,8 +7978,33 @@ function addAndHuntCustomContractor() {
    AUTHENTICATION, DELEGATION & ONBOARDING ENHANCEMENTS
    ========================================================================= */
 function getCsrfToken() {
+    if (window.__GRACE_CSRF_TOKEN__) return window.__GRACE_CSRF_TOKEN__;
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag && metaTag.content) return metaTag.content;
     const match = document.cookie.match(/(?:^|;\s*)grace_csrf_token=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
+    return match ? decodeURIComponent(match[1]) : (window.__GRACE_CSRF_TOKEN__ || '');
+}
+
+async function graceFetch(url, options = {}, retries = 2, backoffMs = 600) {
+    if (!options.headers) options.headers = {};
+    if (!options.headers['X-CSRF-Token']) {
+        const token = getCsrfToken();
+        if (token) options.headers['X-CSRF-Token'] = token;
+    }
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            const res = await fetch(url, options);
+            return res;
+        } catch (err) {
+            if (attempt < retries) {
+                console.warn(`[graceFetch] Transient network error on ${url}: ${err.message}. Retrying in ${backoffMs}ms...`);
+                await new Promise(r => setTimeout(r, backoffMs));
+                backoffMs *= 1.5;
+            } else {
+                throw err;
+            }
+        }
+    }
 }
 
 function isUserAuthenticated() {
@@ -13561,37 +13758,10 @@ async function runCliModuleAction(modId, actionIdx, label, btn) {
                 logToConsole(`📬 Real-Time Gmail Draft Batch generator triggered.`, '#10B981');
             }
         } else if (modId === 20 && actionIdx === 2) {
-            const emailInput = prompt("Enter Gmail Address to register (e.g. ewan.gracearchitecture@gmail.com):");
-            if (!emailInput || !emailInput.trim()) {
-                logToConsole("ℹ️ Add Account cancelled (empty email).", "#F59E0B");
-                return;
-            }
-            const cleanEmail = emailInput.trim().toLowerCase();
-            const profInput = prompt("Enter Chrome Profile Name (Optional - press Enter to auto-name):", "");
-            const cleanProfile = (profInput && profInput.trim()) ? profInput.trim() : cleanEmail.split('@')[0];
-            
-            logToConsole(`🔄 Registering ${cleanEmail} (Profile: ${cleanProfile})...`, "#38BDF8");
-            const res = await fetch('/api/cli/action', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
-                body: JSON.stringify({
-                    module_id: 20,
-                    action_id: 2,
-                    label: 'Add Account',
-                    gmail: cleanEmail,
-                    profile_name: cleanProfile
-                })
-            });
-            const d = await res.json();
-            logToConsole(`✅ Account registered in database: ${cleanEmail} [Profile: ${cleanProfile}]`, '#10B981');
-            if (d.auth_url) {
-                logToConsole(`🔑 Google OAuth 2.0 Authorization Link:`, '#F59E0B');
-                logToConsole(`🔗 ${d.auth_url}`, '#00F0FF');
-                logToConsole(`📋 Send this URL to User B on any device to click 'Allow'. Once authorized, drafts can be created in their inbox from anywhere!`, '#A7F3D0');
-            }
-            showToast(`Account registered: ${cleanEmail}`, 'success');
+            openCliOAuthModal();
+            return;
         } else {
-            const res = await fetch('/api/cli/action', {
+            const res = await graceFetch('/api/cli/action', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
                 body: JSON.stringify({module_id: modId, action_id: actionIdx, label: label})
@@ -13604,14 +13774,147 @@ async function runCliModuleAction(modId, actionIdx, label, btn) {
             showToast(`[${actionIdx}] ${label}: Executed successfully`, 'success');
         }
     } catch(err) {
-        logToConsole(`❌ Error executing [${actionIdx}]: ${err.message}`, '#EF4444');
-        showToast(`Action failed: ${err.message}`, 'error');
+        const errMsg = err.message === 'Failed to fetch' 
+            ? 'Network reconnecting. Please wait 2 seconds and retry.'
+            : err.message;
+        logToConsole(`❌ Error executing [${actionIdx}]: ${errMsg}`, '#EF4444');
+        showToast(`Action failed: ${errMsg}`, 'error');
     } finally {
         if (btn) {
             btn.innerHTML = origHtml;
             btn.disabled = false;
         }
     }
+}
+
+function openCliOAuthModal(prefillEmail = "") {
+    const modal = document.getElementById('cli-oauth-modal');
+    if (!modal) return;
+    const emailInput = document.getElementById('cli-oauth-email-input');
+    const profileInput = document.getElementById('cli-oauth-profile-input');
+    const resultBox = document.getElementById('cli-oauth-result-box');
+    const submitBtn = document.getElementById('cli-oauth-submit-btn');
+
+    if (emailInput) {
+        if (prefillEmail) emailInput.value = prefillEmail;
+    }
+    if (resultBox) resultBox.style.display = 'none';
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔗 Register Account &amp; Generate OAuth Link</span>';
+    }
+    modal.removeAttribute('hidden');
+    modal.style.display = 'flex';
+    if (emailInput) emailInput.focus();
+}
+
+function closeCliOAuthModal() {
+    const modal = document.getElementById('cli-oauth-modal');
+    if (modal) {
+        modal.setAttribute('hidden', '');
+        modal.style.display = 'none';
+    }
+}
+
+async function submitCliOAuthAddAccount() {
+    const emailInput = document.getElementById('cli-oauth-email-input');
+    const profileInput = document.getElementById('cli-oauth-profile-input');
+    const dispatchCheck = document.getElementById('cli-oauth-dispatch-check');
+    const submitBtn = document.getElementById('cli-oauth-submit-btn');
+    const resultBox = document.getElementById('cli-oauth-result-box');
+    const linkText = document.getElementById('cli-oauth-link-text');
+    const btnOpen = document.getElementById('cli-oauth-btn-open');
+    const noteEl = document.getElementById('cli-oauth-res-email-note');
+    const titleEl = document.getElementById('cli-oauth-res-title');
+
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    if (!email || !email.includes('@')) {
+        showToast('Please enter a valid Gmail address (e.g. warren.gracearchitectures.us@gmail.com)', 'warning');
+        if (emailInput) emailInput.focus();
+        return;
+    }
+    const profile = (profileInput && profileInput.value.trim()) ? profileInput.value.trim() : email.split('@')[0];
+    const shouldDispatch = dispatchCheck ? dispatchCheck.checked : true;
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳ Registering &amp; Generating OAuth Link...</span>';
+    }
+    logToConsole(`🔄 Registering ${email} under Profile '${profile}'...`, '#38BDF8');
+
+    try {
+        const res = await graceFetch('/api/cli/action', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken()},
+            body: JSON.stringify({
+                module_id: 20,
+                action_id: 2,
+                label: 'Add Account',
+                gmail: email,
+                profile_name: profile,
+                dispatch_invite: shouldDispatch
+            })
+        });
+        const d = await res.json();
+        if (!res.ok || d.status !== 'ok') {
+            throw new Error(d.error || d.message || 'Registration failed');
+        }
+
+        logToConsole(`✅ Account registered in database: ${email} [Profile: ${profile}]`, '#10B981');
+        if (d.auth_url) {
+            logToConsole(`🔑 Google OAuth 2.0 Authorization Link Generated:`, '#F59E0B');
+            logToConsole(`🔗 ${d.auth_url}`, '#00F0FF');
+            logToConsole(`📋 Send this URL to User B or click 'Open Google Login' to authorize.`, '#A7F3D0');
+        }
+
+        if (resultBox) {
+            resultBox.style.display = 'block';
+            if (titleEl) titleEl.innerText = `Account Registered: ${email} [${profile}]`;
+            if (linkText) linkText.value = d.auth_url || '';
+            if (btnOpen) {
+                btnOpen.href = d.auth_url || '#';
+            }
+            if (noteEl) {
+                if (d.email_dispatch && d.email_dispatch.dispatched) {
+                    noteEl.innerHTML = `📧 <b>Invitation Email Dispatched!</b> Sent official Google authorization link to <b>${email}</b> via SMTP.`;
+                    noteEl.style.color = '#A7F3D0';
+                } else {
+                    noteEl.innerHTML = `ℹ️ <b>OAuth Link Ready:</b> Click 'Copy Link' below to send to User B on WhatsApp/Slack, or open the login window directly.`;
+                    noteEl.style.color = '#FDE047';
+                }
+            }
+        }
+        showToast(`Account registered: ${email}`, 'success');
+    } catch (err) {
+        const msg = err.message === 'Failed to fetch' 
+            ? 'Server connection temporarily busy or reconnecting. Please wait 2 seconds and retry.'
+            : err.message;
+        logToConsole(`❌ Error adding account: ${msg}`, '#EF4444');
+        showToast(`Action failed: ${msg}`, 'error');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>🔗 Register Account &amp; Generate OAuth Link</span>';
+        }
+    }
+}
+
+function copyCliOAuthLink() {
+    const linkText = document.getElementById('cli-oauth-link-text');
+    const copyBtn = document.getElementById('cli-oauth-btn-copy');
+    if (!linkText || !linkText.value) return;
+    navigator.clipboard.writeText(linkText.value).then(() => {
+        showToast('✓ Google OAuth 2.0 link copied to clipboard!', 'success');
+        if (copyBtn) {
+            const prev = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied to Clipboard!</span>';
+            setTimeout(() => { copyBtn.innerHTML = prev; }, 2000);
+        }
+    }).catch(() => {
+        linkText.select();
+        document.execCommand('copy');
+        showToast('✓ Link copied to clipboard!', 'success');
+    });
 }
 
 document.addEventListener('keydown', function(e) {
@@ -20397,7 +20700,26 @@ def app(environ, start_response):
                     res_payload["auth_url"] = auth_url
                     res_payload["gmail"] = gmail_addr
                     res_payload["profile_name"] = prof_name
-                    res_payload["message"] = f"Account {gmail_addr} registered for Profile '{prof_name}'. OAuth link ready."
+
+                    dispatch_invite = req.get("dispatch_invite", True)
+                    email_result = {"dispatched": False, "note": "Dispatch skipped"}
+                    if dispatch_invite and gmail_addr and "@" in gmail_addr:
+                        try:
+                            email_result = dispatch_oauth_invite_email_smtp(
+                                target_email=gmail_addr,
+                                auth_url=auth_url,
+                                profile_name=prof_name,
+                                requester_name=active_user
+                            )
+                        except Exception as e_invite:
+                            logger.warning("Failed to dispatch OAuth invite email: %s", e_invite)
+                            email_result = {"dispatched": False, "error": str(e_invite)}
+
+                    res_payload["email_dispatch"] = email_result
+                    if email_result.get("dispatched"):
+                        res_payload["message"] = f"Account {gmail_addr} registered. Google OAuth invitation dispatched to {gmail_addr} via email!"
+                    else:
+                        res_payload["message"] = f"Account {gmail_addr} registered for Profile '{prof_name}'. OAuth link ready."
                 res_b = json.dumps(res_payload).encode("utf-8")
                 secure_start_response("200 OK", [
                     ("Content-Type", "application/json; charset=utf-8"),
@@ -20449,6 +20771,17 @@ def app(environ, start_response):
             else:
                 body = render_dashboard(view_mode=view_mode)
 
+            current_csrf = session_csrf or cookie_csrf
+            new_cookie_needed = False
+            if not current_csrf:
+                current_csrf = secrets.token_urlsafe(32)
+                new_cookie_needed = True
+
+            if "</head>" in body:
+                body = body.replace("</head>", f'<meta name="csrf-token" content="{current_csrf}">\n</head>', 1)
+            if "</body>" in body:
+                body = body.replace("</body>", f'<script>window.__GRACE_CSRF_TOKEN__ = "{current_csrf}";</script>\n</body>', 1)
+
             data = body.encode("utf-8")
             status = "200 OK"
             response_headers = [
@@ -20458,9 +20791,8 @@ def app(environ, start_response):
                 ("Pragma", "no-cache"),
                 ("Expires", "0"),
             ]
-            if "grace_csrf_token" not in cookies:
-                csrf_bootstrap = secrets.token_urlsafe(32)
-                c_val = f"grace_csrf_token={csrf_bootstrap}; Path=/; SameSite=Lax; Max-Age=604800"
+            if new_cookie_needed or ("grace_csrf_token" not in cookies):
+                c_val = f"grace_csrf_token={current_csrf}; Path=/; SameSite=Lax; Max-Age=604800"
                 if is_secure_conn:
                     c_val += "; Secure"
                 response_headers.append(("Set-Cookie", c_val))

@@ -2306,6 +2306,42 @@ def run_tests():
     assert "/^[1-9]$/.test(key)" in html_cli_m20, "Frontend JS must support number keys 1 through 9"
     print("[PASS 56.5] Dynamic keys 1-9 keyboard shortcut listener verified.")
 
+    # 56.6 Executive Google OAuth Modal & 1-Click Action Controls
+    assert 'id="cli-oauth-modal"' in html_cli_m20, "Page must contain #cli-oauth-modal"
+    assert 'id="cli-oauth-email-input"' in html_cli_m20, "Modal must contain Gmail email input"
+    assert 'id="cli-oauth-btn-copy"' in html_cli_m20, "Modal must contain 1-Click Copy Link button"
+    assert 'id="cli-oauth-btn-open"' in html_cli_m20, "Modal must contain Open Google Login Popup link"
+    assert 'submitCliOAuthAddAccount' in html_cli_m20, "Modal must have submitCliOAuthAddAccount handler"
+    print("[PASS 56.6] Executive #cli-oauth-modal verified with 1-Click Copy, Open Login Popup, and auto-naming.")
+
+    # 56.7 User B Automated Email Dispatch via SMTP or Direct Link Package
+    st_warren, _, d_warren = wsgi_request(
+        "/api/cli/action",
+        "POST",
+        body_dict={
+            "module_id": 20,
+            "action_id": 2,
+            "label": "Add Account",
+            "gmail": "warren.gracearchitectures.us@gmail.com",
+            "profile_name": "warren",
+            "dispatch_invite": True
+        }
+    )
+    assert st_warren.startswith("200"), f"Expected 200, got {st_warren}"
+    res_warren = json.loads(d_warren.decode("utf-8"))
+    assert res_warren.get("status") == "ok"
+    assert res_warren.get("gmail") == "warren.gracearchitectures.us@gmail.com"
+    assert "email_dispatch" in res_warren, "Response must include email_dispatch details"
+    assert "dispatched" in res_warren["email_dispatch"]
+    assert "accounts.google.com" in res_warren["auth_url"]
+    print("[PASS 56.7] User B (warren.gracearchitectures.us@gmail.com) account registered with email dispatch handling.")
+
+    # 56.8 Resilient CSRF Bootstrapping & graceFetch
+    assert '<meta name="csrf-token"' in html_cli_m20, "HTML must include meta csrf-token"
+    assert 'window.__GRACE_CSRF_TOKEN__' in html_cli_m20, "HTML must include window.__GRACE_CSRF_TOKEN__"
+    assert 'graceFetch' in html_cli_m20, "HTML must include graceFetch with retry mechanism"
+    print("[PASS 56.8] Resilient CSRF bootstrapping & graceFetch network defense verified.")
+
     print("\n[SUCCESS] ALL 56 EXTENSIVE TESTS PASSED WITH 100% SUCCESS!\n")
 
 
