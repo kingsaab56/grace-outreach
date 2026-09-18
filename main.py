@@ -649,11 +649,16 @@ def dispatch_oauth_invite_email_smtp(target_email: str, auth_url: str, profile_n
         import smtplib
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
+        from email.utils import formataddr, make_msgid
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = f"Action Required: Authorize Gmail Account for Grace Outreach ({profile_name})"
-        msg["From"] = f"Grace Outreach Assistant <{smtp_user}>"
-        msg["To"] = target_email
+        msg["From"] = formataddr(("Grace Outreach Assistant", smtp_user))
+        msg["To"] = formataddr((profile_name or "Colleague", target_email))
+        msg["Reply-To"] = formataddr(("Grace Outreach Assistant", smtp_user))
+        msg["Message-ID"] = make_msgid(domain="graceoutreach.io")
+        msg["X-Mailer"] = "Grace Outreach Assistant Enterprise Security Desk"
+        msg["Auto-Submitted"] = "auto-generated"
 
         text_body = f"""Hello,
 
@@ -3788,7 +3793,13 @@ def render_header(view_mode="cli"):
                         <label style="font-size:11.5px; font-weight:800; color:#A7F3D0; display:block; margin-bottom:6px;">
                             GMAIL ADDRESS * (User B or Team Inbox)
                         </label>
-                        <input type="email" id="cli-oauth-email-input" placeholder="e.g. warren.gracearchitectures.us@gmail.com" style="width:100%; padding:10px 12px; font-size:13.5px; border-radius:8px; background:rgba(0,25,20,0.8); border:1.5px solid #123B35; color:#FFF; outline:none;" oninput="this.style.borderColor='#00F0FF'">
+                        <div id="cli-oauth-email-wrap" style="display:flex; align-items:center; background:rgba(0,25,20,0.8); border:1.5px solid #123B35; border-radius:8px; overflow:hidden;">
+                            <input type="text" id="cli-oauth-email-input" placeholder="e.g. warren.gracearchitectures.us" style="flex:1; min-width:0; padding:10px 12px; font-size:13.5px; background:transparent; border:none; color:#FFF; outline:none;" oninput="onCliOAuthEmailInput(this.value)" onfocus="document.getElementById('cli-oauth-email-wrap').style.borderColor='#00F0FF'" onblur="document.getElementById('cli-oauth-email-wrap').style.borderColor='#123B35'">
+                            <span style="background:rgba(0,240,255,0.12); border-left:1.5px solid #123B35; color:#00F0FF; font-weight:800; font-size:13px; padding:10px 14px; user-select:none; white-space:nowrap; letter-spacing:0.3px;">@gmail.com</span>
+                        </div>
+                        <div style="font-size:11px; color:#64748B; margin-top:4px;">
+                            💡 Sirf account ka naam likhein — <b>@gmail.com</b> khud ba khud attach ho jaye ga.
+                        </div>
                     </div>
 
                     <div>
@@ -13851,6 +13862,20 @@ async function runCliModuleAction(modId, actionIdx, label, btn) {
     }
 }
 
+function onCliOAuthEmailInput(val) {
+    const emailInput = document.getElementById('cli-oauth-email-input');
+    const profInput = document.getElementById('cli-oauth-profile-input');
+    let clean = (val || '').trim();
+    if (clean.toLowerCase().endsWith('@gmail.com')) {
+        clean = clean.slice(0, -10).trim();
+        if (emailInput) emailInput.value = clean;
+    }
+    if (profInput && (!profInput.value || profInput.dataset.autoFilled === 'true')) {
+        profInput.value = clean;
+        profInput.dataset.autoFilled = 'true';
+    }
+}
+
 function openCliOAuthModal(prefillEmail = "") {
     const modal = document.getElementById('cli-oauth-modal');
     if (!modal) return;
@@ -13860,7 +13885,14 @@ function openCliOAuthModal(prefillEmail = "") {
     const submitBtn = document.getElementById('cli-oauth-submit-btn');
 
     if (emailInput) {
-        if (prefillEmail) emailInput.value = prefillEmail;
+        if (prefillEmail) {
+            const clean = prefillEmail.replace(/@gmail\.com$/i, '').trim();
+            emailInput.value = clean;
+            if (profileInput) {
+                profileInput.value = clean;
+                profileInput.dataset.autoFilled = 'true';
+            }
+        }
     }
     if (resultBox) resultBox.style.display = 'none';
     if (submitBtn) {
@@ -13900,13 +13932,15 @@ async function submitCliOAuthAddAccount() {
         const noteEl = document.getElementById('cli-oauth-res-email-note');
         const titleEl = document.getElementById('cli-oauth-res-title');
 
-        const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
-        if (!email || !email.includes('@')) {
-            showToast('Please enter a valid Gmail address (e.g. warren.gracearchitectures.us@gmail.com)', 'warning');
+        let rawEmail = emailInput ? emailInput.value.trim().toLowerCase() : '';
+        rawEmail = rawEmail.replace(/@gmail\.com$/i, '').trim();
+        if (!rawEmail) {
+            showToast('Please enter a Gmail account name (e.g. warren.gracearchitectures.us)', 'warning');
             if (emailInput) emailInput.focus();
             return;
         }
-        const profile = (profileInput && profileInput.value.trim()) ? profileInput.value.trim() : email.split('@')[0];
+        const email = rawEmail + '@gmail.com';
+        const profile = (profileInput && profileInput.value.trim()) ? profileInput.value.trim() : rawEmail;
         const shouldDispatch = dispatchCheck ? dispatchCheck.checked : true;
 
         if (submitBtn) {
