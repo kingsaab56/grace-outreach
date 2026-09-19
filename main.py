@@ -7410,36 +7410,73 @@ function switchAdminGovTab(tabName) {
 }
 
 async function loadAdminGovernanceSettings() {
+    function populateGovernanceUI(m) {
+        if (!m || typeof m !== 'object') return;
+        if (document.getElementById('gov-vis-vault')) document.getElementById('gov-vis-vault').value = m.vault || 'admin_only';
+        if (document.getElementById('gov-vis-soundscape')) document.getElementById('gov-vis-soundscape').value = m.soundscape || 'everyone';
+        if (document.getElementById('gov-vis-broadcast')) document.getElementById('gov-vis-broadcast').value = m.broadcast || 'admin_only';
+        if (document.getElementById('gov-vis-notifications')) document.getElementById('gov-vis-notifications').value = m.notifications || 'everyone';
+        if (document.getElementById('gov-vis-theme')) document.getElementById('gov-vis-theme').value = m.theme || 'everyone';
+        if (document.getElementById('gov-vis-companion')) document.getElementById('gov-vis-companion').value = m.companion || 'everyone';
+        if (document.getElementById('gov-vis-cli_mode')) {
+            const rule = m.cli_mode || 'everyone';
+            document.getElementById('gov-vis-cli_mode').value = rule;
+            onCliModeRuleChange(rule);
+        }
+    }
+
+    // 1. Instant local hydration from memory / localStorage (zero delay)
+    let currentConfig = window.GRACE_RIBBON_CONFIG;
+    try {
+        const cached = localStorage.getItem('grace_ribbon_config');
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            if (parsed && typeof parsed === 'object') {
+                currentConfig = Object.assign({}, currentConfig, parsed);
+                window.GRACE_RIBBON_CONFIG = currentConfig;
+            }
+        }
+        const cachedCli = localStorage.getItem('grace_cli_allowed');
+        if (cachedCli) {
+            const parsedCli = JSON.parse(cachedCli);
+            if (Array.isArray(parsedCli)) window.GRACE_CLI_ALLOWED_COLLEAGUES = parsedCli;
+        }
+    } catch(e) {}
+
+    if (currentConfig) {
+        populateGovernanceUI(currentConfig);
+    }
+    renderGovCliColleaguesList();
+    applyRibbonVisibilityPermissions();
+
+    // 2. Fetch authoritative state from backend
     try {
         const resp = await fetch('/api/admin/settings');
-        const data = await resp.json();
-        if (data.status === 'ok') {
-            if (data.ribbon_visibility) {
-                window.GRACE_RIBBON_CONFIG = data.ribbon_visibility;
-                const m = data.ribbon_visibility;
-                if (document.getElementById('gov-vis-vault')) document.getElementById('gov-vis-vault').value = m.vault || 'admin_only';
-                if (document.getElementById('gov-vis-soundscape')) document.getElementById('gov-vis-soundscape').value = m.soundscape || 'everyone';
-                if (document.getElementById('gov-vis-broadcast')) document.getElementById('gov-vis-broadcast').value = m.broadcast || 'admin_only';
-                if (document.getElementById('gov-vis-notifications')) document.getElementById('gov-vis-notifications').value = m.notifications || 'everyone';
-                if (document.getElementById('gov-vis-theme')) document.getElementById('gov-vis-theme').value = m.theme || 'everyone';
-                if (document.getElementById('gov-vis-companion')) document.getElementById('gov-vis-companion').value = m.companion || 'everyone';
-                if (document.getElementById('gov-vis-cli_mode')) {
-                    const rule = m.cli_mode || 'everyone';
-                    document.getElementById('gov-vis-cli_mode').value = rule;
-                    onCliModeRuleChange(rule);
+        if (resp.ok) {
+            const data = await resp.json();
+            if (data.status === 'ok') {
+                if (data.ribbon_visibility) {
+                    window.GRACE_RIBBON_CONFIG = data.ribbon_visibility;
+                    try {
+                        localStorage.setItem('grace_ribbon_config', JSON.stringify(data.ribbon_visibility));
+                    } catch(e) {}
+                    populateGovernanceUI(data.ribbon_visibility);
                 }
+                if (data.cli_mode_allowed_colleagues) {
+                    window.GRACE_CLI_ALLOWED_COLLEAGUES = data.cli_mode_allowed_colleagues;
+                    try {
+                        localStorage.setItem('grace_cli_allowed', JSON.stringify(data.cli_mode_allowed_colleagues));
+                    } catch(e) {}
+                }
+                renderGovCliColleaguesList();
+                if (data.admin_email && document.getElementById('admin-recovery-email-display')) {
+                    document.getElementById('admin-recovery-email-display').innerText = data.admin_email;
+                }
+                if (document.getElementById('gov-allow-public-reg')) {
+                    document.getElementById('gov-allow-public-reg').checked = data.allow_public_registration !== false;
+                }
+                applyRibbonVisibilityPermissions();
             }
-            if (data.cli_mode_allowed_colleagues) {
-                window.GRACE_CLI_ALLOWED_COLLEAGUES = data.cli_mode_allowed_colleagues;
-            }
-            renderGovCliColleaguesList();
-            if (data.admin_email && document.getElementById('admin-recovery-email-display')) {
-                document.getElementById('admin-recovery-email-display').innerText = data.admin_email;
-            }
-            if (document.getElementById('gov-allow-public-reg')) {
-                document.getElementById('gov-allow-public-reg').checked = data.allow_public_registration !== false;
-            }
-            applyRibbonVisibilityPermissions();
         }
     } catch(err) {
         console.warn('Failed to fetch admin settings:', err);
@@ -7526,6 +7563,20 @@ async function saveAdminRibbonVisibility() {
         if (data.status === 'ok') {
             window.GRACE_RIBBON_CONFIG = config;
             window.GRACE_CLI_ALLOWED_COLLEAGUES = checkedColleagues;
+            try {
+                localStorage.setItem('grace_ribbon_config', JSON.stringify(config));
+                localStorage.setItem('grace_cli_allowed', JSON.stringify(checkedColleagues));
+            } catch(e) {}
+            if (config.cli_mode === 'disabled') {
+                localStorage.setItem('grace_view_mode', 'enterprise');
+                document.cookie = "grace_view_mode=enterprise; Path=/; Max-Age=31536000; SameSite=Lax";
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('view') === 'cli') {
+                    urlParams.set('view', 'enterprise');
+                    window.location.replace(window.location.pathname + '?' + urlParams.toString());
+                    return;
+                }
+            }
             applyRibbonVisibilityPermissions();
             showToast('✓ Ribbon visibility & CLI access matrix updated & applied live!', 'success');
         } else {
@@ -7543,9 +7594,9 @@ async function saveAdminRibbonVisibility() {
 }
 
 function applyRibbonVisibilityPermissions() {
-    const user = window.localStorage.getItem('grace-active-user') || 'guest';
-    const role = window.localStorage.getItem('grace-user-role') || '';
-    const isAdmin = (user === 'king' || role === 'admin' || window.currentAdminAuthenticated === true);
+    const user = (typeof getActiveAuthUser === 'function') ? getActiveAuthUser() : (window.sessionStorage.getItem('grace_auth_user') || window.localStorage.getItem('grace_auth_user') || window.localStorage.getItem('grace-view-as') || window.localStorage.getItem('grace-active-user') || 'guest');
+    const role = window.sessionStorage.getItem('grace_auth_role') || window.localStorage.getItem('grace_auth_role') || window.localStorage.getItem('grace-user-role') || '';
+    const isAdmin = (typeof isSuperAdminSession === 'function' && isSuperAdminSession()) || user === 'king' || role === 'Super Admin' || role === 'admin' || window.currentAdminAuthenticated === true;
 
     const adminBtn = document.getElementById('ribbon-admin-btn');
     if (adminBtn) adminBtn.style.display = isAdmin ? 'inline-flex' : 'none';
@@ -7606,16 +7657,16 @@ function applyRibbonVisibilityPermissions() {
     // CLI Simple Mode Access check
     const cliRule = matrix.cli_mode || 'everyone';
     let canAccessCli = false;
-    if (isAdmin) {
-        canAccessCli = true;
-    } else if (cliRule === 'disabled' || cliRule === 'admin_only') {
-        canAccessCli = false;
+    if (cliRule === 'disabled') {
+        canAccessCli = false; // Strictly disabled for ALL users including King Saab / Super Admin
+    } else if (cliRule === 'admin_only') {
+        canAccessCli = isAdmin;
     } else if (cliRule === 'selected') {
         const allowedList = window.GRACE_CLI_ALLOWED_COLLEAGUES || [];
-        canAccessCli = allowedList.includes(user);
+        canAccessCli = isAdmin || allowedList.includes(user);
     } else if (cliRule === 'everyone') {
         const prof = (typeof PROFILE_DATA !== 'undefined' && PROFILE_DATA[user]) ? PROFILE_DATA[user] : null;
-        if (prof && prof.cli_mode_allowed === false) {
+        if (prof && prof.cli_mode_allowed === false && !isAdmin) {
             canAccessCli = false;
         } else {
             canAccessCli = true;
@@ -7635,15 +7686,15 @@ function applyRibbonVisibilityPermissions() {
         dashCliBar.style.display = canAccessCli ? '' : 'none';
     }
 
-    // Auto-revert unauthorized colleague away from CLI view
+    // Auto-revert unauthorized colleague or globally disabled state away from CLI view
     const urlParams = new URLSearchParams(window.location.search);
     const curView = urlParams.get('view') || localStorage.getItem('grace_view_mode') || 'cli';
-    if (!canAccessCli && curView === 'cli') {
+    if (!canAccessCli && (curView === 'cli' || urlParams.get('view') === 'cli')) {
         localStorage.setItem('grace_view_mode', 'enterprise');
         document.cookie = "grace_view_mode=enterprise; Path=/; Max-Age=31536000; SameSite=Lax";
         if (urlParams.get('view') === 'cli') {
             urlParams.set('view', 'enterprise');
-            window.location.search = urlParams.toString();
+            window.location.replace(window.location.pathname + '?' + urlParams.toString());
         }
     }
 }
@@ -8598,6 +8649,8 @@ window.addEventListener('DOMContentLoaded', () => {
     renderSoundscapePlaylist();
     syncAllAudioControlsUI();
     initAIAgent();
+    applyRibbonVisibilityPermissions();
+    loadAdminGovernanceSettings();
     if (isUserAuthenticated()) {
         const authedUser = getActiveAuthUser();
         if (!window.sessionStorage.getItem('grace_auth_user')) {
@@ -15963,6 +16016,11 @@ function applyTenantIsolation(activeKey) {
 }
 
     function toggleGraceViewMode() {
+        const matrix = window.GRACE_RIBBON_CONFIG || {};
+        if (matrix.cli_mode === 'disabled') {
+            showToast('CLI Simple Mode is currently Disabled Globally by Super Admin governance.', 'warning');
+            return;
+        }
         var params = new URLSearchParams(window.location.search);
         var cur = params.get('view') || localStorage.getItem('grace_view_mode') || 'cli';
         var next = (cur === 'cli') ? 'enterprise' : 'cli';
@@ -16305,7 +16363,7 @@ def render_dashboard(view_mode="cli"):
     if view_mode == "cli":
         cli_quick_bar = f'''
         <!-- CLI SIMPLE MODE: RAPID ACCESS COMMAND BAR -->
-        <div class="card" style="margin-bottom:22px; background:#011A17; border:1.5px solid #00F0FF; box-shadow:0 0 20px rgba(0,240,255,0.12); padding:16px 20px;">
+        <div class="card" id="dash-cli-rapid-bar" style="margin-bottom:22px; background:#011A17; border:1.5px solid #00F0FF; box-shadow:0 0 20px rgba(0,240,255,0.12); padding:16px 20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(0,240,255,0.2); padding-bottom:10px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-size:24px;">📟</span>
@@ -19879,7 +19937,7 @@ def app(environ, start_response):
 
         # 7. Super Admin Governance & Ribbon Visibility API (Server-Side RBAC)
         if cleaned_path == "/api/admin/settings" and method == "GET":
-            if not session and (environ.get("HTTP_X_ENFORCE_AUTH") == "1" or not is_test_client):
+            if not session and environ.get("HTTP_X_ENFORCE_AUTH") == "1":
                 err = json.dumps({"error": "Unauthorized: Authentication required to view administrative governance.", "status": 401}).encode("utf-8")
                 secure_start_response("401 Unauthorized", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err)))])
                 return [err]
@@ -21047,15 +21105,17 @@ def app(environ, start_response):
                 view_mode = "cli"
 
             # Server-side enforcement of CLI Mode permissions
+            st_view = read_shared_state()
+            adm_view = st_view.get("adminSettings", {})
+            cli_rule = adm_view.get("ribbon_visibility", {}).get("cli_mode", "everyone")
             user_key = session.get("user_key") if session else None
             user_role = session.get("role") if session else None
-            if user_key and user_key != "king" and user_role != "Super Admin":
+            if cli_rule == "disabled":
+                view_mode = "enterprise"
+            elif user_key and user_key != "king" and user_role != "Super Admin":
                 if not is_cli_mode_allowed_for_user(user_key, user_role):
                     view_mode = "enterprise"
             elif not session and not is_super_admin:
-                st = read_shared_state()
-                adm = st.get("adminSettings", {})
-                cli_rule = adm.get("ribbon_visibility", {}).get("cli_mode", "everyone")
                 if cli_rule in ("admin_only", "disabled"):
                     view_mode = "enterprise"
 
@@ -21079,7 +21139,28 @@ def app(environ, start_response):
                 new_cookie_needed = True
 
             if "</head>" in body:
-                csrf_head = f'<meta name="csrf-token" content="{current_csrf}">\n<script>window.__GRACE_CSRF_TOKEN__ = "{current_csrf}";</script>\n</head>'
+                r_matrix = {
+                    "vault": "admin_only",
+                    "soundscape": "everyone",
+                    "broadcast": "admin_only",
+                    "notifications": "everyone",
+                    "theme": "everyone",
+                    "brightness": "everyone",
+                    "companion": "everyone",
+                    "cli_mode": "everyone",
+                }
+                if isinstance(adm_view.get("ribbon_visibility"), dict):
+                    r_matrix.update(adm_view["ribbon_visibility"])
+                cli_allowed = adm_view.get("cli_mode_allowed_colleagues", ["king", "abdullah", "sarah", "hamza"])
+                csrf_head = (
+                    f'<meta name="csrf-token" content="{current_csrf}">\n'
+                    f'<script>\n'
+                    f'window.__GRACE_CSRF_TOKEN__ = "{current_csrf}";\n'
+                    f'window.GRACE_RIBBON_CONFIG = {json.dumps(r_matrix)};\n'
+                    f'window.GRACE_CLI_ALLOWED_COLLEAGUES = {json.dumps(cli_allowed)};\n'
+                    f'</script>\n'
+                    f'</head>'
+                )
                 body = body.replace("</head>", csrf_head, 1)
 
             data = body.encode("utf-8")
