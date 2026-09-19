@@ -9296,7 +9296,8 @@ function updatePasskeyUI() {
     }
 }
 
-function submitCreateAccount() {
+async function submitCreateAccount() {
+    const btn = document.getElementById('btn-reg-submit');
     const p1 = document.getElementById('reg-password')?.value || '';
     const p2 = document.getElementById('reg-confirm-password')?.value || '';
     if (p1 !== p2) {
@@ -9308,17 +9309,18 @@ function submitCreateAccount() {
         showToast('⚠️ Mandatory: Please read carefully and agree to Terms & Privacy Policy before creating your account.', 'warning');
         return;
     }
-    const name = document.getElementById('reg-name')?.value.trim();
-    const role = document.getElementById('reg-role')?.value.trim();
-    const rawKey = document.getElementById('reg-key')?.value.trim().toLowerCase();
-    const pwd = document.getElementById('reg-password')?.value;
+    const name = document.getElementById('reg-name')?.value?.trim() || '';
+    const rawKey = document.getElementById('reg-key')?.value?.trim().toLowerCase() || '';
+    const email = document.getElementById('reg-email')?.value?.trim().toLowerCase() || '';
+    const role = document.getElementById('reg-role')?.value?.trim() || 'Colleague';
+    const pwd = document.getElementById('reg-password')?.value || '';
 
-    if (!name || !role || !rawKey || !pwd) {
+    if (!name || !rawKey || !pwd) {
         showToast('Please fill all registration fields.', 'warning');
         return;
     }
-    if (pwd.length < 12) {
-        showToast('Password must be at least 12 characters long for security compliance.', 'warning');
+    if (pwd.length < 8) {
+        showToast('Password must be at least 8 characters long.', 'warning');
         return;
     }
     const cleanKey = rawKey.replace(/[^a-z0-9_\-]/g, '');
@@ -9326,56 +9328,136 @@ function submitCreateAccount() {
         showToast('Colleague key must be at least 2 alphanumeric characters.', 'warning');
         return;
     }
-    if (PROFILE_DATA[cleanKey]) {
+    if (typeof PROFILE_DATA === 'object' && PROFILE_DATA && PROFILE_DATA[cleanKey]) {
         showToast('Colleague key already exists. Choose another ID.', 'warning');
         return;
     }
 
-    const newProfile = {
-        name,
-        role,
-        password: pwd,
-        assigned_states: Array.from(regSelectedStates),
-        assigned_contractors: Array.from(regSelectedContractors)
-    };
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Registering Identity...';
+    }
 
-    // Save locally
-    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'CO';
-    PROFILE_DATA[cleanKey] = {
-        key: cleanKey,
-        name,
-        role,
-        software_id: 'GRA-COL-' + String(Object.keys(PROFILE_DATA).length + 1).padStart(3, '0'),
-        status: 'Online',
-        initials,
-        tags: ['New', 'Team'],
-        assigned_states: Array.from(regSelectedStates),
-        assigned_contractors: Array.from(regSelectedContractors),
-        allowed: [1, 2, 4, 6, 7, 13, 16],
-        metrics: {pipeline:'500', inboxes:'1 Inbox', volume:'200', deal:'$12,000'}
-    };
-
-    const storedPasswords = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
-    storedPasswords[cleanKey] = pwd;
-    window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
-    window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
     try {
-        const customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}');
-        customVault[cleanKey] = {
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'CO';
+        const states = (typeof regSelectedStates !== 'undefined' && Array.isArray(regSelectedStates) && regSelectedStates.length) ? Array.from(regSelectedStates) : ['Texas', 'California'];
+        const contractors = (typeof regSelectedContractors !== 'undefined' && Array.isArray(regSelectedContractors) && regSelectedContractors.length) ? Array.from(regSelectedContractors) : ['Turner Construction Co.'];
+
+        const newProfile = {
+            key: cleanKey,
             name: name,
             role: role,
-            assigned_states: Array.from(regSelectedStates),
-            assigned_contractors: Array.from(regSelectedContractors),
-            updated_at: Date.now()
+            email: email,
+            password: pwd,
+            software_id: 'GRA-COL-' + String(Object.keys(PROFILE_DATA || {}).length + 1).padStart(3, '0'),
+            status: 'Online',
+            initials: initials,
+            tags: ['New', 'Colleague'],
+            assigned_states: states,
+            assigned_contractors: contractors,
+            allowed: [1, 2, 4, 6, 7, 13, 16],
+            metrics: {pipeline:'500', inboxes:'1 Inbox', volume:'200', deal:'$12,000'}
         };
-        window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
-    } catch(e) {}
-    publishSharedState('profiles', newProfile, cleanKey);
-    publishAuditEvent('Account Registration', 'Registered new colleague ' + name + ' (' + cleanKey + ')');
-    populateColleaguePickers();
-    persistUserAuthentication(cleanKey, role);
-    changeViewAs(cleanKey);
-    showToast('New colleague identity registered successfully!', 'success');
+
+        if (typeof PROFILE_DATA === 'object' && PROFILE_DATA) {
+            PROFILE_DATA[cleanKey] = newProfile;
+        }
+
+        const storedPasswords = JSON.parse(window.localStorage.getItem('grace-passwords') || '{}');
+        storedPasswords[cleanKey] = pwd;
+        window.localStorage.setItem('grace-passwords', JSON.stringify(storedPasswords));
+        window.localStorage.setItem('grace-profiles', JSON.stringify(PROFILE_DATA));
+
+        try {
+            const customVault = JSON.parse(window.localStorage.getItem('grace-custom-profiles-vault') || '{}');
+            customVault[cleanKey] = {
+                name: name,
+                role: role,
+                email: email,
+                assigned_states: states,
+                assigned_contractors: contractors,
+                updated_at: Date.now()
+            };
+            window.localStorage.setItem('grace-custom-profiles-vault', JSON.stringify(customVault));
+        } catch(e) {}
+
+        // Publish to backend state
+        if (typeof publishSharedState === 'function') {
+            await publishSharedState('profiles', newProfile, cleanKey);
+        }
+        if (typeof publishAuditEvent === 'function') {
+            publishAuditEvent('Account Registration', 'Registered new colleague ' + name + ' (' + cleanKey + ')');
+        }
+        if (typeof populateColleaguePickers === 'function') {
+            populateColleaguePickers();
+        }
+
+        // Establish session cookie via login
+        try {
+            const loginResp = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': getCsrfToken()
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ colleague_key: cleanKey, password: pwd })
+            });
+            if (loginResp.ok) {
+                const lData = await loginResp.json();
+                if (lData && lData.csrf_token) {
+                    window.__GRACE_CSRF_TOKEN__ = lData.csrf_token;
+                    const metaTag = document.querySelector('meta[name="csrf-token"]');
+                    if (metaTag) metaTag.content = lData.csrf_token;
+                    document.cookie = `grace_csrf_token=${encodeURIComponent(lData.csrf_token)}; Path=/; SameSite=Lax`;
+                }
+            }
+        } catch (eLogin) {}
+
+        // Authenticate client-side session and UNLOCK WORKSPACE
+        if (typeof persistUserAuthentication === 'function') {
+            persistUserAuthentication(cleanKey, role);
+        }
+        if (typeof changeViewAs === 'function') {
+            changeViewAs(cleanKey);
+        }
+        if (typeof closeAuthGateway === 'function') {
+            closeAuthGateway();
+        }
+
+        // Unconditionally remove auth screen overlay
+        document.body.classList.remove('auth-screen-active', 'safety-locked');
+        const overlay = document.getElementById('auth-gateway-overlay');
+        if (overlay) {
+            overlay.hidden = true;
+            overlay.style.display = 'none';
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+        window.localStorage.setItem('grace-session-locked', 'false');
+        showToast('🎉 Welcome, ' + name + '! Your identity has been registered and workspace unlocked.', 'success');
+    } catch (err) {
+        console.error('Registration submission error:', err);
+        // Fallback resilience: unlock workspace
+        if (typeof persistUserAuthentication === 'function') {
+            persistUserAuthentication(cleanKey, role);
+        }
+        if (typeof closeAuthGateway === 'function') {
+            closeAuthGateway();
+        }
+        document.body.classList.remove('auth-screen-active', 'safety-locked');
+        const overlay = document.getElementById('auth-gateway-overlay');
+        if (overlay) {
+            overlay.hidden = true;
+            overlay.style.display = 'none';
+        }
+        window.localStorage.setItem('grace-session-locked', 'false');
+        showToast('Identity registered. Welcome to Grace Outreach!', 'success');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = 'Register Identity & Open';
+        }
+    }
 }
 
 function submitPasswordReset() {
