@@ -534,20 +534,31 @@ def generate_otp_email_html(recipient_email: str, otp_code: str, name: str = "Co
 </body>
 </html>"""
 
-def dispatch_otp_email_smtp(target_email: str, otp_code: str, name: str = "Colleague", purpose: str = "register"):
-    v1 = os.environ.get("SMTP_USER", "support.graceoutreach@gmail.com").strip()
-    v2 = os.environ.get("SMTP_PASS", "").strip()
-    
-    # Auto-Heal: detect if SMTP_USER and SMTP_PASS are swapped in environment
+GLOBAL_ASSET_CACHE = {}
+
+def get_smtp_credentials():
+    v1 = (os.environ.get("SMTP_USER") or os.environ.get("GMAIL_USER") or os.environ.get("ADMIN_EMAIL") or "support.graceoutreach@gmail.com").strip()
+    v2 = (os.environ.get("SMTP_PASS") or os.environ.get("GMAIL_APP_PASSWORD") or os.environ.get("SMTP_PASSWORD") or "").strip()
+    if not v2 and "_read_shared_state_unlocked" in globals():
+        try:
+            st = _read_shared_state_unlocked()
+            adm_pass = st.get("adminSettings", {}).get("smtp_pass", "").strip()
+            if adm_pass:
+                v2 = adm_pass
+        except Exception:
+            pass
     if "@" in v2 and "@" not in v1:
-        smtp_user = v2
-        smtp_pass = v1
+        smtp_user, smtp_pass = v2, v1
     else:
-        smtp_user = v1
-        smtp_pass = v2
-        
-    # Strip any spaces from Google 16-character App Password (e.g., 'iarn gvsp misq ebol')
-    smtp_pass = smtp_pass.replace(" ", "")
+        smtp_user, smtp_pass = v1, v2
+    return smtp_user, smtp_pass.replace(" ", "")
+
+def is_smtp_configured() -> bool:
+    _, pwd = get_smtp_credentials()
+    return bool(pwd)
+
+def dispatch_otp_email_smtp(target_email: str, otp_code: str, name: str = "Colleague", purpose: str = "register"):
+    smtp_user, smtp_pass = get_smtp_credentials()
     
     if not smtp_pass:
         logger.info("[OTP DISPATCH] Dispatched OTP %s to %s for %s (Awaiting SMTP_PASS configuration).", otp_code, target_email, purpose)
@@ -557,11 +568,13 @@ def dispatch_otp_email_smtp(target_email: str, otp_code: str, name: str = "Colle
         import smtplib
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
+        from email.utils import formataddr
         
         msg = MIMEMultipart("alternative")
         msg["Subject"] = f"Grace Outreach Security: Your Verification Code is {otp_code}"
-        msg["From"] = f"Grace Outreach Assistant <{smtp_user}>"
+        msg["From"] = formataddr(("Grace Outreach Assistant", smtp_user))
         msg["To"] = target_email
+        msg["Reply-To"] = formataddr(("Grace Outreach Assistant", smtp_user))
         
         text_body = f"""Dear Colleague,
 
@@ -577,10 +590,28 @@ Developed by King Saab 56 & Engineering Team
         msg.attach(MIMEText(text_body, "plain", "utf-8"))
         msg.attach(MIMEText(html_body, "html", "utf-8"))
         
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=12) as server:
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(smtp_user, [target_email], msg.as_string())
-        logger.info("Successfully dispatched live OTP email via SMTP to %s", target_email)
+        sent = False
+        # Attempt 1: Port 465 (SSL) with resilient 15s timeout
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
+                server.login(smtp_user, smtp_pass)
+                server.sendmail(smtp_user, [target_email], msg.as_string())
+            sent = True
+            logger.info("Successfully dispatched live OTP email via SMTP_SSL:465 to %s", target_email)
+        except Exception as e465:
+            logger.warning("SMTP SSL:465 failed for OTP (%s), attempting STARTTLS on port 587...", e465)
+            # Attempt 2: Port 587 (STARTTLS) with resilient 15s timeout
+            try:
+                with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo()
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(smtp_user, [target_email], msg.as_string())
+                sent = True
+                logger.info("Successfully dispatched live OTP email via STARTTLS:587 to %s", target_email)
+            except Exception as e587:
+                logger.warning("SMTP STARTTLS:587 also failed for OTP: %s", e587)
     except Exception as exc:
         logger.warning("SMTP dispatch attempt to %s failed: %s", target_email, exc)
 
@@ -3655,7 +3686,7 @@ def render_header(view_mode="cli"):
         <div id="ai-agent-avatar-wrap" class="ai-agent-avatar-wrap" onclick="handleAgentAvatarClick(event)" title="Drag to reposition · Click to chat or open guide">
             <div class="agent-pedestal-halo"></div>
             <div class="agent-pedestal-ring"></div>
-            <img id="ai-agent-img" class="ai-agent-mascot-img" src="/api/assets/ai-agent-titan.png" alt="Grace 3D AI Assistant">
+            <img id="ai-agent-img" class="ai-agent-mascot-img" src="/api/assets/ai-agent-titan.png" alt="Grace 3D AI Assistant" loading="eager" decoding="async" width="90" height="90">
             <!-- Speaking Equalizer Wave Bars -->
             <div class="agent-speaking-waves" id="agent-speaking-waves" title="Speaking aloud">
                 <span class="wave-bar"></span>
@@ -3672,7 +3703,7 @@ def render_header(view_mode="cli"):
         <div id="ai-agent-bubble" class="ai-agent-bubble" hidden>
             <div class="bubble-header">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <img id="bubble-mini-avatar" src="/api/assets/ai-agent-titan.png" alt="Avatar" style="width:30px; height:30px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.8); border:1.5px solid var(--accent-green);">
+                    <img id="bubble-mini-avatar" src="/api/assets/ai-agent-titan.png" alt="Avatar" style="width:30px; height:30px; border-radius:50%; object-fit:contain; background:rgba(0,30,25,0.8); border:1.5px solid var(--accent-green);" loading="eager" decoding="async" width="30" height="30">
                     <div>
                         <strong id="bubble-agent-name" style="font-size:13px; color:var(--accent-gold);">Calvin</strong>
                         <span id="bubble-agent-tag" style="font-size:10px; color:var(--accent-green); display:block;">Prime Resonance · Executive Guide</span>
@@ -11229,11 +11260,28 @@ function toRomanUrduPhonetic(text) {
         [/اورا/g, 'Aura'],
         [/زیفر/g, 'Zephyr'],
         [/بائیس/g, 'baais'],
+        [/اکیس/g, 'ikkees'],
+        [/بیس/g, 'bees'],
+        [/انیس/g, 'unnees'],
+        [/اٹھارہ/g, 'atharah'],
+        [/سترہ/g, 'satrah'],
+        [/سولہ/g, 'solah'],
+        [/پندرہ/g, 'pandrah'],
+        [/چودہ/g, 'chaudah'],
+        [/تیرہ/g, 'terah'],
+        [/بارہ/g, 'barah'],
+        [/گیارہ/g, 'gyarah'],
         [/دس/g, 'das'],
+        [/نو/g, 'nau'],
+        [/آٹھ/g, 'aath'],
+        [/سات/g, 'saat'],
+        [/چھ/g, 'chhay'],
+        [/پانچ/g, 'paanch'],
         [/چار/g, 'chaar'],
         [/تین/g, 'teen'],
         [/دو/g, 'do'],
-        [/ماڈیولز/g, 'modules'],
+        [/ایک/g, 'aik'],
+        [/ماڈیولز|ماڈیول/g, 'modules'],
         [/ٹیلی میٹری/g, 'telemetry'],
         [/اسٹیپس/g, 'steps'],
         [/بٹن/g, 'button'],
@@ -11247,9 +11295,34 @@ function toRomanUrduPhonetic(text) {
         [/ڈسپیچر/g, 'dispatcher'],
         [/چیک پوائنٹس/g, 'checkpoints'],
         [/گوگل/g, 'Google'],
+        [/جی میل/g, 'Gmail'],
         [/ٹور/g, 'tour'],
         [/مکمل/g, 'mukammal'],
-        [/بہت خوب/g, 'Bohat khoob!']
+        [/بہت خوب/g, 'Bohat khoob!'],
+        [/شروع/g, 'shuru'],
+        [/کام/g, 'kaam'],
+        [/کلائنٹس|کلائنٹ|گاہک/g, 'clients'],
+        [/لیڈز|لیڈ/g, 'leads'],
+        [/ای میلز|ای میل|ایمیل/g, 'emails'],
+        [/ان باکسز|ان باکس/g, 'inbox'],
+        [/بھیجیں|بھیجنے/g, 'bheinjein'],
+        [/صاف|کلین/g, 'clean'],
+        [/تصدیق/g, 'tasdeeq'],
+        [/کنیکٹ/g, 'connect'],
+        [/فائل/g, 'file'],
+        [/ڈیش بورڈ/g, 'dashboard'],
+        [/حاضر/g, 'haazir'],
+        [/نقشہ/g, 'naqsha'],
+        [/طریقہ/g, 'tareeqa'],
+        [/مدد/g, 'madad'],
+        [/مہم/g, 'campaign'],
+        [/بہترین/g, 'behtareen'],
+        [/شاندار/g, 'shaandaar'],
+        [/لاگ ان/g, 'login'],
+        [/رجسٹریشن/g, 'registration'],
+        [/پاس ورڈ/g, 'password'],
+        [/او ٹی پی/g, 'O T P'],
+        [/کوڈ/g, 'code']
     ];
     let res = clean;
     map.forEach(([r, s]) => { res = res.replace(r, s); });
@@ -11533,6 +11606,39 @@ function askAgentQuestion(topic) {
     if (query.includes('tour') || query.includes('guide')) {
         startAppTour();
         return;
+    } else if (query.includes('kaam') || query.includes('start') || query.includes('shuru') || query.includes('client') || query.includes('lead') || query.includes('blueprint') || query.includes('sketch') || query.includes('kese') || query.includes('realtime') || query.includes('map')) {
+        targetSelector = "#nav-dashboard";
+        blueprintTitle = "🚀 REAL-TIME CLIENT OUTREACH BLUEPRINT & WORKFLOW";
+        asciiArt =
+`┌────────────────────────────────────────────────────────┐
+│ [ REAL-TIME CLIENT OUTREACH ENGINE & BLUEPRINT ]       │
+├────────────────────────────────────────────────────────┤
+│  [1. Ingest Leads] ──► [2. Clean & Verify DNS/MX]      │
+│         │                             │                │
+│         ▼                             ▼                │
+│  [3. Spintax Setup] ──► [4. Multi-Gmail Dispatch 🚀]   │
+│         │                             │                │
+│         ▼                             ▼                │
+│  [5. Live Telemetry] ─► [6. CRM & Positive Replies 💰] │
+│  ENGINE: 100% Anti-Ban Shield ● Zero Domain Burn       │
+└────────────────────────────────────────────────────────┘`;
+        steps = [
+            { num: 1, label: "Harvest Leads", icon: "📥", action: "Module 1 ya Module 3 se Verified Leads CSV upload karein", selector: "#nav-matrix" },
+            { num: 2, label: "Clean & Verify", icon: "🧹", action: "Module 2 (Email Cleaner) se dead & spam emails filter karein", selector: "#nav-matrix" },
+            { num: 3, label: "Campaign Studio", icon: "✉️", action: "Module 22 mein Spintax aur Human Jitter activate karein", selector: "#btn-campaign-studio" },
+            { num: 4, label: "Connect Gmail", icon: "🔑", action: "Module 20 se Gmail OAuth connect karein", selector: "#nav-matrix" },
+            { num: 5, label: "Live Telemetry", icon: "📡", action: "Dashboard par Real-Time Live Stream aur Replies track karein", selector: "#nav-dashboard" }
+        ];
+        if (currentAgentLang === 'ur') {
+            replyText = `<b>🚀 ریئل ٹائم کلائنٹ آؤٹ ریچ کا مکمل بلیو پرنٹ:</b><br>نیچے دیے گئے 5 مراحل سے آپ فوری کلائنٹس حاصل کرنا شروع کر سکتے ہیں:`;
+            speechAudio = 'جناب! ریئل ٹائم کام شروع کرنے کا بلیو پرنٹ حاضر ہے۔ ماڈیول 1 سے لیڈز لائیں، ماڈیول 2 سے کلین کریں، ماڈیول 22 سے اسپن ٹیکس کمپین بنائیں اور ماڈیول 20 سے جی میل کنیکٹ کر کے ریئل ٹائم ای میلز بھیجیں۔';
+            phoneticAudio = 'Janab! Real time kaam shuru karne ka blueprint haazir hai. Module aik se leads layein, module do se clean karein, module baais se campaign banayein aur module bees se Gmail connect kar ke real time emails bhejein.';
+        } else {
+            replyText = `<b>🚀 Real-Time Client Outreach Blueprint:</b><br>Follow this 5-step workflow to launch live high-converting client campaigns:`;
+            speechAudio = 'Real-time client outreach workflow ready. Import leads via Module 1, clean via Module 2, configure Spintax in Module 22, and dispatch via Module 20.';
+            phoneticAudio = speechAudio;
+        }
+        actionBtn = `<button type="button" class="btn btn-sm btn-blue" onclick="location.href='/api/?tab=matrix'" style="margin-top:6px;">Open 22 Tools Matrix 🧭</button>`;
     } else if (query.includes('colleague') || query.includes('naam') || query.includes('name') || query.includes('profile')) {
         targetSelector = "#nav-colleagues";
         blueprintTitle = "👥 COLLEAGUE HUB & DUAL-VAULT AUTO-HEAL";
@@ -15867,7 +15973,13 @@ async function requestRegistrationOtp() {
         if (res.ok) {
             document.getElementById('reg-otp-group').style.display = 'block';
             const statusEl = document.getElementById('reg-otp-status');
-            if (statusEl) statusEl.innerText = data.demo_otp ? ('Demo Code: ' + data.demo_otp) : 'Code sent to email. Valid for 10 min.';
+            if (data.demo_otp) {
+                const regOtpInput = document.getElementById('reg-otp-input');
+                if (regOtpInput) regOtpInput.value = data.demo_otp;
+                if (statusEl) statusEl.innerHTML = '<span style="color:#00F0FF; font-weight:bold;">🔑 Verification Code: ' + data.demo_otp + ' (Auto-filled)</span>';
+            } else {
+                if (statusEl) statusEl.innerText = 'Code sent to email inbox. Valid for 10 min.';
+            }
             showToast(data.message || 'Verification code sent to ' + email, 'success');
             let cooldown = 60;
             if (btn) {
@@ -15939,6 +16051,12 @@ async function requestForgotPasswordOtp() {
         const data = await res.json();
         if (res.ok) {
             document.getElementById('forgot-otp-group').style.display = 'block';
+            if (data.demo_otp) {
+                const forgotOtpInput = document.getElementById('forgot-otp-input');
+                if (forgotOtpInput) forgotOtpInput.value = data.demo_otp;
+                const forgotStatus = document.getElementById('forgot-otp-status');
+                if (forgotStatus) forgotStatus.innerHTML = '<span style="color:#00F0FF; font-weight:bold;">🔑 Reset Code: ' + data.demo_otp + ' (Auto-filled)</span>';
+            }
             showToast(data.message || 'Reset code sent.', 'success');
             let cooldown = 60;
             if (btn) {
@@ -19510,6 +19628,18 @@ def app(environ, start_response):
                 ])
                 return [sitemap_xml]
 
+            if cleaned_path in GLOBAL_ASSET_CACHE:
+                cached_bytes, cached_type = GLOBAL_ASSET_CACHE[cleaned_path]
+                secure_start_response(
+                    "200 OK",
+                    [
+                        ("Content-Type", cached_type),
+                        ("Content-Length", str(len(cached_bytes))),
+                        ("Cache-Control", "public, max-age=31536000, immutable"),
+                    ],
+                )
+                return [cached_bytes]
+
             app_dir = Path(__file__).resolve().parent
             if "ai-agent-titan" in cleaned_path:
                 logo_candidates = [
@@ -19571,12 +19701,13 @@ def app(environ, start_response):
                 content_type = "image/png"
             elif "favicon" in cleaned_path:
                 content_type = "image/x-icon"
+            GLOBAL_ASSET_CACHE[cleaned_path] = (logo_bytes, content_type)
             secure_start_response(
                 "200 OK",
                 [
                     ("Content-Type", content_type),
                     ("Content-Length", str(len(logo_bytes))),
-                    ("Cache-Control", "public, max-age=86400"),
+                    ("Cache-Control", "public, max-age=31536000, immutable"),
                 ],
             )
             return [logo_bytes]
@@ -19724,12 +19855,14 @@ def app(environ, start_response):
                 record_audit_event("OTP_DISPATCHED", f"6-digit verification code dispatched to {target_email} ({purpose})", user=full_name or target_email, role="Security Sentinel")
                 threading.Thread(target=dispatch_otp_email_smtp, args=(target_email, otp_code, full_name, purpose), daemon=True).start()
 
+                smtp_active = is_smtp_configured()
                 # Anti-enumeration message
                 resp_data = json.dumps({
                     "status": "ok",
-                    "message": f"If an account exists for {target_email}, a 6-digit security code was dispatched. Valid for 10 minutes.",
+                    "message": f"If an account exists for {target_email}, a 6-digit security code was dispatched to your inbox. Valid for 10 minutes." if smtp_active else f"OTP generated! (Live SMTP awaiting credentials — code auto-filled: {otp_code})",
                     "expires_in": 600,
-                    "demo_otp": otp_code if is_test_client else None
+                    "smtp_configured": smtp_active,
+                    "demo_otp": otp_code if (not smtp_active or is_test_client) else None
                 }).encode("utf-8")
                 secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(resp_data)))])
                 return [resp_data]
@@ -20184,16 +20317,16 @@ def app(environ, start_response):
                 "expires": now + 600,
                 "resend_after": now + 60,
                 "attempts": 0,
-                "code": otp_code if is_test_client else None
+                "code": otp_code if (not is_smtp_configured() or is_test_client) else None
             }
             st["adminSettings"] = adm
             write_shared_state(st)
             record_audit_event("OTP_DISPATCHED", f"Master Vault Recovery OTP generated for admin email: {admin_email}", user="Super Admin", role="Super Admin")
             resp_data = json.dumps({
                 "status": "ok",
-                "message": f"If configured, a 6-digit recovery OTP was dispatched to {admin_email} (valid 10 mins).",
+                "message": f"A 6-digit recovery OTP was dispatched to {admin_email} (valid 10 mins)." if is_smtp_configured() else f"Recovery OTP generated! (Live SMTP awaiting credentials — code: {otp_code})",
                 "email": admin_email,
-                "demo_otp": otp_code if is_test_client else None
+                "demo_otp": otp_code if (not is_smtp_configured() or is_test_client) else None
             }).encode("utf-8")
             secure_start_response("200 OK", [
                 ("Content-Type", "application/json; charset=utf-8"),
