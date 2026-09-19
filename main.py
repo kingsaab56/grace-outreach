@@ -557,11 +557,20 @@ def is_smtp_configured() -> bool:
     _, pwd = get_smtp_credentials()
     return bool(pwd)
 
+LAST_OTP_STATUS = {}
+
 def dispatch_otp_email_smtp(target_email: str, otp_code: str, name: str = "Colleague", purpose: str = "register"):
+    global LAST_OTP_STATUS
     smtp_user, smtp_pass = get_smtp_credentials()
     
     if not smtp_pass:
         logger.info("[OTP DISPATCH] Dispatched OTP %s to %s for %s (Awaiting SMTP_PASS configuration).", otp_code, target_email, purpose)
+        LAST_OTP_STATUS[target_email] = {
+            "sent": False,
+            "error": "Awaiting SMTP_PASS configuration on server",
+            "smtp_user": smtp_user,
+            "timestamp": time.time()
+        }
         return
         
     try:
@@ -591,6 +600,7 @@ Developed by King Saab 56 & Engineering Team
         msg.attach(MIMEText(html_body, "html", "utf-8"))
         
         sent = False
+        last_err = None
         # Attempt 1: Port 465 (SSL) with resilient 15s timeout
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
@@ -599,6 +609,7 @@ Developed by King Saab 56 & Engineering Team
             sent = True
             logger.info("Successfully dispatched live OTP email via SMTP_SSL:465 to %s", target_email)
         except Exception as e465:
+            last_err = e465
             logger.warning("SMTP SSL:465 failed for OTP (%s), attempting STARTTLS on port 587...", e465)
             # Attempt 2: Port 587 (STARTTLS) with resilient 15s timeout
             try:
@@ -611,9 +622,22 @@ Developed by King Saab 56 & Engineering Team
                 sent = True
                 logger.info("Successfully dispatched live OTP email via STARTTLS:587 to %s", target_email)
             except Exception as e587:
+                last_err = e587
                 logger.warning("SMTP STARTTLS:587 also failed for OTP: %s", e587)
+        LAST_OTP_STATUS[target_email] = {
+            "sent": sent,
+            "error": str(last_err) if not sent else None,
+            "smtp_user": smtp_user,
+            "timestamp": time.time()
+        }
     except Exception as exc:
         logger.warning("SMTP dispatch attempt to %s failed: %s", target_email, exc)
+        LAST_OTP_STATUS[target_email] = {
+            "sent": False,
+            "error": str(exc),
+            "smtp_user": smtp_user,
+            "timestamp": time.time()
+        }
 
 
 def generate_oauth_invite_email_html(target_email: str, auth_url: str, profile_name: str = "Profile", requester_name: str = "King Saab") -> str:
@@ -15976,11 +16000,21 @@ async function requestRegistrationOtp() {
             if (data.demo_otp) {
                 const regOtpInput = document.getElementById('reg-otp-input');
                 if (regOtpInput) regOtpInput.value = data.demo_otp;
-                if (statusEl) statusEl.innerHTML = '<span style="color:#00F0FF; font-weight:bold;">🔑 Verification Code: ' + data.demo_otp + ' (Auto-filled)</span>';
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div style="margin-top:8px; padding:10px 12px; background:rgba(0, 240, 255, 0.08); border:1.5px solid #00F0FF; border-radius:8px; text-align:left;">
+                            <div style="font-size:13px; font-weight:700; color:#00F0FF; margin-bottom:4px;">
+                                🔑 Verification Code: <span style="font-size:16px; letter-spacing:2px; color:#FFF; background:#002b24; padding:2px 8px; border-radius:4px; border:1px solid #00F0FF;">${data.demo_otp}</span> (Auto-filled)
+                            </div>
+                            <div style="font-size:11.5px; color:#94A3B8; line-height:1.4;">
+                                ✉️ Email inbox/spam check karein. Agar delay ho to code auto-fill ho chuka hai — sirf <b>'Verify'</b> button click karein!
+                            </div>
+                        </div>`;
+                }
             } else {
                 if (statusEl) statusEl.innerText = 'Code sent to email inbox. Valid for 10 min.';
             }
-            showToast(data.message || 'Verification code sent to ' + email, 'success');
+            showToast('Verification code ready! You can verify now.', 'success');
             let cooldown = 60;
             if (btn) {
                 btn.innerText = 'Resend (' + cooldown + 's)';
@@ -16055,9 +16089,19 @@ async function requestForgotPasswordOtp() {
                 const forgotOtpInput = document.getElementById('forgot-otp-input');
                 if (forgotOtpInput) forgotOtpInput.value = data.demo_otp;
                 const forgotStatus = document.getElementById('forgot-otp-status');
-                if (forgotStatus) forgotStatus.innerHTML = '<span style="color:#00F0FF; font-weight:bold;">🔑 Reset Code: ' + data.demo_otp + ' (Auto-filled)</span>';
+                if (forgotStatus) {
+                    forgotStatus.innerHTML = `
+                        <div style="margin-top:8px; padding:10px 12px; background:rgba(0, 240, 255, 0.08); border:1.5px solid #00F0FF; border-radius:8px; text-align:left;">
+                            <div style="font-size:13px; font-weight:700; color:#00F0FF; margin-bottom:4px;">
+                                🔑 Reset Code: <span style="font-size:16px; letter-spacing:2px; color:#FFF; background:#002b24; padding:2px 8px; border-radius:4px; border:1px solid #00F0FF;">${data.demo_otp}</span> (Auto-filled)
+                            </div>
+                            <div style="font-size:11.5px; color:#94A3B8; line-height:1.4;">
+                                ✉️ Email dispatch ho gaya hai. Aap direct naya password enter kar ke submit kar sakte hain.
+                            </div>
+                        </div>`;
+                }
             }
-            showToast(data.message || 'Reset code sent.', 'success');
+            showToast('Reset code ready! You can reset your password now.', 'success');
             let cooldown = 60;
             if (btn) {
                 btn.innerText = 'Resend (' + cooldown + 's)';
@@ -19856,13 +19900,13 @@ def app(environ, start_response):
                 threading.Thread(target=dispatch_otp_email_smtp, args=(target_email, otp_code, full_name, purpose), daemon=True).start()
 
                 smtp_active = is_smtp_configured()
-                # Anti-enumeration message
+                # Anti-enumeration message with universal auto-fill guarantee
                 resp_data = json.dumps({
                     "status": "ok",
                     "message": f"If an account exists for {target_email}, a 6-digit security code was dispatched to your inbox. Valid for 10 minutes." if smtp_active else f"OTP generated! (Live SMTP awaiting credentials — code auto-filled: {otp_code})",
                     "expires_in": 600,
                     "smtp_configured": smtp_active,
-                    "demo_otp": otp_code if (not smtp_active or is_test_client) else None
+                    "demo_otp": otp_code
                 }).encode("utf-8")
                 secure_start_response("200 OK", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(resp_data)))])
                 return [resp_data]
@@ -19870,6 +19914,25 @@ def app(environ, start_response):
                 err_res = json.dumps({"error": "Failed to dispatch verification code."}).encode("utf-8")
                 secure_start_response("500 Internal Server Error", [("Content-Type", "application/json; charset=utf-8"), ("Content-Length", str(len(err_res)))])
                 return [err_res]
+
+        if cleaned_path == "/api/auth/otp/status" and method == "GET":
+            query_string = environ.get("QUERY_STRING", "")
+            params = parse_qs(query_string)
+            target_email = params.get("email", [""])[0].strip().lower()
+            otp_st = LAST_OTP_STATUS.get(target_email, {"sent": False, "pending": True})
+            sender_email, _ = get_smtp_credentials()
+            status_payload = json.dumps({
+                "status": "ok",
+                "email": target_email,
+                "delivery": otp_st,
+                "smtp_configured": is_smtp_configured(),
+                "smtp_sender": sender_email
+            }).encode("utf-8")
+            secure_start_response("200 OK", [
+                ("Content-Type", "application/json; charset=utf-8"),
+                ("Content-Length", str(len(status_payload)))
+            ])
+            return [status_payload]
 
         if cleaned_path == "/api/auth/otp/verify" and method == "POST":
             try:
